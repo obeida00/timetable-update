@@ -186,12 +186,20 @@ td.clk:hover{background:#ede9fe!important}
 .dev-pill{font-size:.82rem;font-weight:800;padding:6px 12px;border-radius:999px;flex:0 0 auto}
 
 
-.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
-.set-card{background:#f8f7ff;border:1px solid #ede9fe;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;min-height:240px;height:100%}
-.set-card h3{margin:0;color:#4c1d95;font-size:1.05rem;font-weight:800}
-.set-wide{grid-column:1/-1;min-height:auto}
-.set-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:auto}
+.set-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.set-head h2{margin:0;border:0;padding:0}
+.ver-chip{background:linear-gradient(135deg,#6d28d9,#4f46e5);color:#fff;font-weight:800;font-size:.82rem;padding:6px 12px;border-radius:999px;box-shadow:0 6px 14px rgba(109,40,217,.25)}
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch}
+.set-card{background:#f8f7ff;border:1px solid #ede9fe;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.set-card h3{margin:0;color:#4c1d95;font-size:1.02rem;font-weight:800}
+.set-wide{grid-column:1/-1}
+.set-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .set-actions .btn{width:100%}
+.set-split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.set-split .hint{margin:0 0 8px}
+.set-danger{display:flex;flex-wrap:wrap;gap:8px}
+.set-card label{min-width:0}
+.set-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .days-chk{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px}
 .days-chk span{min-height:44px;justify-content:center;margin:0}
 @media(max-width:800px){
@@ -227,7 +235,7 @@ td.clk:hover{background:#ede9fe!important}
   table.slim td.act::before,table.cls-table td.act::before{display:none}
   .sec-tag{margin:4px}
 }
-@media(max-width:800px){.set-grid{grid-template-columns:1fr}.set-actions{grid-template-columns:1fr}}
+@media(max-width:800px){.set-grid,.set-split,.set-nums,.set-actions{grid-template-columns:1fr}}
 @media(max-width:800px){.grid2{grid-template-columns:1fr}label{min-width:100%}}
 @media print{
   nav,.no-print,header.top,#editBar,.hint,.modal,.tabs{display:none!important}
@@ -261,7 +269,7 @@ td.clk:hover{background:#ede9fe!important}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size: 1.45rem; margin: 0 0 4px 0;">تطبيق نظام الجداول المدرسية</h1>
-    <div style="font-size: 0.85rem; color: #e9d5ff; margin: 0;">أداة متكاملة لإنشاء وتوزيع الجداول المدرسية بكل سهولة واحترافية</div>
+    <div style="font-size: 0.85rem; color: #e9d5ff; margin: 0;">إصدار 0.01 — أداة متكاملة لإنشاء وتوزيع الجداول المدرسية</div>
     </div>
   </div>
   <div style="z-index: 1;">
@@ -323,32 +331,34 @@ td.clk:hover{background:#ede9fe!important}
 </section>
 
 <section id="settings" class="card" hidden>
-  <h2>الإعدادات</h2>
-  <p class="hint">إعدادات المدرسة، حفظ ونقل البيانات، التصدير، والاسترداد من الصور.</p>
+  <div class="set-head">
+    <h2>الإعدادات</h2>
+    <span class="ver-chip">إصدار 0.01</span>
+  </div>
+  <p class="hint">رتّب المدرسة والدوام هنا، ثم احفظ أو انقل البيانات. التحديث يظهر تلقائياً عند توفر نسخة أحدث.</p>
   <div class="set-grid">
     <div class="set-card">
-      <h3>أيام الدوام</h3>
-      <div class="chk days-chk" id="daysBox"></div>
-    </div>
-    <div class="set-card">
-      <h3>بيانات المدرسة</h3>
+      <h3>المدرسة والدوام</h3>
       <label>اسم المدرسة<input id="schoolName" value="مدرسة بدور بغداد الابتدائية" placeholder="مدرسة بدور بغداد الابتدائية" readonly></label>
       <button class="btn w" type="button" onclick="changeSchoolName()">تغيير اسم المدرسة</button>
-      <label>عدد الدروس اليومية<input id="periods" type="number" min="1" max="12" value="6" oninput="saveSettings(true)"></label>
-      <label>مسافة الحافة في تصدير JPG (مم)<input id="exPadMm" type="number" min="0" max="25" step="0.1" value="1" oninput="saveSettings(true)"></label>
-      <button class="btn" style="margin-top:auto" type="button" onclick="saveSettings()">حفظ الإعدادات</button>
+      <div class="chk days-chk" id="daysBox"></div>
+      <div class="set-nums">
+        <label>الدروس اليومية<input id="periods" type="number" min="1" max="12" value="6" oninput="saveSettings(true)"></label>
+        <label>حافة التصدير (مم)<input id="exPadMm" type="number" min="0" max="25" step="0.1" value="1" oninput="saveSettings(true)"></label>
+      </div>
+      <button class="btn" type="button" onclick="saveSettings()">حفظ الإعدادات</button>
     </div>
-    <div class="set-card set-wide">
-      <h3>إدارة البيانات</h3>
-      <p class="hint" style="margin-bottom:12px">احفظ ملف JSON وانقله لأي جهاز (آيفون / أندرويد / كمبيوتر) ثم استردّه هناك.</p>
-      <div class="set-actions no-print">
+    <div class="set-card">
+      <h3>التحديث والبيانات</h3>
+      <p class="hint" style="margin:0">الإصدار الحالي <strong>0.01</strong></p>
+      <div class="set-actions no-print" style="grid-template-columns:1fr 1fr">
+        <button class="btn g" type="button" onclick="checkAppUpdate(true)">تحقق من التحديث</button>
         <button class="btn g" type="button" onclick="backupJSON()">حفظ نسخة</button>
         <button class="btn w" type="button" onclick="openRestore()">استرداد نسخة</button>
         <button class="btn" type="button" onclick="toggleExport()">تصدير الجدول</button>
         <button class="btn o" type="button" onclick="openUploadModal()">استرداد من الصور</button>
         <button class="btn w" type="button" onclick="guardPin(reloadSeed)">تحميل بيانات الدفتر</button>
         <button class="btn d" type="button" onclick="guardPin(resetSystem)">تصفير النظام</button>
-        <button class="btn" type="button" onclick="checkAppUpdate(true)">تحقق من التحديث</button>
       </div>
       <input type="file" id="restore" accept="application/json" hidden onchange="restoreJSON(event)">
     </div>
@@ -696,7 +706,7 @@ td.clk:hover{background:#ede9fe!important}
 const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
 try{localStorage.removeItem("school_tt_v2");localStorage.removeItem("school_tt_v3");}catch(e){}
 const KEY="school_tt_v4";
-const APP_VERSION="1.1.0";
+const APP_VERSION="0.01";
 
 const GUIDE_STEPS=[
   {tab:"classes",title:"1 — الصفوف والشعب",msg:"ابدأ من تبويب الصفوف والشعب. أضف الصف (الأول، الثاني…) ثم أضف الشعب (أ، ب، ج). احذف أي شعبة غير موجودة في مدرستك."},
