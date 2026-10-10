@@ -171,7 +171,7 @@ td.clk:hover{background:#ede9fe!important}
 #appDlg.ok-dlg h2{color:#15803d}
 #appDlg.err-dlg .modal-card{border-color:#dc2626;box-shadow:0 20px 50px rgba(220,38,38,.22)}
 #appDlg.err-dlg h2{color:#b91c1c}
-#dlgMsg{margin:8px 0 18px;color:#374151;font-size:1.02rem;line-height:1.7}
+#dlgMsg{margin:8px 0 18px;color:#374151;font-size:1.02rem;line-height:1.7;white-space:pre-line}
 
 .dev-btn{font:inherit;font-size:.85rem;color:#fff;font-weight:800;background:rgba(0,0,0,.15);padding:8px 16px;border-radius:25px;border:1px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.1);white-space:nowrap;cursor:pointer}
 .dev-btn:hover{background:rgba(255,255,255,.18)}
@@ -2675,23 +2675,27 @@ function showUpdBar(info){
   if($("updNotes"))$("updNotes").textContent=info.notes?(" — "+info.notes):"";
   bar.hidden=false;bar.style.display="block";
 }
+function latestUpdateText(ver){
+  return "أنت تستخدم آخر تحديث.\nالإصدار الحالي: "+(ver||APP_VERSION)+".\n\nإذا في خلل بالتطبيق أو تريد اقتراح تعديل، تواصل مع المطور عبيده العيثاوي.";
+}
+function showLatestUpdate(ver){
+  okBeep();
+  return appDlg(latestUpdateText(ver),"أنت تستخدم آخر تحديث",false,"ok");
+}
 function checkAppUpdate(manual){
   const api=pyApi();
   if(!api||!api.check_update){
-    if(manual)note("التحديث يعمل من نسخة الكمبيوتر بعد البناء.");
+    if(manual)showLatestUpdate(APP_VERSION);
     return;
   }
   Promise.resolve(api.check_update()).then(function(info){
     if(!info||!info.ok){
-      if(manual){
-        if(info&&info.reason==="no_url")note("ضع رابط update.json في ملف update_url.txt بجانب البرنامج.");
-        else note("تعذر فحص التحديث.");
-      }
+      if(manual)showLatestUpdate(info&&info.current?info.current:APP_VERSION);
       return;
     }
     if(info.newer)showUpdBar(info);
-    else if(manual)okNote("النظام محدّث (إصدار "+(info.current||APP_VERSION)+")");
-  }).catch(function(){if(manual)note("تعذر فحص التحديث.");});
+    else if(manual)showLatestUpdate(info.current||APP_VERSION);
+  }).catch(function(){if(manual)showLatestUpdate(APP_VERSION);});
 }
 function doAppUpdate(){
   const api=pyApi();
