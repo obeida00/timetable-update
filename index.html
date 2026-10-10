@@ -171,6 +171,19 @@ td.clk:hover{background:#ede9fe!important}
 #appDlg.ok-dlg h2{color:#15803d}
 #appDlg.err-dlg .modal-card{border-color:#dc2626;box-shadow:0 20px 50px rgba(220,38,38,.22)}
 #appDlg.err-dlg h2{color:#b91c1c}
+
+.empty-cell{background:#fecaca!important;}
+.empty-cell:hover{background:#fca5a5!important;}
+#tBox .modal-card{width:min(760px,100%);padding:22px 22px 16px}
+#tBox h2{margin-bottom:4px}
+.t-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;width:100%}
+.t-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;width:100%;margin-top:4px}
+#tAssign{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+#tAssign .asg{display:grid;grid-template-columns:1.1fr 1.1fr 80px 110px auto;gap:8px;align-items:end;width:100%;margin:0;background:#f8f7ff;border:1px solid #ede9fe;border-radius:14px;padding:8px}
+#tAssign .asg label{min-width:0;margin:0}
+@media(max-width:700px){
+  .t-top,#tAssign .asg{grid-template-columns:1fr}
+}
 #dlgMsg{margin:8px 0 18px;color:#374151;font-size:1.02rem;line-height:1.7;white-space:pre-line}
 
 .dev-btn{font:inherit;font-size:.85rem;color:#fff;font-weight:800;background:rgba(0,0,0,.15);padding:8px 16px;border-radius:25px;border:1px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.1);white-space:nowrap;cursor:pointer}
@@ -373,7 +386,7 @@ td.clk:hover{background:#ede9fe!important}
     <button class="btn o" onclick="openRemainModal()">إكمال المتبقي (اختياري)</button>
     <button class="btn w" onclick="openVacModal()">الشواغر والبدلاء</button>
     <label>عدد شعب الرياضة في الساحة بنفس الدرس
-      <input id="yardMax" type="number" min="1" max="16" value="2" onchange="saveYardMax()">
+      <input id="yardMax" type="number" min="1" step="1" value="2" onchange="saveYardMax()">
     </label>
   </div>
   <div id="genMsg"></div>
@@ -480,23 +493,25 @@ td.clk:hover{background:#ede9fe!important}
 </div>
 <div id="tBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="modal-card" onclick="event.stopPropagation()">
-    <h2 id="tTitle">إضافة معلم</h2>
-    <form class="row" onsubmit="return saveTeacher(event)">
+    <h2 id="tTitle">إضافة معلم / ة</h2>
+    <form onsubmit="return saveTeacher(event)">
       <input type="hidden" id="tId">
-      <label>اسم المعلم<input id="tName" required></label>
-      <label>الاختصاص<input id="tSpec"></label>
-      <label>حد الدروس الأسبوعي (اختياري)<input id="tLoad" type="number" min="0" value="0"></label>
-      <div class="form-actions" style="width:100%">
-        <button class="btn o" type="button" onclick="openTOff()">الأوف: <span id="tOffSum">—</span></button>
-        <label style="display:flex;align-items:center;gap:8px;margin:0"><input type="checkbox" id="tLeave" onchange="toggleLeave()"> مجاز</label>
+      <div class="t-top">
+        <label>المعلم / ة<input id="tName" required placeholder="الاسم الثلاثي"></label>
+        <label>الاختصاص<input id="tSpec" placeholder="رياضيات، عربي…"></label>
+        <label>حد الدروس الأسبوعي (اختياري)<input id="tLoad" type="number" min="0" value="0"></label>
       </div>
-      <label id="tSubWrap" hidden>المعلم البديل (يأخذ الدروس)
+      <div class="t-meta">
+        <button class="btn o" type="button" onclick="openTOff()">الأوف: <span id="tOffSum">—</span></button>
+        <label style="display:flex;align-items:center;gap:8px;margin:0;min-width:auto"><input type="checkbox" id="tLeave" onchange="toggleLeave()"> مجاز / ة</label>
+      </div>
+      <label id="tSubWrap" hidden>المعلم / ة البديل (يأخذ الدروس)
         <select id="tSub"></select>
       </label>
-      <div style="width:100%;margin-top:6px">
+      <div style="width:100%;margin-top:12px">
         <strong>المواد والشعب والدروس</strong>
         <div id="tAssign"></div>
-        <button class="btn w s" type="button" onclick="addAssignRow()">+ مادة وشعبة</button>
+        <button class="btn w s" type="button" onclick="addAssignRow()" style="margin-top:8px">+ مادة وشعبة</button>
         <p style="margin:8px 0 0">مجموع الدروس: <strong id="tAssignTotal">0</strong></p>
       </div>
       <div class="form-actions">
@@ -580,6 +595,7 @@ td.clk:hover{background:#ede9fe!important}
       <label>المعلم<select id="sTeacher" required></select></label>
       <label>المادة<input id="sName" required placeholder="عربي، رياضيات، علوم..."></label>
       <label>الدروس الأسبوعية لكل شعبة<input id="sLoad" type="number" min="1" value="6" required></label>
+      <label>النوع<select id="sRole"><option value="main">أساسية</option><option value="assist">مساعدة</option></select></label>
       <label style="flex:2">الشعب<div id="sSec" class="chk"></div></label>
       <div class="form-actions">
         <button class="btn" type="submit">حفظ</button>
@@ -853,7 +869,7 @@ function persistDisk(s){
     }
   }catch(e){}
 }
-let _saveT=null,_lastSaved="";
+let _saveT=null,_lastSaved="",_refT=null,_refreshing=false;
 function flushSave(){
   const s=JSON.stringify(db);
   if(s===_lastSaved)return;
@@ -872,6 +888,56 @@ function save(skipHist){
   try{localStorage.setItem(KEY,s);}catch(e){}
   clearTimeout(_saveT);
   _saveT=setTimeout(flushSave,200);
+  clearTimeout(_refT);
+  _refT=setTimeout(refreshAll,40);
+}
+
+function syncGridFromData(){
+  if(!db.grid)return;
+  Object.keys(db.grid).forEach(function(secId){
+    const days=db.grid[secId];
+    if(!days||typeof days!=="object")return;
+    Object.keys(days).forEach(function(d){
+      const arr=days[d];
+      if(!Array.isArray(arr))return;
+      arr.forEach(function(c,p){
+        if(!c)return;
+        const sub=c.subjectId?db.subjects.find(s=>s.id===c.subjectId):null;
+        if(sub){
+          arr[p]={subjectId:sub.id,teacherId:sub.teacherId,name:sub.name};
+          return;
+        }
+        if(!db.teachers.some(x=>x.id===c.teacherId)) arr[p]=null;
+      });
+    });
+  });
+}
+function refreshAll(){
+  if(_refreshing)return;
+  _refreshing=true;
+  try{
+    syncGridFromData();
+    const keepT=$("sTeacher")?$("sTeacher").value:"";
+    const keepV=$("viewType")?$("viewType").value:"";
+    const keepD=$("dayPick")?$("dayPick").value:"";
+    const keepSF=$("sFilter")?$("sFilter").value:"";
+    const keepTF=$("tFilter")?$("tFilter").value:"";
+    renderTeachers();
+    renderClasses();
+    renderSubjects();
+    renderSettings();
+    if($("sFilter"))$("sFilter").value=keepSF;
+    if($("tFilter"))$("tFilter").value=keepTF;
+    if(!$("sBox")||$("sBox").hidden) fillTeacherSelect();
+    else {fillTeacherSelect(); if($("sTeacher"))$("sTeacher").value=keepT;}
+    if($("viewType")){
+      $("viewType").value=keepV||$("viewType").value;
+      fillDayPick();
+      if($("dayPick")&&keepD)$("dayPick").value=keepD;
+      renderViews();
+    }
+  }catch(e){}
+  _refreshing=false;
 }
 function undoLast(){
   if(hist.length<2){note("لا يوجد ترجيع");return;}
@@ -1234,11 +1300,14 @@ function openTOff(){
 function secOptions(sel){
   return db.sections.map(s=>`<option value="${s.id}" ${s.id===sel?"selected":""}>${esc(secName(s.id))}</option>`).join("");
 }
+function normSubj(n){return String(n||"").trim().replace(/\s+/g,"").replace(/ة/g,"ه").replace(/[أإآ]/g,"ا");}
+function roleLabel(r){return r==="assist"?"مساعدة":"أساسية";}
 function readAssign(){
   return [...document.querySelectorAll("#tAssign .asg")].map(row=>({
     name:(row.querySelector(".asg-name").value||"").trim(),
     sectionId:row.querySelector(".asg-sec").value,
-    weekly:+row.querySelector(".asg-w").value||0
+    weekly:+row.querySelector(".asg-w").value||0,
+    role:(row.querySelector(".asg-role")&&row.querySelector(".asg-role").value)||"main"
   })).filter(x=>x.name&&x.sectionId&&x.weekly);
 }
 function totalAssign(){
@@ -1248,14 +1317,15 @@ function totalAssign(){
   const secs=[...new Set(rows.map(x=>secName(x.sectionId)))];
   if($("tSecSum"))$("tSecSum").textContent=secs.length?secs.join("، "):"—";
 }
-function addAssignRow(name,sec,w){
+function addAssignRow(name,sec,w,role){
   const box=$("tAssign");if(!box)return;
   const div=document.createElement("div");
-  div.className="asg row";
-  div.style.cssText="width:100%;align-items:end;margin-top:8px";
+  div.className="asg";
+  const r=role==="assist"?"assist":"main";
   div.innerHTML=`<label>المادة<input class="asg-name" value="${(name||"").replace(/"/g,"&quot;")}" oninput="totalAssign()" placeholder="رياضيات"></label>
     <label>الشعبة<select class="asg-sec" onchange="totalAssign()">${secOptions(sec||"")}</select></label>
     <label>الدروس<input class="asg-w" type="number" min="1" value="${w||6}" oninput="totalAssign()"></label>
+    <label>النوع<select class="asg-role"><option value="main" ${r==="main"?"selected":""}>أساسية</option><option value="assist" ${r==="assist"?"selected":""}>مساعدة</option></select></label>
     <button type="button" class="btn d s" onclick="this.parentElement.remove();totalAssign()">حذف</button>`;
   box.appendChild(div);totalAssign();
 }
@@ -1267,7 +1337,7 @@ function resetTeacher(){
   if($("tAssign"))$("tAssign").innerHTML="";
   updateTSummary();totalAssign();
 }
-function openTeacher(){resetTeacher();addAssignRow();$("tTitle").textContent="إضافة معلم";$("tBox").hidden=false;}
+function openTeacher(){resetTeacher();addAssignRow();$("tTitle").textContent="إضافة معلم / ة";$("tBox").hidden=false;}
 function saveTeacher(e){
   e.preventDefault();
   const asg=readAssign();
@@ -1280,18 +1350,29 @@ function saveTeacher(e){
   const subId=leave?($("tSub")&&$("tSub").value)||"":"";
   if(leave&&!subId){alert("المعلم المجاز يحتاج بديلاً يأخذ الدروس");return false;}
   const rec={id:$("tId").value||uid(),name:$("tName").value.trim(),specialty:spec,weekly:+$("tLoad").value||0,sections:secs,offDays,leave,subId};
+  const dup=[];
+  asg.forEach(a=>{
+    if(a.role==="assist")return;
+    const other=db.subjects.find(s=>s.teacherId!==rec.id&&s.sectionId===a.sectionId&&normSubj(s.name)===normSubj(a.name)&&(s.role||"main")==="main");
+    if(other) dup.push(a.name+" في "+secName(a.sectionId)+" للمعلمة "+teacherName(other.teacherId));
+    const same=asg.filter(x=>x.sectionId===a.sectionId&&normSubj(x.name)===normSubj(a.name)&&(x.role||"main")==="main");
+    if(same.length>1) dup.push(a.name+" مكررة أساسية في "+secName(a.sectionId));
+  });
+  if(dup.length){alert("لا يمكن مادتان أساسيتان بنفس الاسم في نفس الشعبة.\nاجعلي الثانية «مساعدة».\n"+[...new Set(dup)].join("\n"));return false;}
   const i=db.teachers.findIndex(t=>t.id===rec.id);
   if(i>=0)db.teachers[i]=rec;else db.teachers.push(rec);
   const keep=[];
   asg.forEach(a=>{
     const sec=db.sections.find(x=>x.id===a.sectionId);
-    const exist=db.subjects.find(s=>s.teacherId===rec.id&&s.sectionId===a.sectionId&&s.name===a.name);
-    if(exist){exist.weekly=a.weekly;exist.classId=sec?sec.classId:exist.classId;keep.push(exist.id);}
-    else {const id=uid();db.subjects.push({id,name:a.name,teacherId:rec.id,classId:sec?sec.classId:"",sectionId:a.sectionId,weekly:a.weekly});keep.push(id);}
+    const exist=db.subjects.find(s=>s.teacherId===rec.id&&s.sectionId===a.sectionId&&normSubj(s.name)===normSubj(a.name));
+    if(exist){exist.weekly=a.weekly;exist.classId=sec?sec.classId:exist.classId;exist.role=a.role||"main";exist.name=a.name;keep.push(exist.id);}
+    else {const id=uid();db.subjects.push({id,name:a.name,teacherId:rec.id,classId:sec?sec.classId:"",sectionId:a.sectionId,weekly:a.weekly,role:a.role||"main"});keep.push(id);}
   });
   db.subjects=db.subjects.filter(s=>s.teacherId!==rec.id||keep.includes(s.id));
   applyLeaveCover(rec);
-  save();renderTeachers();renderSubjects();resetTeacher();fillTeacherSelect();$("tBox").hidden=true;return false;
+  save();renderTeachers();renderSubjects();resetTeacher();fillTeacherSelect();$("tBox").hidden=true;
+  showQuotaNotes(secs, rec.name);
+  return false;
 }
 function editTeacher(id){
   const t=db.teachers.find(x=>x.id===id);if(!t)return;
@@ -1304,10 +1385,10 @@ function editTeacher(id){
   fillSecMulti(t.sections||[]);
   if($("tAssign"))$("tAssign").innerHTML="";
   const list=db.subjects.filter(s=>s.teacherId===t.id);
-  if(list.length) list.forEach(s=>addAssignRow(s.name,s.sectionId,s.weekly));
+  if(list.length) list.forEach(s=>addAssignRow(s.name,s.sectionId,s.weekly,s.role));
   else addAssignRow();
   updateTSummary();
-  $("tTitle").textContent="تعديل المعلم";
+  $("tTitle").textContent="تعديل المعلم / ة";
   $("tBox").hidden=false;
 }
 function delTeacher(id){ask("حذف المعلم؟").then(ok=>{if(!ok)return;db.teachers=db.teachers.filter(t=>t.id!==id);save();renderTeachers();fillTeacherSelect();});}
@@ -1362,14 +1443,16 @@ function fillSectionSummary(id){
   if(!db.sections.length){el.innerHTML=`<tr><td colspan="6" class="muted">لا شعب</td></tr>`;return;}
   el.innerHTML=db.sections.map(s=>{
     const list=db.subjects.filter(x=>x.sectionId===s.id);
-    const w=list.reduce((a,x)=>a+(+x.weekly||0),0);
-    const tm={};
-    list.forEach(x=>{
-      const n=teacherName(x.teacherId);
-      tm[n]=(tm[n]||0)+(+x.weekly||0);
-    });
-    const teachers=Object.keys(tm).map(n=>n+" ("+tm[n]+")").join("، ")||"—";
-    const mats=list.map(x=>x.name+" ("+(+x.weekly||0)+")").join("، ")||"—";
+    const mains=list.filter(x=>(x.role||"main")!=="assist");
+    const w=mains.reduce((a,x)=>a+(+x.weekly||0),0);
+    const teachers=list.map(x=>teacherName(x.teacherId)+" ("+roleLabel(x.role)+", "+(+x.weekly||0)+")").join("، ")||"—";
+    const grouped={};
+    mains.forEach(x=>{grouped[x.name]=(grouped[x.name]||0)+(+x.weekly||0);});
+    const assists=list.filter(x=>x.role==="assist");
+    let mats=Object.keys(grouped).map(n=>n+" ("+grouped[n]+")").join("، ")||"—";
+    if(assists.length) mats+=" — مساعدة: "+assists.map(x=>x.name+" / "+teacherName(x.teacherId)).join("، ");
+    const dups=[...new Set(mains.filter((x,i)=>mains.findIndex(y=>normSubj(y.name)===normSubj(x.name))!==i).map(x=>x.name))];
+    if(dups.length) mats="تكرار: "+dups.join("، ")+" | "+mats;
     const gap=cap-w;
     const gapTxt=gap>0?gap+" ناقص":(gap<0?(-gap)+" زيادة عن السعة":"مكتمل");
     return `<tr><td>${esc(secName(s.id))}</td><td><strong>${w}</strong></td><td>${cap}</td><td>${gapTxt}</td><td>${esc(teachers)}</td><td>${esc(mats)}</td></tr>`;
@@ -1415,6 +1498,24 @@ function renderClasses(){
   }</tbody></table></div>`;
 }
 
+
+function sectionCap(){return ((db.settings.days||[]).length||5)*(db.settings.periods||6);}
+function showQuotaNotes(secIds, teacherName){
+  const cap=sectionCap();
+  const ids=[...new Set((secIds||[]).filter(Boolean))];
+  if(!ids.length)return;
+  const lines=[];
+  if(teacherName) lines.push("المعلم: "+teacherName);
+  ids.forEach(id=>{
+    const w=sectionWeekly(id);
+    const nm=secName(id);
+    const left=cap-w;
+    if(w>=cap) lines.push("تنبيه: شعبة "+nm+" أكملت النصاب ("+w+" من "+cap+").");
+    else lines.push("تنبيه: شعبة "+nm+" تحتاج بعد "+left+" دروس لإكمال النصاب ("+w+" من "+cap+").");
+  });
+  okBeep();
+  appDlg(lines.join("\n"),"تنبيه",false,"ok");
+}
 function resetSubject(){$("sId").value="";$("sName").value="";$("sLoad").value=6;fillTeacherSelect();fillSecSelect([]);}
 function openSubject(){resetSubject();$("sTitle").textContent="إضافة مادة";$("sBox").hidden=false;}
 function saveSubject(e){
@@ -1424,34 +1525,43 @@ function saveSubject(e){
   const name=$("sName").value.trim();
   const teacherId=$("sTeacher").value;
   const weekly=+$("sLoad").value||1;
+  const role=($("sRole")&&$("sRole").value)||"main";
   const editId=$("sId").value;
+  if(role!=="assist"){
+    const clash=secs.filter(sectionId=>db.subjects.some(s=>s.id!==editId&&s.sectionId===sectionId&&normSubj(s.name)===normSubj(name)&&(s.role||"main")==="main"&&s.teacherId!==teacherId));
+    if(clash.length){alert("المادة موجودة أساسية في: "+clash.map(secName).join("، ")+"\nاجعلي النوع مساعدة أو غيّري المعلمة.");return false;}
+  }
   if(editId){
     const old=db.subjects.find(s=>s.id===editId);
     if(old){
       const sectionId=secs[0]||old.sectionId;
       const sec=db.sections.find(x=>x.id===sectionId);
-      old.name=name;old.teacherId=teacherId;old.sectionId=sectionId;old.classId=sec?sec.classId:old.classId;old.weekly=weekly;
+      old.name=name;old.teacherId=teacherId;old.sectionId=sectionId;old.classId=sec?sec.classId:old.classId;old.weekly=weekly;old.role=role;
       const t=db.teachers.find(x=>x.id===teacherId);
       if(t&&!t.sections.includes(sectionId))t.sections.push(sectionId);
-      save();renderSubjects();renderTeachers();resetSubject();$("sBox").hidden=true;return false;
+      save();renderSubjects();renderTeachers();resetSubject();$("sBox").hidden=true;
+      showQuotaNotes([sectionId], t?t.name:"");
+      return false;
     }
   }
   secs.forEach(sectionId=>{
     const sec=db.sections.find(x=>x.id===sectionId);
-    const rec={id:uid(),name,teacherId,classId:sec?sec.classId:"",sectionId,weekly};
+    const rec={id:uid(),name,teacherId,classId:sec?sec.classId:"",sectionId,weekly,role};
     const exist=db.subjects.find(s=>s.teacherId===teacherId&&s.sectionId===sectionId&&s.name===name);
     if(exist){exist.weekly=weekly;exist.classId=rec.classId;}
     else db.subjects.push(rec);
   });
   const t=db.teachers.find(x=>x.id===teacherId);
   if(t) t.sections=[...new Set([...(t.sections||[]),...secs])];
-  save();renderSubjects();renderTeachers();resetSubject();$("sBox").hidden=true;return false;
+  save();renderSubjects();renderTeachers();resetSubject();$("sBox").hidden=true;
+  showQuotaNotes(secs, t?t.name:"");
+  return false;
 }
 function editSubject(id){
   const s=db.subjects.find(x=>x.id===id);if(!s)return;
   fillTeacherSelect();
   $("sId").value=s.id;$("sName").value=s.name;$("sTeacher").value=s.teacherId;
-  fillSecSelect([s.sectionId]);$("sLoad").value=s.weekly;
+  fillSecSelect([s.sectionId]);$("sLoad").value=s.weekly;if($("sRole"))$("sRole").value=s.role||"main";
   $("sTitle").textContent="تعديل المادة";
   $("sBox").hidden=false;
 }
@@ -1473,7 +1583,7 @@ function renderSubjects(){
       <td data-l="المعلم">${esc(teacherName(s.teacherId))}</td>
       <td data-l="المادة">${esc(s.name)}</td>
       <td data-l="الصف / الشعبة">${esc(secName(s.sectionId))}</td>
-      <td data-l="الدروس الأسبوعية"><strong>${s.weekly}</strong></td>
+      <td data-l="النوع">${roleLabel(s.role)}</td><td data-l="الدروس الأسبوعية"><strong>${s.weekly}</strong></td>
       <td class="no-print act"><button class="btn w s" onclick="editSubject('${s.id}')">تعديل</button><button class="btn d s" onclick="delSubject('${s.id}')">حذف</button></td></tr>`).join("");
   $("sBody").innerHTML=rows||`<tr><td colspan="6" class="muted">لا مواد بعد</td></tr>`;
   const tot=db.subjects.reduce((a,s)=>a+(+s.weekly||0),0);
@@ -1557,7 +1667,7 @@ function generate(){
     if(hit)s.sectionId=hit;
   });
   const baseJobs=[];
-  db.subjects.forEach(s=>{for(let i=0;i<s.weekly;i++)baseJobs.push({...s,k:i});});
+  db.subjects.filter(s=>(s.role||"main")!=="assist").forEach(s=>{for(let i=0;i<s.weekly;i++)baseJobs.push({...s,k:i});});
 
   function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
@@ -1750,12 +1860,12 @@ function teacherOptsByClass(secId,sel){
   const g=(lab,arr)=>`<optgroup label="${lab}">${arr.map(t=>`<option value="${t.id}" ${t.id===sel?"selected":""}>${esc(t.name)}</option>`).join("")}</optgroup>`;
   return `<option value="">— اختر معلمًا —</option>`+g("نفس الصف",same)+g("صفوف أخرى",oth);
 }
-function maxYard(){return Math.max(1,Math.min(16,+(db.settings.maxYard||2)));}
+function maxYard(){return Math.max(1,+(db.settings.maxYard||2));}
 function saveYardMax(){
-  db.settings.maxYard=Math.max(1,Math.min(16,+$("yardMax").value||2));
+  db.settings.maxYard=Math.max(1,+$("yardMax").value||2);
   save();
 }
-function sectionWeekly(sid){return db.subjects.filter(s=>s.sectionId===sid).reduce((a,s)=>a+(+s.weekly||0),0);}
+function sectionWeekly(sid){return db.subjects.filter(s=>s.sectionId===sid&&(s.role||"main")!=="assist").reduce((a,s)=>a+(+s.weekly||0),0);}
 function emptyReport(){
   const days=db.settings.days||[],P=db.settings.periods||6,cap=days.length*P;
   if(!db.grid)return "";
@@ -1985,7 +2095,7 @@ function renderVacancy(){
       const vac=db.vacancies&&db.vacancies[s.id]&&db.vacancies[s.id][d]&&db.vacancies[s.id][d][p];
       if(lesson) h+=`<td>${miniCell(lesson)}</td>`;
       else if(vac) h+=`<td class="vac-cell"><div class="mini-s">شاغر</div><div class="mini-t">${esc(teacherName(vac.teacherId))}</div></td>`;
-      else h+=`<td><span class="muted">—</span></td>`;
+      else h+=`<td class="empty-cell"></td>`;
     });
     h+=`</tr>`;
   }
@@ -2013,7 +2123,7 @@ function tableHTML(title, rowsMap, secId){
       const html=off?raw.html:(raw||"");
       const cls=(off?"off-cell":"")+(secId?" clk":"");
       const clk=secId?` onclick="editCell('${secId}',${d},${p})"`:"";
-      h+=`<td class="${cls.trim()}"${clk}>${html||'<span class="muted">—</span>'}</td>`;
+      h+=`<td class="${(cls+(html||off?"":" empty-cell")).trim()}"${clk}>${html||""}</td>`;
     });
     h+=`</tr>`;
   }
@@ -2072,7 +2182,7 @@ function shortSubj(n){
   return s.slice(0,6);
 }
 function miniCell(c){
-  if(!c)return '<span class="muted">—</span>';
+  if(!c)return "";
   const tid=coverTid(c.teacherId);
   const extra=tid!==c.teacherId?" بديل":"";
   return `<div class="mini-s">${esc(shortSubj(c.name||subjName(c.subjectId)))}</div><div class="mini-t">${esc(shortName(teacherName(tid)))}${extra}</div>`;
@@ -2115,7 +2225,7 @@ function renderDayAll(){
     secs.forEach((s,i)=>{
       const split=i&&secs[i-1].classId!==s.classId?"g-split":"";
       const c=db.grid[s.id]&&db.grid[s.id][d]&&db.grid[s.id][d][p];
-      h+=`<td class="clk ${split}" onclick="editCell('${s.id}',${d},${p})">${miniCell(c)}</td>`;
+      h+=`<td class="clk ${split}${c?"":" empty-cell"}" onclick="editCell('${s.id}',${d},${p})">${miniCell(c)}</td>`;
     });
     h+=`</tr>`;
   }
@@ -2144,7 +2254,7 @@ function renderWeekAll(){
       secs.forEach((s,i)=>{
         const split=i&&secs[i-1].classId!==s.classId?"g-split":"";
         const c=db.grid[s.id]&&db.grid[s.id][d]&&db.grid[s.id][d][p];
-        h+=`<td class="clk ${split}" onclick="editCell('${s.id}',${d},${p})">${miniCell(c)}</td>`;
+        h+=`<td class="clk ${split}${c?"":" empty-cell"}" onclick="editCell('${s.id}',${d},${p})">${miniCell(c)}</td>`;
       });
       h+=`</tr>`;
     }
@@ -2490,7 +2600,9 @@ function captureView(type,cb){
       const Pex=db.settings.periods||6;
       const perIx=Math.max(0,(ri-headRows)%Pex);
       const bands=["#ffffff","#f3e8ff","#ecfdf5","#fff7ed","#e0f2fe","#fce7f3"];
-      ctx.fillStyle=th?"#5b21b6":bands[perIx%6];
+      const sub0=td.querySelector(".mini-s");
+      const emptyCell=!th&&ri>=headRows&&!sub0&&!(td.innerText||"").replace(/[\s—\-]/g,"");
+      ctx.fillStyle=th?"#5b21b6":(emptyCell?"#fecaca":bands[perIx%6]);
       ctx.fillRect(x,y,w,rh);
       ctx.strokeStyle="#6d28d9";ctx.lineWidth=1.6;ctx.strokeRect(x,y,w,rh);
       if(ri>=headRows){
@@ -2538,7 +2650,7 @@ function captureView(type,cb){
           const y0=y+rh/2-((lines.length-1)*gap)/2;
           ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#fff";
           lines.forEach((ln,i)=>ctx.fillText(ln,x+w/2,y0+i*gap));
-        }else{
+        }else if(txt && txt!=="—" && txt!=="-"){
           drawFit(txt,x+w/2,y+rh/2,w-8,base,false);
         }
       }
