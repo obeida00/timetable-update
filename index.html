@@ -17,6 +17,7 @@
   --bg:#f3f0ff;--card:#fff;--ink:#1e1b4b;--muted:#64748b;--line:#ede9fe;
   --pri:#6d28d9;--pri2:#7c3aed;--ok:#059669;--bad:#e11d48;
   --sh:0 10px 32px rgba(91,33,182,.1);
+  --grid:#5b21b6;--grid-dark:#4c1d95;
 }
 *{box-sizing:border-box;font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 html,body{
@@ -26,20 +27,20 @@ html,body{
 }
 button,input,select,textarea,table,th,td,h1,h2,h3,label{font-family:inherit}
 button, input, select, textarea { touch-action: manipulation; }
-.app{max-width:1120px;margin:0 auto;padding:18px}
+.app{max-width:1360px;width:100%;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box}
 header.top{
   display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
-  margin:-18px -18px 18px;padding:26px 22px;color:#fff;text-align:right;
+  margin:0;padding:10px 18px;color:#fff;text-align:right;
   background:linear-gradient(135deg,#4c1d95 0%,#6d28d9 48%,#2563eb 100%);
-  box-shadow:0 16px 40px rgba(76,29,149,.28);border-radius:0 0 28px 28px;
+  box-shadow:0 16px 40px rgba(76,29,149,.28);border-radius:24px;
 }
 .brand{display:flex;gap:12px;align-items:center;justify-content:center}
-.app-logo{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:16px;padding:4px;flex:0 0 auto;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.app-logo{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:14px;padding:3px;flex:0 0 auto;box-shadow:0 4px 12px rgba(0,0,0,.16)}
 .brand-row{display:flex;align-items:center;gap:14px;flex:1;min-width:250px;z-index:1}
 h1{font-size:1.55rem;margin:0;font-weight:800}
 .sub{display:none}
 nav.tabs{
-  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;padding:10px;
+  display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:10px 12px;
   background:rgba(255,255,255,.92);border-radius:20px;box-shadow:var(--sh);backdrop-filter:blur(10px);
 }
 nav.tabs button{
@@ -52,13 +53,16 @@ nav.tabs button:hover{background:#ede9fe;transform:translateY(-2px)}
 nav.tabs button.on{background:linear-gradient(135deg,#6d28d9,#4f46e5);color:#fff;box-shadow:0 10px 20px rgba(109,40,217,.32)}
 .ico{width:18px;height:18px;vertical-align:-3px;margin-left:6px}
 .card{
-  background:var(--card);border-radius:24px;padding:24px;box-shadow:var(--sh);margin-bottom:16px;border:1px solid #f3e8ff;
+  background:var(--card);border-radius:24px;padding:24px;box-shadow:var(--sh);margin:0;border:1px solid #f3e8ff;
 }
 .card.show{animation:in .32s ease}
 @keyframes in{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
 h2{margin:0 0 10px;font-size:1.28rem;color:#4c1d95;display:inline-block;border-bottom:3px solid #a78bfa;padding-bottom:5px;font-weight:800}
 .hint{background:#f5f3ff;border:1px solid #ddd6fe;color:#5b21b6;padding:10px 12px;border-radius:12px;margin:0 0 14px;font-size:.9rem;line-height:1.65}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+[hidden]{display:none!important}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:#059669;color:#fff;font-weight:800;padding:12px 22px;border-radius:14px;z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 10px 28px rgba(5,150,105,.35)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .form-actions{display:flex;gap:8px;flex-wrap:wrap}
 label{display:flex;flex-direction:column;gap:5px;font-size:.85rem;color:#374151;min-width:160px;flex:1;font-weight:700}
 input,select,textarea{
@@ -97,11 +101,16 @@ tr:hover td{background:#f5f3ff}
 .chk span:hover{transform:translateY(-1px);background:#ede9fe;border-color:#c4b5fd}
 .cell-sub{font-weight:700;color:#5b21b6}
 .cell-t{font-size:.78rem;color:var(--muted)}
-.search{max-width:260px}
-.toolbar{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;overflow-x:auto;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.search{max-width:none}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;overflow:visible;margin:0 0 12px}
 .toolbar .btn{flex:0 0 auto;white-space:nowrap}
-.toolbar label.search{flex:1 1 200px;min-width:160px;flex-direction:row;align-items:center;gap:8px;margin:0;font-size:.82rem}
-.toolbar label.search input{flex:1;min-width:140px;min-height:40px}
+.toolbar label.search,.toolbar label.sort{
+  flex:1 1 200px;width:auto;max-width:280px;min-width:180px;
+  flex-direction:row;align-items:center;gap:8px;margin:0;font-size:.82rem;white-space:nowrap
+}
+.toolbar label.search input,.toolbar label.sort select{
+  flex:1;width:100%;min-width:0;min-height:42px;box-sizing:border-box
+}
 .drop{position:relative;flex:0 0 auto}
 .drop-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:20;background:#fff;border:1px solid #ddd6fe;border-radius:12px;box-shadow:0 10px 24px rgba(76,29,149,.18);min-width:160px;padding:6px;display:flex;flex-direction:column;gap:4px}
 .drop-menu[hidden]{display:none!important}
@@ -109,20 +118,21 @@ tr:hover td{background:#f5f3ff}
 .drop-menu button:hover{background:#ede9fe}
 
 .cls-table th,.cls-table td{padding:8px 10px}
-.sec-tag{display:inline-flex;align-items:center;gap:4px;margin:2px;padding:3px 8px;border-radius:8px;background:#f5f3ff;border:1px solid #ddd6fe;font-weight:700}
+.sec-tag{display:inline-flex;align-items:center;gap:4px;margin:2px;padding:5px 12px;border-radius:8px;background:#f5f3ff;border:1px solid #c4b5fd;font-weight:700;cursor:pointer;color:#5b21b6}
 .sec-tag button{border:0;background:transparent;color:#ef4444;cursor:pointer;font-weight:800;padding:0 2px;line-height:1}
 table.slim th,table.slim td{padding:5px 6px;line-height:1.25}
 .act{white-space:nowrap;display:flex;flex-direction:row;gap:6px;justify-content:center;align-items:center}
 .act .btn.s{padding:4px 10px;min-height:28px;margin:0}
 .table-wrap{overflow:auto;margin-top:14px}
-.sheet-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:0 0 4px;padding:10px 28px;background:#5b21b6;border-radius:12px;color:#fff}
-.sheet-head .school{margin:0;padding-inline-end:8px;font-size:1.05rem;color:#fff;font-weight:800;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sheet-head .title{margin:0;font-size:1.1rem;color:#fff;font-weight:800;text-align:center;white-space:nowrap}
-.sheet-head .day{margin:0;padding-inline-start:8px;font-size:1.05rem;color:#fff;font-weight:700;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.print-sheet{width:100%;max-width:100%;overflow:hidden}.onepage{width:100%;max-width:100%;table-layout:fixed;font-size:.62rem;border:1px solid #5b21b6}
-.onepage th,.onepage td{padding:3px 2px;vertical-align:middle;border:1.6px solid #6d28d9}
-.onepage thead th{background:#5b21b6;color:#fff;white-space:normal;font-size:.62rem;line-height:1.15;padding:3px 2px}
-.onepage tbody th{background:#7c3aed;color:#fff;white-space:nowrap;font-size:.62rem}
+#viewOut{margin-top:18px}
+.sheet-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:0 0 4px;padding:10px 28px;background:var(--grid);border-radius:12px;color:#fff}
+.sheet-head .school{margin:0;padding-inline-end:8px;font-size:1.28rem;color:#fff;font-weight:800;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet-head .title{margin:0;font-size:1.32rem;color:#fff;font-weight:800;text-align:center;white-space:nowrap}
+.sheet-head .day{margin:0;padding-inline-start:8px;font-size:1.22rem;color:#fff;font-weight:700;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.print-sheet{width:100%;max-width:100%;overflow:hidden}.onepage{width:100%;max-width:100%;table-layout:fixed;font-size:.62rem;border:1px solid var(--grid)}
+.onepage th,.onepage td{padding:3px 2px;vertical-align:middle;border:1.6px solid var(--grid)}
+.onepage thead th{background:var(--grid);color:#fff;white-space:normal;font-size:.62rem;line-height:1.15;padding:3px 2px}
+.onepage tbody th{background:#f5f3ff;color:#4c1d95;white-space:nowrap;font-size:.62rem}
 .onepage tbody td{background:#fff;min-width:0}
 .onepage tbody tr:nth-child(even) td{background:#faf8ff}
 tbody tr.pband0 td{background:#fff}
@@ -132,26 +142,26 @@ tbody tr.pband3 td{background:#fff7ed}
 tbody tr.pband4 td{background:#e0f2fe}
 tbody tr.pband5 td{background:#fce7f3}
 
-.onepage tbody tr td,.onepage tbody tr th,.week-grid tbody tr td,.week-grid tbody tr th{border-bottom:2.4px solid #4c1d95}
-.mini-s{font-weight:800;line-height:1.15;color:#4c1d95;font-size:var(--fs-sub,13px)}
-.mini-t{font-size:var(--fs-tea,10px);color:#6b7280;line-height:1.15;margin-top:1px}
+.onepage tbody tr td,.onepage tbody tr th,.week-grid tbody tr td,.week-grid tbody tr th{border-bottom:2.4px solid var(--grid-dark)}
+.mini-s{font-weight:800;line-height:1.05;color:#4c1d95;font-size:var(--fs-sub,13px)}
+.mini-t{font-size:var(--fs-tea,10px);color:#6b7280;line-height:1.2;margin-top:6px}
 .week-grid tbody tr.band0 td{background:#fff}
 .week-grid tbody tr.band1 td{background:#f3e8ff}
 .week-grid tbody tr.band2 td{background:#ecfdf5}
 .week-grid tbody tr.band3 td{background:#fff7ed}
 .week-grid tbody tr.band4 td{background:#e0f2fe}
-.week-grid tbody tr.day-split td,.week-grid tbody tr.day-split th{border-top:3px solid #6d28d9}
+.week-grid tbody tr.day-split td,.week-grid tbody tr.day-split th{border-top:3px solid var(--grid-dark)}
 .period-line{border-bottom:1px solid #f3e8ff;padding:1px 3px;line-height:1.15;font-size:.58rem;flex:1 1 0;min-height:0;height:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .period-line:last-child{border:0}
 .week-grid{width:100%;table-layout:fixed}
-.week-grid th,.week-grid td{border:1.6px solid #6d28d9}
-.week-grid thead th{border-bottom:2px solid #4c1d95}
-.week-grid tbody th,.week-grid tbody td{border-bottom:2px solid #6d28d9;height:78px}
+.week-grid th,.week-grid td{border:1.6px solid var(--grid)}
+.week-grid thead th{border-bottom:2px solid var(--grid-dark);background:var(--grid);color:#fff}
+.week-grid tbody th,.week-grid tbody td{border-bottom:2px solid var(--grid);height:var(--cell-h,78px)}
 .week-grid tbody td{padding:0;vertical-align:stretch}
-.week-grid .g-split,.onepage .g-split{border-inline-start:4px solid #3b0764}
+.week-grid .g-split,.onepage .g-split{border-inline-start:4px solid var(--grid-dark)}
 .week-grid tbody th{width:22px;white-space:nowrap;font-size:.65rem;padding:2px 0}
-.week-stack{display:flex;flex-direction:column;height:78px}
-.onepage tbody td{height:46px;vertical-align:middle}
+.week-stack{display:flex;flex-direction:column;height:var(--cell-h,78px)}
+.onepage tbody td{height:var(--cell-h-day,46px);vertical-align:middle}
 .day-v,.per-col{width:22px;max-width:28px;padding:2px 0;vertical-align:middle}
 .day-v span,.onepage thead th.per-col span{writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.08em;font-size:.68rem;display:inline-block}
 .per-col{white-space:nowrap;font-size:.7rem}
@@ -174,20 +184,36 @@ td.clk:hover{background:#ede9fe!important}
 
 .empty-cell{background:#fecaca!important;}
 .empty-cell:hover{background:#fca5a5!important;}
-#tBox .modal-card{width:min(760px,100%);padding:22px 22px 16px}
-#tBox h2{margin-bottom:4px}
-.t-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;width:100%}
-.t-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;width:100%;margin-top:4px}
+
+#sBox .modal-card,#tBox .modal-card{width:min(860px,96vw);padding:22px 22px 16px}
+#sBox h2,#tBox h2{margin-bottom:6px}
+#sBox form,#tBox form{display:flex;flex-direction:column;gap:18px;width:100%}
+#sBox .form-actions,#tBox .form-actions{margin:0;width:100%;justify-content:flex-start;flex-shrink:0}
+.s-top,.t-top{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%;align-items:end}
+.t-top{grid-template-columns:repeat(3,minmax(0,1fr))}
+.s-top label,.t-top label,#tAssign .asg label{min-width:0;margin:0;width:100%}
+.s-top input,.s-top select,.t-top input,.t-top select,#tAssign .asg input,#tAssign .asg select{
+  width:100%;min-height:46px;box-sizing:border-box
+}
+.s-secs{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:#f8f7ff;border:1px solid #ede9fe;border-radius:16px;padding:12px;margin-top:8px}
+.s-secs span{margin:0;width:100%;justify-content:space-between;box-sizing:border-box}
+.t-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;width:100%;margin-top:8px}
 #tAssign{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-#tAssign .asg{display:grid;grid-template-columns:1.1fr 1.1fr 80px 110px auto;gap:8px;align-items:end;width:100%;margin:0;background:#f8f7ff;border:1px solid #ede9fe;border-radius:14px;padding:8px}
-#tAssign .asg label{min-width:0;margin:0}
-@media(max-width:700px){
-  .t-top,#tAssign .asg{grid-template-columns:1fr}
+#tAssign .asg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.2fr) minmax(0,0.7fr) minmax(0,0.9fr) auto;gap:10px;align-items:end;width:100%;margin:0;background:#f8f7ff;border:1px solid #ede9fe;border-radius:16px;padding:10px;box-sizing:border-box}
+@media(max-width:800px){
+  .s-top,.t-top,#tAssign .asg,.s-secs{grid-template-columns:1fr}
 }
 #dlgMsg{margin:8px 0 18px;color:#374151;font-size:1.02rem;line-height:1.7;white-space:pre-line}
 
+.dev-wrap{display:flex;align-items:center;gap:8px;z-index:1}
 .dev-btn{font:inherit;font-size:.85rem;color:#fff;font-weight:800;background:rgba(0,0,0,.15);padding:8px 16px;border-radius:25px;border:1px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.1);white-space:nowrap;cursor:pointer}
 .dev-btn:hover{background:rgba(255,255,255,.18)}
+.bell-btn{position:relative;width:42px;height:42px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(0,0,0,.15);color:#fff;cursor:pointer;display:grid;place-items:center;padding:0}
+.bell-btn svg{width:20px;height:20px}
+.bell-dot{position:absolute;top:4px;left:4px;width:10px;height:10px;background:#ef4444;border-radius:50%;display:none;box-shadow:0 0 0 2px #5b21b6}
+.bell-btn.has .bell-dot{display:block}
+.bell-btn.has{animation:bellpulse 1.4s ease-in-out infinite}
+@keyframes bellpulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.45)}70%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
 .dev-list{display:flex;flex-direction:column;gap:12px;margin:12px 0 4px}
 .dev-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s}
 .dev-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.08)}
@@ -261,12 +287,12 @@ td.clk:hover{background:#ede9fe!important}
   .print-sheet{display:flex;flex-direction:column}
   .print-sheet div[style*="overflow"]{overflow:visible!important;flex:1;display:flex}
   .print-sheet table{width:100%;height:100%;flex:1}
-  .sheet-head{display:grid;grid-template-columns:1fr auto 1fr;margin:0 0 3mm;padding:2.5mm 8mm;background:#5b21b6;border-radius:0;border:0;flex:0 0 auto}
-  .sheet-head .school,.sheet-head .title,.sheet-head .day{font-size:11pt;color:#fff!important;margin:0}
-  .onepage,.week-grid{width:100%;height:100%;table-layout:fixed;font-size:7pt;border:1.5px solid #4c1d95}
-  .onepage th,.onepage td,.week-grid th,.week-grid td{padding:1px 2px;border:1.6px solid #5b21b6!important}
-  .onepage tbody tr td,.week-grid tbody tr td{border-bottom:2.4px solid #4c1d95!important}
-  .g-split{border-inline-start:4px solid #3b0764!important}
+  .sheet-head{display:grid;grid-template-columns:1fr auto 1fr;margin:0 0 3mm;padding:2.5mm 8mm;background:var(--grid);border-radius:0;border:0;flex:0 0 auto}
+  .sheet-head .school,.sheet-head .title,.sheet-head .day{font-size:14pt;color:#fff!important;margin:0}
+  .onepage,.week-grid{width:100%;height:100%;table-layout:fixed;font-size:7pt;border:1.5px solid var(--grid-dark)}
+  .onepage th,.onepage td,.week-grid th,.week-grid td{padding:1px 2px;border:1.6px solid var(--grid)!important}
+  .onepage tbody tr td,.week-grid tbody tr td{border-bottom:2.4px solid var(--grid-dark)!important}
+  .g-split{border-inline-start:4px solid var(--grid-dark)!important}
   .mini-s{font-size:var(--fs-sub,13px)!important}
   .mini-t{font-size:var(--fs-tea,10px)!important}
   .week-grid tbody tr,.week-grid tbody th,.week-grid tbody td{height:18%}
@@ -281,12 +307,16 @@ td.clk:hover{background:#ede9fe!important}
   <div class="brand-row">
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
-    <h1 style="font-size: 1.45rem; margin: 0 0 4px 0;">تطبيق نظام الجداول المدرسية</h1>
-    <div style="font-size: 0.85rem; color: #e9d5ff; margin: 0;">إصدار 0.01 — أداة متكاملة لإنشاء وتوزيع الجداول المدرسية</div>
+    <h1 style="font-size: 1.38rem; margin: 0 0 2px 0;">نظام الجداول المدرسية</h1>
+    <div style="font-size: 0.8rem; color: #e9d5ff; margin: 0;line-height:1.45">إصدار 0.01 — أنشئ جداول الصفوف والمعلمين بسهولة، ووزّع الدروس وعدّلها ثم صدّرها للطباعة.</div>
     </div>
   </div>
-  <div style="z-index: 1;">
-    <button type="button" class="dev-btn no-print" onclick="$('devBox').hidden=false">المطور: عبيده العيثاوي</button>
+  <div class="dev-wrap no-print">
+    <button type="button" class="bell-btn" id="bellBtn" title="التنبيهات" onclick="openNotif()">
+      <span class="bell-dot"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+    </button>
+    <button type="button" class="dev-btn" onclick="$('devBox').hidden=false">المطور: عبيده العيثاوي</button>
   </div>
 </header>
 <div id="updBar" class="hint no-print" hidden style="display:none;margin:0 0 12px;background:#ecfdf5;border-color:#6ee7b7;color:#065f46">
@@ -313,6 +343,13 @@ td.clk:hover{background:#ede9fe!important}
     <button class="btn g" type="button" onclick="openIo('teachers','export')">تصدير</button>
     <button class="btn o" type="button" onclick="openIo('teachers','import')">استرداد</button>
     <label class="search">بحث<input id="tFilter" placeholder="اسم، اختصاص، شعبة" oninput="renderTeachers()"></label>
+    <label class="sort">ترتيب
+      <select id="tSort" onchange="renderTeachers()">
+        <option value="load">الأكثر دروساً</option>
+        <option value="name">الاسم أبجدياً</option>
+        <option value="sec">الصف والشعبة (أول أ، أول ب…)</option>
+      </select>
+    </label>
   </div>
   <div class="table-wrap">
     <table class="slim"><thead><tr><th>#</th><th>الاسم</th><th>الاختصاص</th><th>الدروس الأسبوعية</th><th>الشعب (دروس)</th><th>الأوف</th><th>مجاز / بديل</th><th class="no-print">إجراءات</th></tr></thead><tbody id="tBody"></tbody></table>
@@ -321,7 +358,7 @@ td.clk:hover{background:#ede9fe!important}
 
 <section id="classes" class="card show">
   <h2>الصفوف والشعب</h2>
-  <p class="hint">أضف صفًا ثم شعبًا صغيرة (أ، ب، ج). اضغط × لحذف شعبة.</p>
+  <p class="hint">اضغطي <strong>اسم الصف</strong> أو شارة الشعبة (<strong>أ، ب، ج</strong>) لفتح قائمة المعلمين والمادة والدروس في هذه الشعبة. زر حذف يتيح حذف شعبة واحدة أو الصف كله.</p>
   <button class="btn no-print" type="button" onclick="openClass()">إضافة صف</button>
   <div id="classList"></div>
 </section>
@@ -336,10 +373,17 @@ td.clk:hover{background:#ede9fe!important}
     <button class="btn g" type="button" onclick="openIo('subjects','export')">تصدير</button>
     <button class="btn o" type="button" onclick="openIo('subjects','import')">استرداد</button>
     <label class="search">بحث<input id="sFilter" placeholder="معلم، مادة، شعبة" oninput="renderSubjects()"></label>
+    <label class="sort">ترتيب
+      <select id="sSort" onchange="renderSubjects()">
+        <option value="load">الأكثر دروساً</option>
+        <option value="name">الاسم أبجدياً</option>
+        <option value="sec">الصف والشعبة (أول أ، أول ب…)</option>
+      </select>
+    </label>
   </div>
   <div id="sSum"></div>
   <div class="table-wrap">
-    <table class="slim"><thead><tr><th>#</th><th>المعلم</th><th>المادة</th><th>الصف / الشعبة</th><th>الدروس الأسبوعية</th><th class="no-print">إجراءات</th></tr></thead><tbody id="sBody"></tbody></table>
+    <table class="slim"><thead><tr><th>#</th><th>المعلم</th><th>المادة</th><th>الصف / الشعبة</th><th>النوع</th><th>الدروس الأسبوعية</th><th class="no-print">إجراءات</th></tr></thead><tbody id="sBody"></tbody></table>
   </div>
 </section>
 
@@ -354,11 +398,12 @@ td.clk:hover{background:#ede9fe!important}
       <h3>المدرسة والدوام</h3>
       <label>اسم المدرسة<input id="schoolName" value="مدرسة بدور بغداد الابتدائية" placeholder="مدرسة بدور بغداد الابتدائية" readonly></label>
       <button class="btn w" type="button" onclick="changeSchoolName()">تغيير اسم المدرسة</button>
-      <div class="chk days-chk" id="daysBox"></div>
+      <button class="btn o" type="button" onclick="openDaysBox()">أيام الدوام: <span id="daysSum">—</span></button>
       <div class="set-nums">
         <label>الدروس اليومية<input id="periods" type="number" min="1" max="12" value="6" oninput="saveSettings(true)"></label>
-        <label>حافة التصدير (مم)<input id="exPadMm" type="number" min="0" max="25" step="0.1" value="1" oninput="saveSettings(true)"></label>
+        <label>لون أطراف الجدول<input id="gridColor" type="color" value="#5b21b6" oninput="saveGridColor()"></label>
       </div>
+      <button class="btn o" type="button" onclick="openPrintDims()">ضبط الأبعاد للطباعة</button>
       <button class="btn" type="button" onclick="saveSettings()">حفظ الإعدادات</button>
     </div>
     <div class="set-card">
@@ -386,7 +431,7 @@ td.clk:hover{background:#ede9fe!important}
     <button class="btn o" onclick="openRemainModal()">إكمال المتبقي (اختياري)</button>
     <button class="btn w" onclick="openVacModal()">الشواغر والبدلاء</button>
     <label>عدد شعب الرياضة في الساحة بنفس الدرس
-      <input id="yardMax" type="number" min="1" step="1" value="2" onchange="saveYardMax()">
+      <input id="yardMax" type="number" min="1" step="1" placeholder="" onchange="saveYardMax()" oninput="saveYardMax()">
     </label>
   </div>
   <div id="genMsg"></div>
@@ -408,6 +453,7 @@ td.clk:hover{background:#ede9fe!important}
     </label>
     <label>خط المادة <input id="fsSub" type="number" min="8" max="28" value="14" style="width:70px" oninput="applyFonts()"></label>
     <label>خط المعلم <input id="fsTea" type="number" min="7" max="22" value="12" style="width:70px" oninput="applyFonts()"></label>
+    <label>ارتفاع الخانة <input id="cellH" type="number" min="36" max="160" step="2" value="60" style="width:70px" oninput="applyCellH()"></label>
     <button class="btn" type="button" onclick="toggleExport()">طباعة وتصدير</button>
   </div>
   <div id="editBar" class="no-print" hidden>
@@ -424,7 +470,7 @@ td.clk:hover{background:#ede9fe!important}
 
 <div id="exportBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="modal-card" onclick="event.stopPropagation()">
-    <h2>طباعة وتصدير</h2>
+    <h2 id="exTitle">طباعة وتصدير</h2>
     <div class="row">
       <label>الصيغة
         <select id="exFmt">
@@ -435,22 +481,29 @@ td.clk:hover{background:#ede9fe!important}
         </select>
       </label>
       <label>الحجم
-        <select id="exSize">
+        <select id="exSize" onchange="loadExProf()">
           <option value="A4">A4</option>
           <option value="A3">A3</option>
         </select>
       </label>
       <label>الاتجاه
-        <select id="exDir">
+        <select id="exDir" onchange="saveExProf()">
           <option value="landscape">بالعرض</option>
           <option value="portrait">بالطول</option>
         </select>
       </label>
+    </div>
+    <div id="exExtra" class="row" hidden>
       <label>خط المادة <input id="exFsSub" type="number" min="8" max="40" value="24" style="width:70px" oninput="applyExportFonts()"></label>
       <label>خط المعلم <input id="exFsTea" type="number" min="7" max="36" value="20" style="width:70px" oninput="applyExportFonts()"></label>
       <label>مسافة الحافة (مم) <input id="exPadMmBox" type="number" min="0" max="25" step="0.1" value="1" style="width:70px" oninput="saveExPad()"></label>
+      <label>مسافة المادة والمعلم <input id="exGap" type="number" min="1" max="20" step="1" value="8" style="width:70px" oninput="saveExLayout()"></label>
+      <label>ارتفاع الخانة % <input id="exCell" type="number" min="50" max="130" step="5" value="100" style="width:70px" oninput="saveExLayout()"></label>
+      <label>ارتفاع شريط المدرسة (مم) <input id="exBarMm" type="number" min="6" max="22" step="0.5" value="11" style="width:70px" oninput="saveExLayout()"></label>
     </div>
     <div class="form-actions" style="margin-top:14px">
+      <button class="btn o" type="button" onclick="toggleExDims()">تعديل الأبعاد</button>
+      <button class="btn w" type="button" id="exSaveBtn" hidden onclick="saveExSize()">حفظ التعديل على الأبعاد</button>
       <button class="btn g" type="button" onclick="doExport()">تنفيذ</button>
       <button class="btn d" type="button" onclick="$('exportBox').hidden=true">إغلاق</button>
     </div>
@@ -540,6 +593,42 @@ td.clk:hover{background:#ede9fe!important}
     </div>
   </div>
 </div>
+
+
+
+<div id="clsDelBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <h2 id="clsDelTitle">حذف</h2>
+    <p class="hint">احذف شعبة واحدة، أو احذف الصف بالكامل.</p>
+    <div id="clsDelSecs" style="display:flex;flex-direction:column;gap:8px;margin:8px 0"></div>
+    <div class="form-actions" style="margin-top:14px">
+      <button class="btn d" type="button" id="clsDelAll">حذف الصف بالكامل</button>
+      <button class="btn" type="button" onclick="$('clsDelBox').hidden=true">إغلاق</button>
+    </div>
+  </div>
+</div>
+<div id="whoBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="modal-card" style="width:min(720px,96vw)" onclick="event.stopPropagation()">
+    <h2 id="whoTitle">المعلمون</h2>
+    <p id="whoSum" class="hint" style="margin:0 0 10px"></p>
+    <div class="table-wrap"><table class="slim"><thead><tr><th>المعلم</th><th>المادة</th><th>الشعبة</th><th>النوع</th><th>الدروس</th></tr></thead><tbody id="whoBody"></tbody></table></div>
+    <div class="form-actions" style="margin-top:14px">
+      <button class="btn d s" type="button" id="whoDel" hidden>حذف هذه الشعبة</button>
+      <button class="btn" type="button" onclick="$('whoBox').hidden=true">إغلاق</button>
+    </div>
+  </div>
+</div>
+<div id="daysModal" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <h2>أيام الدوام</h2>
+    <p class="hint">حدّدي أيام دوام المدرسة. تُحفظ مباشرة.</p>
+    <div class="chk days-chk" id="daysBox"></div>
+    <div class="form-actions" style="margin-top:14px">
+      <button class="btn" type="button" onclick="saveSettings(true);$('daysModal').hidden=true;renderSettings()">تم</button>
+      <button class="btn d" type="button" onclick="$('daysModal').hidden=true">إغلاق</button>
+    </div>
+  </div>
+</div>
 <div id="remainBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="modal-card" style="width:min(920px,100%)" onclick="event.stopPropagation()">
     <h2>إكمال المتبقي يدويًا</h2>
@@ -590,13 +679,15 @@ td.clk:hover{background:#ede9fe!important}
 <div id="sBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="modal-card" onclick="event.stopPropagation()">
     <h2 id="sTitle">إضافة مادة</h2>
-    <form class="row" onsubmit="return saveSubject(event)">
+    <form onsubmit="return saveSubject(event)">
       <input type="hidden" id="sId">
-      <label>المعلم<select id="sTeacher" required></select></label>
-      <label>المادة<input id="sName" required placeholder="عربي، رياضيات، علوم..."></label>
-      <label>الدروس الأسبوعية لكل شعبة<input id="sLoad" type="number" min="1" value="6" required></label>
-      <label>النوع<select id="sRole"><option value="main">أساسية</option><option value="assist">مساعدة</option></select></label>
-      <label style="flex:2">الشعب<div id="sSec" class="chk"></div></label>
+      <div class="s-top">
+        <label>المعلم / ة<select id="sTeacher" required></select></label>
+        <label>المادة<input id="sName" required placeholder="عربي، رياضيات، علوم..."></label>
+        <label>الشعبة<select id="sSec" required></select></label>
+        <label>الدروس الأسبوعية<input id="sLoad" type="number" min="1" value="6" required></label>
+        <label>النوع<select id="sRole"><option value="main">أساسية</option><option value="assist">مساعدة</option></select></label>
+      </div>
       <div class="form-actions">
         <button class="btn" type="submit">حفظ</button>
         <button class="btn o" type="button" onclick="undoLast()">ترجيع</button>
@@ -831,9 +922,18 @@ function note(msg){
   errBeep();
   return appDlg(m,"خطأ",false,"err");
 }
+function toast(msg){
+  let el=$("toast");
+  if(!el){el=document.createElement("div");el.id="toast";el.className="toast";document.body.appendChild(el);}
+  el.textContent=String(msg||"");
+  el.classList.add("show");
+  clearTimeout(el._h);
+  el._h=setTimeout(function(){el.classList.remove("show");},2200);
+}
 function okNote(msg){
-  okBeep();
-  return appDlg(String(msg||""),"تم بنجاح",false,"ok");
+  try{okBeep();}catch(e){}
+  toast(msg);
+  return Promise.resolve(true);
 }
 function ask(msg){return appDlg(String(msg||""),"تأكيد",true,"");}
 function appDlg(msg,title,needNo,kind){
@@ -846,10 +946,10 @@ function appDlg(msg,title,needNo,kind){
     $("dlgTitle").textContent=title;
     $("dlgMsg").textContent=msg;
     $("dlgCancel").hidden=!needNo;
-    const labs=kind==="fix"?["تعليمات الحل","لاحقاً"]:needNo?["حسنًا","إلغاء"]:["حسنًا",""];
+    const labs=kind==="upd"?["تحديث الآن","لاحقاً"]:kind==="fix"?["تعليمات الحل","لاحقاً"]:needNo?["حسنًا","إلغاء"]:["حسنًا",""];
     $("dlgOk").textContent=labs[0];
     $("dlgCancel").textContent=labs[1]||"إلغاء";
-    $("dlgOk").className=kind==="fix"?"btn g":"btn";
+    $("dlgOk").className=(kind==="fix"||kind==="upd")?"btn g":"btn";
     box.hidden=false;
     $("dlgOk").onclick=function(){box.hidden=true;box.classList.remove("ok-dlg","err-dlg");$("dlgOk").className="btn";$("dlgOk").textContent="حسنًا";res(true);};
     $("dlgCancel").onclick=function(){box.hidden=true;box.classList.remove("ok-dlg","err-dlg");$("dlgOk").className="btn";$("dlgOk").textContent="حسنًا";res(false);};
@@ -860,7 +960,9 @@ let hist=[];
 function pyApi(){
   try{return window.pywebview&&window.pywebview.api;}catch(e){return null;}
 }
+let _diskReady=false;
 function persistDisk(s){
+  if(!_diskReady)return;
   try{
     const api=pyApi();
     if(api&&api.save_data){
@@ -960,13 +1062,27 @@ function load(fileRaw){
     }catch(e){}
     return false;
   }
-  let ok=false;
-  if(fileRaw) ok=applyDb(fileRaw);
-  if(!ok){
-    try{ok=applyDb(localStorage.getItem(KEY));}catch(e){}
+  function score(d){
+    if(!d||typeof d!=="object")return -1;
+    return ((d.classes||[]).length||0)*20+((d.teachers||[]).length||0)*8+((d.subjects||[]).length||0);
   }
-  if(!ok){
-    seedSchool();save();
+  let best=null,bestN=-1;
+  function consider(raw){
+    if(!raw)return;
+    try{
+      const x=typeof raw==="string"?JSON.parse(raw):raw;
+      const n=score(x);
+      if(n>bestN){best=x;bestN=n;}
+    }catch(e){}
+  }
+  consider(fileRaw);
+  try{consider(localStorage.getItem(KEY));}catch(e){}
+  if(best&&bestN>0) applyDb(JSON.stringify(best));
+  else if(!applyDb(fileRaw)){
+    try{applyDb(localStorage.getItem(KEY));}catch(e){}
+  }
+  if(!(db.classes&&db.classes.length)&&!(db.teachers&&db.teachers.length)){
+    seedSchool();
   }
   try{localStorage.removeItem(KEY+"_grid");localStorage.removeItem(KEY+"_school");}catch(e){}
   if(!db.settings)db.settings={};
@@ -974,7 +1090,8 @@ function load(fileRaw){
   if(!db.settings.days||!db.settings.days.length)db.settings.days=[0,1,2,3,4];
   if(!db.settings.schoolName)db.settings.schoolName="مدرسة بدور بغداد الابتدائية";
   if(db.settings.exPadMm==null)db.settings.exPadMm=1;
-  save(true);
+  if(!db.settings.gridColor)db.settings.gridColor="#5b21b6";
+  applyGridColor();
 }
 function reloadSeed(){
   ask("تحميل بيانات الدفتر؟ سيتم استبدال البيانات الحالية.").then(ok=>{
@@ -1192,15 +1309,16 @@ function ensureHindSalem(){
   });
 }
 function tab(btn){
+  if(!btn)return;
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on",b===btn));
   ["teachers","classes","subjects","settings","generate","views"].forEach(id=>{
-    const el=$(id);
+    const el=$(id); if(!el)return;
     const on=btn.dataset.tab===id;
     el.hidden=!on;
     el.classList.toggle("show",on);
   });
-  if(btn.dataset.tab==="views")renderViews();
-  if(btn.dataset.tab==="settings")renderSettings();
+  try{ if(btn.dataset.tab==="views")renderViews(); }catch(e){}
+  try{ if(btn.dataset.tab==="settings")renderSettings(); }catch(e){}
 }
 
 function dayName(i){return DAYS[i]||"";}
@@ -1278,9 +1396,15 @@ function fillTeacherSelect(){
 }
 function fillClassSelect(){fillSecSelect();}
 function fillSecSelect(selected){
+  const el=$("sSec");if(!el)return;
   const sel=selected?[].concat(selected):[];
-  if(!db.sections.length){$("sSec").innerHTML='<span class="muted">أضف الصفوف والشعب أولًا</span>';return;}
-  $("sSec").innerHTML=db.sections.map(s=>`<span><input type="checkbox" value="${s.id}" ${sel.includes(s.id)?"checked":""}> ${esc(secName(s.id))}</span>`).join("");
+  const cur=sel[0]||"";
+  const secs=db.sections.slice().sort(function(a,b){
+    const k1=secSortKey(a.id),k2=secSortKey(b.id);
+    return k1[0]-k2[0]||k1[1]-k2[1]||arCmp(k1[2],k2[2]);
+  });
+  el.innerHTML='<option value="">— اختر الشعبة —</option>'+secs.map(s=>`<option value="${s.id}">${esc(secName(s.id))}</option>`).join("");
+  if(cur) el.value=cur;
 }
 
 function updateTSummary(){
@@ -1300,7 +1424,21 @@ function openTOff(){
 function secOptions(sel){
   return db.sections.map(s=>`<option value="${s.id}" ${s.id===sel?"selected":""}>${esc(secName(s.id))}</option>`).join("");
 }
-function normSubj(n){return String(n||"").trim().replace(/\s+/g,"").replace(/ة/g,"ه").replace(/[أإآ]/g,"ا");}
+function foldAr(s){
+  return String(s||"").replace(/[أإآٱ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim();
+}
+function foldTok(s){
+  return foldAr(s).replace(/(^|\s)ال/g,"$1").replace(/\s+/g,"");
+}
+function normSubj(n){
+  let s=foldTok(n);
+  const aliases={
+    "قراءه":"عربي","قراءهعربيه":"عربي","قراءهعربي":"عربي","لغهعربيه":"عربي","لغهاربيه":"عربي",
+    "العربيه":"عربي","العربي":"عربي","لغهاربي":"عربي","لغهعربي":"عربي",
+    "رياضه":"رياضه","تربيهرياضيه":"رياضه","تربيهبدنيه":"رياضه","ساحه":"رياضه"
+  };
+  return aliases[s]||s;
+}
 function roleLabel(r){return r==="assist"?"مساعدة":"أساسية";}
 function readAssign(){
   return [...document.querySelectorAll("#tAssign .asg")].map(row=>({
@@ -1412,12 +1550,27 @@ function _doReset(){
   save();boot();alert("تم تصفير النظام");
 }
 function teacherHours(id){return db.subjects.filter(s=>s.teacherId===id).reduce((a,s)=>a+(+s.weekly||0),0);}
+function teacherMinSec(tid){
+  const secs=db.subjects.filter(s=>s.teacherId===tid).map(s=>s.sectionId);
+  if(!secs.length)return [999,99,""];
+  return secs.map(secSortKey).sort((a,b)=>a[0]-b[0]||a[1]-b[1]||arCmp(a[2],b[2]))[0];
+}
 function renderTeachers(){
   const q=(($("tFilter")&&$("tFilter").value)||"").trim();
+  const sort=($("tSort")&&$("tSort").value)||"load";
   const list=db.teachers.filter(t=>{
     if(!q)return true;
     const txt=(t.name||"")+" "+(t.specialty||"")+" "+teacherSecHours(t.id)+" "+teacherOffDays(t).map(dayName).join(" ");
-    return txt.includes(q);
+    return foldTok(txt).includes(foldTok(q));
+  }).sort(function(a,b){
+    if(sort==="name") return arCmp(a.name,b.name);
+    if(sort==="sec"){
+      const k1=teacherMinSec(a.id),k2=teacherMinSec(b.id);
+      return k1[0]-k2[0]||k1[1]-k2[1]||arCmp(k1[2],k2[2])||arCmp(a.name,b.name);
+    }
+    const ha=teacherHours(a.id),hb=teacherHours(b.id);
+    if(hb!==ha)return hb-ha;
+    return arCmp(a.name,b.name);
   });
   $("tBody").innerHTML=list.map((t,i)=>`<tr>
     <td data-l="#">${i+1}</td><td data-l="الاسم">${esc(t.name)}</td><td data-l="الاختصاص">${esc(t.specialty)}</td><td data-l="الدروس الأسبوعية">${teacherHours(t.id)}</td>
@@ -1465,8 +1618,19 @@ function addClass(e){
   const name=$("cName").value.trim();if(!name)return false;
   db.classes.push({id:uid(),name});$("cName").value="";save();renderClasses();fillClassSelect();$("cBox").hidden=true;return false;
 }
-function delClass(id){
-  ask("حذف الصف وكل شعبه؟").then(ok=>{if(!ok)return;_delClass(id);});return;}
+function openClassDel(id){
+  const c=db.classes.find(x=>x.id===id); if(!c)return;
+  if($("clsDelTitle"))$("clsDelTitle").textContent="حذف — "+c.name;
+  const secs=db.sections.filter(s=>s.classId===id);
+  if($("clsDelSecs")) $("clsDelSecs").innerHTML=secs.length?secs.map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f8f7ff;border:1px solid #ede9fe;border-radius:12px;padding:8px 12px"><strong>${esc(s.name)}</strong><button type="button" class="btn d s" style="min-height:32px;padding:4px 12px" onclick="delOneSec('${s.id}','${id}')">حذف</button></div>`).join(""):'<span class="muted">لا شعب</span>';
+  const all=$("clsDelAll");
+  if(all) all.onclick=function(){ ask("حذف صف "+c.name+" وكل شعبه؟").then(ok=>{if(!ok)return;_delClass(id);$("clsDelBox").hidden=true;}); };
+  if($("clsDelBox"))$("clsDelBox").hidden=false;
+}
+function delClass(id){ openClassDel(id); }
+function delOneSec(sid,cid){
+  ask("حذف شعبة "+secName(sid)+" فقط؟").then(ok=>{if(!ok)return;_delSec(sid);openClassDel(cid);});
+}
 function _delClass(id){
   db.classes=db.classes.filter(c=>c.id!==id);
   db.sections=db.sections.filter(s=>s.classId!==id);
@@ -1486,12 +1650,43 @@ function delSection(id){
 function _delSec(id){
   db.sections=db.sections.filter(s=>s.id!==id);save();renderClasses();fillSecMulti();
 }
+function showWhoList(title, list, secId){
+  if($("whoTitle"))$("whoTitle").textContent=title;
+  const rows=(list||[]).map(s=>`<tr>
+    <td>${esc(teacherName(s.teacherId))}</td>
+    <td>${esc(s.name)}</td>
+    <td>${esc(secName(s.sectionId))}</td>
+    <td>${roleLabel(s.role)}</td>
+    <td><strong>${s.weekly||0}</strong></td></tr>`).join("");
+  const tot=(list||[]).reduce((a,s)=>a+(+s.weekly||0),0);
+  const mains=(list||[]).filter(s=>(s.role||"main")!=="assist").reduce((a,s)=>a+(+s.weekly||0),0);
+  const cap=sectionCap();
+  if($("whoBody")) $("whoBody").innerHTML=(rows?rows+`<tr><td colspan="4"><strong>المجموع</strong></td><td><strong>${tot}</strong></td></tr>`:`<tr><td colspan="5" class="muted">لا معلمون مرتبطون بعد</td></tr>`);
+  if($("whoSum")) $("whoSum").innerHTML=secId?("مجموع دروس الشعبة <strong>"+mains+"</strong> من السعة <strong>"+cap+"</strong>"+(tot!==mains?" (مع المساعدة: "+tot+")":"")):"مجموع الدروس المعروضة: <strong>"+tot+"</strong>";
+  const del=$("whoDel");
+  if(del){
+    del.hidden=!secId;
+    del.onclick=secId?function(){ $("whoBox").hidden=true; delSection(secId); }:null;
+  }
+  if($("whoBox"))$("whoBox").hidden=false;
+}
+function showClassTeachers(cid){
+  const c=db.classes.find(x=>x.id===cid);
+  const sids=db.sections.filter(s=>s.classId===cid).map(s=>s.id);
+  const list=db.subjects.filter(s=>sids.includes(s.sectionId));
+  showWhoList("معلمو صف "+((c&&c.name)||""), list, "");
+}
+function showSecTeachers(sid){
+  const list=db.subjects.filter(s=>s.sectionId===sid);
+  showWhoList("معلمو شعبة "+secName(sid), list, sid);
+}
 function renderClasses(){
-  $("classList").innerHTML=`<div class="table-wrap"><table class="cls-table"><thead><tr><th>الصف</th><th>الشعب</th><th class="no-print">إجراءات</th></tr></thead><tbody>${
+  if(!$("classList"))return;
+  $("classList").innerHTML=`<div class="table-wrap"><table class="cls-table"><thead><tr><th>الصف<br><span style="font-weight:600;font-size:.75rem;opacity:.9">اضغط لعرض المعلمين</span></th><th>الشعب<br><span style="font-weight:600;font-size:.75rem;opacity:.9">اضغط الشعبة لعرض معلميها</span></th><th class="no-print">إجراءات</th></tr></thead><tbody>${
     db.classes.map(c=>{
       const secs=db.sections.filter(s=>s.classId===c.id);
-      const chips=secs.length?secs.map(s=>`<span class="sec-tag">${esc(s.name)}<button type="button" title="حذف الشعبة" onclick="delSection('${s.id}')">×</button></span>`).join(""):'<span class="muted">لا شعب</span>';
-      return `<tr><td data-l="الصف"><b>${esc(c.name)}</b></td><td data-l="الشعب">${chips}</td><td class="no-print act">
+      const chips=secs.length?secs.map(s=>`<span class="sec-tag" title="عرض المعلمين" onclick="showSecTeachers('${s.id}')">${esc(s.name)}</span>`).join(""):'<span class="muted">لا شعب</span>';
+      return `<tr><td data-l="الصف"><b style="cursor:pointer;color:#5b21b6" onclick="showClassTeachers('${c.id}')">${esc(c.name)}</b></td><td data-l="الشعب">${chips}</td><td class="no-print act">
         <button class="btn w s" onclick="addSection('${c.id}')">+ شعبة</button>
         <button class="btn d s" onclick="delClass('${c.id}')">حذف</button></td></tr>`;
     }).join("")||`<tr><td colspan="3" class="muted">لم تُضف صفوف بعد</td></tr>`
@@ -1520,16 +1715,21 @@ function resetSubject(){$("sId").value="";$("sName").value="";$("sLoad").value=6
 function openSubject(){resetSubject();$("sTitle").textContent="إضافة مادة";$("sBox").hidden=false;}
 function saveSubject(e){
   e.preventDefault();
-  const secs=[...document.querySelectorAll("#sSec input:checked")].map(o=>o.value);
-  if(!secs.length){alert("اختر شعبة واحدة على الأقل، أو عدة شعب لنفس المعلم.");return false;}
+  const one=($("sSec")&&$("sSec").value)||"";
+  const secs=one?[one]:[];
+  if(!secs.length){alert("اختر الشعبة.");return false;}
   const name=$("sName").value.trim();
   const teacherId=$("sTeacher").value;
   const weekly=+$("sLoad").value||1;
   const role=($("sRole")&&$("sRole").value)||"main";
   const editId=$("sId").value;
   if(role!=="assist"){
-    const clash=secs.filter(sectionId=>db.subjects.some(s=>s.id!==editId&&s.sectionId===sectionId&&normSubj(s.name)===normSubj(name)&&(s.role||"main")==="main"&&s.teacherId!==teacherId));
-    if(clash.length){alert("المادة موجودة أساسية في: "+clash.map(secName).join("، ")+"\nاجعلي النوع مساعدة أو غيّري المعلمة.");return false;}
+    const clash=[];
+    secs.forEach(sectionId=>{
+      const s=db.subjects.find(x=>x.id!==editId&&x.sectionId===sectionId&&normSubj(x.name)===normSubj(name)&&(x.role||"main")==="main"&&x.teacherId!==teacherId);
+      if(s) clash.push(secName(sectionId)+" للمعلمة "+teacherName(s.teacherId)+" ("+s.name+")");
+    });
+    if(clash.length){alert("المادة موجودة أساسية عند معلمة أخرى:\n"+clash.join("\n")+"\nاجعلي النوع مساعدة أو غيّري المعلمة.");return false;}
   }
   if(editId){
     const old=db.subjects.find(s=>s.id===editId);
@@ -1571,49 +1771,99 @@ function _delSub(id){
   db.subjects=db.subjects.filter(x=>x.id!==id);
   save();renderSubjects();
 }
+function arCmp(a,b){return String(a||"").localeCompare(String(b||""),"ar",{numeric:true,sensitivity:"base"});}
+function secSortKey(sid){
+  const sec=db.sections.find(s=>s.id===sid);
+  const ci=sec?db.classes.findIndex(c=>c.id===sec.classId):999;
+  const letters="أاإآببتثجحخدذرزسشصضطظعغفقكلمنهويىء";
+  const nm=sec?(sec.name||""):"";
+  let li=99;
+  for(let i=0;i<nm.length;i++){const x=letters.indexOf(nm[i]); if(x>=0){li=x;break;}}
+  return [(ci<0?999:ci), li, nm];
+}
 function renderSubjects(){
   const q=(($("sFilter")&&$("sFilter").value)||"").trim();
-  const list=db.subjects.filter(s=>{
+  const sort=($("sSort")&&$("sSort").value)||"load";
+  const nDays=(db.settings.days||[]).length||5;
+  const P=db.settings.periods||6;
+  const maxT=nDays*P;
+  let list=db.subjects.filter(s=>{
     if(!q)return true;
     const t=teacherName(s.teacherId)+" "+(s.name||"")+" "+secName(s.sectionId);
-    return t.includes(q);
+    return foldTok(t).includes(foldTok(q));
   });
-  const rows=list.map((s,i)=>`<tr>
+  list.sort(function(a,b){
+    if(sort==="name"){
+      const n=arCmp(teacherName(a.teacherId),teacherName(b.teacherId));
+      if(n)return n;
+      const k1=secSortKey(a.sectionId),k2=secSortKey(b.sectionId);
+      return k1[0]-k2[0]||k1[1]-k2[1]||arCmp(k1[2],k2[2])||arCmp(a.name,b.name);
+    }
+    if(sort==="sec"){
+      const k1=secSortKey(a.sectionId),k2=secSortKey(b.sectionId);
+      return k1[0]-k2[0]||k1[1]-k2[1]||arCmp(k1[2],k2[2])||arCmp(teacherName(a.teacherId),teacherName(b.teacherId))||arCmp(a.name,b.name);
+    }
+    const ha=teacherHours(a.teacherId),hb=teacherHours(b.teacherId);
+    if(hb!==ha)return hb-ha;
+    return arCmp(teacherName(a.teacherId),teacherName(b.teacherId))||arCmp(a.name,b.name);
+  });
+  const rows=list.map((s,i)=>{
+    const h=teacherHours(s.teacherId);
+    const hot=h>=maxT;
+    return `<tr${hot?' style="background:#fef2f2"':""}>
       <td data-l="#">${i+1}</td>
-      <td data-l="المعلم">${esc(teacherName(s.teacherId))}</td>
+      <td data-l="المعلم">${esc(teacherName(s.teacherId))} <span class="muted">(${h})</span></td>
       <td data-l="المادة">${esc(s.name)}</td>
       <td data-l="الصف / الشعبة">${esc(secName(s.sectionId))}</td>
       <td data-l="النوع">${roleLabel(s.role)}</td><td data-l="الدروس الأسبوعية"><strong>${s.weekly}</strong></td>
-      <td class="no-print act"><button class="btn w s" onclick="editSubject('${s.id}')">تعديل</button><button class="btn d s" onclick="delSubject('${s.id}')">حذف</button></td></tr>`).join("");
-  $("sBody").innerHTML=rows||`<tr><td colspan="6" class="muted">لا مواد بعد</td></tr>`;
+      <td class="no-print act"><button class="btn w s" onclick="editSubject('${s.id}')">تعديل</button><button class="btn d s" onclick="delSubject('${s.id}')">حذف</button></td></tr>`;
+  }).join("");
+  $("sBody").innerHTML=rows||`<tr><td colspan="7" class="muted">لا مواد بعد</td></tr>`;
   const tot=db.subjects.reduce((a,s)=>a+(+s.weekly||0),0);
-  const nDays=(db.settings.days||[]).length||5;
-  const P=db.settings.periods||6;
   const nSec=db.sections.length;
-  const maxS=nSec*nDays*P, maxT=nDays*P;
+  const maxS=nSec*nDays*P;
   if($("sSum")) $("sSum").innerHTML=`<div class="hint" style="margin:0">مجموع الدروس الأسبوعي <strong>${tot}</strong> من حد المدرسة <strong>${maxS}</strong> (${nSec} شعب × ${nDays} أيام × ${P} دروس) — حد المعلم <strong>${maxT}</strong> درس/أسبوع.</div>`;
 }
 
+function openDaysBox(){
+  renderSettings();
+  if($("daysModal"))$("daysModal").hidden=false;
+}
 function renderSettings(){
   const days=db.settings.days||[];
-  $("daysBox").innerHTML=DAYS.map((d,i)=>`<span><input type="checkbox" value="${i}" ${days.includes(i)?"checked":""} onchange="saveSettings(true)"> ${d}</span>`).join("");
-  $("periods").value=db.settings.periods;
+  if($("daysBox")) $("daysBox").innerHTML=DAYS.map((d,i)=>`<span><input type="checkbox" value="${i}" ${days.includes(i)?"checked":""} onchange="saveSettings(true)"> ${d}</span>`).join("");
+  if($("daysSum")) $("daysSum").textContent=days.length?days.map(dayName).join("، "):"—";
+  if($("periods"))$("periods").value=db.settings.periods;
   if($("schoolName"))$("schoolName").value=db.settings.schoolName||"";
-  if($("yardMax"))$("yardMax").value=db.settings.maxYard||2;
-  const pad=db.settings.exPadMm!=null?db.settings.exPadMm:1;
-  if($("exPadMm"))$("exPadMm").value=pad;
-  if($("exPadMmBox"))$("exPadMmBox").value=pad;
+  if($("yardMax"))$("yardMax").value=db.settings.maxYard||"";
+  if($("gridColor"))$("gridColor").value=db.settings.gridColor||"#5b21b6";
+  applyGridColor();
+}
+function gridHex(){return (db.settings&&db.settings.gridColor)||"#5b21b6";}
+function gridDark(){
+  let h=gridHex().replace("#","");
+  if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  const n=parseInt(h,16); if(isNaN(n))return "#4c1d95";
+  const r=Math.max(0,(n>>16)-40), g=Math.max(0,((n>>8)&255)-40), b=Math.max(0,(n&255)-40);
+  return "#"+[r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+function applyGridColor(){
+  const c=gridHex(), d=gridDark();
+  document.documentElement.style.setProperty("--grid",c);
+  document.documentElement.style.setProperty("--grid-dark",d);
+}
+function saveGridColor(){
+  if($("gridColor")) db.settings.gridColor=$("gridColor").value||"#5b21b6";
+  applyGridColor(); save();
 }
 function saveSettings(silent){
-  const days=[...document.querySelectorAll("#daysBox input:checked")].map(x=>+x.value);
-  const periods=+$("periods").value||6;
+  let days=[...document.querySelectorAll("#daysBox input:checked")].map(x=>+x.value);
+  if(!days.length) days=(db.settings&&db.settings.days&&db.settings.days.length)?db.settings.days.slice():[0,1,2,3,4];
+  const periods=+(($("periods")&&$("periods").value)||db.settings.periods||6);
   let schoolName=($("schoolName")&&$("schoolName").value.trim())||"";
   if(!schoolUnlocked) schoolName=(db.settings&&db.settings.schoolName)||"مدرسة بدور بغداد الابتدائية";
   if($("schoolName")&&!schoolUnlocked){ $("schoolName").value=schoolName; $("schoolName").readOnly=true; }
-  const exPadMm=Math.max(0,Math.min(25,+(($("exPadMm")&&$("exPadMm").value)||($("exPadMmBox")&&$("exPadMmBox").value)||db.settings.exPadMm||1)));
-  db.settings=Object.assign({},db.settings,{days,periods,schoolName,exPadMm,maxYard:+(($("yardMax")&&$("yardMax").value)||db.settings.maxYard||2)});
-  if($("exPadMm"))$("exPadMm").value=exPadMm;
-  if($("exPadMmBox"))$("exPadMmBox").value=exPadMm;
+  db.settings=Object.assign({},db.settings,{days,periods,schoolName,maxYard:(($("yardMax")&&$("yardMax").value.trim())?Math.max(1,+$("yardMax").value): (db.settings.maxYard||""))});
   save();
   if(!silent && $("genMsg")) $("genMsg").innerHTML='<div class="msg ok">تم حفظ الإعدادات</div>';
 }
@@ -1655,10 +1905,17 @@ function teacherBusyAt(tid,d,p){
 
 function generate(){
   const msg=$("genMsg");
+  if(!msg)return;
   const days=db.settings.days||[];
   const P=db.settings.periods;
   if(!days.length||!P){msg.innerHTML='<div class="msg err">حدد أيام الدوام وعدد الدروس.</div>';return;}
   if(!db.subjects.length){msg.innerHTML='<div class="msg err">أضف مواد أولًا.</div>';return;}
+  if(window._genBusy)return;
+  window._genBusy=true;
+  msg.innerHTML='<div class="msg warn">جاري إنشاء الجدول… انتظر لحظة.</div>';
+  setTimeout(function(){ try{ generateNow(msg,days,P); }catch(e){ msg.innerHTML='<div class="msg err">تعذر الإنشاء</div>'; } window._genBusy=false; },40);
+}
+function generateNow(msg,days,P){
 
   db.subjects.forEach(s=>{
     if(s.sectionId&&db.sections.some(x=>x.id===s.sectionId))return;
@@ -1681,8 +1938,9 @@ function generate(){
       grid[job.sectionId][d][p]={subjectId:job.id,teacherId:job.teacherId,name:job.name};
       teacherBusy[busyKey(job.teacherId,d,p)]=1;
     }
+    const tmap={};(db.teachers||[]).forEach(x=>tmap[x.id]=x);
     function can(job,d,p){
-      const t=db.teachers.find(x=>x.id===job.teacherId);
+      const t=tmap[job.teacherId];
       if(!job.sectionId||!grid[job.sectionId]||!grid[job.sectionId][d])return false;
       if(isOff(t,d))return false;
       if(grid[job.sectionId][d][p])return false;
@@ -1721,7 +1979,7 @@ function generate(){
       put(job,d,p);return false;
     }
     function tryDisplace(job){
-      const t=db.teachers.find(x=>x.id===job.teacherId);
+      const t=tmap[job.teacherId];
       for(const d of days){
         if(isOff(t,d))continue;
         if(!grid[job.sectionId]||!grid[job.sectionId][d])continue;
@@ -1738,7 +1996,7 @@ function generate(){
       return false;
     }
     function tryKick(job){
-      const t=db.teachers.find(x=>x.id===job.teacherId);
+      const t=tmap[job.teacherId];
       for(const d of days){
         if(isOff(t,d))continue;
         if(!grid[job.sectionId]||!grid[job.sectionId][d])continue;
@@ -1761,7 +2019,7 @@ function generate(){
       return false;
     }
     function trySwapTeacher(job){
-      const t=db.teachers.find(x=>x.id===job.teacherId);
+      const t=tmap[job.teacherId];
       for(const d of days){
         if(isOff(t,d))continue;
         if(!grid[job.sectionId]||!grid[job.sectionId][d])continue;
@@ -1787,13 +2045,13 @@ function generate(){
     jobs.forEach(job=>{
       if(tryPlace(job)||tryDisplace(job)||tryKick(job))placed.push(job);else failed.push(job);
     });
-    for(let k=0;k<12;k++)mop();
+    for(let k=0;k<4;k++)mop();
     return {grid,placed,failed};
   }
 
   const tNeedAll={};baseJobs.forEach(j=>tNeedAll[j.teacherId]=(tNeedAll[j.teacherId]||0)+1);
   let best=null;
-  const tries=120;
+  const tries=24;
   for(let i=0;i<tries;i++){
     let jobs=baseJobs.slice();
     const pe=jobs.filter(j=>isSport(j)), rest=jobs.filter(j=>!isSport(j));
@@ -1860,9 +2118,14 @@ function teacherOptsByClass(secId,sel){
   const g=(lab,arr)=>`<optgroup label="${lab}">${arr.map(t=>`<option value="${t.id}" ${t.id===sel?"selected":""}>${esc(t.name)}</option>`).join("")}</optgroup>`;
   return `<option value="">— اختر معلمًا —</option>`+g("نفس الصف",same)+g("صفوف أخرى",oth);
 }
-function maxYard(){return Math.max(1,+(db.settings.maxYard||2));}
+function maxYard(){
+  const v=+(db.settings&&db.settings.maxYard);
+  if(!v)return 9999;
+  return Math.max(1,v);
+}
 function saveYardMax(){
-  db.settings.maxYard=Math.max(1,+$("yardMax").value||2);
+  const raw=($("yardMax")&&$("yardMax").value||"").trim();
+  db.settings.maxYard=raw===""?"":Math.max(1,+raw||0);
   save();
 }
 function sectionWeekly(sid){return db.subjects.filter(s=>s.sectionId===sid&&(s.role||"main")!=="assist").reduce((a,s)=>a+(+s.weekly||0),0);}
@@ -2262,8 +2525,8 @@ function renderWeekAll(){
   return h+`</tbody></table></div></div>`;
 }
 function isSport(c){
-  const n=((c&&(c.name||subjName(c.subjectId)))||"");
-  return /رياض/.test(n);
+  const n=normSubj(c&&(c.name||subjName(c.subjectId)));
+  return n==="رياضه";
 }
 function yardBusy(d,p,g){
   g=g||db.grid||{};
@@ -2340,7 +2603,24 @@ function renderViews(){
   out.innerHTML=html||'<p class="muted">لا نتائج.</p>';
 }
 
-function toggleExport(){const b=$("exportBox");b.hidden=!b.hidden;}
+function setExSaveVis(on){
+  if($("exSaveBtn"))$("exSaveBtn").hidden=!on;
+}
+function toggleExDims(){
+  const e=$("exExtra");
+  if(!e)return;
+  e.hidden=!e.hidden;
+  setExSaveVis(!e.hidden);
+  if(!e.hidden)loadExProf();
+}
+function toggleExport(){
+  const b=$("exportBox");
+  b.hidden=!b.hidden;
+  if($("exExtra"))$("exExtra").hidden=true;
+  setExSaveVis(false);
+  if($("exTitle"))$("exTitle").textContent="طباعة وتصدير";
+  if(b&&!b.hidden)loadExProf();
+}
 function setPrintPage(){
   const size=$("exSize").value||"A4";
   const dir=$("exDir").value||"landscape";
@@ -2475,7 +2755,7 @@ function exportExcel(){
 }
 function doExport(){
   try{
-    applyExportFonts();
+    saveExProf();
     if(!$("viewOut")||!$("viewOut").querySelector("table")){
       const btn=document.querySelector('nav.tabs button[data-tab="views"]');
       if(btn)tab(btn);
@@ -2502,6 +2782,7 @@ function fitFont(ctx,text,maxW,maxH,bold){
 }
 function captureView(type,cb){
   try{
+  saveExProf();
   const el=$("viewOut");
   if(!el){note("لا يوجد عرض جدول.");return;}
   const tbl=el.querySelector("table");
@@ -2515,47 +2796,46 @@ function captureView(type,cb){
   const ctx=cv.getContext("2d");
   ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
   const pxmm=dpi/25.4;
-  const padMm=Math.max(0,+(($("exPadMmBox")&&$("exPadMmBox").value)||($("exPadMm")&&$("exPadMm").value)||db.settings.exPadMm||1));
+  const padMm=Math.max(0,+(($("exPadMmBox")&&$("exPadMmBox").value)||db.settings.exPadMm||1));
   const pad=Math.round(pxmm*padMm);
-  const head=el.querySelector(".sheet-head");
-  const school=(head&&head.querySelector(".school")&&head.querySelector(".school").innerText)||db.settings.schoolName||"مدرسة بدور بغداد الابتدائية";
-  const title=(head&&head.querySelector(".title")&&head.querySelector(".title").innerText)||"جدول الدروس";
-  const day=(head&&head.querySelector(".day")&&head.querySelector(".day").innerText)||"";
+  const barMm=Math.max(6,+(($("exBarMm")&&$("exBarMm").value)||db.settings.exBarMm||9));
+  const barH=Math.round(pxmm*barMm);
+  const G=gridHex(), GD=gridDark();
   const F="Cairo,Tahoma,Arial";
-  const barH=Math.round(8*pxmm);
-  ctx.fillStyle="#5b21b6";
+  ctx.fillStyle=G;
   ctx.fillRect(pad,pad,W-2*pad,barH);
-  const hf=Math.round(barH*0.48);
+  const school=db.settings.schoolName||"";
+  const title="جدول الدروس";
+  const headEl=el.querySelector(".sheet-head");
+  const day=(headEl&&headEl.querySelector(".day")&&headEl.querySelector(".day").innerText)||"";
   function headFit(txt,maxW,align,px,py){
-    let fs=hf;ctx.font="800 "+fs+"px "+F;
-    while(fs>14&&ctx.measureText(txt).width>maxW){fs--;ctx.font="800 "+fs+"px "+F;}
-    ctx.textAlign=align;ctx.textBaseline="middle";ctx.fillStyle="#fff";
-    ctx.save();ctx.beginPath();ctx.rect(px-(align==="right"?maxW:align==="center"?maxW/2:0),py-barH/2,maxW,barH);ctx.clip();
-    ctx.fillText(txt,px,py);ctx.restore();
+    let fs=Math.round(barH*0.42);
+    ctx.font="800 "+fs+"px "+F;
+    while(fs>10&&ctx.measureText(String(txt||"")).width>maxW){fs--;ctx.font="800 "+fs+"px "+F;}
+    ctx.fillStyle="#fff";ctx.textAlign=align;ctx.textBaseline="middle";
+    ctx.fillText(String(txt||""),px,py);
   }
-  const inset=pad+Math.round(pxmm*12);
-  const colW=(W-2*pad-inset*2)/3-8;
+  const colW=(W-2*pad)/3-16;
+  const inset=12;
   headFit(school,colW,"right",W-pad-inset,pad+barH/2);
   headFit(title,colW,"center",W/2,pad+barH/2);
   headFit(day,colW,"left",pad+inset,pad+barH/2);
   const innerW=W-2*pad, innerH=H-2*pad;
-  const top=pad+barH;
-
+  const tableTop=pad+barH;
+  const tableH=innerH-barH;
   const rows=[...tbl.rows];
   if(!rows.length){cb(cv);return;}
   let maxCols=0;
   rows.forEach(tr=>{let c=0;[...tr.cells].forEach(td=>c+=(td.colSpan||1));if(c>maxCols)maxCols=c;});
   const isWeek=tbl.classList.contains("week-grid");
   const headRows=isWeek?2:1;
-  const tableTop=top, tableH=innerH-barH;
-  const hh=Math.round((isWeek?6.8:8)*pxmm);
+  const cellSc=Math.max(50,Math.min(130,+(db.settings.exCell||100)))/100;
+  const hh=Math.round((isWeek?6.8:8)*pxmm/Math.max(0.7,Math.min(1.3,cellSc)));
   const bodyN=Math.max(1,rows.length-headRows);
   const bodySpace=Math.max(1,tableH-hh*headRows);
-  const bh=bodySpace/bodyN;
   const thinD=Math.round(7.2*pxmm), thinP=Math.round(6.4*pxmm);
   const secN=Math.max(1,isWeek?maxCols-2:maxCols);
   const restW=isWeek?innerW-thinD-thinP:innerW;
-  const secW=restW/secN;
   function colWid(c){
     if(!isWeek){
       const a=Math.round(c*innerW/maxCols), b=Math.round((c+1)*innerW/maxCols);
@@ -2575,14 +2855,13 @@ function captureView(type,cb){
   }
   function sumH(to){let s=0;for(let k=0;k<to;k++)s+=rowH(k);return s;}
   const sc=dpi/96;
-  const base=Math.round(Math.max(12*sc*0.45, Math.min(bh*0.22, secW*0.18, 13*sc)));
   const taken={};
-  function wrapLines(ctx,text,maxW){
+  function wrapLines(ctx2,text,maxW){
     const words=String(text||"").split(/\s+/);
     const out=[];let cur="";
     words.forEach(w=>{
       const n=cur?cur+" "+w:w;
-      if(ctx.measureText(n).width<=maxW)cur=n;else{if(cur)out.push(cur);cur=w;}
+      if(ctx2.measureText(n).width<=maxW)cur=n;else{if(cur)out.push(cur);cur=w;}
     });
     if(cur)out.push(cur);
     return out.slice(0,2);
@@ -2602,19 +2881,19 @@ function captureView(type,cb){
       const bands=["#ffffff","#f3e8ff","#ecfdf5","#fff7ed","#e0f2fe","#fce7f3"];
       const sub0=td.querySelector(".mini-s");
       const emptyCell=!th&&ri>=headRows&&!sub0&&!(td.innerText||"").replace(/[\s—\-]/g,"");
-      ctx.fillStyle=th?"#5b21b6":(emptyCell?"#fecaca":bands[perIx%6]);
+      ctx.fillStyle=th?G:(emptyCell?"#fecaca":bands[perIx%6]);
       ctx.fillRect(x,y,w,rh);
-      ctx.strokeStyle="#6d28d9";ctx.lineWidth=1.6;ctx.strokeRect(x,y,w,rh);
+      ctx.strokeStyle=G;ctx.lineWidth=1.6;ctx.strokeRect(x,y,w,rh);
       if(ri>=headRows){
-        ctx.strokeStyle="#4c1d95";ctx.lineWidth=2.6;
+        ctx.strokeStyle=GD;ctx.lineWidth=2.6;
         ctx.beginPath();ctx.moveTo(x,y+rh);ctx.lineTo(x+w,y+rh);ctx.stroke();
       }
       if(td.classList.contains("g-split")){
-        ctx.strokeStyle="#3b0764";ctx.lineWidth=4;
+        ctx.strokeStyle=GD;ctx.lineWidth=4;
         ctx.beginPath();ctx.moveTo(x+w,y);ctx.lineTo(x+w,y+rh);ctx.stroke();
       }
       if(!th&&ri>=headRows&&(ri-headRows)%Pex===0){
-        ctx.strokeStyle="#4c1d95";ctx.lineWidth=3.5;
+        ctx.strokeStyle=GD;ctx.lineWidth=3.5;
         ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w,y);ctx.stroke();
       }
       ctx.save();
@@ -2633,13 +2912,17 @@ function captureView(type,cb){
         drawFit(td.innerText.trim(),0,0,rh-8,Math.max(12,Math.min(Math.round(w*0.72),Math.round(12*sc))),true);
       }else if(sub){
         const s=sub.innerText.trim(), te=tea?tea.innerText.trim():"";
-        let subFs=Math.round((+(db.settings.fsSubEx||24))*sc*Math.min(1.15,w/(70*sc)));
-        let teaFs=Math.round((+(db.settings.fsTeaEx||20))*sc*Math.min(1.1,w/(80*sc)));
-        subFs=Math.max(10,Math.min(subFs,Math.round(bh*0.38)));
-        teaFs=Math.max(9,Math.min(teaFs,Math.round(bh*0.28),subFs));
+        const gapN=Math.max(1,Math.min(20,+(db.settings.exGap||8)));
+        const half=0.16+(gapN-8)*0.012;
+        const uS=(+(db.settings.fsSubEx||28))/28;
+        const uT=(+(db.settings.fsTeaEx||20))/20;
+        let subFs=Math.max(10,Math.round(rh*0.34*uS*cellSc));
+        let teaFs=Math.max(8,Math.round(rh*0.21*uT*cellSc));
+        subFs=Math.min(subFs,Math.round(rh*0.42));
+        teaFs=Math.min(teaFs,Math.round(rh*0.26),subFs-2);
         ctx.fillStyle=th?"#fff":"#4c1d95";
-        drawFit(s,x+w/2,y+rh*(te?0.34:0.52),w-6,subFs,true);
-        if(te){ctx.fillStyle="#4b5563";drawFit(te,x+w/2,y+rh*0.72,w-6,teaFs,false);}
+        drawFit(s,x+w/2,y+rh*(te?(0.50-half):0.50),w-6,subFs,true);
+        if(te){ctx.fillStyle="#4b5563";drawFit(te,x+w/2,y+rh*(0.50+half),w-6,teaFs,false);}
       }else{
         const txt=td.innerText.replace(/\s+/g," ").trim();
         if(th){
@@ -2651,17 +2934,30 @@ function captureView(type,cb){
           ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#fff";
           lines.forEach((ln,i)=>ctx.fillText(ln,x+w/2,y0+i*gap));
         }else if(txt && txt!=="—" && txt!=="-"){
-          drawFit(txt,x+w/2,y+rh/2,w-8,base,false);
+          drawFit(txt,x+w/2,y+rh/2,w-8,Math.max(10,Math.round(rh*0.28)),false);
         }
       }
       ctx.restore();
       col+=cspan;
     });
   });
-    cb(cv);
+  cb(cv);
   }catch(e){note("تعذر إنشاء الصورة: "+(e&&e.message?e.message:e));}
 }
-function exportJPG(){captureView("jpg",cv=>{const a=document.createElement("a");a.href=cv.toDataURL("image/jpeg",0.95);a.download="timetable.jpg";a.click();okNote("تم تصدير الصورة بنجاح");});}
+function saveViaApp(dataUrl,name,okMsg){
+  const api=window.pywebview&&window.pywebview.api;
+  if(api&&api.save_export){
+    api.save_export(dataUrl,name).then(function(p){okNote(okMsg+(p?(" — "+p):""));}).catch(function(){okNote(okMsg);});
+    return true;
+  }
+  return false;
+}
+function exportJPG(){captureView("jpg",cv=>{
+  const data=cv.toDataURL("image/jpeg",0.95);
+  if(!saveViaApp(data,"timetable.jpg","تم حفظ الصورة")){
+    const a=document.createElement("a");a.href=data;a.download="timetable.jpg";a.click();okNote("تم تصدير الصورة بنجاح");
+  }
+});}
 function exportPDF(){
   captureView("png",cv=>{
     const size=($("exSize")&&$("exSize").value)||"A4";
@@ -2723,25 +3019,88 @@ function restoreJSON(e){
 function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
 
 function applyFonts(){
-  const s=+(($("fsSub")&&$("fsSub").value)||db.settings.fsSub||14);
-  const te=+(($("fsTea")&&$("fsTea").value)||db.settings.fsTea||12);
-  db.settings.fsSub=s;db.settings.fsTea=te;save();
+  const s=+(($("fsSub")&&$("fsSub").value)||14);
+  const te=+(($("fsTea")&&$("fsTea").value)||12);
   document.documentElement.style.setProperty("--fs-sub",s+"px");
   document.documentElement.style.setProperty("--fs-tea",te+"px");
 }
-function saveExPad(){
-  const v=Math.max(0,Math.min(25,+(($("exPadMmBox")&&$("exPadMmBox").value)||($("exPadMm")&&$("exPadMm").value)||1)));
-  db.settings.exPadMm=v;
-  if($("exPadMm"))$("exPadMm").value=v;
-  if($("exPadMmBox"))$("exPadMmBox").value=v;
+function applyCellH(){
+  const h=Math.max(36,Math.min(160,+(($("cellH")&&$("cellH").value)||60)));
+  document.documentElement.style.setProperty("--cell-h",h+"px");
+  document.documentElement.style.setProperty("--cell-h-day",Math.max(32,Math.round(h*0.6))+"px");
+}
+function exBuiltIn(sz){
+  return sz==="A3"
+    ? {fsSub:28,fsTea:22,pad:1,gap:8,cell:100,bar:13,dir:"landscape"}
+    : {fsSub:28,fsTea:20,pad:1,gap:8,cell:100,bar:9,dir:"landscape"};
+}
+function exDef(sz){
+  const b=exBuiltIn(sz);
+  const d=(db.settings&&db.settings.exDefBy&&db.settings.exDefBy[sz])||{};
+  return Object.assign({},b,d);
+}
+function exKey(){return (($("exSize")&&$("exSize").value)||"A4");}
+function getExProf(){
+  if(!db.settings.exBy)db.settings.exBy={};
+  const k=exKey();
+  const d=exDef(k);
+  const p=Object.assign({},d,db.settings.exBy[k]||{});
+  db.settings.exBy[k]=p;
+  db.settings.fsSubEx=p.fsSub;db.settings.fsTeaEx=p.fsTea;
+  db.settings.exPadMm=p.pad;db.settings.exGap=p.gap;
+  db.settings.exCell=p.cell;db.settings.exBarMm=p.bar;
+  return p;
+}
+function fillExForm(p){
+  p=p||getExProf();
+  if($("exFsSub"))$("exFsSub").value=p.fsSub;
+  if($("exFsTea"))$("exFsTea").value=p.fsTea;
+  if($("exPadMmBox"))$("exPadMmBox").value=p.pad;
+  if($("exGap"))$("exGap").value=p.gap;
+  if($("exCell"))$("exCell").value=p.cell;
+  if($("exBarMm"))$("exBarMm").value=p.bar;
+  if($("exDir")&&p.dir)$("exDir").value=p.dir;
+}
+function saveExProf(){
+  if(!db.settings.exBy)db.settings.exBy={};
+  const k=exKey();
+  const p={
+    fsSub:Math.max(8,Math.min(40,+(($("exFsSub")&&$("exFsSub").value)||24))),
+    fsTea:Math.max(7,Math.min(36,+(($("exFsTea")&&$("exFsTea").value)||20))),
+    pad:Math.max(0,Math.min(25,+(($("exPadMmBox")&&$("exPadMmBox").value)||1))),
+    gap:Math.max(1,Math.min(20,+(($("exGap")&&$("exGap").value)||8))),
+    cell:Math.max(50,Math.min(130,+(($("exCell")&&$("exCell").value)||100))),
+    bar:Math.max(6,Math.min(22,+(($("exBarMm")&&$("exBarMm").value)||11))),
+    dir:($("exDir")&&$("exDir").value)||"landscape"
+  };
+  db.settings.exBy[k]=p;
+  db.settings.fsSubEx=p.fsSub;db.settings.fsTeaEx=p.fsTea;
+  db.settings.exPadMm=p.pad;db.settings.exGap=p.gap;
+  db.settings.exCell=p.cell;db.settings.exBarMm=p.bar;
   save();
 }
-function applyExportFonts(){
-  const s=+(($("exFsSub")&&$("exFsSub").value)||db.settings.fsSubEx||24);
-  const te=+(($("exFsTea")&&$("exFsTea").value)||db.settings.fsTeaEx||20);
-  db.settings.fsSubEx=s;db.settings.fsTeaEx=te;save();
+function loadExProf(){fillExForm(getExProf());}
+function saveExPad(){saveExProf();}
+function applyExportFonts(){saveExProf();}
+function saveExLayout(){saveExProf();}
+function saveExSize(){
+  saveExProf();
+  if(!db.settings.exDefBy)db.settings.exDefBy={};
+  const k=exKey();
+  db.settings.exDefBy[k]=Object.assign({},db.settings.exBy[k]);
+  save();
+  toast("تم حفظ أبعاد "+k+" (منفصلة عن "+(k==="A3"?"A4":"A3")+")");
 }
+function openPrintDims(){
+  if($("exportBox"))$("exportBox").hidden=false;
+  if($("exExtra"))$("exExtra").hidden=false;
+  setExSaveVis(true);
+  if($("exTitle"))$("exTitle").textContent="ضبط الأبعاد للطباعة";
+  loadExProf();
+}
+window.addEventListener("error",function(ev){try{console.error(ev.error||ev.message);}catch(e){}});
 function boot(fileRaw){
+  try{
   load(fileRaw);
   if(!db.settings.offApplied){applyOffList();db.settings.offApplied=1;save();}
 
@@ -2752,14 +3111,17 @@ function boot(fileRaw){
   }
 fillDaySelects();fillSecMulti();fillTeacherSelect();fillClassSelect();
   renderTeachers();renderClasses();renderSubjects();renderSettings();
-  if($("fsSub"))$("fsSub").value=db.settings.fsSub||14;
-  if($("fsTea"))$("fsTea").value=db.settings.fsTea||12;
-  if($("exFsSub"))$("exFsSub").value=db.settings.fsSubEx||24;
-  if($("exFsTea"))$("exFsTea").value=db.settings.fsTeaEx||20;
-  if($("exPadMm"))$("exPadMm").value=db.settings.exPadMm!=null?db.settings.exPadMm:1;
-  if($("exPadMmBox"))$("exPadMmBox").value=db.settings.exPadMm!=null?db.settings.exPadMm:1;
-  applyFonts();applyExportFonts();
-  setTimeout(function(){openGuide(false);},400);
+  if($("fsSub"))$("fsSub").value=14;
+  if($("fsTea"))$("fsTea").value=12;
+  if($("cellH"))$("cellH").value=60;
+  applyCellH();
+  if(!db.settings.exBy)db.settings.exBy={};
+  db.settings.exBy.A4=Object.assign({},exDef("A4"),db.settings.exBy.A4||{});
+  db.settings.exBy.A3=Object.assign({},exDef("A3"),db.settings.exBy.A3||{});
+  loadExProf();
+  applyFonts();
+  setTimeout(function(){openGuide(false);},0);
+  }catch(e){try{document.body.insertAdjacentHTML("afterbegin","<div class=msg err>"+String(e)+"</div>");}catch(x){}}
 }
 let started=false;
 function startApp(fileRaw){
@@ -2767,25 +3129,60 @@ function startApp(fileRaw){
   started=true;
   boot(fileRaw||"");
 }
+function mergeDisk(txt){
+  _diskReady=true;
+  if(!txt){save(true);return;}
+  try{
+    const x=JSON.parse(txt);
+    const n=((x.classes||[]).length||0)*20+((x.teachers||[]).length||0)*8+((x.subjects||[]).length||0);
+    const cur=((db.classes||[]).length||0)*20+((db.teachers||[]).length||0)*8+((db.subjects||[]).length||0);
+    if(n>cur){
+      db=Object.assign({teachers:[],classes:[],sections:[],subjects:[],settings:{},grid:null},x);
+      if(x.settings)db.settings=Object.assign({},db.settings,x.settings);
+      refreshAll();
+    }
+  }catch(e){}
+  save(true);
+}
 function kickoff(){
+  if(!started) startApp("");
   const api=pyApi();
   if(api&&api.load_data){
-    Promise.resolve(api.load_data()).then(function(t){startApp(t||"");}).catch(function(){startApp("");});
-    return;
-  }
-  startApp("");
+    Promise.resolve(api.load_data()).then(function(txt){mergeDisk(txt||"");}).catch(function(){_diskReady=true;});
+  }else _diskReady=true;
 }
 window.addEventListener("pywebviewready",kickoff);
-setTimeout(function(){if(!started)kickoff();},600);
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",kickoff);
+else kickoff();
 window.addEventListener("beforeunload",function(){try{clearTimeout(_saveT);flushSave();}catch(e){}});
 document.addEventListener("visibilitychange",function(){if(document.hidden){try{clearTimeout(_saveT);flushSave();}catch(e){}}});
 setInterval(function(){try{flushSave();}catch(e){}},8000);
+let _updInfo=null;
+function setBell(on){
+  const b=$("bellBtn");
+  if(b) b.classList.toggle("has",!!on);
+}
 function showUpdBar(info){
   const bar=$("updBar");if(!bar)return;
-  if(!info||!info.newer){bar.hidden=true;bar.style.display="none";return;}
+  if(!info||!info.newer){bar.hidden=true;return;}
   if($("updVer"))$("updVer").textContent=info.remote||"";
   if($("updNotes"))$("updNotes").textContent=info.notes?(" — "+info.notes):"";
-  bar.hidden=false;bar.style.display="block";
+  bar.hidden=false;
+}
+function offerUpdate(info,force){
+  if(!info||!info.newer){setBell(false);return;}
+  _updInfo=info;
+  setBell(true);
+  showUpdBar(info);
+  const notes=String(info.notes||"تحسينات وإصلاحات عامة.").replace(/\n/g,"\n");
+  const msg="يتوفر تحديث جديد (إصدار "+(info.remote||"")+")\nالإصدار الحالي: "+(info.current||APP_VERSION)+"\n\nالمميزات والتعديلات:\n"+notes+"\n\nهل تريد التحديث الآن؟";
+  if(!force && sessionStorage.getItem("updAsk")===(info.remote||"")) return;
+  sessionStorage.setItem("updAsk",info.remote||"");
+  appDlg(msg,"تحديث جديد",true,"upd").then(function(ok){if(ok)doAppUpdate();});
+}
+function openNotif(){
+  if(_updInfo&&_updInfo.newer) offerUpdate(_updInfo,true);
+  else showLatestUpdate(APP_VERSION);
 }
 function latestUpdateText(ver){
   return "أنت تستخدم آخر تحديث.\nالإصدار الحالي: "+(ver||APP_VERSION)+".\n\nإذا في خلل بالتطبيق أو تريد اقتراح تعديل، تواصل مع المطور عبيده العيثاوي.";
@@ -2805,8 +3202,8 @@ function checkAppUpdate(manual){
       if(manual)showLatestUpdate(info&&info.current?info.current:APP_VERSION);
       return;
     }
-    if(info.newer)showUpdBar(info);
-    else if(manual)showLatestUpdate(info.current||APP_VERSION);
+    if(info.newer)offerUpdate(info,!!manual);
+    else {setBell(false);if(manual)showLatestUpdate(info.current||APP_VERSION);}
   }).catch(function(){if(manual)showLatestUpdate(APP_VERSION);});
 }
 function doAppUpdate(){
@@ -2817,7 +3214,7 @@ function doAppUpdate(){
     else note("تعذر التحديث. تأكد من رابط الملفات.");
   }).catch(function(){note("تعذر التحديث");});
 }
-setTimeout(function(){checkAppUpdate(false);},1800);
+setTimeout(function(){checkAppUpdate(false);},600);
 
 let selectedImages = [];
 
