@@ -1,5 +1,5 @@
 {
-  "version": "0.02",
-  "notes": "بطاقات الإعدادات ونوافذ مستقلة مع رجوع",
+  "version": "0.08",
+  "notes": "التبويبات تحت الشريط وليس داخله",
   "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html"
 }
