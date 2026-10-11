@@ -1,5 +1,5 @@
 {
-  "version": "0.08",
-  "notes": "التبويبات تحت الشريط وليس داخله",
+  "version": "0.35",
+  "notes": "زر اضافة صف بدون تمدد",
   "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html"
 }

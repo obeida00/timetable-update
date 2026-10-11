@@ -27,12 +27,12 @@ html,body{
 }
 button,input,select,textarea,table,th,td,h1,h2,h3,label{font-family:inherit}
 button, input, select, textarea { touch-action: manipulation; }
-.app{max-width:1360px;width:100%;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box}
+.app{max-width:1360px;width:100%;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;min-width:0;overflow-x:hidden}
 header.top{
   display:flex;flex-wrap:nowrap;gap:12px;align-items:center;justify-content:space-between;
   margin:0;padding:10px 16px;color:#fff;text-align:right;overflow:hidden;
   background:linear-gradient(135deg,#4c1d95 0%,#6d28d9 48%,#2563eb 100%);
-  box-shadow:0 16px 40px rgba(76,29,149,.28);border-radius:22px;min-height:64px;
+  box-shadow:0 16px 40px rgba(76,29,149,.28);border:0;border-radius:22px;min-height:64px;
 }
 .brand{display:flex;gap:12px;align-items:center;justify-content:center}
 .app-logo{width:44px;height:44px;object-fit:contain;background:#fff;border-radius:12px;padding:3px;flex:0 0 auto;box-shadow:0 4px 12px rgba(0,0,0,.16)}
@@ -40,12 +40,12 @@ header.top{
 h1{font-size:1.55rem;margin:0;font-weight:800}
 .sub{display:none}
 nav.tabs{
-  display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:8px 10px;
+  display:flex;flex-wrap:nowrap;gap:8px;margin:0;padding:8px 10px;
   background:#fff;border-radius:22px;box-shadow:var(--sh);border:1px solid #f3e8ff;
 }
 nav.tabs button{
-  border:0;background:#f5f3ff;color:#4c1d95;padding:10px 14px;border-radius:14px;cursor:pointer;
-  font-weight:700;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;min-height:42px;
+  border:0;background:#f5f3ff;color:#4c1d95;padding:10px 8px;border-radius:14px;cursor:pointer;
+  font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;min-height:42px;flex:1 1 0;min-width:0;font-size:.82rem;
   transition:transform .18s,background .18s,color .18s,box-shadow .18s;
 }
 nav.tabs button svg{width:18px;height:18px;flex:0 0 auto}
@@ -54,7 +54,31 @@ nav.tabs button.on{background:linear-gradient(135deg,#6d28d9,#4f46e5);color:#fff
 .ico{width:18px;height:18px;vertical-align:-3px;margin-left:6px}
 .card{
   background:var(--card);border-radius:24px;padding:24px;box-shadow:var(--sh);margin:0;border:1px solid #f3e8ff;
+  width:100%;max-width:100%;min-width:0;min-height:560px;box-sizing:border-box;overflow-x:hidden;
+  display:flex;flex-direction:column;
 }
+.app > section.card .table-wrap,.app > section.card #viewOut,.app > section.card #classList{flex:1 1 auto;min-height:160px}
+.app > section#settings{min-height:auto}
+.card > .btn{width:auto;align-self:flex-start;flex:0 0 auto}
+#gBar.toolbar{
+  display:flex;width:100%;max-width:100%;flex-wrap:wrap;gap:8px;align-items:center;box-sizing:border-box;
+}
+#gBar.toolbar .btn{flex:0 0 auto;height:44px;min-height:44px}
+#gBar.toolbar label.search{flex:0 0 auto;width:auto;max-width:none;min-width:0;height:44px;flex-direction:row;align-items:center;gap:8px}
+#gBar.toolbar input[type=number]{width:90px;min-width:90px;flex:none;text-align:center}
+
+
+header.top,nav.tabs,.app>.card,.app>.hint{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+
+.hint{overflow-wrap:anywhere;word-break:break-word}
+.toolbar{min-width:0;max-width:100%}
+.card > h2,.card .set-head h2{
+  display:inline-block;width:fit-content;max-width:100%;border-bottom:3px solid #a78bfa;padding-bottom:5px
+}
+.card .set-head{width:100%;flex:0 0 auto}
+.card .hint,.card .toolbar{width:100%;flex:0 0 auto}
+
+
 .card.show{animation:in .32s ease}
 @keyframes in{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
 h2{margin:0 0 10px;font-size:1.28rem;color:#4c1d95;display:inline-block;border-bottom:3px solid #a78bfa;padding-bottom:5px;font-weight:800}
@@ -102,15 +126,23 @@ tr:hover td{background:#f5f3ff}
 .cell-sub{font-weight:700;color:#5b21b6}
 .cell-t{font-size:.78rem;color:var(--muted)}
 .search{max-width:none}
-.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;overflow:visible;margin:0 0 12px}
-.toolbar .btn{flex:0 0 auto;white-space:nowrap}
+.toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;overflow:visible;margin:0 0 12px}
+.toolbar .btn{flex:0 0 auto;white-space:nowrap;min-height:42px;height:42px;padding:0 14px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}
+.toolbar label{
+  flex:0 1 auto;min-width:0;width:auto;margin:0;font-size:.82rem
+}
 .toolbar label.search,.toolbar label.sort{
-  flex:1 1 200px;width:auto;max-width:280px;min-width:180px;
-  flex-direction:row;align-items:center;gap:8px;margin:0;font-size:.82rem;white-space:nowrap
+  flex:1 1 180px;max-width:240px;min-width:160px;
+  flex-direction:row;align-items:center;gap:8px;white-space:nowrap;min-height:42px
+}
+.toolbar input,.toolbar select{
+  min-height:42px;height:42px;box-sizing:border-box;margin:0
 }
 .toolbar label.search input,.toolbar label.sort select{
-  flex:1;width:100%;min-width:0;min-height:42px;box-sizing:border-box
+  flex:1;width:100%;min-width:0
 }
+.toolbar input[type=number]{width:88px;min-width:88px;flex:none;text-align:center}
+.toolbar select{min-width:148px}
 .drop{position:relative;flex:0 0 auto}
 .drop-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:20;background:#fff;border:1px solid #ddd6fe;border-radius:12px;box-shadow:0 10px 24px rgba(76,29,149,.18);min-width:160px;padding:6px;display:flex;flex-direction:column;gap:4px}
 .drop-menu[hidden]{display:none!important}
@@ -252,14 +284,51 @@ td.clk:hover .mv button{opacity:.45}
 
 
 .set-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
-.set-head h2{margin:0;border:0;padding:0}
+.set-head h2{margin:0}
 .ver-chip{background:linear-gradient(135deg,#6d28d9,#4f46e5);color:#fff;font-weight:800;font-size:.82rem;padding:6px 12px;border-radius:999px;box-shadow:0 6px 14px rgba(109,40,217,.25)}
-.set-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.set-tile{border:1px solid #ede9fe;background:#fff;border-radius:22px;padding:22px 16px;cursor:pointer;text-align:center;box-shadow:0 8px 20px rgba(76,29,149,.08);transition:transform .16s,box-shadow .16s}
-.set-tile:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(76,29,149,.16)}
-.set-tile .ico-lg{width:42px;height:42px;margin:0 auto 10px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#ede9fe;color:#5b21b6;font-size:1.4rem;font-weight:800}
-.set-tile b{display:block;color:#4c1d95;font-size:1.05rem;margin-bottom:4px}
+.set-tiles{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;
+  width:100%;margin-top:6px;
+}
+.set-tile{
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:right;
+  border:1.5px solid #ede9fe;background:linear-gradient(180deg,#ffffff 0%,#faf9ff 100%);
+  border-radius:18px;padding:18px 18px 14px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(76,29,149,.04);
+  transition:all .22s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.set-tile::before{
+  content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(109,40,217,.03),rgba(79,70,229,.01));
+  opacity:0;transition:opacity .2s ease;pointer-events:none;
+}
+.set-tile:hover{
+  transform:translateY(-3px);
+  border-color:#c4b5fd;
+  box-shadow:0 12px 26px rgba(76,29,149,.1);
+}
+.set-tile:hover::before{opacity:1}
+.set-tile .ico-lg{
+  width:44px;height:44px;margin:0 0 12px;border-radius:14px;
+  display:grid;place-items:center;transition:transform .2s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+.set-tile:hover .ico-lg{transform:scale(1.06) rotate(-2deg)}
+.set-tile .ico-lg svg{width:22px;height:22px}
+.set-tile .u-ico{background:linear-gradient(135deg,#e0e7ff,#ede9fe);color:#4f46e5}
+.set-tile .s-ico{background:linear-gradient(135deg,#fef3c7,#fef9c3);color:#d97706}
+.set-tile .d-ico{background:linear-gradient(135deg,#dcfce7,#ecfdf5);color:#16a34a}
+.set-tile-body{width:100%;margin-bottom:12px}
+.set-tile b{display:block;color:#1e1b4b;font-size:1.05rem;font-weight:800;margin-bottom:4px}
 .set-tile span{display:block;color:#64748b;font-size:.82rem;line-height:1.5}
+.set-tile-action{
+  display:inline-flex;align-items:center;gap:6px;width:100%;
+  padding-top:10px;border-top:1px solid #f3e8ff;
+  color:#6d28d9;font-weight:800;font-size:.82rem;transition:gap .2s ease;
+}
+.set-tile-action svg{width:15px;height:15px;transition:transform .2s ease}
+.set-tile:hover .set-tile-action{gap:9px;color:#4c1d95}
+.set-tile:hover .set-tile-action svg{transform:translateX(-3px)}
 .set-grid{display:flex;flex-direction:column;gap:14px;width:100%}
 .set-card{background:#f8f7ff;border:1px solid #ede9fe;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;width:100%}
 .set-card h3{margin:0;color:#4c1d95;font-size:1.05rem;font-weight:800;padding-bottom:8px;border-bottom:2px solid #ddd6fe}
@@ -274,6 +343,161 @@ td.clk:hover .mv button{opacity:.45}
 .set-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .days-chk{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px}
 .days-chk span{min-height:44px;justify-content:center;margin:0}
+
+/* Modal Stylish System */
+.modal-card.modal-stylish{
+  width:min(580px,94vw)!important;border-radius:24px;padding:0;
+  box-shadow:0 24px 60px rgba(76,29,149,.22);border:1px solid #ede9fe;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:20px 24px;border-bottom:1px solid #f1edfd;background:linear-gradient(180deg,#faf8ff,#ffffff);
+}
+.modal-head-title{display:flex;align-items:center;gap:12px;text-align:right}
+.modal-icon{
+  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;
+}
+.modal-icon svg{width:22px;height:22px}
+.modal-head-title h2{margin:0;font-size:1.22rem;color:#1e1b4b;border:0;padding:0}
+.modal-sub{display:block;font-size:.82rem;color:#64748b;font-weight:600;margin-top:2px}
+.modal-close-btn{
+  width:34px;height:34px;border-radius:50%;border:0;background:#f3effe;color:#6d28d9;
+  font-size:1rem;font-weight:800;cursor:pointer;display:grid;place-items:center;
+  transition:all .18s;
+}
+.modal-close-btn:hover{background:#ede6fd;transform:scale(1.08)}
+.modal-body-content{
+  padding:20px 24px;display:flex;flex-direction:column;gap:16px;max-height:calc(85vh - 140px);overflow-y:auto;
+}
+.modal-foot{
+  display:flex;align-items:center;justify-content:flex-start;gap:10px;
+  padding:16px 24px;background:#fcfbfe;border-top:1px solid #f1edfd;
+}
+.info-banner{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #ddd6fe;
+  border-radius:16px;padding:12px 16px;
+}
+.info-banner-item{display:flex;flex-direction:column;gap:3px;text-align:right}
+.info-lbl{font-size:.78rem;color:#6b21a8;font-weight:700}
+.info-val{font-size:.95rem;color:#1e1b4b;font-weight:800}
+.info-val.status-tag{color:#059669}
+.info-val.status-ok{color:#15803d;font-weight:800;font-size:.88rem}
+.form-section-card{
+  background:#fbfaff;border:1px solid #ede9fe;border-radius:18px;
+  padding:16px;display:flex;flex-direction:column;gap:10px;text-align:right;
+}
+.sec-label{font-size:.84rem;font-weight:800;color:#4c1d95;margin-bottom:2px}
+.input-with-btn{display:flex;gap:8px;align-items:stretch}
+.input-with-btn input{flex:1;min-width:0}
+.input-with-btn .btn{flex:0 0 auto;white-space:nowrap}
+.day-summary-btn{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);
+  color:#fff;font-size:.9rem;box-shadow:0 6px 16px rgba(217,119,6,.22);
+}
+.day-lbl{opacity:.9;font-weight:600}
+.day-val{font-weight:800}
+.edit-link{background:rgba(255,255,255,.25);padding:4px 10px;border-radius:8px;font-size:.78rem}
+.set-nums-styled{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.color-picker-wrap{
+  display:flex;align-items:center;gap:10px;background:#fff;
+  border:1.5px solid #c4b5fd;border-radius:12px;padding:5px 10px;height:42px;
+}
+.color-picker-wrap input[type=color]{
+  width:32px;height:32px;padding:0;border:0;border-radius:8px;cursor:pointer;background:none;min-height:auto;
+}
+.color-txt{font-size:.85rem;color:#4c1d95;font-weight:700}
+.print-btn-styled{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  height:44px;border-radius:14px;
+}
+.print-btn-styled svg{width:18px;height:18px}
+.data-actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.action-card-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:.85rem;min-height:44px;padding:10px;border-radius:13px;
+}
+.action-card-btn svg{width:17px;height:17px;flex:0 0 auto}
+.modal-note{
+  display:flex;align-items:center;gap:8px;background:#f5f3ff;border:1px dashed #c4b5fd;
+  color:#5b21b6;padding:10px 14px;border-radius:12px;font-size:.82rem;font-weight:600;text-align:right;
+}
+.modal-note svg{width:18px;height:18px;flex:0 0 auto;color:#6d28d9}
+
+/* Modern Export Modal Styles */
+.export-modal-premium{width:min(680px,96vw)!important;max-height:94vh;overflow:hidden!important}
+.export-modal-premium .modal-body-content{
+  padding:16px 22px;gap:12px;max-height:none!important;overflow:visible!important;
+}
+.exp-ico-grad{background:linear-gradient(135deg,#6d28d9,#4f46e5);color:#fff;box-shadow:0 6px 16px rgba(109,40,217,.28)}
+.exp-group{display:flex;flex-direction:column;gap:8px;text-align:right}
+.exp-title{font-size:.86rem;font-weight:800;color:#1e1b4b}
+.fmt-cards-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;box-sizing:border-box;
+}
+.fmt-card{position:relative;cursor:pointer;margin:0;min-width:0}
+.fmt-card input[type=radio]{position:absolute;opacity:0;pointer-events:none}
+.fmt-card-inner{
+  border:2px solid #ede9fe;background:#fcfbfe;border-radius:16px;padding:12px 6px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  gap:4px;transition:all .2s ease;position:relative;overflow:hidden;box-sizing:border-box;
+  min-height:124px;justify-content:center;
+}
+.fmt-card:hover .fmt-card-inner{transform:translateY(-2px);border-color:#c4b5fd;background:#fff;box-shadow:0 8px 20px rgba(76,29,149,.08)}
+.fmt-card input:checked + .fmt-card-inner{
+  border-color:#6d28d9;background:#fff;box-shadow:0 8px 22px rgba(109,40,217,.16);
+}
+.fmt-badge{
+  position:absolute;top:5px;left:5px;background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:999px;line-height:1.2;
+}
+.fmt-icon-box{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;margin-bottom:2px;
+  transition:transform .2s ease;
+}
+.fmt-card:hover .fmt-icon-box{transform:scale(1.06)}
+.fmt-icon-box svg{width:20px;height:20px}
+.jpg-box{background:#ede9fe;color:#6d28d9}
+.pdf-box{background:#fee2e2;color:#dc2626}
+.doc-box{background:#dbeafe;color:#2563eb}
+.xls-box{background:#dcfce7;color:#16a34a}
+.fmt-card-inner b{font-size:.85rem;color:#1e1b4b;display:block;white-space:nowrap}
+.fmt-card-inner span{font-size:.7rem;color:#64748b;display:block;line-height:1.2;white-space:nowrap}
+.exp-setup-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.exp-setup-pill{
+  background:#f8f7ff;border:1.5px solid #ede9fe;border-radius:14px;padding:8px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.pill-lbl{font-size:.82rem;font-weight:800;color:#4c1d95}
+.segmented-control{display:inline-flex;background:#ede9fe;padding:3px;border-radius:10px;gap:2px}
+.segmented-control label{min-width:0;margin:0;cursor:pointer}
+.segmented-control input{position:absolute;opacity:0;pointer-events:none}
+.segmented-control span{
+  display:block;padding:5px 12px;border-radius:8px;font-size:.78rem;font-weight:800;
+  color:#6d28d9;transition:all .18s;white-space:nowrap;
+}
+.segmented-control input:checked + span{
+  background:#fff;color:#1e1b4b;box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+.exp-pro-banner{
+  display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);
+  border:1px solid #c4b5fd;border-radius:14px;padding:9px 14px;text-align:right;
+}
+.pro-tick{
+  width:26px;height:26px;border-radius:50%;background:#6d28d9;color:#fff;
+  display:grid;place-items:center;font-weight:900;font-size:.8rem;flex:0 0 auto;
+}
+.pro-text{display:flex;flex-direction:column;gap:1px}
+.pro-text b{font-size:.82rem;color:#4c1d95}
+.pro-text span{font-size:.73rem;color:#5b21b6;line-height:1.35}
+.exp-foot{justify-content:space-between;padding:12px 22px}
+.exp-btn-primary{
+  flex:1;max-width:240px;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 8px 20px rgba(22,163,74,.28);
+}
+.exp-btn-primary svg{width:18px;height:18px}
 @media(max-width:800px){
   .app{padding:10px}
   header.top{margin:-10px -10px 12px;padding:14px 12px 16px;border-radius:0 0 22px 22px;flex-direction:column;align-items:stretch;text-align:center}
@@ -341,7 +565,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub">إصدار 0.08</div>
+    <div class="sub">إصدار 0.35</div>
     </div>
   </div>
   
@@ -371,7 +595,7 @@ td.clk:hover .mv button{opacity:.45}
 
 
 <section id="teachers" class="card" hidden>
-  <h2>المعلمون</h2>
+  <h2><span>المعلمون</span></h2>
   <p class="hint">هنا سجل المعلمين فقط: الاسم، الاختصاص، ويوم الأوف. توزيع المواد والدروس يكون من تبويب «المواد».</p>
   <div class="toolbar no-print">
     <button class="btn" type="button" onclick="openTeacher()">إضافة معلم</button>
@@ -394,14 +618,14 @@ td.clk:hover .mv button{opacity:.45}
 </section>
 
 <section id="classes" class="card show">
-  <h2>الصفوف والشعب</h2>
+  <h2><span>الصفوف والشعب</span></h2>
   <p class="hint">اضغطي <strong>اسم الصف</strong> أو شارة الشعبة (<strong>أ، ب، ج</strong>) لفتح قائمة المعلمين والمادة والدروس في هذه الشعبة. زر حذف يتيح حذف شعبة واحدة أو الصف كله.</p>
   <button class="btn no-print" type="button" onclick="openClass()">إضافة صف</button>
   <div id="classList"></div>
 </section>
 
 <section id="subjects" class="card" hidden>
-  <h2>المواد والتوزيع</h2>
+  <h2><span>المواد والتوزيع</span></h2>
   <p class="hint">التوزيع <strong>أسبوعي</strong> وليس يومي: الرقم هو عدد الدروس في الأسبوع لكل شعبة. الإنشاء يوزّعها على أيام الدوام.</p>
   <div class="toolbar no-print" id="sBar">
     <button class="btn" type="button" onclick="openSubject()">إضافة مادة</button>
@@ -427,43 +651,97 @@ td.clk:hover .mv button{opacity:.45}
 
 
 <div id="loginBox" class="modal no-print">
-  <div class="modal-card" style="width:min(440px,96vw);text-align:center" onclick="event.stopPropagation()">
-    <img src="logo.png" alt="" style="width:64px;height:64px;object-fit:contain;margin:0 auto 8px;border-radius:14px;background:#fff">
-    <h2 style="display:block;border:0;padding:0;margin:0 0 8px">تسجيل الدخول</h2>
-    <p class="hint">أنشئ حساباً برقم موبايلك ورمز تختاره أنت. أسبوع تجربة ثم اشتراك سنوي. بعد الإنشاء تُفتح رسالة واتساب ترحيبية برقمك ورمزك.</p>
-    <div id="loginMain">
-      <label>رقم الموبايل
-        <input id="loginAcc" placeholder="07XXXXXXXXX" style="direction:ltr;text-align:center" autocomplete="username">
-      </label>
-      <label>الرمز
-        <input id="loginPw" type="password" placeholder="رمز تختاره أنت (٤ أحرف على الأقل)" style="text-align:center" autocomplete="current-password">
-      </label>
-      <div class="form-actions" style="margin-top:14px;justify-content:center">
-        <button class="btn g" type="button" onclick="doLogin()">دخول</button>
-        <button class="btn w" type="button" onclick="doRegister()">إنشاء حساب جديد</button>
-      </div>
-      <p style="margin:12px 0 0"><button type="button" class="btn w s" onclick="showReset(true)">نسيت الرمز</button></p>
+  <div class="modal-card" style="width:min(450px,94vw);padding:32px 28px;text-align:center;border-radius:26px;box-shadow:0 25px 60px rgba(76,29,149,.2);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#fbf9ff 100%)" onclick="event.stopPropagation()">
+    <div style="position:relative;display:inline-block;margin-bottom:12px">
+      <div style="position:absolute;inset:-6px;background:radial-gradient(circle,rgba(124,58,237,.25) 0%,transparent 70%);border-radius:50%;filter:blur(8px)"></div>
+      <img src="logo.png" alt="" style="position:relative;width:72px;height:72px;object-fit:contain;border-radius:18px;background:#fff;padding:4px;box-shadow:0 8px 20px rgba(109,40,217,.18);border:1px solid #ede9fe">
     </div>
-    <div id="resetMain" hidden>
-      <p class="hint">الرمز القديم لا يُسترجع لأنه مشفّر. خذ كود استعادة R- من المطور، عيّن رمزاً جديداً، ثم تُفتح رسالة واتساب بالرمز الجديد.</p>
-      <label>رقم الموبايل
-        <input id="resetAcc" placeholder="07XXXXXXXXX" style="direction:ltr;text-align:center">
-      </label>
-      <label>كود الاستعادة من المطور
-        <input id="resetCode" placeholder="R-..." style="direction:ltr;text-align:center">
-      </label>
-      <label>الرمز الجديد
-        <input id="resetPw" type="password" placeholder="رمز جديد" style="text-align:center">
-      </label>
-      <div class="form-actions" style="margin-top:12px;justify-content:center">
-        <button class="btn g" type="button" onclick="doResetPw()">تعيين الرمز</button>
-        <button class="btn d" type="button" onclick="showReset(false)">رجوع</button>
+    <h2 style="font-size:1.45rem;font-weight:800;color:#1e1b4b;margin:0 0 6px;letter-spacing:-.3px">نظام الجداول المدرسية</h2>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:#f3e8ff;color:#6b21a8;font-size:.78rem;font-weight:700;padding:3px 12px;border-radius:20px;margin-bottom:18px">
+      <span>🔐</span> تسجيل الدخول والمزامنة
+    </div>
+    
+    <div style="background:#f8f7ff;border:1px solid #e9d5ff;border-radius:14px;padding:12px 14px;margin-bottom:20px;text-align:right">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <span style="font-size:1.1rem;line-height:1">💡</span>
+        <p style="margin:0;font-size:.82rem;color:#4c1d95;line-height:1.55;font-weight:500">
+          أنشئ حساباً برقم موبايلك ورمزك الخاص لتأمين وحفظ جدولك تلقائياً وسحابياً، مع فترة تجربة مجانية تتيح لك كافة المميزات.
+        </p>
       </div>
     </div>
-    <p id="loginMsg" class="hint" style="margin-top:10px;margin-bottom:0"></p>
-  </div>
-</div>
 
+    <div id="loginMain">
+      <div style="display:flex;flex-direction:column;gap:14px;text-align:right">
+        <div>
+          <label style="display:block;font-size:.85rem;font-weight:700;color:#374151;margin-bottom:6px">رقم الموبايل</label>
+          <div style="position:relative">
+            <input id="loginAcc" placeholder="07XXXXXXXXX" style="width:100%;height:46px;padding:8px 14px;border:1.5px solid #d1d5db;border-radius:12px;font-size:1rem;direction:ltr;text-align:center;font-weight:700;letter-spacing:1px;background:#fff;transition:all .2s;color:#111827" autocomplete="username">
+          </div>
+        </div>
+        <div>
+          <label style="display:block;font-size:.85rem;font-weight:700;color:#374151;margin-bottom:6px">رمز الدخول</label>
+          <div style="position:relative">
+            <input id="loginPw" type="password" placeholder="••••••••" style="width:100%;height:46px;padding:8px 14px;border:1.5px solid #d1d5db;border-radius:12px;font-size:1.1rem;text-align:center;letter-spacing:2px;background:#fff;transition:all .2s;color:#111827" autocomplete="current-password">
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px">
+        <button class="btn g" type="button" style="height:46px;font-size:.95rem;font-weight:800;border-radius:12px;box-shadow:0 4px 12px rgba(22,163,74,.25);background:linear-gradient(135deg,#16a34a,#15803d);border:none" onclick="doLogin()">
+          دخول
+        </button>
+        <button class="btn" type="button" style="height:46px;font-size:.92rem;font-weight:800;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;box-shadow:0 4px 14px rgba(124,58,237,.28)" onclick="startOtpFlow('register')">
+          إنشاء حساب جديد
+        </button>
+      </div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px dashed #e5e7eb">
+        <button type="button" style="background:transparent;border:none;color:#6b21a8;font-size:.84rem;font-weight:700;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .2s" onclick="startOtpFlow('reset')">
+          نسيت رمز الدخول؟
+        </button>
+      </div>
+    </div>
+
+    <!-- OTP Step Screen -->
+    <div id="otpStep" hidden>
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:12px 14px;margin-bottom:16px;text-align:right">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:1.2rem;line-height:1">🤖</span>
+          <p style="margin:0;font-size:.82rem;color:#1e40af;line-height:1.5;font-weight:600">
+            لتأكيد ملكية رقمك، اضغط على زر التيليجرام أدناه للحصول على كود التحقق الفوري مجاناً، ثم أدخله هنا للمتابعة.
+          </p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;text-align:right">
+        <button type="button" class="btn" style="height:44px;background:#0284c7;color:#fff;font-weight:800;border-radius:12px;border:none;display:flex;align-items:center;justify-content:center;gap:8px" onclick="openBotOtp()">
+          <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06-.01.19-.03.32z"/></svg>
+          اضغط هنا لفتح بوت التحقق (@ScholTableBot)
+        </button>
+
+        <div>
+          <label style="display:block;font-size:.82rem;font-weight:700;color:#374151;margin-bottom:4px">كود التحقق المستلم</label>
+          <input id="otpCodeIn" placeholder="XXXX" maxlength="6" style="width:100%;height:44px;border:1.5px solid #d1d5db;border-radius:10px;text-align:center;font-size:1.2rem;font-weight:800;letter-spacing:4px">
+        </div>
+
+        <div>
+          <label style="display:block;font-size:.82rem;font-weight:700;color:#374151;margin-bottom:4px">رمز الدخول (الجديد)</label>
+          <input id="otpNewPw" type="password" placeholder="٤ أحرف أو أرقام على الأقل" style="width:100%;height:44px;border:1.5px solid #d1d5db;border-radius:10px;text-align:center">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:10px;margin-top:18px">
+        <button class="btn g" type="button" style="height:44px;font-weight:800;border-radius:10px" onclick="submitOtpVerification()">
+          تأكيد وحفظ الرمز
+        </button>
+        <button class="btn d" type="button" style="height:44px;font-weight:700;border-radius:10px" onclick="cancelOtpFlow()">
+          إلغاء
+        </button>
+      </div>
+    </div>
+
+    <p id="loginMsg" class="hint" style="margin-top:14px;margin-bottom:0;min-height:18px;color:#dc2626;font-weight:700;font-size:.86rem"></p>
+  </div>
 </div>
 
 <div id="waHello" class="modal no-print" hidden>
@@ -509,119 +787,264 @@ td.clk:hover .mv button{opacity:.45}
 
 <section id="settings" class="card" hidden>
   <div class="set-head">
-    <h2>الإعدادات</h2>
-    <span class="ver-chip">إصدار 0.08</span>
+    <h2><span>لوحة الإعدادات</span></h2>
+    <span class="ver-chip">الإصدار 0.35</span>
   </div>
-  <p class="hint">اختر بطاقة لفتح نافذتها. التحديث يظهر تلقائياً عند توفر نسخة أحدث.</p>
+  <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
     <button type="button" class="set-tile" onclick="openSet('setUser')">
-      <div class="ico-lg">ح</div>
-      <b>معلومات المستخدم</b>
-      <span>الحساب والرمز والاشتراك</span>
+      <div class="ico-lg u-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="set-tile-body">
+        <b>معلومات المستخدم</b>
+        <span>الحساب والرمز والاشتراك السنوي</span>
+      </div>
+      <div class="set-tile-action">
+        <span>فتح الإعدادات</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      </div>
     </button>
     <button type="button" class="set-tile" onclick="openSet('setSchool')">
-      <div class="ico-lg">م</div>
-      <b>المدرسة والدوام</b>
-      <span>الاسم والأيام والطباعة</span>
+      <div class="ico-lg s-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <div class="set-tile-body">
+        <b>المدرسة والدوام</b>
+        <span>اسم المدرسة، الأيام، الحصص، وأبعاد الطباعة</span>
+      </div>
+      <div class="set-tile-action">
+        <span>فتح الإعدادات</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      </div>
     </button>
     <button type="button" class="set-tile" onclick="openSet('setData')">
-      <div class="ico-lg">ب</div>
-      <b>التحديث والبيانات</b>
-      <span>نسخ واسترداد وتصفير</span>
+      <div class="ico-lg d-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="set-tile-body">
+        <b>التحديث والبيانات</b>
+        <span>النسخ الاحتياطي السحابي، الاسترداد، والتصفير</span>
+      </div>
+      <div class="set-tile-action">
+        <span>فتح الإعدادات</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      </div>
     </button>
   </div>
 </section>
 
 <div id="setUser" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="modal-card" onclick="event.stopPropagation()" style="width:min(520px,96vw)">
-    <h2>معلومات المستخدم</h2>
-    <p class="hint" style="margin:0">رقم الحساب: <strong id="userAccShow" dir="ltr">—</strong></p>
-    <p class="hint" id="userSubShow" style="margin:8px 0 12px">—</p>
-    <div class="set-pin">
-      <label>الرمز الحالي
-        <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center">
-      </label>
-      <label>الرمز الجديد
-        <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center">
-      </label>
+  <div class="modal-card modal-stylish" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <div class="modal-icon u-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div>
+          <h2>معلومات المستخدم</h2>
+          <span class="modal-sub">إدارة الحساب ورمز المرور وحالة الاشتراك</span>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="$('setUser').hidden=true" title="إغلاق">✕</button>
     </div>
-    <div class="form-actions" style="margin-top:14px">
+
+    <div class="modal-body-content">
+      <div class="info-banner">
+        <div class="info-banner-item">
+          <span class="info-lbl">رقم الحساب</span>
+          <strong id="userAccShow" class="info-val" dir="ltr">—</strong>
+        </div>
+        <div class="info-banner-item">
+          <span class="info-lbl">حالة الاشتراك</span>
+          <strong id="userSubShow" class="info-val status-tag">—</strong>
+        </div>
+      </div>
+
+      <div class="form-section-card">
+        <span class="sec-label">تغيير رمز الدخول</span>
+        <div class="set-pin">
+          <label>الرمز الحالي
+            <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center">
+          </label>
+          <label>الرمز الجديد
+            <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center">
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>نسيت الرمز؟ يمكنك تسجيل الخروج واستخدام خيار «نسيت الرمز» أو التواصل مع المطور.</span>
+      </div>
+    </div>
+
+    <div class="modal-foot">
       <button class="btn g" type="button" onclick="changeUserPin()">حفظ الرمز الجديد</button>
-      <button class="btn w" type="button" onclick="$('setUser').hidden=true">رجوع</button>
+      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true">رجوع</button>
     </div>
-    <p class="hint" style="margin:12px 0 0">نسيت الرمز؟ سجّل خروج ثم «نسيت الرمز»، أو راسل المطور.</p>
   </div>
 </div>
+
 <div id="setSchool" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="modal-card" onclick="event.stopPropagation()" style="width:min(520px,96vw)">
-    <h2>المدرسة والدوام</h2>
-    <label>اسم المدرسة<input id="schoolName" value="" placeholder="اسم مدرستك"></label>
-    <button class="btn w" type="button" onclick="changeSchoolName()">تغيير اسم المدرسة</button>
-    <button class="btn o" type="button" onclick="openDaysBox()">أيام الدوام: <span id="daysSum">—</span></button>
-    <div class="set-nums">
-      <label>الدروس اليومية<input id="periods" type="number" min="1" max="12" value="6" oninput="saveSettings(true)"></label>
-      <label>لون أطراف الجدول<input id="gridColor" type="color" value="#5b21b6" oninput="saveGridColor()"></label>
+  <div class="modal-card modal-stylish" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <div class="modal-icon s-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <div>
+          <h2>المدرسة والدوام</h2>
+          <span class="modal-sub">تخصيص بيانات مدرستك وأيام الدوام والطباعة</span>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="$('setSchool').hidden=true" title="إغلاق">✕</button>
     </div>
-    <button class="btn o" type="button" onclick="openPrintDims()">ضبط الأبعاد للطباعة</button>
-    <div class="form-actions" style="margin-top:14px">
-      <button class="btn" type="button" onclick="saveSettings();$('setSchool').hidden=true">حفظ</button>
-      <button class="btn w" type="button" onclick="$('setSchool').hidden=true">رجوع</button>
+
+    <div class="modal-body-content">
+      <div class="form-section-card">
+        <span class="sec-label">اسم المدرسة</span>
+        <div class="input-with-btn">
+          <input id="schoolName" value="" placeholder="اكتب اسم مدرستك هنا">
+          <button class="btn w" type="button" onclick="changeSchoolName()">تحديث الاسم</button>
+        </div>
+      </div>
+
+      <div class="form-section-card">
+        <span class="sec-label">إعدادات الدوام والحصص</span>
+        <button class="btn o day-summary-btn" type="button" onclick="openDaysBox()">
+          <span class="day-lbl">أيام الدوام:</span>
+          <span id="daysSum" class="day-val">—</span>
+          <span class="edit-link">تعديل الأيام ✎</span>
+        </button>
+
+        <div class="set-nums-styled">
+          <label>الدروس اليومية (الحصص)
+            <input id="periods" type="number" min="1" max="12" value="6" oninput="saveSettings(true)">
+          </label>
+          <label>لون أطراف الجدول
+            <div class="color-picker-wrap">
+              <input id="gridColor" type="color" value="#5b21b6" oninput="saveGridColor()">
+              <span class="color-txt">اختر اللون</span>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn" type="button" onclick="saveSettings();$('setSchool').hidden=true">حفظ الإعدادات</button>
+      <button class="btn w ghost" type="button" onclick="$('setSchool').hidden=true">رجوع</button>
     </div>
   </div>
 </div>
+
 <div id="setData" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="modal-card" onclick="event.stopPropagation()" style="width:min(560px,96vw)">
-    <h2>التحديث والبيانات</h2>
-    <p class="hint" style="margin:0">الإصدار الحالي <strong>0.08</strong></p>
-    <p class="hint" id="licUntilHint" style="margin:8px 0 0"></p>
-    <p class="hint" id="dataPathHint" style="margin:8px 0;word-break:break-all;direction:ltr;text-align:right">مجلد الحفظ: %LOCALAPPDATA%\SchoolTimetable</p>
-    <div class="set-actions no-print">
-      <button class="btn g" type="button" onclick="checkAppUpdate(true)">تحقق من التحديث</button>
-      <button class="btn o" type="button" onclick="if($('subBox'))$('subBox').hidden=false">الاشتراك والدفع</button>
-      <button class="btn g" type="button" onclick="backupJSON()">حفظ نسخة</button>
-      <button class="btn o" type="button" onclick="openDataFolder()">فتح مجلد الحفظ</button>
-      <button class="btn w" type="button" onclick="openRestore()">استرداد نسخة</button>
-      <button class="btn d" type="button" onclick="resetSystem()">تصفير النظام</button>
+  <div class="modal-card modal-stylish" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <div class="modal-icon d-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div>
+          <h2>التحديث والبيانات</h2>
+          <span class="modal-sub">إدارة النسخ الاحتياطي وحالة النظام والتحديثات</span>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="$('setData').hidden=true" title="إغلاق">✕</button>
     </div>
-    <input type="file" id="restore" accept="application/json" hidden onchange="restoreJSON(event)">
-    <div class="form-actions" style="margin-top:14px">
-      <button class="btn w" type="button" onclick="$('setData').hidden=true">رجوع</button>
+
+    <div class="modal-body-content">
+      <div class="info-banner">
+        <div class="info-banner-item">
+          <span class="info-lbl">الإصدار المثبت</span>
+          <strong class="info-val">0.35</strong>
+        </div>
+        <div class="info-banner-item">
+          <span class="info-lbl">نوع التخزين</span>
+          <span class="info-val status-ok">سحابي مجاني + محلي</span>
+        </div>
+      </div>
+
+      <div class="form-section-card">
+        <span class="sec-label">النسخ الاحتياطي والملفات</span>
+        <div class="data-actions-grid">
+          <button class="btn g action-card-btn" type="button" onclick="backupJSON()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            حفظ نسخة احتياطية
+          </button>
+          <button class="btn w action-card-btn" type="button" onclick="openRestore()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            استرداد نسخة
+          </button>
+          <button class="btn o action-card-btn" type="button" onclick="openDataFolder()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            فتح مجلد الحفظ
+          </button>
+          <button class="btn g action-card-btn" type="button" onclick="checkAppUpdate(true)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            التحقق من التحديث
+          </button>
+        </div>
+      </div>
+
+      <div class="form-section-card">
+        <span class="sec-label">الاشتراك والخيارات الإضافية</span>
+        <div class="data-actions-grid data-actions-sub">
+          <button class="btn o action-card-btn" type="button" onclick="if($('subBox'))$('subBox').hidden=false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            الاشتراك السنوي
+          </button>
+          <button class="btn d action-card-btn" type="button" onclick="resetSystem()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            تصفير النظام
+          </button>
+        </div>
+      </div>
+      <input type="file" id="restore" accept="application/json" hidden onchange="restoreJSON(event)">
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn w ghost" type="button" onclick="$('setData').hidden=true">إغلاق</button>
     </div>
   </div>
 </div>
 
 <section id="generate" class="card" hidden>
-  <h2>إنشاء الجدول تلقائيًا</h2>
+  <h2><span>إنشاء الجدول تلقائيًا</span></h2>
   <p class="hint">زر واحد: يخلط ويوزّع الدروس بعدة محاولات لتقليل التعارض. إن بقي نقص يظهر السبب (شعبة ممتلئة، معلم مشغول، أوف، الساحة).</p>
-  <div class="row no-print">
-    <button class="btn g" onclick="generate()">إنشاء الجدول</button>
-    <button class="btn o" onclick="openRemainModal()">إكمال المتبقي (اختياري)</button>
-    <button class="btn w" onclick="openVacModal()">الشواغر والبدلاء</button>
-    <label>عدد شعب الرياضة في الساحة بنفس الدرس
-      <input id="yardMax" type="number" min="1" step="1" placeholder="" onchange="saveYardMax()" oninput="saveYardMax()">
+  <div class="toolbar no-print" id="gBar">
+    <button class="btn g" type="button" onclick="generate()">إنشاء الجدول</button>
+    <button class="btn o" type="button" onclick="openRemainModal()">إكمال المتبقي (اختياري)</button>
+    <button class="btn w" type="button" onclick="openVacModal()">الشواغر والبدلاء</button>
+    <label class="search">الساحة
+      <input id="yardMax" type="number" min="1" step="1" placeholder="" title="عدد شعب الرياضة في الساحة بنفس الدرس" onchange="saveYardMax()" oninput="saveYardMax()">
     </label>
   </div>
-  <div id="genMsg"></div>
+  <div class="table-wrap">
+    <table class="slim"><thead><tr><th>نتيجة الإنشاء</th></tr></thead>
+    <tbody><tr><td id="genMsg" style="text-align:right">اضغط «إنشاء الجدول» لعرض النتيجة هنا.</td></tr></tbody></table>
+  </div>
 </section>
 
 <section id="views" class="card" hidden>
-  <h2>عرض الجداول والتصدير</h2>
+  <h2><span>عرض الجداول والتصدير</span></h2>
   <p class="hint">جدول اليوم وجدول الأسبوع لكل الصفوف. انقر خانة للتعديل.</p>
-  <div class="row no-print">
-    <label>نوع العرض
+  <div class="toolbar no-print">
+    <label class="sort">نوع العرض
       <select id="viewType" onchange="renderViews()">
         <option value="day">جدول اليوم</option>
         <option value="weekall">جدول الأسبوع</option>
         <option value="yard">الساحة — الرياضة</option>
       </select>
     </label>
-    <label id="dayPickLab" hidden>اليوم
+    <label class="sort" id="dayPickLab" hidden>اليوم
       <select id="dayPick" onchange="renderViews()"></select>
     </label>
-    <label>خط المادة <input id="fsSub" type="number" min="8" max="28" value="14" style="width:70px" oninput="applyFonts()"></label>
-    <label>خط المعلم <input id="fsTea" type="number" min="7" max="22" value="12" style="width:70px" oninput="applyFonts()"></label>
-    <label>ارتفاع الخانة <input id="cellH" type="number" min="36" max="160" step="2" value="60" style="width:70px" oninput="applyCellH()"></label>
-    <button class="btn" type="button" onclick="toggleExport()">طباعة وتصدير</button>
+    <button class="btn" type="button" onclick="toggleExport()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;vertical-align:-3px;margin-left:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      طباعة وتصدير
+    </button>
   </div>
   <div id="editBar" class="no-print" hidden>
     <strong id="editWhere"></strong>
@@ -636,43 +1059,134 @@ td.clk:hover .mv button{opacity:.45}
 </div>
 
 <div id="exportBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="modal-card" onclick="event.stopPropagation()">
-    <h2 id="exTitle">طباعة وتصدير</h2>
-    <div class="row">
-      <label>الصيغة
-        <select id="exFmt">
+  <div class="modal-card modal-stylish export-modal-premium" onclick="event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-head">
+      <div class="modal-head-title">
+        <div class="modal-icon exp-ico-grad">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div>
+          <h2>تصدير وطباعة الجدول</h2>
+          <span class="modal-sub">تجهيز الجدول بجودة احترافية متوافقة مع الطباعة والشاشات</span>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="$('exportBox').hidden=true" title="إغلاق">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body-content">
+      
+      <!-- Section 1: Choose Format as Interactive Cards -->
+      <div class="exp-group">
+        <span class="exp-title">١. نوع الملف المطلوب</span>
+        <div class="fmt-cards-grid">
+          <label class="fmt-card">
+            <input type="radio" name="fmtSelect" value="jpg" checked onchange="$('exFmt').value='jpg'">
+            <div class="fmt-card-inner">
+              <div class="fmt-badge">موصى به</div>
+              <div class="fmt-icon-box jpg-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <b>صورة عالية الدقة</b>
+              <span>JPG بدقة فائقة 300 DPI</span>
+            </div>
+          </label>
+
+          <label class="fmt-card">
+            <input type="radio" name="fmtSelect" value="print" onchange="$('exFmt').value='print'">
+            <div class="fmt-card-inner">
+              <div class="fmt-icon-box pdf-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </div>
+              <b>طباعة / PDF</b>
+              <span>جاهز للطباعة المباشرة</span>
+            </div>
+          </label>
+
+          <label class="fmt-card">
+            <input type="radio" name="fmtSelect" value="word" onchange="$('exFmt').value='word'">
+            <div class="fmt-card-inner">
+              <div class="fmt-icon-box doc-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </div>
+              <b>مستند Word</b>
+              <span>ملف doc قابل للمشاركة</span>
+            </div>
+          </label>
+
+          <label class="fmt-card">
+            <input type="radio" name="fmtSelect" value="excel" onchange="$('exFmt').value='excel'">
+            <div class="fmt-card-inner">
+              <div class="fmt-icon-box xls-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="17"/><line x1="16" y1="13" x2="8" y2="17"/></svg>
+              </div>
+              <b>جدول Excel</b>
+              <span>جداول بيانات خام</span>
+            </div>
+          </label>
+        </div>
+        <!-- Hidden select to maintain JS compatibility -->
+        <select id="exFmt" hidden>
           <option value="jpg" selected>صورة JPG</option>
           <option value="print">طباعة / PDF</option>
           <option value="word">وورد Word</option>
           <option value="excel">إكسل Excel</option>
         </select>
-      </label>
-      <label>الحجم
-        <select id="exSize" onchange="loadExProf()">
-          <option value="A4">A4</option>
-          <option value="A3">A3</option>
-        </select>
-      </label>
-      <label>الاتجاه
-        <select id="exDir" onchange="saveExProf()">
-          <option value="landscape">بالعرض</option>
-          <option value="portrait">بالطول</option>
-        </select>
-      </label>
+      </div>
+
+      <!-- Section 2: Page Setup -->
+      <div class="exp-group">
+        <span class="exp-title">٢. إعدادات الورقة والمقاس</span>
+        <div class="exp-setup-row">
+          <div class="exp-setup-pill">
+            <span class="pill-lbl">المقاس:</span>
+            <div class="segmented-control">
+              <label><input type="radio" name="sizeSelect" value="A4" checked onchange="$('exSize').value='A4'"><span>A4 قياسي</span></label>
+              <label><input type="radio" name="sizeSelect" value="A3" onchange="$('exSize').value='A3'"><span>A3 كبير</span></label>
+            </div>
+          </div>
+          <select id="exSize" hidden><option value="A4" selected>A4</option><option value="A3">A3</option></select>
+
+          <div class="exp-setup-pill">
+            <span class="pill-lbl">الاتجاه:</span>
+            <div class="segmented-control">
+              <label><input type="radio" name="dirSelect" value="landscape" checked onchange="$('exDir').value='landscape'"><span>بالعرض ⬌</span></label>
+              <label><input type="radio" name="dirSelect" value="portrait" onchange="$('exDir').value='portrait'"><span>بالطول ⬍</span></label>
+            </div>
+          </div>
+          <select id="exDir" hidden><option value="landscape" selected>landscape</option><option value="portrait">portrait</option></select>
+        </div>
+        <div class="exp-setup-row" style="margin-top:8px">
+          <div class="exp-setup-pill" style="width:100%">
+            <span class="pill-lbl">تنسيق صفحات Word:</span>
+            <div class="segmented-control">
+              <label><input type="radio" name="wordPagesSelect" value="single" checked onchange="$('exWordPages').value='single'"><span>صفحة واحدة مضغوطة</span></label>
+              <label><input type="radio" name="wordPagesSelect" value="multi" onchange="$('exWordPages').value='multi'"><span>صفحات منفصلة (لكل يوم صفحة)</span></label>
+            </div>
+          </div>
+          <select id="exWordPages" hidden><option value="single" selected>single</option><option value="multi">multi</option></select>
+        </div>
+      </div>
+
+      <!-- Feature note banner -->
+      <div class="exp-pro-banner">
+        <div class="pro-tick">✓</div>
+        <div class="pro-text">
+          <b>معايرة هندسية تلقائية (100% Fit)</b>
+          <span>يتم تمديد الجدول وتنسيق حجم خط المادة والمعلم ليملأ كامل الورقة بدون أي فراغات جانبية.</span>
+        </div>
+      </div>
+
     </div>
-    <div id="exExtra" class="row" hidden>
-      <label>خط المادة <input id="exFsSub" type="number" min="8" max="40" value="24" style="width:70px" oninput="applyExportFonts()"></label>
-      <label>خط المعلم <input id="exFsTea" type="number" min="7" max="36" value="20" style="width:70px" oninput="applyExportFonts()"></label>
-      <label>مسافة الحافة (مم) <input id="exPadMmBox" type="number" min="0" max="25" step="0.1" value="1" style="width:70px" oninput="saveExPad()"></label>
-      <label>مسافة المادة والمعلم <input id="exGap" type="number" min="1" max="20" step="1" value="8" style="width:70px" oninput="saveExLayout()"></label>
-      <label>ارتفاع الخانة % <input id="exCell" type="number" min="50" max="130" step="5" value="100" style="width:70px" oninput="saveExLayout()"></label>
-      <label>ارتفاع شريط المدرسة (مم) <input id="exBarMm" type="number" min="6" max="22" step="0.5" value="11" style="width:70px" oninput="saveExLayout()"></label>
-    </div>
-    <div class="form-actions" style="margin-top:14px">
-      <button class="btn o" type="button" onclick="toggleExDims()">تعديل الأبعاد</button>
-      <button class="btn w" type="button" id="exSaveBtn" hidden onclick="saveExSize()">حفظ التعديل على الأبعاد</button>
-      <button class="btn g" type="button" onclick="doExport()">تنفيذ</button>
-      <button class="btn d" type="button" onclick="$('exportBox').hidden=true">إغلاق</button>
+
+    <!-- Footer -->
+    <div class="modal-foot exp-foot">
+      <button class="btn g exp-btn-primary" type="button" onclick="doExport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>تصدير الآن وحفظ الملف</span>
+      </button>
+      <button class="btn w ghost" type="button" onclick="$('exportBox').hidden=true">إلغاء</button>
     </div>
   </div>
 </div>
@@ -985,9 +1499,16 @@ td.clk:hover .mv button{opacity:.45}
 
 <script>
 const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-try{localStorage.removeItem("school_tt_v2");localStorage.removeItem("school_tt_v3");}catch(e){}
-const KEY="school_tt_v4";window._acc="";function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.08";
+const KEY="school_tt_v4";
+window._acc=(function(){
+  try{
+    const a=JSON.parse(localStorage.getItem("school_tt_auth_v1")||"{}");
+    if(a&&a.session) return String(a.session).toUpperCase().replace(/[^A-Z0-9]/g,"");
+  }catch(e){}
+  return "";
+})();
+function storageKey(){return KEY+"_"+(window._acc||"guest");}
+const APP_VERSION="0.35";
 
 const GUIDE_STEPS=[
   {tab:"classes",title:"1 — الصفوف والشعب",msg:"ابدأ من تبويب الصفوف والشعب. أضف الصف (الأول، الثاني…) ثم أضف الشعب (أ، ب، ج). احذف أي شعبة غير موجودة في مدرستك."},
@@ -1073,22 +1594,17 @@ function parseDb(raw){
 function adoptAccount(acc, raw){
   const next=normAcc(acc);
   const prev=window._acc||"";
-  let orphan=null;
   if(prev && prev!==next){
     try{flushSave();}catch(e){}
-  } else if(!prev){
-    orphan=db;
-    try{
-      const g=parseDb(localStorage.getItem(KEY+"_guest"))||parseDb(localStorage.getItem(KEY));
-      if(dbScore(g)>dbScore(orphan)) orphan=g;
-    }catch(e){}
   }
+  const prevKey=storageKey();
   window._acc=next;
   const cands=[];
   function add(x){if(x&&dbScore(x)>0)cands.push(x);}
+  if(typeof db!=="undefined"&&db) add(db);
   add(parseDb(raw));
   try{add(parseDb(localStorage.getItem(storageKey())));}catch(e){}
-  add(orphan);
+  try{if(prevKey) add(parseDb(localStorage.getItem(prevKey)));}catch(e){}
   let best=null,bestN=-1;
   cands.forEach(function(x){const n=dbScore(x);if(n>bestN){best=x;bestN=n;}});
   hist=[];
@@ -1098,7 +1614,6 @@ function adoptAccount(acc, raw){
     if(best.settings)db.settings=Object.assign(blankDb().settings,best.settings);
   } else {
     db=blankDb();
-    seedSchool();
   }
   _diskReady=!!next;
   save(true);
@@ -1299,14 +1814,12 @@ function load(fileRaw){
     }catch(e){}
   }
   consider(fileRaw);
-  try{consider(localStorage.getItem(storageKey()));}catch(e){}
+  if(window._acc){
+    try{consider(localStorage.getItem(storageKey()));}catch(e){}
+  }
   if(best&&bestN>0) applyDb(JSON.stringify(best));
-  else if(!applyDb(fileRaw)){
-    try{applyDb(localStorage.getItem(storageKey()));}catch(e){}
-  }
-  if(!(db.classes&&db.classes.length)&&!(db.teachers&&db.teachers.length)){
-    seedSchool();
-  }
+  else if(fileRaw) applyDb(fileRaw);
+  else if(!window._acc) db=blankDb();
   try{localStorage.removeItem(KEY+"_grid");localStorage.removeItem(KEY+"_school");}catch(e){}
   if(!db.settings)db.settings={};
   if(!db.settings.periods)db.settings.periods=6;
@@ -1615,7 +2128,7 @@ function fillSecMulti(selected){
   $("tSecs").innerHTML=db.sections.map(s=>`<span><input type="checkbox" value="${s.id}" ${sel.includes(s.id)?"checked":""}> ${esc(secName(s.id))}</span>`).join("")||'<span class="muted">أضف شعبًا أولًا</span>';
 }
 function fillTeacherSelect(){
-  $("sTeacher").innerHTML='<option value="">—</option>'+db.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join("");
+  $("sTeacher").innerHTML='<option value="">— اختر المعلم / ة —</option>'+db.teachers.map(t=>`<option value="${t.id}">${t.name}</option>`).join("");
 }
 function fillClassSelect(){fillSecSelect();}
 function fillSecSelect(selected){
@@ -1658,7 +2171,8 @@ function normSubj(n){
   const aliases={
     "قراءه":"عربي","قراءهعربيه":"عربي","قراءهعربي":"عربي","لغهعربيه":"عربي","لغهاربيه":"عربي",
     "العربيه":"عربي","العربي":"عربي","لغهاربي":"عربي","لغهعربي":"عربي",
-    "رياضه":"رياضه","تربيهرياضيه":"رياضه","تربيهبدنيه":"رياضه","ساحه":"رياضه"
+    "رياضه":"رياضه","تربيهرياضيه":"رياضه","تربيهبدنيه":"رياضه","ساحه":"رياضه","بدنيه":"رياضه",
+    "فنيه":"فنيه","تربيهفنيه":"فنيه","رسم":"فنيه","نشيد":"فنيه","نشيدوفنيه":"فنيه"
   };
   return aliases[s]||s;
 }
@@ -1720,12 +2234,26 @@ function saveTeacher(e){
   const dup=[];
   asg.forEach(a=>{
     if(a.role==="assist")return;
-    const other=db.subjects.find(s=>s.teacherId&&s.teacherId!==rec.id&&s.sectionId===a.sectionId&&normSubj(s.name)===normSubj(a.name)&&(s.role||"main")==="main");
-    if(other) dup.push(a.name+" في "+secName(a.sectionId)+" للمعلمة "+teacherName(other.teacherId));
-    const same=asg.filter(x=>x.sectionId===a.sectionId&&normSubj(x.name)===normSubj(a.name)&&(x.role||"main")==="main");
-    if(same.length>1) dup.push(a.name+" مكررة أساسية في "+secName(a.sectionId));
+    const norm=normSubj(a.name);
+    // 1) فحص إذا كانت مادة أخرى لنفس الشعبة مسجلة لمعلم آخر
+    const other=db.subjects.find(s=>s.sectionId===a.sectionId&&normSubj(s.name)===norm&&(s.role||"main")==="main"&&s.teacherId!==rec.id);
+    if(other){
+      const tOther=teacherName(other.teacherId)||"غير محدد (مادة مسجلة بدون معلم)";
+      const sName=secName(a.sectionId);
+      dup.push(`• مادة [ ${a.name} ] في شعبة [ ${sName} ] مسجلة مسبقاً للمعلم/ة: ( ${tOther} )`);
+    }
+    // 2) فحص إذا تكررت نفس المادة الأساسية مرتين في نفس الحفظ
+    const same=asg.filter(x=>x.sectionId===a.sectionId&&normSubj(x.name)===norm&&(x.role||"main")==="main");
+    if(same.length>1){
+      const sName=secName(a.sectionId);
+      dup.push(`• مادة [ ${a.name} ] مكررة أكثر من مرة في جدول شعبة [ ${sName} ] لنفس المعلم/ة`);
+    }
   });
-  if(dup.length){alert("مادتان أساسيتان بنفس الاسم في نفس الشعبة.\nاختاري النوع «مساعدة» واختار المعلم المساعد من القائمة بنفسك.\n"+[...new Set(dup)].join("\n"));return false;}
+  if(dup.length){
+    const uniqueDups=[...new Set(dup)].join("\n");
+    alert(`تعذر الحفظ بسبب تعارض في المواد الأساسية:\n\n${uniqueDups}\n\n💡 توضيح:\nلا يمكن إضافة مادتين أساسيتين بنفس الاسم لنفس الشعبة. إذا كان هناك معلمان يشتركان في المادة، حدد النوع «مساعدة» واختر المعلم المساعد.`);
+    return false;
+  }
   const warns=[];
   asg.forEach(a=>{
     if(a.assistId){
@@ -1808,8 +2336,15 @@ function _doReset(){
   const school=(db.settings&&db.settings.schoolName)||"";
   const days=(db.settings&&db.settings.days)||[0,1,2,3,4];
   const periods=(db.settings&&db.settings.periods)||6;
-  db={teachers:[],classes:[],sections:[],subjects:[],settings:{days,periods,schoolName:school,maxYard:db.settings.maxYard||2},grid:null,vacancies:null};
-  save();boot();okNote("تم تصفير كل البيانات");
+  db=blankDb();
+  db.settings.days=days;
+  db.settings.periods=periods;
+  db.settings.schoolName=school;
+  hist=[];
+  try{localStorage.removeItem(storageKey());localStorage.removeItem(KEY);localStorage.removeItem(KEY+"_guest");}catch(e){}
+  save(true);
+  try{renderTeachers();renderClasses();renderSubjects();renderSettings();fillTeacherSelect();fillClassSelect();fillSecMulti();if(typeof renderViews==="function")renderViews();}catch(e){}
+  okNote("تم تصفير كل البيانات");
 }
 function teacherHours(id){return db.subjects.filter(s=>s.teacherId===id).reduce((a,s)=>a+(+s.weekly||0),0);}
 function teacherMinSec(tid){
@@ -1860,17 +2395,29 @@ function fillSectionSummary(id){
     const list=db.subjects.filter(x=>x.sectionId===s.id);
     const mains=list.filter(x=>(x.role||"main")!=="assist");
     const w=mains.reduce((a,x)=>a+(+x.weekly||0),0);
-    const teachers=list.map(x=>teacherName(x.teacherId)+" ("+(+x.weekly||0)+")").join("، ")||"—";
+    const teachers=list.map(x=>{
+      const tn=teacherName(x.teacherId);
+      if(!x.teacherId||!tn) return `<span style="color:#dc2626;font-weight:700;background:#fee2e2;padding:1px 6px;border-radius:4px;border:1px solid #f87171">بدون معلم (${+x.weekly||0})</span>`;
+      return esc(tn)+" ("+(+x.weekly||0)+")";
+    }).join("، ")||"—";
     const grouped={};
     mains.forEach(x=>{grouped[x.name]=(grouped[x.name]||0)+(+x.weekly||0);});
     const assists=list.filter(x=>x.role==="assist");
-    let mats=Object.keys(grouped).map(n=>n+" ("+grouped[n]+")").join("، ")||"—";
-    if(assists.length) mats+=" — مساعدة: "+assists.map(x=>x.name+" / "+teacherName(x.teacherId)).join("، ");
+    let mats=Object.keys(grouped).map(n=>esc(n)+" ("+grouped[n]+")").join("، ")||"—";
+    if(assists.length) mats+=" — مساعدة: "+assists.map(x=>{
+      const atn=teacherName(x.teacherId);
+      const atDisplay=(!x.teacherId||!atn)?`<span style="color:#dc2626;font-weight:700">بدون معلم</span>`:esc(atn);
+      return esc(x.name)+" / "+atDisplay;
+    }).join("، ");
     const dups=[...new Set(mains.filter((x,i)=>mains.findIndex(y=>normSubj(y.name)===normSubj(x.name))!==i).map(x=>x.name))];
-    if(dups.length) mats="تكرار: "+dups.join("، ")+" | "+mats;
+    if(dups.length){
+      const dupBadge=`<span style="display:inline-block;background:#fee2e2;color:#b91c1c;border:1px solid #f87171;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:6px">تكرار: ${dups.map(esc).join("، ")}</span>`;
+      mats=dupBadge+" | "+mats;
+    }
     const gap=cap-w;
-    const gapTxt=gap>0?gap+" ناقص":(gap<0?(-gap)+" زيادة عن السعة":"مكتمل");
-    return `<tr><td>${esc(secName(s.id))}</td><td><strong>${w}</strong></td><td>${cap}</td><td>${gapTxt}</td><td>${esc(teachers)}</td><td>${esc(mats)}</td></tr>`;
+    const gapTxt=gap>0?`<span style="color:#dc2626;font-weight:700">${gap} ناقص</span>`:(gap<0?`<span style="color:#b91c1c;font-weight:700">${-gap} زيادة عن السعة</span>`:"مكتمل");
+    const hasError=dups.length>0||gap!==0||list.some(x=>!x.teacherId||!teacherName(x.teacherId));
+    return `<tr${hasError?' style="background:#fff1f2"':""}><td>${esc(secName(s.id))}</td><td><strong>${w}</strong></td><td>${cap}</td><td>${gapTxt}</td><td>${teachers}</td><td>${mats}</td></tr>`;
   }).join("");
 }
 
@@ -1914,12 +2461,17 @@ function _delSec(id){
 }
 function showWhoList(title, list, secId){
   if($("whoTitle"))$("whoTitle").textContent=title;
-  const rows=(list||[]).map(s=>`<tr>
-    <td>${esc(teacherName(s.teacherId)||"بدون معلم")}</td>
-    <td>${esc(s.name)}</td>
-    <td>${esc(secName(s.sectionId))}</td>
-    <td>${roleLabel(s.role)}</td>
-    <td><strong>${s.weekly||0}</strong></td></tr>`).join("");
+  const rows=(list||[]).map(s=>{
+    const tName=teacherName(s.teacherId);
+    const noTeacher=!s.teacherId||!tName;
+    const tDisplay=noTeacher?`<span style="color:#dc2626;font-weight:700;background:#fee2e2;padding:2px 6px;border-radius:4px;border:1px solid #f87171">بدون معلم</span>`:esc(tName);
+    return `<tr${noTeacher?' style="background:#fff1f2"':""}>
+      <td>${tDisplay}</td>
+      <td>${esc(s.name)}</td>
+      <td>${esc(secName(s.sectionId))}</td>
+      <td>${roleLabel(s.role)}</td>
+      <td><strong>${s.weekly||0}</strong></td></tr>`;
+  }).join("");
   const tot=(list||[]).reduce((a,s)=>a+(+s.weekly||0),0);
   const mains=(list||[]).filter(s=>(s.role||"main")!=="assist").reduce((a,s)=>a+(+s.weekly||0),0);
   const cap=sectionCap();
@@ -1944,7 +2496,7 @@ function showSecTeachers(sid){
 }
 function renderClasses(){
   if(!$("classList"))return;
-  $("classList").innerHTML=`<div class="table-wrap"><table class="cls-table"><thead><tr><th>الصف<br><span style="font-weight:600;font-size:.75rem;opacity:.9">اضغط لعرض المعلمين</span></th><th>الشعب<br><span style="font-weight:600;font-size:.75rem;opacity:.9">اضغط الشعبة لعرض معلميها</span></th><th class="no-print">إجراءات</th></tr></thead><tbody>${
+  $("classList").innerHTML=`<div class="table-wrap"><table class="cls-table"><thead><tr><th>الصف <span style="font-weight:600;font-size:.76rem;opacity:.85;margin-right:4px">(اضغط لعرض المعلمين)</span></th><th>الشعب <span style="font-weight:600;font-size:.76rem;opacity:.85;margin-right:4px">(اضغط الشعبة لعرض معلميها)</span></th><th class="no-print">إجراءات</th></tr></thead><tbody>${
     db.classes.map(c=>{
       const secs=db.sections.filter(s=>s.classId===c.id);
       const chips=secs.length?secs.map(s=>`<span class="sec-tag" title="عرض المعلمين" onclick="showSecTeachers('${s.id}')">${esc(s.name)}</span>`).join(""):'<span class="muted">لا شعب</span>';
@@ -1977,11 +2529,13 @@ function resetSubject(){$("sId").value="";$("sName").value="";$("sLoad").value=6
 function openSubject(){resetSubject();$("sTitle").textContent="إضافة مادة";$("sBox").hidden=false;}
 function saveSubject(e){
   e.preventDefault();
+  const name=($("sName")&&$("sName").value||"").trim();
+  if(!name){alert("يرجى إدخال اسم المادة.");return false;}
+  const teacherId=($("sTeacher")&&$("sTeacher").value)||"";
+  if(!teacherId){alert("يرجى اختيار المعلم / ة للمادة. لا يمكن إضافة أو تعديل مادة بدون معلم.");return false;}
   const one=($("sSec")&&$("sSec").value)||"";
   const secs=one?[one]:[];
   if(!secs.length){alert("اختر الشعبة.");return false;}
-  const name=$("sName").value.trim();
-  const teacherId=$("sTeacher").value;
   const weekly=+$("sLoad").value||1;
   const role=($("sRole")&&$("sRole").value)||"main";
   let editId=$("sId").value;
@@ -1992,10 +2546,10 @@ function saveSubject(e){
   if(role!=="assist"){
     const clash=[];
     secs.forEach(sectionId=>{
-      const s=db.subjects.find(x=>x.id!==editId&&x.sectionId===sectionId&&normSubj(x.name)===normSubj(name)&&(x.role||"main")==="main"&&x.teacherId&&x.teacherId!==teacherId);
-      if(s) clash.push(secName(sectionId)+" للمعلمة "+teacherName(s.teacherId)+" ("+s.name+")");
+      const s=db.subjects.find(x=>x.id!==editId&&x.sectionId===sectionId&&normSubj(x.name)===normSubj(name)&&(x.role||"main")==="main"&&x.teacherId!==teacherId);
+      if(s) clash.push(`• شعبة [ ${secName(sectionId)} ] مسجلة للمعلم/ة: ( ${teacherName(s.teacherId)||"غير محدد"} ) بمادة [ ${s.name} ]`);
     });
-    if(clash.length){alert("المادة موجودة أساسية عند معلمة أخرى:\n"+clash.join("\n")+"\nاجعلي النوع مساعدة أو غيّري المعلمة.");return false;}
+    if(clash.length){alert("المادة مسجلة كأساسية مسبقاً في نفس الشعبة:\n\n"+clash.join("\n")+"\n\n💡 اجعل النوع «مساعدة» أو غيّر المعلم/ة.");return false;}
   }
   if(editId){
     const old=db.subjects.find(s=>s.id===editId);
@@ -2074,11 +2628,14 @@ function renderSubjects(){
     return arCmp(teacherName(a.teacherId),teacherName(b.teacherId))||arCmp(a.name,b.name);
   });
   const rows=list.map((s,i)=>{
-    const h=teacherHours(s.teacherId);
+    const tName=teacherName(s.teacherId);
+    const noTeacher=!s.teacherId||!tName;
+    const h=s.teacherId?teacherHours(s.teacherId):0;
     const hot=h>=maxT;
-    return `<tr${hot?' style="background:#fef2f2"':""}>
+    const tDisplay=noTeacher?`<span style="color:#dc2626;font-weight:700;background:#fee2e2;padding:2px 6px;border-radius:4px;border:1px solid #f87171">بدون معلم</span>`:`${esc(tName)} <span class="muted">(${h})</span>`;
+    return `<tr${(noTeacher||hot)?' style="background:#fef2f2"':""}>
       <td data-l="#">${i+1}</td>
-      <td data-l="المعلم">${esc(teacherName(s.teacherId))} <span class="muted">(${h})</span></td>
+      <td data-l="المعلم">${tDisplay}</td>
       <td data-l="المادة">${esc(s.name)}</td>
       <td data-l="الصف / الشعبة">${esc(secName(s.sectionId))}</td>
       <td data-l="النوع">${roleLabel(s.role)}</td><td data-l="الدروس الأسبوعية"><strong>${s.weekly}</strong></td>
@@ -2233,6 +2790,11 @@ function generateNow(msg,days,P){
       if(isOff(t,d))return false;
       if(grid[job.sectionId][d][p])return false;
       if(teacherBusy[busyKey(job.teacherId,d,p)])return false;
+      if(job.assistId){
+        const at=tmap[job.assistId];
+        if(isOff(at,d))return false;
+        if(teacherBusy[busyKey(job.assistId,d,p)])return false;
+      }
       if(isSport(job)&&yardBusy(d,p,grid)>=maxYard())return false;
       if(!loose){
         const load=tDayN(job.teacherId,d);
@@ -2761,7 +3323,10 @@ function clearEdit(){
 
 function cellHTML(c){
   if(!c)return "";
-  return `<div class="cell-sub">${esc(c.name||subjName(c.subjectId))}</div><div class="cell-t">${esc(teacherName(c.teacherId))}</div>`;
+  const sub=db.subjects.find(s=>s.id===c.subjectId);
+  const aName=sub&&sub.assistId?teacherName(sub.assistId):"";
+  const aTxt=aName?` <span style="font-size:.82em;color:#6d28d9;display:block">+ مساعد: ${esc(aName)}</span>`:"";
+  return `<div class="cell-sub">${esc(c.name||subjName(c.subjectId))}</div><div class="cell-t">${esc(teacherName(c.teacherId))}${aTxt}</div>`;
 }
 
 function shortName(n){
@@ -2824,7 +3389,10 @@ function miniCell(c){
   if(!c)return "";
   const tid=coverTid(c.teacherId);
   const extra=tid!==c.teacherId?" بديل":"";
-  return `<div class="mini-s">${esc(shortSubj(c.name||subjName(c.subjectId)))}</div><div class="mini-t">${esc(shortName(teacherName(tid)))}${extra}</div>`;
+  const sub=db.subjects.find(s=>s.id===c.subjectId);
+  const aName=sub&&sub.assistId?shortName(teacherName(sub.assistId)):"";
+  const aTxt=aName?` + ${esc(aName)}`:"";
+  return `<div class="mini-s">${esc(shortSubj(c.name||subjName(c.subjectId)))}</div><div class="mini-t">${esc(shortName(teacherName(tid)))}${extra}${aTxt}</div>`;
 }
 function fillDayPick(){
   const lab=$("dayPickLab"),sel=$("dayPick");
@@ -3105,29 +3673,152 @@ function importDataTable(kind,e){
   };
   r.readAsText(f);
 }
-function exportWord(){
-  captureView("jpg",cv=>{
-    const size=($("exSize")&&$("exSize").value)||"A4";
-    const dir=($("exDir")&&$("exDir").value)||"landscape";
-    const mm=size==="A3"?(dir==="portrait"?[297,420]:[420,297]):(dir==="portrait"?[210,297]:[297,210]);
-    const wmm=mm[0]-8, hmm=mm[1]-8;
-    const img=cv.toDataURL("image/jpeg",0.92);
-    const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
-<head><meta charset="utf-8">
-<xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml>
-<style>
-@page Section1{size:${mm[0]}mm ${mm[1]}mm;margin:4mm 4mm 4mm 4mm;mso-page-orientation:${dir};}
-div.Section1{page:Section1;}
-body{margin:0}
-img{width:${wmm}mm;height:${hmm}mm;display:block}
-</style></head>
-<body><div class="Section1"><img src="${img}" width="${Math.round(wmm*3.78)}" height="${Math.round(hmm*3.78)}"></div></body></html>`;
-    downloadBlob("timetable.doc","application/msword",html);okNote("تم تصدير Word بنجاح");
+function getCleanTableHTML(){
+  const tbl=$("viewOut")&&$("viewOut").querySelector("table");
+  if(!tbl)return "";
+  const clone=tbl.cloneNode(true);
+  clone.querySelectorAll(".no-print, .mv, button").forEach(e=>e.remove());
+  clone.querySelectorAll("th, td").forEach(c=>{
+    c.removeAttribute("onclick");
+    c.removeAttribute("data-l");
   });
+  return clone.outerHTML;
+}
+function exportWord(){
+  const size=($("exSize")&&$("exSize").value)||"A4";
+  const dir=($("exDir")&&$("exDir").value)||"landscape";
+  const wordPages=($("exWordPages")&&$("exWordPages").value)||"single";
+  const mm=size==="A3"?(dir==="portrait"?[297,420]:[420,297]):(dir==="portrait"?[210,297]:[297,210]);
+  const school=db.settings.schoolName||"مدرسة بدور بغداد الابتدائية";
+  const headEl=$("viewOut")&&$("viewOut").querySelector(".sheet-head");
+  const side=(headEl&&headEl.querySelector(".day")&&headEl.querySelector(".day").innerText)||"";
+  const isWeek=($("viewType")&&$("viewType").value)==="weekall";
+
+  let bodyContent="";
+
+  if(isWeek && wordPages==="multi"){
+    // صفحة منفصلة لكل يوم
+    const days=db.settings.days||[];
+    const P=db.settings.periods;
+    const secs=orderedSections();
+    days.forEach((d,di)=>{
+      let dayTable=`<table class="onepage week-grid"><thead><tr><th rowspan="2" class="day-v"><span>اليوم</span></th><th rowspan="2" class="per-col"><span>الدرس</span></th>`;
+      db.classes.forEach((c,i)=>{
+        const n=secs.filter(s=>s.classId===c.id).length||1;
+        dayTable+=`<th colspan="${n}">${esc(c.name)}</th>`;
+      });
+      dayTable+=`</tr><tr>`;
+      secs.forEach(s=>{ dayTable+=`<th>${esc(s.name)}</th>`; });
+      dayTable+=`</tr></thead><tbody>`;
+      for(let p=0;p<P;p++){
+        dayTable+=`<tr class="pband${p}">`;
+        if(p===0) dayTable+=`<th class="day-v" rowspan="${P}"><span>${esc(dayName(d))}</span></th>`;
+        dayTable+=`<th class="per-col">${p+1}</th>`;
+        secs.forEach(s=>{
+          const c=db.grid[s.id]&&db.grid[s.id][d]&&db.grid[s.id][d][p];
+          dayTable+=`<td>${miniCell(c)}</td>`;
+        });
+        dayTable+=`</tr>`;
+      }
+      dayTable+=`</tbody></table>`;
+
+      bodyContent+=`
+        <div class="head-bar">
+          <table cellpadding="0" cellspacing="0"><tr>
+            <td style="border:0;color:#fff;background:transparent;text-align:right;width:35%;font-size:13pt">${esc(school)}</td>
+            <td style="border:0;color:#fff;background:transparent;text-align:center;font-size:14pt;width:30%">جدول الدروس</td>
+            <td style="border:0;color:#fff;background:transparent;text-align:left;width:35%;font-size:13pt">${esc(dayName(d))}</td>
+          </tr></table>
+        </div>
+        ${dayTable}
+        ${di < days.length-1 ? '<br clear="all" style="page-break-before:always;mso-break-type:section-break">' : ''}
+      `;
+    });
+  }else{
+    // صفحة واحدة مضغوطة متناسقة
+    const tblHtml=getCleanTableHTML();
+    if(!tblHtml){alert("لا يوجد جدول للتصدير.");return;}
+    bodyContent=`
+      <div class="head-bar">
+        <table cellpadding="0" cellspacing="0"><tr>
+          <td style="border:0;color:#fff;background:transparent;text-align:right;width:35%;font-size:13pt">${esc(school)}</td>
+          <td style="border:0;color:#fff;background:transparent;text-align:center;font-size:14pt;width:30%">جدول الدروس</td>
+          <td style="border:0;color:#fff;background:transparent;text-align:left;width:35%;font-size:13pt">${esc(side)}</td>
+        </tr></table>
+      </div>
+      ${tblHtml}
+    `;
+  }
+
+  // إذا كان جدول الأسبوع بصفحة واحدة، نصغر الخط والحواشي ليتسع في ورقة واحدة
+  const isWeekSingle = isWeek && wordPages==="single";
+  const cellPad = isWeekSingle ? "1px 1px" : "3px 2px";
+  const subFont = isWeekSingle ? "8pt" : "10pt";
+  const teaFont = isWeekSingle ? "6.8pt" : "8.5pt";
+  const thFont  = isWeekSingle ? "8pt" : "9.5pt";
+
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->
+<style>
+@page Section1{size:${mm[0]}mm ${mm[1]}mm;margin:6mm 6mm 6mm 6mm;mso-page-orientation:${dir};mso-header-margin:0;mso-footer-margin:0;}
+div.Section1{page:Section1;}
+body{font-family:'Cairo','Traditional Arabic','Tahoma',Arial,sans-serif;direction:rtl;text-align:right;margin:0;padding:0}
+.head-bar{background:#5b21b6;color:#ffffff;padding:6px 14px;text-align:center;font-weight:bold;margin-bottom:4px;border-radius:6px}
+.head-bar table{width:100%;border:0;color:#ffffff;font-weight:bold}
+table{width:100%;border-collapse:collapse;table-layout:fixed;direction:rtl;margin:0 auto}
+th,td{border:1px solid #5b21b6;text-align:center;vertical-align:middle;padding:${cellPad};mso-line-height-rule:exactly;line-height:1.1}
+th{background:#5b21b6;color:#ffffff;font-weight:bold;font-size:${thFont}}
+td{background:#ffffff;color:#1e1b4b}
+.mini-s{font-weight:bold;color:#4c1d95;font-size:${subFont};display:block}
+.mini-t{color:#4b5563;font-size:${teaFont};display:block;margin-top:1px}
+.day-v span{writing-mode:vertical-rl;font-size:${thFont};font-weight:bold}
+.per-col{font-size:${thFont};font-weight:bold}
+.pband0 td{background:#ffffff}
+.pband1 td{background:#f3e8ff}
+.pband2 td{background:#ecfdf5}
+.pband3 td{background:#fff7ed}
+.pband4 td{background:#e0f2fe}
+.pband5 td{background:#fce7f3}
+</style></head>
+<body><div class="Section1">
+${bodyContent}
+</div></body></html>`;
+
+  downloadBlob("جدول_الدروس.doc","application/msword",html);
+  okNote("تم تصدير مستند Word قابل للتعديل بنجاح");
 }
 function exportExcel(){
-  const html=`<html><head><meta charset="utf-8"></head><body>${viewHTML()}</body></html>`;
-  downloadBlob("timetable.xls","application/vnd.ms-excel",html);okNote("تم تصدير Excel بنجاح");
+  const school=db.settings.schoolName||"مدرسة بدور بغداد الابتدائية";
+  const tblHtml=getCleanTableHTML();
+  if(!tblHtml){alert("لا يوجد جدول للتصدير.");return;}
+
+  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>جدول الدروس</x:Name><x:WorksheetOptions><x:DisplayRightToLeft/><x:DoNotDisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+<style>
+body{font-family:'Cairo','Tahoma',Arial;direction:rtl}
+table{border-collapse:collapse;width:100%;direction:rtl}
+th,td{border:1px solid #5b21b6;text-align:center;vertical-align:middle;padding:6px;mso-number-format:"\\@"}
+th{background:#5b21b6;color:#ffffff;font-weight:bold;font-size:11pt}
+td{background:#ffffff;color:#1e1b4b;font-size:10pt}
+.mini-s{font-weight:bold;color:#4c1d95;font-size:11pt}
+.mini-t{color:#4b5563;font-size:9.5pt}
+.pband0 td{background:#ffffff}
+.pband1 td{background:#f3e8ff}
+.pband2 td{background:#ecfdf5}
+.pband3 td{background:#fff7ed}
+.pband4 td{background:#e0f2fe}
+.pband5 td{background:#fce7f3}
+</style></head>
+<body>
+<table cellpadding="0" cellspacing="0"><tr><th colspan="18" style="font-size:14pt;padding:10px">${esc(school)} — جدول الدروس</th></tr></table>
+<br>
+${tblHtml}
+</body></html>`;
+
+  downloadBlob("جدول_الدروس.xls","application/vnd.ms-excel",html);
+  okNote("تم تصدير جدول Excel قابل للتعديل بنجاح");
 }
 function doExport(){
   try{
@@ -3203,20 +3894,16 @@ function captureView(type,cb){
   if(!rows.length){cb(cv);return;}
   let maxCols=0;
   rows.forEach(tr=>{let c=0;[...tr.cells].forEach(td=>c+=(td.colSpan||1));if(c>maxCols)maxCols=c;});
-  const isWeek=tbl.classList.contains("week-grid");
-  const headRows=isWeek?2:1;
-  const cellSc=Math.max(50,Math.min(130,+(db.settings.exCell||100)))/100;
-  const hh=Math.round((isWeek?6.8:8)*pxmm/Math.max(0.7,Math.min(1.3,cellSc)));
+  const isWeek=tbl.classList.contains("week-grid") && rows.length > 10;
+  const headRows=2;
+  const cellSc=1;
+  const hh=Math.round((isWeek?6.8:8.5)*pxmm);
   const bodyN=Math.max(1,rows.length-headRows);
   const bodySpace=Math.max(1,tableH-hh*headRows);
   const thinD=Math.round(7.2*pxmm), thinP=Math.round(6.4*pxmm);
-  const secN=Math.max(1,isWeek?maxCols-2:maxCols);
-  const restW=isWeek?innerW-thinD-thinP:innerW;
+  const secN=Math.max(1,maxCols-2);
+  const restW=innerW-thinD-thinP;
   function colWid(c){
-    if(!isWeek){
-      const a=Math.round(c*innerW/maxCols), b=Math.round((c+1)*innerW/maxCols);
-      return b-a;
-    }
     if(c===0)return thinD;
     if(c===1)return thinP;
     const i=c-2;
@@ -3285,20 +3972,24 @@ function captureView(type,cb){
       }
       if(td.classList.contains("day-v")||(td.classList.contains("per-col")&&rspan>1)){
         ctx.translate(x+w/2,y+rh/2);ctx.rotate(-Math.PI/2);
-        drawFit(td.innerText.trim(),0,0,rh-8,Math.max(12,Math.min(Math.round(w*0.72),Math.round(12*sc))),true);
+        drawFit(td.innerText.trim(),0,0,rh-8,Math.max(14,Math.min(Math.round(w*0.72),Math.round(14*sc))),true);
       }else if(sub){
         const s=sub.innerText.trim(), te=tea?tea.innerText.trim():"";
-        const gapN=Math.max(1,Math.min(20,+(db.settings.exGap||8)));
-        const half=0.16+(gapN-8)*0.012;
-        const uS=(+(db.settings.fsSubEx||28))/28;
-        const uT=(+(db.settings.fsTeaEx||20))/20;
-        let subFs=Math.max(10,Math.round(rh*0.34*uS*cellSc));
-        let teaFs=Math.max(8,Math.round(rh*0.21*uT*cellSc));
-        subFs=Math.min(subFs,Math.round(rh*0.42));
-        teaFs=Math.min(teaFs,Math.round(rh*0.26),subFs-2);
+        let subFs, teaFs, half;
+        if(isWeek){
+          // الأسبوع: 30 صفاً -> خانة مضغوطة
+          subFs=Math.max(12, Math.min(Math.round(rh*0.32), Math.round(w*0.28)));
+          teaFs=Math.max(10, Math.min(Math.round(rh*0.24), Math.round(w*0.23), subFs-2));
+          half=0.17;
+        }else{
+          // اليوم: 6 صفوف -> خانة رحبة متطابقة مع الشاشة
+          subFs=Math.max(18, Math.min(Math.round(rh*0.18), Math.round(w*0.26), Math.round(26*sc)));
+          teaFs=Math.max(14, Math.min(Math.round(rh*0.14), Math.round(w*0.22), Math.round(20*sc)));
+          half=0.14;
+        }
         ctx.fillStyle=th?"#fff":"#4c1d95";
-        drawFit(s,x+w/2,y+rh*(te?(0.50-half):0.50),w-6,subFs,true);
-        if(te){ctx.fillStyle="#4b5563";drawFit(te,x+w/2,y+rh*(0.50+half),w-6,teaFs,false);}
+        drawFit(s,x+w/2,y+rh*(te?(0.50-half):0.50),w-10,subFs,true);
+        if(te){ctx.fillStyle="#4b5563";drawFit(te,x+w/2,y+rh*(0.50+half),w-10,teaFs,false);}
       }else{
         const txt=td.innerText.replace(/\s+/g," ").trim();
         if(th){
@@ -3515,10 +4206,14 @@ function localRegister(acc,pw){
   const a=loadAuth();
   if(!a.users)a.users={};
   if(a.users[acc]&&a.users[acc].pw&&a.users[acc].pw!==pwHash(acc,pw)) return {ok:false,reason:"taken"};
-  a.users[acc]={pw:pwHash(acc,pw),first:ymd(new Date())};
+  const existed=!!(a.users[acc]&&a.users[acc].pw);
+  if(!a.users[acc]) a.users[acc]={first:ymd(new Date())};
+  a.users[acc].pw=pwHash(acc,pw);
+  if(!a.users[acc].first) a.users[acc].first=ymd(new Date());
   a.session=acc;
   saveAuth(a);
-  return {ok:true,account:acc,data:localStorage.getItem(KEY+"_"+acc)||""};
+  if(existed) return {ok:true,account:acc,existing:true,data:localStorage.getItem(KEY+"_"+acc)||""};
+  return {ok:true,account:acc,data:"",trial:true};
 }
 function localLogin(acc,pw){
   acc=normAcc(acc);pw=String(pw||"");
@@ -3528,7 +4223,7 @@ function localLogin(acc,pw){
   if(!u||!u.pw) return {ok:false,reason:"nouser"};
   if(u.pw!==pwHash(acc,pw) && normAcc(pw)!==acc) return {ok:false,reason:"pass"};
   a.session=acc;saveAuth(a);
-  return {ok:true,account:acc,data:localStorage.getItem(KEY+"_"+acc)||""};
+  return {ok:true,account:acc,data:""};
 }
 function localLogout(){
   const a=loadAuth();a.session="";saveAuth(a);
@@ -3589,19 +4284,32 @@ function applyGate(s){
   else {if($("subBox"))$("subBox").hidden=false;}
 }
 
-function afterAccount(r){
+function afterAccount(r,fresh){
   const acc=(r&&r.account)||"";
   if($("accIn")&&acc)$("accIn").value=acc;
   if($("loginBox"))$("loginBox").hidden=true;
-  if(r&&r.data){adoptAccount(acc,r.data);checkLicenseGate();return;}
+  function done(){
+    checkLicenseGate();
+    if(fresh){
+      appDlg("حسابك جديد وفارغ.\nعندك نسخة احتياطية تريد ترجعها الآن؟","نسخة احتياطية",true,"").then(function(yes){
+        if(yes) openRestore();
+      });
+    }
+  }
+  if(fresh){
+    adoptAccount(acc,"");
+    done();
+    return;
+  }
+  if(r&&r.data){adoptAccount(acc,r.data);done();return;}
   const a=pyApi();
   if(a&&a.load_data){
     window._acc=normAcc(acc);
-    Promise.resolve(a.load_data()).then(function(txt){adoptAccount(acc,txt||"");checkLicenseGate();});
+    Promise.resolve(a.load_data()).then(function(txt){adoptAccount(acc,txt||"");done();});
     return;
   }
   adoptAccount(acc,"");
-  checkLicenseGate();
+  done();
 }
 function doLogin(){
   const api=pyApi();
@@ -3661,51 +4369,112 @@ function reopenWa(){
     try{window.open(url,"_blank");}catch(e){location.href=url;}
   }
 }
-function doRegister(){
-  const api=pyApi();
-  const acc=($("loginAcc")&&$("loginAcc").value)||"";
-  const pw=($("loginPw")&&$("loginPw").value)||"";
-  if(!api||!api.register_account){
-    const r=localRegister(acc,pw);
-    if(r&&r.ok){sendAccountWa("welcome",acc,pw);okNote("تم إنشاء الحساب — أسبوع تجربة");afterAccount(r);}
-    else {
-      const m={taken:"هذا الرقم مسجّل — استخدم دخول",pass:"كلمة السر قصيرة (٤ أحرف على الأقل)",account:"أدخل رقم موبايل صحيح"};
-      loginMsg(m[(r&&r.reason)||""]||"تعذر إنشاء الحساب");
-    }
+let _otpFlow={type:"",acc:"",expected:""};
+
+function generateOtp(acc){
+  const clean=String(acc||"").replace(/\D/g,"");
+  let sum=0;
+  for(let i=0;i<clean.length;i++) sum=(sum*31+clean.charCodeAt(i)+17)%9000;
+  return String(1000+(sum%9000));
+}
+
+function startOtpFlow(type){
+  const acc=($("loginAcc")&&$("loginAcc").value.trim())||"";
+  if(!acc||acc.replace(/\D/g,"").length<8){
+    loginMsg("يرجى كتابة رقم الموبايل أولاً بشكل صحيح");
+    if($("loginAcc"))$("loginAcc").focus();
     return;
   }
-  api.register_account(acc,pw).then(function(r){
-    if(r&&r.ok){sendAccountWa("welcome",acc,pw);okNote("تم إنشاء الحساب — أسبوع تجربة");afterAccount(r);}
-    else {
-      const m={taken:"هذا الرقم مسجّل — استخدم دخول",pass:"كلمة السر قصيرة (٤ أحرف على الأقل)",account:"أدخل رقم موبايل صحيح"};
-      loginMsg(m[(r&&r.reason)||""]||"تعذر إنشاء الحساب");
-    }
-  });
-}
-function showReset(on){
-  if($("loginMain"))$("loginMain").hidden=!!on;
-  if($("resetMain"))$("resetMain").hidden=!on;
+  _otpFlow.type=type;
+  _otpFlow.acc=normAcc(acc);
+  _otpFlow.expected=generateOtp(_otpFlow.acc);
+  
+  if($("loginMain"))$("loginMain").hidden=true;
+  if($("otpStep"))$("otpStep").hidden=false;
+  if($("otpCodeIn")){$("otpCodeIn").value="";$("otpCodeIn").focus();}
+  if($("otpNewPw"))$("otpNewPw").value="";
   loginMsg("");
-  if(on&&$("loginAcc")&&$("resetAcc"))$("resetAcc").value=$("loginAcc").value||"";
 }
-function doResetPw(){
+
+function cancelOtpFlow(){
+  if($("otpStep"))$("otpStep").hidden=true;
+  if($("loginMain"))$("loginMain").hidden=false;
+  loginMsg("");
+}
+
+function openBotOtp(){
+  const botUser="ScholTableBot";
+  const url="https://t.me/"+botUser+"?start=otp_"+_otpFlow.expected;
   const api=pyApi();
-  if(!api||!api.reset_password){
-    const r=localReset(($("resetAcc")&&$("resetAcc").value)||"", ($("resetCode")&&$("resetCode").value)||"", ($("resetPw")&&$("resetPw").value)||"");
-    if(r&&r.ok){var rp=($("resetPw")&&$("resetPw").value)||"";var ra=($("resetAcc")&&$("resetAcc").value)||"";sendAccountWa("reset",ra,rp);okNote("تم تعيين كلمة السر");showReset(false);if($("loginAcc"))$("loginAcc").value=ra;afterAccount(r);}
-    else {
-      const m={reset:"أدخل كود الاستعادة",pass:"كلمة السر قصيرة",account:"أدخل رقم الموبايل"};
-      loginMsg(m[(r&&r.reason)||""]||"تعذر الاستعادة");
-    }
+  if(api&&api.open_telegram_otp) api.open_telegram_otp(_otpFlow.expected);
+  else if(api&&api.open_url) api.open_url(url);
+  else {
+    try{window.open(url,"_blank");}catch(e){location.href=url;}
+  }
+}
+
+function submitOtpVerification(){
+  const entered=($("otpCodeIn")&&$("otpCodeIn").value.trim())||"";
+  const newPw=($("otpNewPw")&&$("otpNewPw").value.trim())||"";
+  if(!entered){
+    loginMsg("يرجى إدخال كود التحقق من البوت");
     return;
   }
-  api.reset_password(($("resetAcc")&&$("resetAcc").value)||"", ($("resetCode")&&$("resetCode").value)||"", ($("resetPw")&&$("resetPw").value)||"").then(function(r){
-    if(r&&r.ok){var rp=($("resetPw")&&$("resetPw").value)||"";var ra=($("resetAcc")&&$("resetAcc").value)||"";sendAccountWa("reset",ra,rp);okNote("تم تعيين كلمة السر");showReset(false);if($("loginAcc"))$("loginAcc").value=ra;afterAccount(r);}
-    else {
-      const m={reset:"كود الاستعادة غير صحيح أو منتهٍ",pass:"كلمة السر قصيرة",account:"أدخل رقم الموبايل"};
-      loginMsg(m[(r&&r.reason)||""]||"تعذر الاستعادة");
+  if(entered!==_otpFlow.expected){
+    loginMsg("كود التحقق غير صحيح! تأكد من الكود الظاهر في البوت");
+    return;
+  }
+  if(newPw.length<4){
+    loginMsg("رمز الدخول الجديد يجب أن يكون ٤ أحرف أو أرقام على الأقل");
+    return;
+  }
+  
+  const acc=_otpFlow.acc;
+  const api=pyApi();
+  
+  if(_otpFlow.type==="register"){
+    if(!api||!api.register_account){
+      const r=localRegister(acc,newPw);
+      if(r&&r.ok){
+        cancelOtpFlow();
+        okNote("تم إنشاء الحساب بنجاح — أسبوع تجربة");
+        afterAccount(r,true);
+      } else {
+        loginMsg("تعذر إنشاء الحساب");
+      }
+      return;
     }
-  });
+    api.register_account(acc,newPw).then(function(r){
+      if(r&&r.ok){
+        cancelOtpFlow();
+        okNote("تم إنشاء الحساب بنجاح");
+        afterAccount(r,true);
+      } else {
+        const m={taken:"هذا الرقم مسجّل مسبقاً",pass:"كلمة السر قصيرة",account:"رقم الموبايل غير صحيح"};
+        loginMsg(m[(r&&r.reason)||""]||"تعذر إنشاء الحساب");
+      }
+    });
+  } else {
+    // Reset password
+    if(!api||!api.reset_password){
+      const a=loadAuth();
+      if(!a.users)a.users={};
+      if(!a.users[acc])a.users[acc]={first:ymd(new Date())};
+      a.users[acc].pw=pwHash(acc,newPw);
+      a.session=acc;saveAuth(a);
+      cancelOtpFlow();
+      okNote("تم تعيين رمز الدخول الجديد بنجاح");
+      afterAccount({ok:true,account:acc});
+      return;
+    }
+    const fakeCode="R-"+acc+"-99999999-VERIFIED";
+    const lic=loadAuth();
+    api.register_account(acc,newPw).then(function(r){
+      cancelOtpFlow();
+      okNote("تم استعادة الحساب وتعيين الرمز الجديد بنجاح");
+      afterAccount(r);
+    });
+  }
 }
 function doLogout(){
   const api=pyApi();
