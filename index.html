@@ -4395,15 +4395,37 @@ function startOtpFlow(type){
     if($("loginAcc"))$("loginAcc").focus();
     return;
   }
-  _otpFlow.type=type;
-  _otpFlow.acc=normAcc(acc);
-  _otpFlow.expected=generateOtp(_otpFlow.acc);
-  
-  if($("loginMain"))$("loginMain").hidden=true;
-  if($("otpStep"))$("otpStep").hidden=false;
-  if($("otpCodeIn")){$("otpCodeIn").value="";$("otpCodeIn").focus();}
-  if($("otpNewPw"))$("otpNewPw").value="";
-  loginMsg("");
+  const cleanAcc=normAcc(acc);
+  const api=pyApi();
+
+  function proceed(){
+    _otpFlow.type=type;
+    _otpFlow.acc=cleanAcc;
+    _otpFlow.expected=generateOtp(_otpFlow.acc);
+    
+    if($("loginMain"))$("loginMain").hidden=true;
+    if($("otpStep"))$("otpStep").hidden=false;
+    if($("otpCodeIn")){$("otpCodeIn").value="";$("otpCodeIn").focus();}
+    if($("otpNewPw"))$("otpNewPw").value="";
+    loginMsg("");
+  }
+
+  // إذا كان يضغط على "إنشاء حساب جديد"، نتحقق أولاً هل الحساب مسجل بالفعل أم لا
+  if(type==="register"){
+    if(api&&api.check_account_status){
+      api.check_account_status(cleanAcc).then(function(r){
+        if(r&&r.exists){
+          loginMsg("⚠️ هذا الرقم مسجّل في النظام مسبقاً! يرجى إدخال الرمز والضغط على «دخول» أو استخدام «نسيت رمز الدخول»");
+        } else {
+          proceed();
+        }
+      }).catch(proceed);
+      return;
+    }
+  }
+
+  // في حالة استعادة الرمز أو عدم توفر الفحص السحابي المباشر
+  proceed();
 }
 
 function cancelOtpFlow(){
