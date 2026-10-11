@@ -850,6 +850,27 @@ td.clk:hover .mv button{opacity:.45}
         </div>
       </div>
 
+      <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:12px;border-radius:14px;margin-bottom:12px">
+        <span class="sec-label" style="color:#6b21a8;font-weight:800;font-size:.86rem;display:flex;align-items:center;gap:6px">
+          🏫 ربط فريق العمل / المعاونين بنفس الجدول
+        </span>
+        <p style="margin:4px 0 8px;font-size:.76rem;color:#581c87;line-height:1.4">
+          يمكن لأكثر من مستخدم (مدير / معاون) التعديل على نفس جدول المدرسة بحساباتهم الخاصة:
+        </p>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e9d5ff;padding:6px 12px;border-radius:10px;margin-bottom:8px">
+          <span style="font-size:.78rem;font-weight:700;color:#4c1d95">رمز مدرستك للمشاركة:</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <strong id="mySchoolCode" style="font-size:.95rem;color:#7c3aed;letter-spacing:1px;direction:ltr">SCH-XXXX</strong>
+            <button class="btn w s" type="button" style="padding:2px 8px;font-size:.72rem;min-height:26px" onclick="copySchoolCode()">نسخ</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input id="joinSchoolIn" placeholder="أدخل رمز مدرسة أخرى (SCH-...)" style="flex:1;height:34px;min-height:34px;padding:4px 8px;font-size:.82rem;text-align:center;direction:ltr;border-radius:8px">
+          <button class="btn g s" type="button" style="height:34px;min-height:34px;font-size:.78rem;padding:0 12px;border-radius:8px" onclick="doLinkSchool()">انضمام للمدرسة</button>
+        </div>
+        <div id="schoolTeamMsg" style="margin-top:4px;font-size:.75rem;font-weight:700;color:#15803d;min-height:14px"></div>
+      </div>
+
       <div class="form-section-card">
         <span class="sec-label">تغيير رمز الدخول</span>
         <div class="set-pin">
@@ -4502,11 +4523,43 @@ function showLicRemain(s){
     else $("licUntilHint").textContent="انتهت التجربة. فعّل الاشتراك السنوي.";
   }
   if($("userAccShow"))$("userAccShow").textContent=(s&&s.account)||window._acc||"—";
+  if($("mySchoolCode"))$("mySchoolCode").textContent=(s&&s.school_code)||"SCH-"+String((s&&s.account)||window._acc||"").slice(-4);
   if($("userSubShow")){
     if(s&&s.ok&&s.mode==="paid") $("userSubShow").textContent="اشتراك سنوي — باقي "+s.days+" يوم";
     else if(s&&s.ok&&s.mode==="trial") $("userSubShow").textContent="تجربة — باقي "+s.days+" يوم حتى "+(s.until||"");
     else $("userSubShow").textContent="انتهى الاشتراك — فعّل من شاشة الدفع";
   }
+}
+function copySchoolCode(){
+  const t=(($("mySchoolCode")&&$("mySchoolCode").textContent)||"").trim();
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){okNote("تم نسخ رمز المدرسة المشترك");}).catch(function(){});
+}
+function doLinkSchool(){
+  const sc=(($("joinSchoolIn")&&$("joinSchoolIn").value)||"").trim();
+  if(!sc){if($("schoolTeamMsg"))$("schoolTeamMsg").textContent="يرجى كتابة رمز المدرسة";return;}
+  const api=pyApi();
+  if(!api||!api.link_school){
+    okNote("تم الربط تجريبياً");
+    if($("mySchoolCode"))$("mySchoolCode").textContent=sc.toUpperCase();
+    return;
+  }
+  api.link_school(sc).then(function(r){
+    if(r&&r.ok){
+      if($("mySchoolCode"))$("mySchoolCode").textContent=r.school_code;
+      if($("schoolTeamMsg")){
+        $("schoolTeamMsg").style.color="#15803d";
+        $("schoolTeamMsg").textContent="تم الانضمام للمدرسة بنجاح! جاري مزامنة الجدول...";
+      }
+      okNote("تم الانضمام للمدرسة بنجاح");
+      if(r.data){mergeDisk(r.data);}
+      checkLicenseGate();
+    } else {
+      if($("schoolTeamMsg")){
+        $("schoolTeamMsg").style.color="#dc2626";
+        $("schoolTeamMsg").textContent="رمز المدرسة غير صحيح";
+      }
+    }
+  });
 }
 function activateLic(){
   const api=window.pywebview&&window.pywebview.api;

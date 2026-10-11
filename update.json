@@ -1,5 +1,5 @@
 {
-  "version": "0.36",
-  "notes": "تحديث نظام تسجيل الدخول والتحقق السحابي عبر التيليجرام وتحسين واجهة المستخدم",
+  "version": "0.37",
+  "notes": "إضافة ميزة ربط فريق العمل/المعاونين بنفس المدرسة ومزامنة الجداول سحابياً",
   "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html"
 }
