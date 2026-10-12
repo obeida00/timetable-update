@@ -4312,7 +4312,7 @@ function applyGate(s){
   if(s&&s.ok){if($("subBox"))$("subBox").hidden=true;}
   else {if($("subBox"))$("subBox").hidden=false;}
 
-  // حماية البيانات بعد التحديث أو إعادة التحميل
+  // حماية البيانات بعد التحديث أو إعادة التحميل والمزامنة السحابية للهاتف
   if(isFirstLoad || dbScore(db)<=0){
     const api=pyApi();
     if(api&&api.load_data){
@@ -4321,6 +4321,15 @@ function applyGate(s){
           adoptAccount(acc, txt);
         }
       }).catch(function(){});
+    } else {
+      // في متصفح الهاتف: سحب النسخة من السحابة مباشرة عند فتح الصفحة
+      fetch("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc))
+        .then(function(res){return res.json();})
+        .then(function(data){
+          if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
+            adoptAccount(acc, data.data);
+          }
+        }).catch(function(){});
     }
   }
 }
