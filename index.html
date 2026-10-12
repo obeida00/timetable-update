@@ -1725,7 +1725,6 @@ function persistCloud(s){
 }
 
 function persistDisk(s){
-  if(!_diskReady)return;
   try{
     const api=pyApi();
     if(api&&api.save_data){
@@ -4678,9 +4677,18 @@ function mergeDisk(txt){
 }
 function kickoff(){
   if(!started) startApp("");
-  _diskReady=false;
+  _diskReady=true;
+  checkLicenseGate();
 }
-window.addEventListener("pywebviewready",kickoff);
+window.addEventListener("pywebviewready",function(){
+  kickoff();
+  const api=pyApi();
+  if(api&&api.license_status){
+    api.license_status().then(function(s){
+      applyGate(s);
+    }).catch(function(){});
+  }
+});
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",kickoff);
 else kickoff();
 window.addEventListener("beforeunload",function(){try{clearTimeout(_saveT);flushSave();}catch(e){}});
