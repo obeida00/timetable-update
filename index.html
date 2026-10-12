@@ -1708,6 +1708,22 @@ function pyApi(){
   try{return window.pywebview&&window.pywebview.api;}catch(e){return null;}
 }
 let _diskReady=false;
+let _cloudPushTimer=null;
+function persistCloud(s){
+  const acc=window._acc||"";
+  if(!acc||acc.length<8)return;
+  clearTimeout(_cloudPushTimer);
+  _cloudPushTimer=setTimeout(function(){
+    try{
+      fetch("https://schol-table-bot.obe092.workers.dev/api/sync", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({acc: acc, data: s, school: (db&&db.settings&&db.settings.schoolName)||""})
+      }).catch(function(){});
+    }catch(e){}
+  }, 1200);
+}
+
 function persistDisk(s){
   if(!_diskReady)return;
   try{
@@ -1717,6 +1733,7 @@ function persistDisk(s){
       if(p&&typeof p.then==="function")p.catch(function(){});
     }
   }catch(e){}
+  persistCloud(s);
 }
 let _saveT=null,_lastSaved="",_refT=null,_refreshing=false;
 function flushSave(){
@@ -4286,12 +4303,27 @@ function applyGate(s){
   const logged=!!(s&&s.account);
   if(!logged){if($("loginBox"))$("loginBox").hidden=false;if($("subBox"))$("subBox").hidden=true;return;}
   if($("loginBox"))$("loginBox").hidden=true;
-  window._acc=s.account;if($("accIn")&&!$("accIn").value)$("accIn").value=s.account;
+  const acc=s.account;
+  const isFirstLoad=(window._acc!==acc);
+  window._acc=acc;
+  if($("accIn")&&!$("accIn").value)$("accIn").value=acc;
   showLicRemain(s);
   window._licCanClose=!!(s&&s.ok);
   if($("subClose"))$("subClose").hidden=!window._licCanClose;if($("subBack"))$("subBack").hidden=!window._licCanClose;
   if(s&&s.ok){if($("subBox"))$("subBox").hidden=true;}
   else {if($("subBox"))$("subBox").hidden=false;}
+
+  // حماية البيانات بعد التحديث أو إعادة التحميل
+  if(isFirstLoad || dbScore(db)<=0){
+    const api=pyApi();
+    if(api&&api.load_data){
+      Promise.resolve(api.load_data()).then(function(txt){
+        if(txt && dbScore(parseDb(txt))>0){
+          adoptAccount(acc, txt);
+        }
+      }).catch(function(){});
+    }
+  }
 }
 
 function afterAccount(r,fresh){
@@ -4318,8 +4350,20 @@ function afterAccount(r,fresh){
     Promise.resolve(a.load_data()).then(function(txt){adoptAccount(acc,txt||"");done();});
     return;
   }
-  adoptAccount(acc,"");
-  done();
+  // في الهاتف أو متصفح الويب: سحب النسخة من السحابة مباشرة
+  fetch("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc))
+    .then(function(res){return res.json();})
+    .then(function(data){
+      if(data&&data.ok&&data.data){
+        adoptAccount(acc, data.data);
+      } else {
+        adoptAccount(acc, "");
+      }
+      done();
+    }).catch(function(){
+      adoptAccount(acc, "");
+      done();
+    });
 }
 function doLogin(){
   const api=pyApi();
@@ -4724,12 +4768,14 @@ function checkAppUpdate(manual){
 function doAppUpdate(){
   const api=pyApi();
   if(!api||!api.apply_update){note("التحديث غير متاح هنا");return;}
+  try{flushSave();}catch(e){}
   Promise.resolve(api.apply_update()).then(function(r){
     if(r&&r.ok){
       try{localStorage.setItem("uiVer",(_updInfo&&_updInfo.remote)||APP_VERSION);}catch(e){}
+      try{flushSave();}catch(e){}
       dismissUpdateUi();
-      okNote("تم التحديث.");
-      setTimeout(function(){location.reload();},400);
+      okNote("تم التحديث بنجاح! جاري إعادة التحميل...");
+      setTimeout(function(){location.reload();},500);
     }
     else note("تعذر التحديث. تأكد من رابط الملفات.");
   }).catch(function(){note("تعذر التحديث");});
