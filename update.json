@@ -1,5 +1,5 @@
 {
-  "version": "0.37",
-  "notes": "إضافة ميزة ربط فريق العمل/المعاونين بنفس المدرسة ومزامنة الجداول سحابياً",
+  "version": "0.38",
+  "notes": "إصلاح جذري لحفظ وتثبيت بيانات الجدول تلقائياً وعدم مسحها عند التحديثات",
   "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html"
 }
