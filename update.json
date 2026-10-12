@@ -1,5 +1,5 @@
 {
-  "version": "0.38",
-  "notes": "إصلاح جذري لحفظ وتثبيت بيانات الجدول تلقائياً وعدم مسحها عند التحديثات",
+  "version": "0.40",
+  "notes": "إصلاح الحفظ التلقائي، دعم التعديل من الهاتف بالباركود والمزامنة الفورية، وتحديث الاشتراك السنوي",
   "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html"
 }
