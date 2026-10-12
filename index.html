@@ -570,6 +570,9 @@ td.clk:hover .mv button{opacity:.45}
   </div>
   
   <div class="dev-wrap no-print">
+    <button type="button" class="lic-chip" style="background:#0ea5e9;color:#fff" title="فتح الجدول على الهاتف بالباركود" onclick="$('mobileQrModal').hidden=false">
+      📱 فتح على الموبايل
+    </button>
     <button type="button" class="lic-chip" id="licRemain" title="الاشتراك" onclick="if($('subBox'))$('subBox').hidden=false">الاشتراك</button>
     <button type="button" class="bell-btn" id="bellBtn" title="التنبيهات" onclick="openNotif()">
       <span class="bell-dot"></span>
@@ -757,7 +760,7 @@ td.clk:hover .mv button{opacity:.45}
     </div>
     <div>
       <h2>الاشتراك السنوي</h2>
-      <p class="hint">السعر <strong>20,000</strong> دينار عراقي للسنة. ادفع عبر سوبر كي بالباركود ثم أرسل رقم حسابك (موبايلك) لعبيده العيثاوي. نفس الحساب يعمل على أي جهاز.</p>
+      <p class="hint">السعر <strong>30,000</strong> دينار عراقي للسنة. ادفع عبر سوبر كي بالباركود ثم أرسل رقم حسابك (موبايلك) لعبيده العيثاوي. نفس الحساب يعمل على أي جهاز.</p>
       <label>رقم الحساب (موبايلك)
         <input id="accIn" placeholder="07XXXXXXXXX" style="direction:ltr;text-align:center">
       </label>
@@ -770,6 +773,33 @@ td.clk:hover .mv button{opacity:.45}
         <button type="button" class="btn d" id="subBack" hidden onclick="$('subBox').hidden=true">رجوع</button>
       </div>
       <p id="licMsg" class="hint" style="margin-top:8px;margin-bottom:0"></p>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة باركود الهاتف لتسهيل الفتح المباشر -->
+<div id="mobileQrModal" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="modal-card modal-stylish" style="max-width:420px;text-align:center" onclick="event.stopPropagation()">
+    <div class="modal-head" style="justify-content:center">
+      <div class="modal-head-title" style="text-align:center">
+        <div class="modal-icon s-ico" style="margin:0 auto 8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <h2 style="font-size:1.15rem">فتح النظام على هاتفك 📱</h2>
+        <span class="modal-sub">امسح الباركود بكاميرا الموبايل لفتح جدولك فوراً</span>
+      </div>
+    </div>
+    <div class="modal-body-content" style="padding:16px 20px">
+      <div style="background:#fff;border:2px dashed #8b5cf6;padding:12px;border-radius:14px;display:inline-block;margin:6px auto 14px;box-shadow:0 4px 12px rgba(139,92,246,0.12)">
+        <img id="qrMobileImg" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fobeida00.github.io%2Ftimetable-update%2F" alt="QR Code" style="width:190px;height:190px;display:block;border-radius:8px">
+      </div>
+      <p style="font-size:.82rem;color:#4b5563;line-height:1.5;margin-bottom:12px">
+        وجه كاميرا هاتفك نحو الباركود أو اضغط على الزر أدناه لنسخ الرابط وإرساله عبر الواتساب أو التيليجرام.
+      </p>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn g" type="button" onclick="copyMobileUrl()">نسخ الرابط</button>
+        <button class="btn w ghost" type="button" onclick="$('mobileQrModal').hidden=true">إغلاق</button>
+      </div>
     </div>
   </div>
 </div>
@@ -807,16 +837,16 @@ td.clk:hover .mv button{opacity:.45}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
       </div>
     </button>
-    <button type="button" class="set-tile" onclick="openSet('setData')">
-      <div class="ico-lg d-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <button type="button" class="set-tile" onclick="$('mobileQrModal').hidden=false">
+      <div class="ico-lg s-ico" style="background:#e0f2fe;color:#0284c7">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
       </div>
       <div class="set-tile-body">
-        <b>التحديث والبيانات</b>
-        <span>النسخ الاحتياطي السحابي، الاسترداد، والتصفير</span>
+        <b>تطبيق الهاتف والمزامنة</b>
+        <span>باركود فتح النظام على الموبايل والتعديل المباشر</span>
       </div>
       <div class="set-tile-action">
-        <span>فتح الإعدادات</span>
+        <span>عرض الباركود</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
       </div>
     </button>
@@ -4222,8 +4252,16 @@ function localStatus(){
   if(isNaN(first.getTime())) first=new Date();
   const end=new Date(first.getTime()+7*86400000);
   const days=Math.floor((end.setHours(0,0,0,0)-new Date().setHours(0,0,0,0))/86400000);
-  if(days>=0) return {ok:true,mode:"trial",account:acc,until:ymd(new Date(first.getTime()+7*86400000)),days:days,price:20000};
-  return {ok:false,mode:"locked",account:acc,until:"",days:0,price:20000};
+  if(days>=0) return {ok:true,mode:"trial",account:acc,until:ymd(new Date(first.getTime()+7*86400000)),days:days,price:30000};
+  return {ok:false,mode:"locked",account:acc,until:"",days:0,price:30000};
+}
+function copyMobileUrl(){
+  const url="https://obeida00.github.io/timetable-update/";
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function(){okNote("تم نسخ رابط الهاتف");}).catch(function(){});
+  } else {
+    okNote("تم نسخ الرابط");
+  }
 }
 function localRegister(acc,pw){
   acc=normAcc(acc);pw=String(pw||"");
