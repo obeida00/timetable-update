@@ -4330,24 +4330,19 @@ function afterAccount(r,fresh){
   const acc=(r&&r.account)||"";
   if($("accIn")&&acc)$("accIn").value=acc;
   if($("loginBox"))$("loginBox").hidden=true;
-  function done(){
+  function done(hasData){
     checkLicenseGate();
-    if(fresh){
+    if(fresh && !hasData){
       appDlg("حسابك جديد وفارغ.\nعندك نسخة احتياطية تريد ترجعها الآن؟","نسخة احتياطية",true,"").then(function(yes){
         if(yes) openRestore();
       });
     }
   }
-  if(fresh){
-    adoptAccount(acc,"");
-    done();
-    return;
-  }
-  if(r&&r.data){adoptAccount(acc,r.data);done();return;}
+  if(r&&r.data){adoptAccount(acc,r.data);done(true);return;}
   const a=pyApi();
   if(a&&a.load_data){
     window._acc=normAcc(acc);
-    Promise.resolve(a.load_data()).then(function(txt){adoptAccount(acc,txt||"");done();});
+    Promise.resolve(a.load_data()).then(function(txt){adoptAccount(acc,txt||"");done(!!(txt&&dbScore(parseDb(txt))>0));});
     return;
   }
   // في الهاتف أو متصفح الويب: سحب النسخة من السحابة مباشرة
@@ -4356,13 +4351,14 @@ function afterAccount(r,fresh){
     .then(function(data){
       if(data&&data.ok&&data.data){
         adoptAccount(acc, data.data);
+        done(true);
       } else {
         adoptAccount(acc, "");
+        done(false);
       }
-      done();
     }).catch(function(){
       adoptAccount(acc, "");
-      done();
+      done(false);
     });
 }
 function doLogin(){
