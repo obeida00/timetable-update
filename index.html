@@ -605,6 +605,7 @@ td.clk:hover .mv button{opacity:.45}
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
     </button>
+    <button type="button" class="dev-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;font-weight:700" onclick="syncToCloudNow(true)" title="مزامنة فورية مع بوت التيليجرام">☁️ مزامنة التيليجرام</button>
     <button type="button" class="dev-btn" onclick="$('devBox').hidden=false">المطور: عبيده العيثاوي</button>
     <button type="button" class="dev-btn" id="logoutTop" onclick="doLogout()">تسجيل الخروج</button>
   </div>
@@ -1917,17 +1918,44 @@ function pyApi(){
 }
 let _diskReady=false;
 let _cloudPushTimer=null;
+function syncToCloudNow(showToast){
+  const acc=window._acc||"";
+  if(!acc||acc.length<8){
+    if(showToast) note("يرجى تسجيل الدخول بحسابك أولاً لتفعيل المزامنة السحابية.");
+    return;
+  }
+  const s=JSON.stringify(db);
+  const school=(db&&db.settings&&db.settings.schoolName)||"مدرسة بدون اسم";
+  const tCount=(db&&db.teachers)?db.teachers.length:0;
+  const cCount=(db&&db.classes)?db.classes.length:0;
+  const sCount=(db&&db.subjects)?db.subjects.length:0;
+  fetch("https://schol-table-bot.obe092.workers.dev/api/sync", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      acc: acc,
+      data: s,
+      school: school,
+      teachers_count: tCount,
+      classes_count: cCount,
+      subjects_count: sCount,
+      version: APP_VERSION
+    })
+  }).then(function(r){return r.json();}).then(function(res){
+    if(showToast && res && res.ok){
+      okNote("تمت المزامنة مع بوت التيليجرام بنجاح ☁️");
+    }
+  }).catch(function(){
+    if(showToast) note("تعذر الاتصال بخادم المزامنة");
+  });
+}
 function persistCloud(s){
   const acc=window._acc||"";
   if(!acc||acc.length<8)return;
   clearTimeout(_cloudPushTimer);
   _cloudPushTimer=setTimeout(function(){
     try{
-      fetch("https://schol-table-bot.obe092.workers.dev/api/sync", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({acc: acc, data: s, school: (db&&db.settings&&db.settings.schoolName)||""})
-      }).catch(function(){});
+      syncToCloudNow(false);
     }catch(e){}
   }, 1200);
 }
@@ -5638,6 +5666,9 @@ function kickoff(){
   if(!started) startApp("");
   _diskReady=true;
   checkLicenseGate();
+  setTimeout(function(){
+    if(window._acc) syncToCloudNow(false);
+  }, 2000);
 }
 window.addEventListener("pywebviewready",function(){
   kickoff();
