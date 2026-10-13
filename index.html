@@ -605,7 +605,7 @@ td.clk:hover .mv button{opacity:.45}
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
     </button>
-    <button type="button" class="dev-btn" style="background:#0284c7;color:#fff;border-color:#0284c7;font-weight:700" onclick="syncToCloudNow(true)" title="مزامنة فورية مع بوت التيليجرام">☁️ مزامنة التيليجرام</button>
+    <button type="button" class="dev-btn" id="syncTgBtn" style="background:#0284c7;color:#fff;border-color:#0284c7;font-weight:700;display:none" onclick="syncToCloudNow(true)" title="مزامنة فورية مع بوت التيليجرام">☁️ مزامنة التيليجرام</button>
     <button type="button" class="dev-btn" onclick="$('devBox').hidden=false">المطور: عبيده العيثاوي</button>
     <button type="button" class="dev-btn" id="logoutTop" onclick="doLogout()">تسجيل الخروج</button>
   </div>
@@ -1945,9 +1945,7 @@ function syncToCloudNow(showToast){
     if(showToast && res && res.ok){
       okNote("تمت المزامنة مع بوت التيليجرام بنجاح ☁️");
     }
-  }).catch(function(){
-    if(showToast) note("تعذر الاتصال بخادم المزامنة");
-  });
+  }).catch(function(){});
 }
 function persistCloud(s){
   const acc=window._acc||"";
@@ -5214,8 +5212,12 @@ function applyGate(s){
   if($("subClose"))$("subClose").hidden=!window._licCanClose;if($("subBack"))$("subBack").hidden=!window._licCanClose;
   if(s&&s.ok){if($("subBox"))$("subBox").hidden=true;}
   else {if($("subBox"))$("subBox").hidden=false;}
+  const DEV_ACC = "07813332882";
+  const isDev = acc && (acc.replace(/\D/g,"").endsWith("7813332882") || acc.indexOf("7813332882") !== -1);
+  const syncBtn = $("syncTgBtn");
+  if(syncBtn) syncBtn.style.display = isDev ? "" : "none";
 
-  // حماية البيانات بعد التحديث أو إعادة التحميل والمزامنة السحابية للهاتف
+
   if(isFirstLoad || dbScore(db)<=0){
     const api=pyApi();
     if(api&&api.load_data){
