@@ -595,7 +595,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub">إصدار 0.40</div>
+    <div class="sub">إصدار 0.41</div>
     </div>
   </div>
   
@@ -839,7 +839,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip">الإصدار 0.40</span>
+    <span class="ver-chip">الإصدار 0.41</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1092,7 +1092,7 @@ td.clk:hover .mv button{opacity:.45}
       <div class="info-banner">
         <div class="info-banner-item">
           <span class="info-lbl">الإصدار المثبت</span>
-          <strong class="info-val">0.35</strong>
+          <strong class="info-val" id="installedVerShow">0.40</strong>
         </div>
         <div class="info-banner-item">
           <span class="info-lbl">نوع التخزين</span>
@@ -1151,7 +1151,7 @@ td.clk:hover .mv button{opacity:.45}
     <button class="btn g" type="button" onclick="generate()">إنشاء الجدول</button>
     <button class="btn o" type="button" onclick="openRemainModal()">إكمال المتبقي (اختياري)</button>
     <button class="btn w" type="button" onclick="openVacModal()">الشواغر والبدلاء</button>
-    <button class="btn" type="button" style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff" onclick="openDutyModal()">🛡️ جدول المراقبين (الساحة والإدارة)</button>
+    <button class="btn" type="button" style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff" onclick="openDutyModal()">🛡️ جدول مراقبة الساحة</button>
     <label class="search">الساحة
       <input id="yardMax" type="number" min="1" step="1" placeholder="" title="عدد شعب الرياضة في الساحة بنفس الدرس" onchange="saveYardMax()" oninput="saveYardMax()">
     </label>
@@ -1170,7 +1170,7 @@ td.clk:hover .mv button{opacity:.45}
       <select id="viewType" onchange="renderViews()">
         <option value="day">جدول اليوم</option>
         <option value="weekall">جدول الأسبوع</option>
-        <option value="duty">جدول مراقبة الساحة والإدارة</option>
+        <option value="duty">جدول مراقبة الساحة</option>
         <option value="yard">الساحة — الرياضة</option>
       </select>
     </label>
@@ -1430,11 +1430,16 @@ td.clk:hover .mv button{opacity:.45}
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:1.5rem">🛡️</span>
         <div>
-          <h2 style="margin:0;font-size:1.25rem;color:#1e1b4b">جدول مراقبة الساحة وقاطع الإدارة والطوابق</h2>
-          <span style="font-size:.78rem;color:#6b21a8">توزيع المعلمين على مدار الأسبوع حسب الأماكن مع مراعاة النصاب العالي</span>
+          <h2 style="margin:0;font-size:1.25rem;color:#1e1b4b">جدول مراقبة الساحة</h2>
+          <span style="font-size:.78rem;color:#6b21a8">توزيع المعلمين على مدار الأسبوع مع مراعاة النصاب العالي</span>
         </div>
       </div>
-      <button class="modal-close-btn" type="button" onclick="$('dutyBox').hidden=true">✕</button>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="dutyTotalTeachers" style="background:#ede9fe;border:1.5px solid #c4b5fd;color:#5b21b6;padding:4px 12px;border-radius:12px;font-size:.82rem;font-weight:800">
+          عدد المعلمين الكلي: <span id="dutyTeacherCountVal" style="color:#4c1d95;font-weight:900">0</span>
+        </div>
+        <button class="modal-close-btn" type="button" onclick="$('dutyBox').hidden=true">✕</button>
+      </div>
     </div>
 
     <!-- إعدادات التوزيع الذكي -->
@@ -1721,7 +1726,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.40";
+const APP_VERSION="0.41";
 
 const GUIDE_STEPS=[
   {tab:"classes",title:"1 — الصفوف والشعب",msg:"ابدأ من تبويب الصفوف والشعب. أضف الصف (الأول، الثاني…) ثم أضف الشعب (أ، ب، ج). احذف أي شعبة غير موجودة في مدرستك."},
@@ -2964,6 +2969,7 @@ function renderSettings(){
   const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || "";
   if($("userNameShow")) $("userNameShow").textContent = curUName || "غير محدد";
   if($("userNameInput")) $("userNameInput").value = curUName;
+  if($("installedVerShow")) $("installedVerShow").textContent = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
   updateLogoUI();
   applyGridColor();
 }
@@ -3917,9 +3923,7 @@ function renderViews(){
 }
 
 // -------------------------------------------------------------
-// نظام جدول مراقبة الساحة وقاطع الإدارة والطوابق
-// -------------------------------------------------------------
-// نظام جدول مراقبة الساحة وقاطع الإدارة والطوابق (مع دعم عدد المعلمين لكل مكان)
+// نظام جدول مراقبة الساحة
 // -------------------------------------------------------------
 function getDutySettings(){
   if(!db.settings.dutySettings){
@@ -3927,10 +3931,7 @@ function getDutySettings(){
       highLoadThreshold: 18,
       highLoadRule: "max1", // "max1" or "exempt" or "normal"
       locations: [
-        { name: "ساحة المدرسة", count: 4 },
-        { name: "الطابق الأرضي", count: 4 },
-        { name: "قاطع الإدارة", count: 2 },
-        { name: "الطابق الأول", count: 2 }
+        { name: "ساحة المدرسة", count: 4 }
       ]
     };
   }
@@ -3944,11 +3945,20 @@ function getDutySettings(){
   return db.settings.dutySettings;
 }
 
+function updateDutyTeacherCount(){
+  const allCount = (db.teachers || []).length;
+  const activeCount = (db.teachers || []).filter(t => !t.leave).length;
+  if($("dutyTeacherCountVal")){
+    $("dutyTeacherCountVal").textContent = allCount + (activeCount !== allCount ? " (" + activeCount + " غير مجاز)" : "");
+  }
+}
+
 function saveDutySettings(){
   const ds = getDutySettings();
   if($("dutyHighLoadThreshold")) ds.highLoadThreshold = +$("dutyHighLoadThreshold").value || 18;
   if($("dutyHighLoadRule")) ds.highLoadRule = $("dutyHighLoadRule").value || "max1";
   save();
+  updateDutyTeacherCount();
 }
 
 function updateDutyLocCount(idx, val){
@@ -3958,6 +3968,7 @@ function updateDutyLocCount(idx, val){
     ds.locations[idx].count = c;
     save();
     renderDutyPreview();
+    updateDutyTeacherCount();
   }
 }
 
@@ -3978,7 +3989,7 @@ function renderDutyLocationsChips(){
 }
 
 function addDutyLocation(){
-  const name = prompt("أدخل اسم مكان أو قاطع المراقبة (مثلاً: الساحة الخلفية، الطابق الثاني...):");
+  const name = prompt("أدخل اسم مكان المراقبة في الساحة (مثلاً: ساحة المدرسة، الساحة الخلفية...):");
   if(!name || !name.trim()) return;
   const countStr = prompt("كم عدد المعلمين المطلوبين لهذا المكان يومياً؟", "2");
   const count = Math.max(1, Math.min(15, parseInt(countStr) || 2));
@@ -3987,6 +3998,7 @@ function addDutyLocation(){
   save();
   renderDutyLocationsChips();
   renderDutyPreview();
+  updateDutyTeacherCount();
 }
 
 function removeDutyLocation(idx){
@@ -3999,12 +4011,14 @@ function removeDutyLocation(idx){
   save();
   renderDutyLocationsChips();
   renderDutyPreview();
+  updateDutyTeacherCount();
 }
 
 function openDutyModal(){
   const ds = getDutySettings();
   if($("dutyHighLoadThreshold")) $("dutyHighLoadThreshold").value = ds.highLoadThreshold || 18;
   if($("dutyHighLoadRule")) $("dutyHighLoadRule").value = ds.highLoadRule || "max1";
+  updateDutyTeacherCount();
   renderDutyLocationsChips();
   renderDutyPreview();
   $("dutyBox").hidden = false;
@@ -4142,7 +4156,7 @@ function renderDuty(){
   const locations = ds.locations || [];
   const sched = db.dutySchedule || {};
 
-  let h = `<div class="print-sheet">${sheetHead("جدول مراقبة الساحة والإدارة والطوابق","المراقبة اليومية")}`;
+  let h = `<div class="print-sheet">${sheetHead("جدول مراقبة الساحة","المراقبة اليومية")}`;
   h += `<div class="table-wrap"><table class="onepage" style="width:100%">`;
   h += `<thead><tr><th style="width:12%">اليوم</th>${locations.map(loc=>`<th>${esc(loc.name)} (${loc.count||1} معلمين)</th>`).join("")}</tr></thead><tbody>`;
 
@@ -4194,7 +4208,7 @@ table{border-collapse:collapse;width:100%;direction:rtl}
 th,td{border:1px solid #5b21b6;text-align:center;vertical-align:middle;padding:8px;font-size:11pt}
 th{background:#5b21b6;color:#ffffff;font-weight:bold}
 </style></head><body>
-<div style="text-align:center;font-size:16pt;font-weight:bold;margin-bottom:12px">${esc(school)} - جدول مراقبة الساحة وقاطع الإدارة والطوابق</div>
+<div style="text-align:center;font-size:16pt;font-weight:bold;margin-bottom:12px">${esc(school)} - جدول مراقبة الساحة</div>
 <table>
 <thead><tr><th>اليوم</th>${locations.map(loc=>`<th>${esc(loc.name)} (${loc.count||1})</th>`).join("")}</tr></thead>
 <tbody>${rowsHtml}</tbody>
@@ -4230,7 +4244,7 @@ function printDutySchedule(){
   const w = window.open("","_blank");
   if(!w){alert("يرجى السماح بالنوافذ المنبثقة");return;}
   w.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8">
-  <title>جدول مراقبة الساحة والإدارة - ${esc(school)}</title>
+  <title>جدول مراقبة الساحة - ${esc(school)}</title>
   <style>
     body{font-family:'Cairo','Tahoma',Arial;margin:24px;direction:rtl;color:#111}
     .head{background:#5b21b6;color:#fff;padding:12px 20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -4244,7 +4258,7 @@ function printDutySchedule(){
   </style></head><body>
   <div class="head">
     <span>${esc(school)}</span>
-    <h2>جدول مراقبة الساحة وقاطع الإدارة والطوابق</h2>
+    <h2>جدول مراقبة الساحة</h2>
     <span>الأسبوع الدراسي</span>
   </div>
   <table>
