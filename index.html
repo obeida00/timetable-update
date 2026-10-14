@@ -602,12 +602,10 @@ td.clk:hover .mv button{opacity:.45}
   </div>
   
   <div class="dev-wrap no-print">
-    <button type="button" class="lic-chip" id="licRemain" title="الاشتراك" onclick="if($('subBox'))$('subBox').hidden=false">الاشتراك</button>
+    <button type="button" class="lic-chip" id="licRemain" title="الاشتراك" onclick="openSubInfoOrPayment()">الاشتراك</button>
     <button type="button" class="bell-btn" id="bellBtn" title="التنبيهات" onclick="openNotif()">
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
-    </button>
-    <button type="button" class="dev-btn" id="syncTgBtn" style="background:#0284c7;color:#fff;border-color:#0284c7;font-weight:700;display:none" onclick="syncToCloudNow(true)" title="مزامنة فورية مع بوت التيليجرام">☁️ مزامنة التيليجرام</button>
     <button type="button" class="dev-btn" onclick="$('devBox').hidden=false">المطور: عبيده العيثاوي</button>
     <button type="button" class="dev-btn" id="logoutTop" onclick="doLogout()">تسجيل الخروج</button>
   </div>
@@ -768,6 +766,50 @@ td.clk:hover .mv button{opacity:.45}
     </div>
 
     <p id="loginMsg" class="hint" style="margin-top:6px;margin-bottom:0;min-height:14px;color:#dc2626;font-weight:700;font-size:.78rem;padding:0;background:transparent;border:none"></p>
+  </div>
+</div>
+
+
+<!-- نافذة تفاصيل الاشتراك النشط -->
+<div id="subInfoBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="modal-card" style="max-width:480px" onclick="event.stopPropagation()">
+    <button type="button" class="sub-x" title="&#1573;&#1594;&#1604;&#1575;&#1602;" onclick="$('subInfoBox').hidden=true">&times;</button>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="width:60px;height:60px;background:linear-gradient(135deg,#059669,#10b981);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 8px 20px rgba(5,150,105,.3)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" style="width:30px;height:30px"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 id="subInfoTitle" style="color:#059669;margin-bottom:4px">&#1575;&#1604;&#1575;&#1588;&#1578;&#1585;&#1575;&#1603; &#1606;&#1588;&#1591;</h2>
+      <p id="subInfoDesc" class="hint" style="margin:0"></p>
+    </div>
+    <div style="display:grid;gap:10px">
+      <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700;color:#374151">&#1606;&#1608;&#1593; &#1575;&#1604;&#1582;&#1591;&#1577;</span>
+        <span id="subInfoMode" style="font-weight:800;color:#059669">&#8212;</span>
+      </div>
+      <div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700;color:#374151">&#1585;&#1602;&#1605; &#1575;&#1604;&#1581;&#1587;&#1575;&#1576;</span>
+        <span id="subInfoAcc" style="font-weight:800;color:#4c1d95;direction:ltr">&#8212;</span>
+      </div>
+      <div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700;color:#374151">&#1575;&#1604;&#1571;&#1610;&#1575;&#1605; &#1575;&#1604;&#1605;&#1578;&#1576;&#1602;&#1610;&#1577;</span>
+        <span id="subInfoDays" style="font-weight:800;color:#6d28d9">&#8212;</span>
+      </div>
+      <div id="subInfoUntilRow" style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700;color:#374151">&#1589;&#1575;&#1604;&#1581; &#1581;&#1578;&#1609;</span>
+        <span id="subInfoUntil" style="font-weight:800;color:#6d28d9;direction:ltr">&#8212;</span>
+      </div>
+      <div id="subInfoCodeRow" hidden style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:14px;padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-weight:700;color:#374151">&#1603;&#1608;&#1583; &#1575;&#1604;&#1578;&#1601;&#1593;&#1610;&#1604;</span>
+          <button class="btn w s" type="button" onclick="copySubInfoCode()" style="height:30px;min-height:30px;padding:0 10px;font-size:.78rem">&#1606;&#1587;&#1582;</button>
+        </div>
+        <div id="subInfoCode" style="font-family:monospace;font-size:.82rem;direction:ltr;word-break:break-all;color:#92400e;font-weight:700">&#8212;</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn w ghost" style="flex:1" type="button" onclick="$('subInfoBox').hidden=true">&#1573;&#1594;&#1604;&#1575;&#1602;</button>
+      <button class="btn d" style="flex:1" type="button" onclick="$('subInfoBox').hidden=true;if($('subBox'))$('subBox').hidden=false">&#1578;&#1601;&#1593;&#1610;&#1604; &#1603;&#1608;&#1583; &#1580;&#1583;&#1610;&#1583;</button>
+    </div>
   </div>
 </div>
 
@@ -1729,7 +1771,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.42";
+const APP_VERSION="0.43";
 
 const GUIDE_STEPS=[
   {tab:"classes",title:"1 — الصفوف والشعب",msg:"ابدأ من تبويب الصفوف والشعب. أضف الصف (الأول، الثاني…) ثم أضف الشعب (أ، ب، ج). احذف أي شعبة غير موجودة في مدرستك."},
@@ -1941,6 +1983,8 @@ function syncToCloudNow(showToast){
       teachers_count: tCount,
       classes_count: cCount,
       subjects_count: sCount,
+      members: window._schoolMembers || (db&&db.settings&&db.settings.teamMembers) || [],
+      user_name: (db&&db.settings&&db.settings.userName) || localStorage.getItem("tt_user_name_" + acc) || "",
       version: APP_VERSION
     })
   }).then(function(r){return r.json();}).then(function(res){
@@ -2977,6 +3021,7 @@ function renderSubjects(){
 
 function openSet(id){
   try{renderSettings();}catch(e){}
+  if(id==='setUser') { try{ refreshTeamMembers(); }catch(e){} }
   if($(id)) $(id).hidden=false;
 }
 function openDaysBox(){
@@ -3909,7 +3954,9 @@ function renderViews(){
   let html="";
   if(type==="section"){
     db.sections.filter(s=>!q||secName(s.id).includes(q)).forEach(s=>{
-      html+=tableHTML("شعبة: "+secName(s.id),(d,p)=>cellHTML(db.grid[s.id]&&db.grid[s.id][d]&&db.grid[s.id][d][p]),s.id);
+      const _sid=s.id;
+      const _secPdfBtn=`<div style="display:flex;justify-content:flex-end;margin-bottom:4px"><button type="button" class="no-print" title="تصدير PDF لهذه الشعبة" style="background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;border:0;border-radius:10px;padding:5px 14px;font-weight:700;font-size:.78rem;cursor:pointer;display:inline-flex;align-items:center;gap:5px;min-height:30px;box-shadow:0 4px 10px rgba(220,38,38,.25)" onclick="exportSectionPDF('${_sid}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>طباعة PDF شعبة ${esc(secName(_sid))}</button></div>`;
+      html+=_secPdfBtn+tableHTML("شعبة: "+secName(s.id),(d,p)=>cellHTML(db.grid[s.id]&&db.grid[s.id][d]&&db.grid[s.id][d][p]),s.id);
     });
   }else if(type==="teacher"){
     db.teachers.filter(t=>!q||t.name.includes(q)).forEach(t=>{
@@ -4937,6 +4984,128 @@ function exportJPG(){captureView("png",cv=>{
     const a=document.createElement("a");a.href=data;a.download="جدول_الدروس.png";a.click();okNote("تم تصدير الصورة بجودة فائقة بنجاح");
   }
 });}
+function exportSectionPDF(secId){
+
+  // تصدير PDF لشعبة واحدة فقط
+
+  const sName=secName(secId)||"الشعبة";
+
+  const days=db.settings.days||[];
+
+  const P=db.settings.periods||6;
+
+  const school=db.settings.schoolName||"نظام الجداول";
+
+  const logoData=db.settings.schoolLogo||"";
+
+  const mgr=(db.settings&&db.settings.schoolManager)||"";
+
+  const mgrTitle=(db.settings&&db.settings.schoolManagerTitle)||"مدير المدرسة";
+
+  const sub=+(db.settings.fsSubEx||24),tea=+(db.settings.fsTeaEx||20);
+
+  const size=($('exSize')&&$('exSize').value)||"A4";
+
+  const dir=($('exDir')&&$('exDir').value)||"landscape";
+
+  // بناء جدول HTML للشعبة
+
+  let tRows="";
+
+  for(let p=0;p<P;p++){
+
+    tRows+=`<tr>`;
+
+    tRows+=`<th style="background:#6d28d9;color:#fff;padding:6px;min-width:40px">${p+1}</th>`;
+
+    days.forEach(function(d){
+
+      const g=db.grid[secId]&&db.grid[secId][d]&&db.grid[secId][d][p];
+
+      if(g){
+
+        tRows+=`<td style="padding:6px 8px;border:1px solid #e0d7ff;text-align:center"><div style="font-weight:800;font-size:${sub}px;color:#1e1b4b">${esc(g.name||subjName(g.subjectId))}</div><div style="font-size:${tea}px;color:#6d28d9">${esc(teacherName(g.teacherId))}</div></td>`;
+
+      } else {
+
+        tRows+=`<td style="padding:6px 8px;border:1px solid #e0d7ff;background:#fafafa"></td>`;
+
+      }
+
+    });
+
+    tRows+=`</tr>`;
+
+  }
+
+  const dayHeaders=days.map(function(d){return `<th style="background:#4c1d95;color:#fff;padding:8px;font-size:14px">${dayName(d)}</th>`;}).join("");
+
+  const logoHtml=logoData?`<img src="${logoData}" style="width:50px;height:50px;object-fit:contain;border-radius:8px">`:"";
+
+  const mgrHtml=mgr?`<div style="display:flex;justify-content:space-between;padding:8px 16px;border-top:2px solid #6d28d9;margin-top:12px;font-size:12px"><span>${getExportDateStr()}</span><span>${mgrTitle}: <strong>${mgr}</strong></span></div>`:"";
+
+  const htmlDoc=`<!DOCTYPE html><html dir="rtl"><head><meta charset="utf-8"><title>جدول ${sName}</title><style>@page{size:${size} ${dir};margin:8mm}body{font-family:Cairo,Tahoma,Arial,sans-serif;margin:0;padding:8px;background:#fff}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd6fe}h1{font-size:18px;color:#4c1d95;margin:0 0 4px}p{margin:0 0 8px;font-size:11px;color:#64748b}</style></head><body><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;border-bottom:3px solid #6d28d9;padding-bottom:8px">${logoHtml}<div><h1>${school} — جدول شعبة: ${sName}</h1></div></div><table><thead><tr><th style="background:#4c1d95;color:#fff;padding:8px">الدرس</th>${dayHeaders}</tr></thead><tbody>${tRows}</tbody></table>${mgrHtml}</body></html>`;
+
+  let f=$('secPdfFrame');
+
+  if(!f){f=document.createElement("iframe");f.id="secPdfFrame";f.setAttribute("style","position:fixed;right:-9999px;width:0;height:0;border:0");document.body.appendChild(f);}
+
+  const d2=f.contentDocument||f.contentWindow.document;
+
+  d2.open();d2.write(htmlDoc);d2.close();
+
+  setTimeout(function(){try{f.contentWindow.focus();f.contentWindow.print();}catch(e){window.print();}},350);
+
+}
+
+function openSubInfoOrPayment(){
+
+  const s=localStatus();
+
+  if(s&&s.ok){
+
+    // المستخدم لديه اشتراك نشط - اعرض التفاصيل
+
+    if($('subInfoTitle'))$('subInfoTitle').textContent=(s.mode==="paid"?"الاشتراك السنوي نشط ✓":"التجربة المجانية نشطة ✓");
+
+    if($('subInfoMode'))$('subInfoMode').textContent=(s.mode==="paid"?"اشتراك سنوي مدفوع":"تجربة مجانية 7 أيام");
+
+    if($('subInfoAcc'))$('subInfoAcc').textContent=s.account||"—";
+
+    if($('subInfoDays'))$('subInfoDays').textContent=(s.days||0)+" يوم";
+
+    if($('subInfoUntil'))$('subInfoUntil').textContent=s.until||"—";
+
+    if($('subInfoDesc'))$('subInfoDesc').textContent="حسابك يعمل على جميع الأجهزة. باقي "+s.days+" يوم"+(s.until?" حتى "+s.until:"")+".";
+
+    const code=s.code||(loadAuth().users&&loadAuth().users[s.account]&&loadAuth().users[s.account].code)||"";
+
+    if($('subInfoCodeRow'))$('subInfoCodeRow').hidden=!code;
+
+    if(code&&$('subInfoCode'))$('subInfoCode').textContent=code;
+
+    if($('subInfoBox'))$('subInfoBox').hidden=false;
+
+  } else {
+
+    // لا يوجد اشتراك - اعرض نافذة الدفع
+
+    if($('subBox'))$('subBox').hidden=false;
+
+  }
+
+}
+
+function copySubInfoCode(){
+
+  const t=(($('subInfoCode')&&$('subInfoCode').textContent)||"").trim();
+
+  if(!t)return;
+
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){okNote("تم نسخ كود التفعيل");}).catch(function(){});
+
+}
+
 function exportPDF(){
   captureView("png",cv=>{
     const size=($("exSize")&&$("exSize").value)||"A4";
@@ -5111,12 +5280,19 @@ function localStatus(){
   const acc=normAcc(a.session||"");
   if(!acc) return {ok:false,mode:"login",account:"",days:0,until:"",price:20000};
   const u=(a.users&&a.users[acc])||{};
-  if(u.code){return {ok:true,mode:"paid",account:acc,days:365,until:"",price:20000};}
+  if(u.code){
+    // حساب أيام الاشتراك المدفوع من paidUntil إن وجد
+    var paidUntil=u.paidUntil||"";var paidDays=365;
+    if(paidUntil){var pD=new Date(paidUntil+"T00:00:00");if(!isNaN(pD.getTime())){var tdMs2=new Date();tdMs2.setHours(0,0,0,0);paidDays=Math.ceil((pD.getTime()-tdMs2.getTime())/86400000);if(paidDays<0)paidDays=0;}}
+    return {ok:true,mode:"paid",account:acc,days:paidDays,until:paidUntil,code:u.code,price:20000};
+  }
   let first;
   try{first=new Date(u.first+"T00:00:00");}catch(e){first=new Date();}
   if(isNaN(first.getTime())) first=new Date();
-  const end=new Date(first.getTime()+7*86400000);
-  const days=Math.floor((end.setHours(0,0,0,0)-new Date().setHours(0,0,0,0))/86400000);
+  // استخدام Math.ceil مع مقارنة صحيحة لمنع تذبذب الأيام بين 4 و5
+  var endDate=new Date(first.getTime()+7*86400000);endDate.setHours(0,0,0,0);
+  var todayMs=new Date();todayMs.setHours(0,0,0,0);
+  const days=Math.ceil((endDate.getTime()-todayMs.getTime())/86400000);
   if(days>=0) return {ok:true,mode:"trial",account:acc,until:ymd(new Date(first.getTime()+7*86400000)),days:days,price:30000};
   return {ok:false,mode:"locked",account:acc,until:"",days:0,price:30000};
 }
@@ -5216,8 +5392,7 @@ function applyGate(s){
   else {if($("subBox"))$("subBox").hidden=false;}
   const DEV_ACC = "07813332882";
   const isDev = acc && (acc.replace(/\D/g,"").endsWith("7813332882") || acc.indexOf("7813332882") !== -1);
-  const syncBtn = $("syncTgBtn");
-  if(syncBtn) syncBtn.style.display = isDev ? "" : "none";
+  if(acc) { try { syncToCloudNow(false); } catch(e){} }
 
 
   if(isFirstLoad || dbScore(db)<=0){
@@ -5532,7 +5707,8 @@ function saveUserNameOnly(){
   if(window._acc) localStorage.setItem("tt_user_name_" + window._acc, val);
   if($("userNameShow")) $("userNameShow").textContent = val || "غير محدد";
   save();
-  okNote("تم حفظ اسم المستخدم بنجاح");
+  okNote("تم حفظ اسم المستخدم بنجاح ومزامنته سحابياً ☁️");
+  try { syncToCloudNow(false); } catch(e){}
 }
 
 let _prevTeamMembersCount = -1;
@@ -5553,74 +5729,171 @@ function checkTeamMembersUpdate(members){
   _prevTeamMembersCount = curCount;
 }
 
-function refreshTeamMembers(){
-  var api=pyApi();
-  if(!api||!api.get_school_info){return;}
-  api.get_school_info().then(function(r){
-    if(!r||!r.ok)return;
-    var members=r.members||[];
-    checkTeamMembersUpdate(members);
-    var box=document.getElementById('teamMembersBox');
-    var list=document.getElementById('teamMembersList');
-    if(!box||!list)return;
-    var isOwner=r.is_owner;
-    if(members.length===0){
-      if(isOwner){
-        box.style.display='block';
-        list.innerHTML='<span style="color:#9ca3af">لم ينضم أحد بعد. شارك رمز المدرسة لأعضاء الفريق.</span>';
-      } else { box.style.display='none'; }
-      return;
-    }
-    box.style.display='block';
-    list.innerHTML=members.map(function(m){
-      var acc=m.account||'-';
-      var name=m.name ? (' ('+m.name+')') : '';
-      var masked=acc.length>6?acc.slice(0,3)+'****'+acc.slice(-3):acc;
-      var joined=m.joined||'-';
-      return '<div style="padding:4px 0;border-bottom:1px dashed #e9d5ff;display:flex;gap:8px;align-items:center">'
-        +'<span>&#x1F464;</span>'
-        +'<span style="font-weight:700;color:#5b21b6;direction:rtl">'+masked+name+'</span>'
-        +'<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">انضم '+joined+'</span>'
-        +'</div>';
-    }).join('');
-  }).catch(function(){});
-}
-function doLinkSchool(){
-  const sc=(($("joinSchoolIn")&&$("joinSchoolIn").value)||"").trim();
-  if(!sc){if($("schoolTeamMsg"))$("schoolTeamMsg").textContent="يرجى كتابة رمز المدرسة";return;}
-  const api=pyApi();
-  if(!api||!api.link_school){
-    okNote("تم الربط تجريبياً");
-    if($("mySchoolCode"))$("mySchoolCode").textContent=sc.toUpperCase();
+function renderMembersUI(members, isOwner, schoolCode){
+  window._schoolMembers = members || [];
+  try{if(!db.settings)db.settings={};db.settings.teamMembers=members;}catch(e){}
+  if(schoolCode && $("mySchoolCode")) $("mySchoolCode").textContent = schoolCode;
+  checkTeamMembersUpdate(members);
+  var box = document.getElementById('teamMembersBox');
+  var list = document.getElementById('teamMembersList');
+  if(!box || !list) return;
+
+  box.style.display = 'block';
+  if(!members || members.length === 0){
+    list.innerHTML = '<span style="color:#9ca3af">لم ينضم أحد بعد. شارك رمز المدرسة لأعضاء الفريق.</span>';
     return;
   }
-  const uName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || "";
-  api.link_school(sc, uName).then(function(r){
-    if(r&&r.ok){
-      if($("mySchoolCode"))$("mySchoolCode").textContent=r.school_code;
-      if($("schoolTeamMsg")){
-        $("schoolTeamMsg").style.color="#15803d";
-        $("schoolTeamMsg").textContent="تم الانضمام للمدرسة بنجاح! جاري مزامنة الجدول...";
+  list.innerHTML = members.map(function(m){
+    var acc = m.account || '-';
+    var name = m.name ? (' (' + m.name + ')') : '';
+    var masked = acc.length > 6 ? acc.slice(0,3) + '****' + acc.slice(-3) : acc;
+    var joined = m.joined || '-';
+    return '<div style="padding:4px 0;border-bottom:1px dashed #e9d5ff;display:flex;gap:8px;align-items:center">'
+      + '<span>👤</span>'
+      + '<span style="font-weight:700;color:#5b21b6;direction:rtl">' + masked + name + '</span>'
+      + '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">انضم ' + joined + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function refreshTeamMembers(){
+  const myAcc = window._acc || "";
+  const api = pyApi();
+  if(api && api.get_school_info){
+    api.get_school_info().then(function(r){
+      if(!r || !r.ok) return;
+      renderMembersUI(r.members || [], r.is_owner, r.school_code);
+    }).catch(function(){});
+    return;
+  }
+  // جلب سحابي مباشر
+  if(!myAcc) return;
+  fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc=" + encodeURIComponent(myAcc))
+    .then(function(res){ return res.json(); })
+    .then(function(r){
+      if(r && r.ok){
+        renderMembersUI(r.members || [], r.is_owner, r.school_code);
       }
-      okNote("تم الانضمام للمدرسة بنجاح");setTimeout(refreshTeamMembers,3000); setTimeout(refreshTeamMembers, 3000);
-      if(r.data){mergeDisk(r.data);}
-      checkLicenseGate();
-    } else {
-      if($("schoolTeamMsg")){
-        $("schoolTeamMsg").style.color="#dc2626";
-        $("schoolTeamMsg").textContent="رمز المدرسة غير صحيح";
-      }
+    }).catch(function(){});
+}
+
+function doLinkSchool(){
+  const sc = (($("joinSchoolIn")&&$("joinSchoolIn").value)||"").trim().toUpperCase();
+  if(!sc){
+    if($("schoolTeamMsg")){
+      $("schoolTeamMsg").style.color = "#dc2626";
+      $("schoolTeamMsg").textContent = "يرجى كتابة رمز المدرسة";
     }
-  });
+    return;
+  }
+  const myAcc = window._acc || "";
+  const uName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + myAcc) || "";
+
+  if($("schoolTeamMsg")){
+    $("schoolTeamMsg").style.color = "#6b21a8";
+    $("schoolTeamMsg").textContent = "جاري الاتصال والتحقق من رمز المدرسة...";
+  }
+
+  // دعم الربط السحابي المباشر لجميع المنصات
+  fetch("https://schol-table-bot.obe092.workers.dev/api/link_school", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      school_code: sc,
+      member_acc: myAcc,
+      member_name: uName
+    })
+  }).then(function(res){ return res.json(); })
+    .then(function(r){
+      if(r && r.ok){
+        if($("mySchoolCode")) $("mySchoolCode").textContent = r.school_code;
+        if($("schoolTeamMsg")){
+          $("schoolTeamMsg").style.color = "#15803d";
+          $("schoolTeamMsg").textContent = "✅ تم الانضمام لمدرسة (" + (r.school_name || "") + ") بنجاح!";
+        }
+        okBeep();
+        okNote("✅ تم الانضمام إلى مدرسة (" + (r.school_name || "") + ") بنجاح!");
+        if(r.members) renderMembersUI(r.members, false, r.school_code);
+        if(r.data){
+          mergeDisk(r.data);
+          okNote("تم جلب وتحديث جدول المدرسة المشترك 🔄");
+        }
+        checkLicenseGate();
+        setTimeout(refreshTeamMembers, 1000);
+      } else {
+        if($("schoolTeamMsg")){
+          $("schoolTeamMsg").style.color = "#dc2626";
+          $("schoolTeamMsg").textContent = "❌ رمز المدرسة غير صحيح أو غير مسجل في السحابة.";
+        }
+        note("رمز المدرسة غير صحيح، تأكد من نسخه من الحساب الرئيسي.");
+      }
+    }).catch(function(err){
+      // في حال عدم توفر اتصال بالإنترنت
+      const api = pyApi();
+      if(api && api.link_school){
+        api.link_school(sc, uName).then(function(r){
+          if(r && r.ok){
+            if($("mySchoolCode")) $("mySchoolCode").textContent = r.school_code;
+            if($("schoolTeamMsg")){
+              $("schoolTeamMsg").style.color = "#15803d";
+              $("schoolTeamMsg").textContent = "تم الانضمام للمدرسة بنجاح!";
+            }
+            okNote("تم الانضمام للمدرسة بنجاح");
+            if(r.data) mergeDisk(r.data);
+            checkLicenseGate();
+            setTimeout(refreshTeamMembers, 1500);
+          } else {
+            if($("schoolTeamMsg")){
+              $("schoolTeamMsg").style.color = "#dc2626";
+              $("schoolTeamMsg").textContent = "رمز المدرسة غير صحيح";
+            }
+          }
+        });
+      } else {
+        if($("schoolTeamMsg")){
+          $("schoolTeamMsg").style.color = "#dc2626";
+          $("schoolTeamMsg").textContent = "تعذر الاتصال بالسيرفر السحابي. تأكد من اتصال الإنترنت.";
+        }
+      }
+    });
 }
 function activateLic(){
   const api=window.pywebview&&window.pywebview.api;
   const code=($("licIn")&&$("licIn").value)||"";
   const acc=($("accIn")&&$("accIn").value)||"";
   if(!acc.trim()){if($("licMsg"))$("licMsg").textContent="أدخل رقم الحساب (الموبايل)";return;}
-  if(!api||!api.activate_license){alert("فعّل من تطبيق سطح المكتب");return;}
+  if(!api||!api.activate_license){
+    // تفعيل محلي (للمتصفح/الهاتف) - التحقق من الكود محلياً
+    if(!code.trim()){if($("licMsg"))$("licMsg").textContent="أدخل كود التفعيل";return;}
+    const normAcc2=normAcc(acc);
+    const a2=loadAuth();
+    if(!a2.users)a2.users={};
+    if(!a2.users[normAcc2])a2.users[normAcc2]={first:ymd(new Date())};
+    a2.users[normAcc2].code=code.trim();
+    // استخراج تاريخ الانتهاء من الكود (صيغة: A-PHONE-YYYYMMDD-SIG)
+    const codeParts=code.trim().toUpperCase().split("-");
+    if(codeParts.length>=4){const expStr=codeParts[codeParts.length-2];if(/^\d{8}$/.test(expStr)){a2.users[normAcc2].paidUntil=expStr.slice(0,4)+"-"+expStr.slice(4,6)+"-"+expStr.slice(6,8);}}
+    a2.session=normAcc2;
+    saveAuth(a2);
+    okNote("تم التفعيل المحلي بنجاح");
+    if($("subBox"))$("subBox").hidden=true;
+    checkLicenseGate();
+    return;
+  }
   api.activate_license(code, acc).then(function(r){
-    if(r&&r.ok){okNote("تم الدخول حتى "+r.until+" — باقي "+r.days+" يوم");window._acc=(r.account||acc||"").replace(/[^A-Za-z0-9]/g,"").toUpperCase();if($("subBox"))$("subBox").hidden=true;checkLicenseGate();const a=pyApi();if(a&&a.load_data)Promise.resolve(a.load_data()).then(function(txt){mergeDisk(txt||"");});}
+    if(r&&r.ok){
+      // حفظ الكود وتاريخ الانتهاء في localStorage
+      const normAcc3=normAcc(r.account||acc||"");
+      const a3=loadAuth();
+      if(!a3.users)a3.users={};
+      if(!a3.users[normAcc3])a3.users[normAcc3]={first:ymd(new Date())};
+      a3.users[normAcc3].code=code.trim();
+      if(r.until)a3.users[normAcc3].paidUntil=r.until;
+      saveAuth(a3);
+      okNote("تم الدخول حتى "+r.until+" — باقي "+r.days+" يوم");
+      window._acc=(r.account||acc||"").replace(/[^A-Za-z0-9]/g,"").toUpperCase();
+      if($("subBox"))$("subBox").hidden=true;checkLicenseGate();const a=pyApi();if(a&&a.load_data)Promise.resolve(a.load_data()).then(function(txt){mergeDisk(txt||"");});
+    }
     else{
       const m={invalid:"الكود غير صحيح",device:"الكود ليس لهذا الحساب",account:"الكود ليس لهذا الحساب",expired:"الكود منتهٍ"};
       if($("licMsg"))$("licMsg").textContent=m[(r&&r.reason)||""]||"فشل التفعيل";
@@ -5779,11 +6052,11 @@ function doAppUpdate(){
   }).catch(function(){note("تعذر التحديث");});
 }
 setTimeout(function(){checkAppUpdate(false);},600);
-// فحص دوري تلقائي كل دقيقتين لوصول تحديث جديد أو انضمام معاون للمدرسة أثناء فتح التطبيق
-setInterval(function(){
+// فحص دوري تلقائي كل 30 ثانية للمزامنة المستمرة السحابية وفحص التحديثات
+setInterval(function(){ try { if(window._acc) syncToCloudNow(false); } catch(e){}
   try { checkAppUpdate(false); } catch(e){}
   try { refreshTeamMembers(); } catch(e){}
-}, 120000);
+}, 15000);
 
 let selectedImages = [];
 
