@@ -5569,6 +5569,9 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
   okBeep();
   okNote("✅ تم تسجيل الدخول بنجاح!");
   afterAccount({ ok: true, account: acc, data: cloudRes.data || "" });
+  if($("loginBox")) $("loginBox").hidden = true;
+  applyGate(localStatus());
+});
 }
 function iqWaNum(phone){
   var n=String(phone||"").replace(/\D/g,"");
@@ -6056,8 +6059,17 @@ function activateLic(){
 }
 function checkLicenseGate(){
   const api=window.pywebview&&window.pywebview.api;
-  if(!api||!api.license_status){applyGate(localStatus());return;}
-  api.license_status().then(function(s){applyGate(s);}).catch(function(){applyGate(localStatus());});
+  const ls=localStatus();
+  if(!api||!api.license_status){applyGate(ls);return;}
+  api.license_status().then(function(s){
+    if(s && s.account){
+      applyGate(s);
+    } else if(ls && ls.account){
+      applyGate(ls);
+    } else {
+      applyGate(s || ls);
+    }
+  }).catch(function(){applyGate(ls);});
 }
 function boot(fileRaw){
   try{
