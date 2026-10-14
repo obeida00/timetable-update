@@ -581,10 +581,14 @@ export default {
       }
 
       // الحساب غير مسجل في أي مدرسة وغير موجود كمالك
+      let removedNow = "";
+      try { removedNow = String(await storeGet(env, "removed_" + acc) || ""); } catch (e) { }
       return new Response(JSON.stringify({
         ok: false,
         not_found: true,
-        error: "account_not_registered"
+        error: "account_not_registered",
+        acc: acc,
+        removed: (removedNow !== "")
       }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
@@ -717,6 +721,15 @@ export default {
         // علامة: هذا الحساب أُزيل من فريق — تمنع جهازه القديم من إعادة الكتابة
         try { await storePut(env, "removed_" + memberAcc, String(Date.now())); } catch (e) { }
         try { await storePut(env, "members_" + memberAcc, ""); } catch (e) { }
+      // مسح كل آثار العضو المأزول من السحابة (الاسم/المدرسة/المشاركة)
+      try { await storePut(env, "school_" + memberAcc, ""); } catch (e) { }
+      try { await storePut(env, "username_" + memberAcc, ""); } catch (e) { }
+      try { await storePut(env, "share_owner_" + memberAcc, ""); } catch (e) { }
+      if (kv) {
+        try { await kv.delete("school_" + memberAcc); } catch (e) { }
+        try { await kv.delete("username_" + memberAcc); } catch (e) { }
+        try { await kv.delete("members_" + memberAcc); } catch (e) { }
+      }
         try { delete globalThis._MEM_CACHE.members[memberAcc]; } catch (e) { }
         // إرجاع العضو لحالة غير مفعّل ليبدأ تجربة جديدة على جهازه
         const mu = users.find(function (u) { return u.acc === memberAcc; });

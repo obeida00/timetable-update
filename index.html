@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.53</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.54</div>
     </div>
   </div>
   
@@ -885,7 +885,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.53</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.54</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1762,7 +1762,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.53";
+const APP_VERSION="0.54";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6178,7 +6178,13 @@ function removeMember(memberAcc){
   }).then(function(res){ return res.json(); })
     .then(function(r){
       if(r && r.ok){
-        okNote("✅ تم إزالة العضو من فريق المدرسة");
+        okNote("✅ تم إزالة العضو — حُذفت بياناته نهائياً من السحابة وجهازه سيرجع لتجربة 7 أيام");
+        try{
+          window._schoolMembers = r.members || [];
+          if(db && db.settings) db.settings.teamMembers = r.members || [];
+          _prevTeamMembersCount = (r.members || []).length;
+          save(true);
+        }catch(e){}
         renderMembersUI(r.members || [], true, null);
       } else {
         note("تعذر إزالة العضو: " + (r.error || ""));
@@ -6192,7 +6198,13 @@ function handleRemovedFromSchool(){
   try{ flushSave(); }catch(e){}
   var acc = window._acc || "";
   try{ localStorage.removeItem(storageKey()); }catch(e){}
+  try{ localStorage.removeItem(KEY + "_" + normAcc(acc)); }catch(e){}
+  try{ localStorage.removeItem(KEY + "_grid"); localStorage.removeItem(KEY + "_school"); }catch(e){}
+  try{ localStorage.removeItem(KEY + "_guest"); }catch(e){}
+  try{ localStorage.removeItem(KEY + "_ets_" + normAcc(acc)); }catch(e){}
   try{ if(acc) localStorage.removeItem("tt_linked_school_" + acc); }catch(e){}
+  try{ if(acc) localStorage.removeItem("tt_user_name_" + acc); }catch(e){}
+  try{ if(acc) localStorage.removeItem("tt_user_name_" + normAcc(acc)); }catch(e){}
   try{
     const a=loadAuth(); const na=normAcc(a.session||"");
     if(na && a.users && a.users[na]){
@@ -6208,8 +6220,10 @@ function handleRemovedFromSchool(){
   try{ db.settings.teamMembers=[]; }catch(e){}
   try{ window._schoolMembers=[]; }catch(e){}
   try{ save(true); }catch(e){}
+  try{ flushSave(); }catch(e){}
   try{ refreshAll(); }catch(e){}
   try{ renderMembersUI([], false, null); }catch(e){}
+  try{ if($("schoolTeamMsg")){ $("schoolTeamMsg").style.color="#b45309"; $("schoolTeamMsg").textContent="⚠️ تمت إزالة حسابك من فريق المدرسة وحُذفت البيانات."; } }catch(e){}
   try{ applyGate(localStatus()); }catch(e){}
   try{ showLicRemain(localStatus()); }catch(e){}
   note("⚠️ تمت إزالة حسابك من فريق المدرسة، وحُذفت البيانات المرتبطة به. رجعت للنسخة التجريبية 7 أيام — لتفعيل الاشتراك تواصل مع المطور.");
@@ -6291,9 +6305,10 @@ function mergeSharedIfNewer(raw, ts){
   okNote("🔄 تم تحديث جدول وبيانات المدرسة تلقائياً");
 }
 function applySchoolInfo(r){
-  if(!r || !r.ok) return;
+  if(!r) return;
   // السيرفر يؤكد أن هذا الحساب أُزيل من الفريق — تُحذف بياناته ويرجع لتجربة 7 أيام
   if(r.removed){ handleRemovedFromSchool(); return; }
+  if(!r.ok) return;
   if(r.owner_acc) window._schoolOwner = r.owner_acc;
   // الاشتراك يُورّث من أي حساب مفعّل داخل الفريق (المالك أو أي عضو منضم)
   if(r.owner_paid && r.owner_until){
@@ -6415,6 +6430,7 @@ function refreshTeamMembers(){
   var savedSchool = (db.settings && db.settings.linkedSchool) || localStorage.getItem("tt_linked_school_" + myAcc) || "";
   // الاستعلام السحابي المباشر دائماً لضمان وصول أحدث جدول واشتراك المالك
   cloudGetSchoolInfo(myAcc).then(function(r){
+    if(r && r.removed){ handleRemovedFromSchool(); return; }
     if(r && r.ok){
       applySchoolInfo(r);
     }
