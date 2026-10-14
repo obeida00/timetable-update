@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.56</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.57</div>
     </div>
   </div>
   
@@ -885,7 +885,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.56</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.57</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1762,7 +1762,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.56";
+const APP_VERSION="0.57";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6220,7 +6220,7 @@ function removeMember(memberAcc){
   }).then(function(res){ return res.json(); })
     .then(function(r){
       if(r && r.ok){
-        okNote("✅ تم إزالة العضو — حُذفت بياناته نهائياً من السحابة وجهازه سيرجع لتجربة 7 أيام");
+        okNote("✅ تم إزالة العضو — بياناته انحذفت من السحابة\n📱 جهازه يحذف الجدول تلقائياً ويرجع تجريبي 7 أيام (خلال ثوانٍ إذا جهازه محدّث على 0.54 أو أحدث)");
         try{
           window._schoolMembers = r.members || [];
           if(db && db.settings) db.settings.teamMembers = r.members || [];
@@ -6267,11 +6267,38 @@ function handleRemovedFromSchool(){
   try{ window._schoolMembers=[]; }catch(e){}
   try{ save(true); }catch(e){}
   try{ flushSave(); }catch(e){}
+  // مسح كل مفاتيح التخزين الخاصة بهذا الحساب (بدون المساس ببيانات الدخول)
+  try{
+    const del=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i)||"";
+      if(k.indexOf("auth")>=0) continue;
+      if(k.indexOf(KEY)===0 || (acc && k.indexOf(acc)>=0)) del.push(k);
+    }
+    del.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+    try{ sessionStorage.clear(); }catch(e){}
+  }catch(e){}
+  // مسح النسخة الاحتياطية المحلية على سطح المكتب حتى لا تُسترجع البيانات
+  try{
+    const a=pyApi();
+    if(a&&a.save_backup){ try{ a.save_backup(JSON.stringify(blankDb()), "backup"); }catch(e){} }
+  }catch(e){}
   try{ refreshAll(); }catch(e){}
   try{ renderMembersUI([], false, null); }catch(e){}
   try{ if($("schoolTeamMsg")){ $("schoolTeamMsg").style.color="#b45309"; $("schoolTeamMsg").textContent="⚠️ تمت إزالة حسابك من فريق المدرسة وحُذفت البيانات."; } }catch(e){}
   try{ applyGate(localStatus()); }catch(e){}
   try{ showLicRemain(localStatus()); }catch(e){}
+  // تثبيت الحذف: نعيد الكتابة بعد لحظات لضمان عدم رجوع البيانات من حفظ تلقائي قديم
+  setTimeout(function(){
+    try{
+      _lastSaved=""; _sharedTsApplied=0; _ownTsApplied=0;
+      db=blankDb();
+      save(true); try{ flushSave(); }catch(e){}
+      const a=pyApi();
+      if(a&&a.save_backup){ try{ a.save_backup(JSON.stringify(blankDb()), "backup"); }catch(e){} }
+      if(a&&a.save_data){ try{ a.save_data(JSON.stringify(blankDb())); }catch(e){} }
+    }catch(e){}
+  }, 2500);
   note("⚠️ تمت إزالة حسابك من فريق المدرسة، وحُذفت البيانات المرتبطة به. رجعت للنسخة التجريبية 7 أيام — لتفعيل الاشتراك تواصل مع المطور.");
 }
 

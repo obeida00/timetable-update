@@ -493,6 +493,16 @@ export default {
 
       if (targetOwner) {
         const ownerAcc = targetOwner.acc;
+        // حساب أُزيل من الفريق: يُمنع من أي بيانات مدرسة تماماً (حتى لو بقيت نسخ قديمة على جهازه)
+        try {
+          if (acc && acc !== ownerAcc && String(await storeGet(env, "removed_" + acc) || "") !== "") {
+            return new Response(JSON.stringify({
+              ok: false, not_found: true, removed: true, acc: acc
+            }), {
+              headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+            });
+          }
+        } catch (e) { }
         const members = await fetchSchoolMembers(env, ownerAcc, kv);
         const ownerCode = "SCH-" + String(ownerAcc).slice(-4);
         const isMember = (acc !== ownerAcc) && members.some(m => m.account === acc);
@@ -2264,7 +2274,7 @@ async function listBoundChats(kv) {
 }
 // رسالة إشعار التحديث الجاهزة
 function updateBroadcastText() {
-  return "🚀 <b>تحديث جديد لنظام الجداول المدرسية — إصدار 0.56</b>\n\n" +
+  return "🚀 <b>تحديث جديد لنظام الجداول المدرسية — إصدار 0.57</b>\n\n" +
     "📲 <b>طريقة التحديث:</b> افتح البرنامج، راح يظهر لك تنبيه التحديث، اضغط «تحديث الآن». لازم تحدّث كل أجهزة المدرسة (المدير والمعاونين).\n\n" +
     "━━━━━━━━━━━━━━━\n" +
     "📌 <b>شنو الجديد:</b>\n" +
