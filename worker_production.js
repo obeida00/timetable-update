@@ -172,10 +172,19 @@ export default {
         }
 
         const users = await getUsersList(kv);
-        // البحث عن المدرسة بواسطة رمز المدرسة SCH-XXXX (المأخوذ من آخر 4 أرقام من هاتف المالك أو كود المدرسة)
+        // البحث عن المدرسة بواسطة:
+        // 1. رمز المدرسة SCH-XXXX
+        // 2. رقم هاتف المالك مباشرة (مثال: 07813332882)
+        // 3. آخر 4 أرقام
+        const cleanInput = schoolCode.replace(/\D/g, "");
         const targetOwner = users.find(u => {
-          const ownerCode = "SCH-" + String(u.acc || "").slice(-4);
-          return ownerCode.toUpperCase() === schoolCode || String(u.school_code || "").toUpperCase() === schoolCode;
+          const ownerCode = ("SCH-" + String(u.acc || "").slice(-4)).toUpperCase();
+          const customCode = String(u.school_code || "").toUpperCase();
+          const ownerPhone = String(u.acc || "").trim();
+          if (ownerCode === schoolCode || customCode === schoolCode) return true;
+          if (ownerPhone === schoolCode || ownerPhone === cleanInput) return true;
+          if (cleanInput && ownerPhone.endsWith(cleanInput) && cleanInput.length >= 4) return true;
+          return false;
         });
 
         if (!targetOwner) {
@@ -202,12 +211,14 @@ export default {
 
         globalThis._MEM_CACHE.members[ownerAcc] = members;
         if (kv) {
-          await kv.put("members_" + ownerAcc, JSON.stringify(members));
+          try { await kv.put("members_" + ownerAcc, JSON.stringify(members)); } catch(e){}
         }
 
         // تحديث عدد الأعضاء في قائمة المدارس
         targetOwner.members_count = members.length;
-        await saveUsersList(kv, users);
+        if (kv) {
+          try { await saveUsersList(kv, users); } catch(e){}
+        }
 
         // جلب جدول المدرسة للمنضم الجديد
         let ownerData = "";
@@ -246,7 +257,16 @@ export default {
       let targetOwner = null;
 
       if (code) {
-        targetOwner = users.find(u => ("SCH-" + String(u.acc || "").slice(-4)).toUpperCase() === code || String(u.school_code || "").toUpperCase() === code);
+        const cleanInput = code.replace(/\D/g, "");
+        targetOwner = users.find(u => {
+          const ownerCode = ("SCH-" + String(u.acc || "").slice(-4)).toUpperCase();
+          const customCode = String(u.school_code || "").toUpperCase();
+          const ownerPhone = String(u.acc || "").trim();
+          if (ownerCode === code || customCode === code) return true;
+          if (ownerPhone === code || ownerPhone === cleanInput) return true;
+          if (cleanInput && ownerPhone.endsWith(cleanInput) && cleanInput.length >= 4) return true;
+          return false;
+        });
       } else if (acc) {
         // أولاً: هل هو المالك؟
         targetOwner = users.find(u => u.acc === acc);

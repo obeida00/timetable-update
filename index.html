@@ -1008,7 +1008,7 @@ td.clk:hover .mv button{opacity:.45}
           </div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <input id="joinSchoolIn" placeholder="أدخل رمز مدرسة أخرى (SCH-...)" style="flex:1;height:34px;min-height:34px;padding:4px 8px;font-size:.82rem;text-align:center;direction:ltr;border-radius:8px">
+          <input id="joinSchoolIn" placeholder="أدخل رمز المدرسة (SCH-XXXX) أو رقم هاتف المدير" style="flex:1;height:34px;min-height:34px;padding:4px 8px;font-size:.82rem;text-align:center;direction:ltr;border-radius:8px">
           <button class="btn g s" type="button" style="height:34px;min-height:34px;font-size:.78rem;padding:0 12px;border-radius:8px" onclick="doLinkSchool()">انضمام للمدرسة</button>
         </div>
         <div id="schoolTeamMsg" style="margin-top:4px;font-size:.75rem;font-weight:700;color:#15803d;min-height:14px"></div>
@@ -6034,20 +6034,28 @@ function refreshTeamMembers(){
 }
 
 function doLinkSchool(){
-  const sc = (($("joinSchoolIn")&&$("joinSchoolIn").value)||"").trim().toUpperCase();
-  if(!sc){
+  let rawSc = (($("joinSchoolIn")&&$("joinSchoolIn").value)||"").trim();
+  if(!rawSc){
     if($("schoolTeamMsg")){
       $("schoolTeamMsg").style.color = "#dc2626";
-      $("schoolTeamMsg").textContent = "يرجى كتابة رمز المدرسة";
+      $("schoolTeamMsg").textContent = "يرجى كتابة رمز المدرسة أو رقم هاتف المدير";
     }
     return;
   }
+  let sc = rawSc.toUpperCase();
+  // إذا أدخل المستخدم رقم موبايل مباشر (10-11 رقماً)
+  const digits = rawSc.replace(/\D/g, "");
+  if(digits.length >= 10 && !sc.startsWith("SCH-")){
+    // تحويله تلقائياً أو إرساله كرمز مدرسة
+    sc = "SCH-" + digits.slice(-4);
+  }
+
   const myAcc = window._acc || "";
   const uName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + myAcc) || "";
 
   if($("schoolTeamMsg")){
     $("schoolTeamMsg").style.color = "#6b21a8";
-    $("schoolTeamMsg").textContent = "جاري الاتصال والتحقق من رمز المدرسة...";
+    $("schoolTeamMsg").textContent = "جاري الاتصال والتحقق من المدرسة...";
   }
 
   // دعم الربط السحابي المباشر لجميع المنصات
@@ -6059,31 +6067,35 @@ function doLinkSchool(){
       member_acc: myAcc,
       member_name: uName
     })
-  }).then(function(res){ return res.json(); })
-    .then(function(r){
-      if(r && r.ok){
-        if($("mySchoolCode")) $("mySchoolCode").textContent = r.school_code;
-        if($("schoolTeamMsg")){
-          $("schoolTeamMsg").style.color = "#15803d";
-          $("schoolTeamMsg").textContent = "✅ تم الانضمام لمدرسة (" + (r.school_name || "") + ") بنجاح!";
-        }
-        okBeep();
-        okNote("✅ تم الانضمام إلى مدرسة (" + (r.school_name || "") + ") بنجاح!");
-        if(r.members) renderMembersUI(r.members, false, r.school_code);
-        if(r.data){
-          mergeDisk(r.data);
-          okNote("تم جلب وتحديث جدول المدرسة المشترك 🔄");
-        }
-        checkLicenseGate();
-        setTimeout(refreshTeamMembers, 1000);
-      } else {
-        if($("schoolTeamMsg")){
-          $("schoolTeamMsg").style.color = "#dc2626";
-          $("schoolTeamMsg").textContent = "❌ رمز المدرسة غير صحيح أو غير مسجل في السحابة.";
-        }
-        note("رمز المدرسة غير صحيح، تأكد من نسخه من الحساب الرئيسي.");
+  }).then(function(res){
+    return res.json().catch(function(){ return { ok: false, error: "server_error" }; });
+  }).then(function(r){
+    if(r && r.ok){
+      if($("mySchoolCode")) $("mySchoolCode").textContent = r.school_code;
+      if($("schoolTeamMsg")){
+        $("schoolTeamMsg").style.color = "#15803d";
+        $("schoolTeamMsg").textContent = "✅ تم الانضمام لمدرسة (" + (r.school_name || "") + ") بنجاح!";
       }
-    }).catch(function(err){
+      okBeep();
+      okNote("✅ تم الانضمام إلى مدرسة (" + (r.school_name || "") + ") بنجاح!");
+      if(r.members) renderMembersUI(r.members, false, r.school_code);
+      if(r.data){
+        mergeDisk(r.data);
+        okNote("تم جلب وتحديث جدول المدرسة المشترك 🔄");
+      }
+      checkLicenseGate();
+      setTimeout(refreshTeamMembers, 1000);
+    } else {
+      const errMsg = (r && r.error === "KV put() limit exceeded for the day.") 
+        ? "⚠️ تم بلوغ الحد اليومي للسيرفر، يرجى المحاولة بعد قليل أو التأكد من إدخال رمز المدرسة الصحيح."
+        : "❌ لم يتم العثور على مدرسة بهذا الرمز أو الرقم. تأكد من إدخال رمز المشاركة (SCH-XXXX) أو رقم هاتف المدير.";
+      if($("schoolTeamMsg")){
+        $("schoolTeamMsg").style.color = "#dc2626";
+        $("schoolTeamMsg").textContent = errMsg;
+      }
+      note(errMsg);
+    }
+  }).catch(function(err){
       // في حال عدم توفر اتصال بالإنترنت
       const api = pyApi();
       if(api && api.link_school){
