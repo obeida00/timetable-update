@@ -5453,24 +5453,82 @@ function afterAccount(r,fresh){
 }
 function doLogin(){
   const api=pyApi();
-  const acc=($("loginAcc")&&$("loginAcc").value)||"";
-  const pw=($("loginPw")&&$("loginPw").value)||"";
-  if(!api||!api.login_account){
-    const r=localLogin(acc,pw);
-    if(r&&r.ok){okNote("تم الدخول");afterAccount(r);}
-    else {
-      const m={pass:"كلمة السر غير صحيحة",nouser:"لا حساب بهذا الرقم — أنشئ حساباً جديداً",account:"أدخل رقم موبايل صحيح"};
-      loginMsg(m[(r&&r.reason)||""]||"تعذر الدخول");
-    }
+  const acc=normAcc(($("loginAcc")&&$("loginAcc").value)||"");
+  const pw=String(($("loginPw")&&$("loginPw").value)||"").trim();
+  if(!acc || acc.length < 8){
+    loginMsg("أدخل رقم موبايل صحيح");
     return;
   }
-  api.login_account(acc,pw).then(function(r){
-    if(r&&r.ok){okNote("تم الدخول");afterAccount(r);}
-    else {
-      const m={pass:"كلمة السر أو الكود غير صحيح",nouser:"لا حساب بهذا الرقم — أنشئ حساباً جديداً",account:"أدخل رقم موبايل صحيح"};
-      loginMsg(m[(r&&r.reason)||""]||"تعذر الدخول");
-    }
-  });
+  if(!pw){
+    loginMsg("يرجى إدخال رمز الدخول");
+    return;
+  }
+
+  // 1. محاولة تسجيل الدخول محلياً أولاً
+  const rLocal = localLogin(acc, pw);
+  if(rLocal && rLocal.ok){
+    okNote("تم الدخول بنجاح");
+    afterAccount(rLocal);
+    return;
+  }
+
+  // 2. إذا كان يعمل بتطبيق سطح المكتب ولديه واجهة محلية
+  if(api && api.login_account){
+    api.login_account(acc, pw).then(function(r){
+      if(r && r.ok){
+        okNote("تم الدخول");
+        afterAccount(r);
+      } else {
+        const m={pass:"كلمة السر أو الكود غير صحيح",nouser:"لا حساب بهذا الرقم — أنشئ حساباً جديداً",account:"أدخل رقم موبايل صحيح"};
+        loginMsg(m[(r&&r.reason)||""]||"تعذر الدخول");
+      }
+    }).catch(function(){ loginMsg("تعذر الاتصال بخدمة الحسابات"); });
+    return;
+  }
+
+  // 3. التحقق السحابي الفوري والمباشر (للهواتف والأجهزة الجديدة)
+  loginMsg("جاري التحقق من الحساب سحابياً ☁️...");
+  fetch("https://schol-table-bot.obe092.workers.dev/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ acc: acc, pw: pw })
+  }).then(function(res){ return res.json(); })
+    .then(function(cloudRes){
+      if(cloudRes && cloudRes.ok){
+        // اعتماد الحساب محلياً في الهاتف
+        const a = loadAuth();
+        if(!a.users) a.users = {};
+        if(!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
+        a.users[acc].pw = pwHash(acc, pw);
+        if(cloudRes.paid && cloudRes.until){
+          a.users[acc].code = "CLOUD-ACTIVE";
+          a.users[acc].paidUntil = cloudRes.until;
+        }
+        a.session = acc;
+        saveAuth(a);
+
+        if(cloudRes.user_name){
+          if(!db.settings) db.settings = {};
+          db.settings.userName = cloudRes.user_name;
+          try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); }catch(e){}
+        }
+
+        okBeep();
+        okNote("✅ تم تسجيل الدخول بنجاح عبر السحابة!");
+        afterAccount({ ok: true, account: acc });
+      } else {
+        const m = {
+          pass: "رمز الدخول غير صحيح",
+          nouser: "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد» لإنشائه",
+          account: "أدخل رقم موبايل صحيح"
+        };
+        loginMsg(m[(cloudRes && cloudRes.reason) || ""] || "تعذر الدخول للحساب");
+      }
+    }).catch(function(){
+      // في حال عدم توفر اتصال بالإنترنت
+      const m = {pass:"كلمة السر غير صحيحة",nouser:"لا حساب بهذا الرقم — أنشئ حساباً جديداً",account:"أدخل رقم موبايل صحيح"};
+      loginMsg(m[(rLocal && rLocal.reason) || ""] || "تعذر التحقق من الحساب بدون إنترنت");
+    });
 }
 function iqWaNum(phone){
   var n=String(phone||"").replace(/\D/g,"");
@@ -5611,6 +5669,15 @@ function submitOtpVerification(){
 
     if(!api||!api.register_account){
       const r=localRegister(acc,newPw);
+      // تسجيل سحابي متزامن في الخلفية لضمان عمله في كل الأجهزة
+      try {
+        fetch("https://schol-table-bot.obe092.workers.dev/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ acc: acc, pw: newPw, name: userNameVal })
+        }).catch(function(){});
+      } catch(e){}
+
       if(r&&r.ok){
         cancelOtpFlow();
         okNote("تم إنشاء الحساب بنجاح — أهلاً بك " + userNameVal);
