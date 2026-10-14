@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.55</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.56</div>
     </div>
   </div>
   
@@ -885,7 +885,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.55</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.56</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1762,7 +1762,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.55";
+const APP_VERSION="0.56";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -5263,22 +5263,53 @@ function uploadReportPdf(){
   };
   fr.readAsDataURL(lr.blob);
 }
+// إنشاء PDF لجدول الأسبوع (أو جدول اليوم) من عرض الجداول
+function buildTimetablePdf(cb, mode){
+  try{
+    const btn=document.querySelector('nav.tabs button[data-tab="views"]');
+    if(btn) tab(btn);
+    if($("viewType")) $("viewType").value=(mode==="day")?"day":"weekall";
+    renderViews();
+    try{ setPrintPage(); }catch(e){}
+    setTimeout(function(){
+      captureView("png",function(cv){
+        if(!cv){ cb&&cb(null); return; }
+        _cvJpeg(cv,function(u8){
+          if(!u8){ cb&&cb(null); return; }
+          var size=($("exSize")&&$("exSize").value)||"A4";
+          var PW=842, PH=595;
+          if(cv.width < cv.height){ PW=595; PH=842; }
+          if(size==="A3"){ PW=Math.round(PW*1.414); PH=Math.round(PH*1.414); }
+          const blob=pdfFromJpegPages([{u8:u8,w:cv.width,h:cv.height}], PW, PH);
+          const sc=((db.settings&&db.settings.schoolName)||"المدرسة").replace(/[\/:*?"<>|\s]+/g,"_");
+          const nm=((mode==="day")?"جدول_اليوم_":"جدول_الاسبوع_")+sc+"_"+ymd(new Date())+".pdf";
+          window._lastReport={kind:"timetable",blob:blob,name:nm};
+          cb&&cb(blob,nm);
+        });
+      });
+    },400);
+  }catch(e){ note("تعذر إنشاء PDF للجدول: "+(e&&e.message?e.message:e)); cb&&cb(null); }
+}
+function _repDone(blob,nm){
+  const m=document.getElementById("repMsg");
+  if(!blob){ if(m) m.textContent="⚠️ لا توجد بيانات لهذا التقرير"; return; }
+  downloadBlob(nm,"application/pdf",blob);
+  if(m) m.innerHTML="✅ تم إنشاء الملف: <b>"+nm+"</b><br>📂 تجده في مجلد «التنزيلات (Downloads)»";
+  const box=document.getElementById("repMenuBox");
+  if(box && box.firstChild && !document.getElementById("repActions")){
+    const act=document.createElement("div");
+    act.id="repActions";
+    act.style.cssText="display:flex;gap:8px;margin-top:12px";
+    act.innerHTML='<button type="button" class="btn g" style="flex:1" onclick="uploadReportPdf()">📤 إرسال إلى تيليكرام</button>';
+    box.firstChild.appendChild(act);
+  }
+}
 function reportChoice(kind){
   const m=document.getElementById("repMsg");
   if(m) m.textContent="⏳ جارٍ إنشاء ملف PDF...";
-  buildReportPdf(kind,function(blob,nm){
-    if(!blob){ if(m) m.textContent="⚠️ لا توجد بيانات لهذا التقرير"; return; }
-    downloadBlob(nm,"application/pdf",blob);
-    if(m) m.innerHTML="✅ تم إنشاء الملف: <b>"+nm+"</b><br>📂 تجده في مجلد «التنزيلات (Downloads)»";
-    const box=document.getElementById("repMenuBox");
-    if(box && box.firstChild && !document.getElementById("repActions")){
-      const act=document.createElement("div");
-      act.id="repActions";
-      act.style.cssText="display:flex;gap:8px;margin-top:12px";
-      act.innerHTML='<button type="button" class="btn g" style="flex:1" onclick="uploadReportPdf()">📤 إرسال إلى تيليكرام</button>';
-      box.firstChild.appendChild(act);
-    }
-  });
+  if(kind==="timetable"){ buildTimetablePdf(function(b,n){ _repDone(b,n); },"week"); return; }
+  if(kind==="timetable_day"){ buildTimetablePdf(function(b,n){ _repDone(b,n); },"day"); return; }
+  buildReportPdf(kind,function(b,n){ _repDone(b,n); });
 }
 function openReportsMenu(){
   const old=document.getElementById("repMenuBox"); if(old) old.remove();
@@ -5288,6 +5319,8 @@ function openReportsMenu(){
   d.innerHTML='<div style="background:#fff;border-radius:18px;padding:18px;width:min(470px,96vw);box-shadow:0 20px 50px rgba(0,0,0,.3);direction:rtl">'
    +'<div style="font-weight:800;color:#4c1d95;font-size:1.05rem;text-align:center;margin-bottom:6px">📄 تصدير التقارير PDF</div>'
    +'<div style="font-size:.78rem;color:#6b7280;text-align:center;margin-bottom:12px">يُنشأ الملف بصيغة PDF جاهزة للطباعة، ويمكن إرساله إلى تيليكرام</div>'
+   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'timetable\')">📆 جدول الأسبوع (PDF)</button>'
+   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'timetable_day\')">📅 جدول اليوم (PDF)</button>'
    +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'teachers\')">👨‍🏫 تقرير المعلمين والأنصبة</button>'
    +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'subjects\')">📚 تقرير المواد الدراسية</button>'
    +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'sections\')">🏫 ملخص كل الشعب</button>'
