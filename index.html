@@ -5571,7 +5571,6 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
   afterAccount({ ok: true, account: acc, data: cloudRes.data || "" });
   if($("loginBox")) $("loginBox").hidden = true;
   applyGate(localStatus());
-});
 }
 function iqWaNum(phone){
   var n=String(phone||"").replace(/\D/g,"");
