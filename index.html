@@ -5509,37 +5509,66 @@ function checkCloudLogin(acc, pw, fallbackLocal){
   }).then(function(res){ return res.json(); })
     .then(function(cloudRes){
       if(cloudRes && cloudRes.ok){
-        const a = loadAuth();
-        if(!a.users) a.users = {};
-        if(!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
-        a.users[acc].pw = pwHash(acc, pw);
-        if(cloudRes.paid && cloudRes.until){
-          a.users[acc].code = "CLOUD-ACTIVE";
-          a.users[acc].paidUntil = cloudRes.until;
-        }
-        a.session = acc;
-        saveAuth(a);
-        if(cloudRes.user_name){
-          if(!db.settings) db.settings = {};
-          db.settings.userName = cloudRes.user_name;
-          try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); }catch(e){}
-        }
-        okBeep();
-        okNote("✅ تم تسجيل الدخول بنجاح عبر السحابة!");
-        afterAccount({ ok: true, account: acc });
+        onCloudLoginSuccess(acc, pw, cloudRes);
+      } else if(cloudRes && cloudRes.reason === "pass") {
+        loginMsg("رمز الدخول غير صحيح");
       } else {
-        const m = {
-          pass: "رمز الدخول غير صحيح",
-          nouser: "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد» لإنشائه",
-          account: "أدخل رقم موبايل صحيح"
-        };
-        var reason = (cloudRes && cloudRes.reason) || (fallbackLocal && fallbackLocal.reason) || "";
-        loginMsg(m[reason] || "تعذر الدخول للحساب");
+        // إذا تعذر الـ KV أو أرجع خطأ، فحص النسخة السحابية كخيار ثانٍ مؤكد
+        verifyViaCloudSync(acc, pw, fallbackLocal);
       }
     }).catch(function(){
-      const m = {pass:"كلمة السر غير صحيحة",nouser:"لا حساب بهذا الرقم — أنشئ حساباً جديداً",account:"أدخل رقم موبايل صحيح"};
-      loginMsg(m[(fallbackLocal && fallbackLocal.reason) || ""] || "تعذر التحقق من الحساب بدون إنترنت");
+      verifyViaCloudSync(acc, pw, fallbackLocal);
     });
+}
+
+function verifyViaCloudSync(acc, pw, fallbackLocal){
+  fetch("https://schol-table-bot.obe092.workers.dev/api/sync?acc=" + encodeURIComponent(acc))
+    .then(function(res){ return res.json(); })
+    .then(function(syncRes){
+      if(syncRes && syncRes.ok && syncRes.data){
+        // الحساب مسجل وموجود في السحابة ولديه بيانات
+        onCloudLoginSuccess(acc, pw, { ok: true, account: acc, data: syncRes.data });
+      } else {
+        // فحص مدرسة الحساب
+        fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc=" + encodeURIComponent(acc))
+          .then(function(r2){ return r2.json(); })
+          .then(function(scInfo){
+            if(scInfo && scInfo.ok && (scInfo.members || scInfo.is_owner)){
+              onCloudLoginSuccess(acc, pw, { ok: true, account: acc });
+            } else {
+              const m = { pass: "رمز الدخول غير صحيح", nouser: "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد» لإنشائه", account: "أدخل رقم موبايل صحيح" };
+              loginMsg((fallbackLocal && m[fallbackLocal.reason]) || "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد»");
+            }
+          }).catch(function(){
+            const m = { pass: "كلمة السر غير صحيحة", nouser: "لا حساب بهذا الرقم — أنشئ حساباً جديداً", account: "أدخل رقم موبايل صحيح" };
+            loginMsg((fallbackLocal && m[fallbackLocal.reason]) || "تعذر التحقق من الحساب");
+          });
+      }
+    }).catch(function(){
+      const m = { pass: "كلمة السر غير صحيحة", nouser: "لا حساب بهذا الرقم — أنشئ حساباً جديداً", account: "أدخل رقم موبايل صحيح" };
+      loginMsg((fallbackLocal && m[fallbackLocal.reason]) || "تعذر التحقق من الحساب بدون إنترنت");
+    });
+}
+
+function onCloudLoginSuccess(acc, pw, cloudRes){
+  const a = loadAuth();
+  if(!a.users) a.users = {};
+  if(!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
+  a.users[acc].pw = pwHash(acc, pw);
+  if(cloudRes.paid && cloudRes.until){
+    a.users[acc].code = "CLOUD-ACTIVE";
+    a.users[acc].paidUntil = cloudRes.until;
+  }
+  a.session = acc;
+  saveAuth(a);
+  if(cloudRes.user_name){
+    if(!db.settings) db.settings = {};
+    db.settings.userName = cloudRes.user_name;
+    try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); }catch(e){}
+  }
+  okBeep();
+  okNote("✅ تم تسجيل الدخول بنجاح!");
+  afterAccount({ ok: true, account: acc, data: cloudRes.data || "" });
 }
 function iqWaNum(phone){
   var n=String(phone||"").replace(/\D/g,"");
