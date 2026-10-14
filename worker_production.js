@@ -13,6 +13,7 @@ const LIC_SECRET = "ObaidaQiYear20k929519"; // سر التشفير الحقيق�
 
 // ذاكرة احتياطية في حال تأخر ربط الـ KV
 globalThis._MEM_CACHE = globalThis._MEM_CACHE || {
+  memberToOwner: {},
   users: [],
   data: {},
   schools: {},
@@ -105,6 +106,84 @@ async function safeKvPut(kv, key, val) {
   } catch (e) {
     return false;
   }
+}
+
+// حفظ قائمة أعضاء المدرسة في D1 + KV + الذاكرة
+async function saveSchoolMembers(env, acc, members) {
+  const val = JSON.stringify(members || []);
+  globalThis._MEM_CACHE.members[acc] = members || [];
+  const d1 = getD1(env);
+  const kv = getKV(env);
+  if (d1) {
+    try {
+      await d1.prepare("INSERT OR REPLACE INTO keyval (k, v) VALUES (?, ?)").bind("members_" + acc, val).run();
+    } catch (e) { }
+  }
+  if (kv) {
+    try { await kv.put("members_" + acc, val); } catch (e) { }
+  }
+  return true;
+}
+
+// وزن بيانات المدرسة لمنع طمس نسخة جيدة ببيانات فارغة
+function dataScore(x) {
+  try {
+    if (!x) return 0;
+    const o = (typeof x === "string") ? JSON.parse(x) : x;
+    if (!o || typeof o !== "object") return 0;
+    let n = 0;
+    ["classes", "teachers", "subjects", "sections"].forEach(function (k) {
+      if (Array.isArray(o[k])) n += o[k].length * 10;
+    });
+    if (o.settings && o.settings.schoolName) n += 5;
+    return n;
+  } catch (e) {
+    return 0;
+  }
+}
+
+// قراءة بيانات الجدول من كل المخازن واختيار الأفضل لمنع النسخ الفارغة/القديمة
+async function getBestData(env, acc) {
+  if (!acc) return "";
+  const d1 = getD1(env);
+  const kv = getKV(env);
+  const cands = [];
+  if (d1) {
+    try {
+      const row = await d1.prepare("SELECT v FROM keyval WHERE k = ?").bind("data_" + acc).first();
+      if (row && row.v) cands.push(String(row.v));
+    } catch (e) { }
+  }
+  if (kv) {
+    try {
+      const v = await kv.get("data_" + acc);
+      if (v) cands.push(String(v));
+    } catch (e) { }
+  }
+  if (globalThis._MEM_CACHE.data[acc]) cands.push(String(globalThis._MEM_CACHE.data[acc]));
+  let best = "";
+  let bn = -1;
+  cands.forEach(function (c) {
+    const n = dataScore(c);
+    if (n > bn) { bn = n; best = c; }
+  });
+  return best;
+}
+
+// حفظ بيانات الجدول في D1 + KV + الذاكرة معاً
+async function saveSchoolData(env, acc, dataStr) {
+  globalThis._MEM_CACHE.data[acc] = dataStr;
+  const d1 = getD1(env);
+  const kv = getKV(env);
+  if (d1) {
+    try {
+      await d1.prepare("INSERT OR REPLACE INTO keyval (k, v) VALUES (?, ?)").bind("data_" + acc, String(dataStr)).run();
+    } catch (e) { }
+  }
+  if (kv) {
+    try { await kv.put("data_" + acc, String(dataStr)); } catch (e) { }
+  }
+  return true;
 }
 
 // دالة توليد كود التفعيل السنوي
@@ -204,6 +283,7 @@ function cleanFilename(str) {
 
 export default {
   async fetch(request, env) {
+    globalThis._ENV = env;
     const url = new URL(request.url);
     const kv = getKV(env);
 
@@ -234,7 +314,7 @@ export default {
           });
         }
 
-        const users = await getUsersList(kv);
+        const users = await getUsersList(env, kv);
         // البحث عن المدرسة بواسطة:
         // 1. رمز المدرسة SCH-XXXX
         // 2. رقم هاتف المالك مباشرة (مثال: 07813332882)
@@ -257,7 +337,7 @@ export default {
         }
 
         const ownerAcc = targetOwner.acc;
-        let members = await fetchSchoolMembers(ownerAcc, null, kv);
+        let members = await fetchSchoolMembers(env, ownerAcc, kv);
         const nowStr = new Date().toLocaleDateString("ar-IQ");
 
         // إضافة العضو أو تحديث اسمه إذا كان موجوداً
@@ -274,19 +354,19 @@ export default {
 
         globalThis._MEM_CACHE.members[ownerAcc] = members;
         if (kv) {
-          try { await kv.put("members_" + ownerAcc, JSON.stringify(members)); } catch(e){}
+          try { await saveSchoolMembers(env, ownerAcc, members); } catch(e){}
+          try { (globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {})[memberAcc] = ownerAcc; } catch(e){}
         }
 
         // تحديث عدد الأعضاء في قائمة المدارس
         targetOwner.members_count = members.length;
         if (kv) {
-          try { await saveUsersList(kv, users); } catch(e){}
+          try { await saveUsersList(env, users); } catch(e){}
         }
 
         // جلب جدول المدرسة للمنضم الجديد
         let ownerData = "";
-        if (kv) ownerData = await kv.get("data_" + ownerAcc);
-        if (!ownerData && globalThis._MEM_CACHE.data[ownerAcc]) ownerData = globalThis._MEM_CACHE.data[ownerAcc];
+        ownerData = await getBestData(env, ownerAcc);
 
         // إشعار مطور النظام في التيليجرام بانضمام عضو
         const adminId = (kv ? await kv.get("admin_chat_id") : null) || globalThis._MEM_CACHE.admin_id;
@@ -316,7 +396,7 @@ export default {
       const acc = String(url.searchParams.get("acc") || "").trim();
       const code = String(url.searchParams.get("code") || "").trim().toUpperCase();
 
-      const users = await getUsersList(kv);
+      const users = await getUsersList(env, kv);
       let targetOwner = null;
 
       if (code) {
@@ -331,23 +411,32 @@ export default {
           return false;
         });
       } else if (acc) {
-        // أولاً: هل هو المالك؟
-        targetOwner = users.find(u => u.acc === acc);
+        // التحقق أولاً: هل هو عضو منضم في مدرسة أخرى؟ (مع ذاكرة عكسية لتسريع الطلب)
+        const cacheMap = globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {};
+        const cachedOwner = cacheMap[acc];
+        if (cachedOwner) {
+          targetOwner = users.find(u => u.acc === cachedOwner) || null;
+        }
         if (!targetOwner) {
-          // هل هو عضو منضم في إحدى المدارس؟
           for (let u of users) {
-            const mems = await fetchSchoolMembers(u.acc, null, kv);
+            if (u.acc === acc) continue;
+            const mems = await fetchSchoolMembers(env, u.acc, kv);
             if (mems.some(m => m.account === acc)) {
               targetOwner = u;
+              cacheMap[acc] = u.acc;
               break;
             }
           }
+        }
+        // إذا لم يكن عضواً منضماً، هل هو مالك مدرسة مسجل؟
+        if (!targetOwner) {
+          targetOwner = users.find(u => u.acc === acc);
         }
       }
 
       if (targetOwner) {
         const ownerAcc = targetOwner.acc;
-        const members = await fetchSchoolMembers(ownerAcc, null, kv);
+        const members = await fetchSchoolMembers(env, ownerAcc, kv);
         const ownerCode = "SCH-" + String(ownerAcc).slice(-4);
         // جلب حالة اشتراك المالك لتوريثها للأعضاء المنضمين
         const ownerPaid = !!(targetOwner.paid);
@@ -356,8 +445,7 @@ export default {
         // جلب بيانات الجدول للمنضم (بيانات المالك)
         let sharedData = "";
         if (isMember) {
-          if (kv) sharedData = (await kv.get("data_" + ownerAcc)) || "";
-          if (!sharedData && globalThis._MEM_CACHE.data[ownerAcc]) sharedData = globalThis._MEM_CACHE.data[ownerAcc];
+          sharedData = await getBestData(env, ownerAcc);
         }
         return new Response(JSON.stringify({
           ok: true,
@@ -397,7 +485,7 @@ export default {
             headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
           });
         }
-        let members = await fetchSchoolMembers(ownerAcc, null, kv);
+        let members = await fetchSchoolMembers(env, ownerAcc, kv);
         const before = members.length;
         members = members.filter(m => m.account !== memberAcc);
         if (members.length === before) {
@@ -406,11 +494,12 @@ export default {
           });
         }
         globalThis._MEM_CACHE.members[ownerAcc] = members;
-        if (kv) await kv.put("members_" + ownerAcc, JSON.stringify(members));
+        await saveSchoolMembers(env, ownerAcc, members);
+        try { (globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {})[ownerAcc] = ""; } catch (e) { }
         // تحديث عدد الأعضاء في قائمة المدارس
-        const users = await getUsersList(kv);
+        const users = await getUsersList(env, kv);
         const u = users.find(x => x.acc === ownerAcc);
-        if (u) { u.members_count = members.length; await saveUsersList(kv, users); }
+        if (u) { u.members_count = members.length; await saveUsersList(env, users); }
         return new Response(JSON.stringify({ ok: true, members: members }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
@@ -551,28 +640,47 @@ export default {
           const dataStr = body.data || "";
           const members = body.members || [];
           const userName = body.user_name || "";
+          const shareOwner = String(body.share_owner || "").trim();
 
-          // حفظ في الذاكرة
-          globalThis._MEM_CACHE.data[acc] = dataStr;
-          globalThis._MEM_CACHE.schools[acc] = school;
-          if (members && members.length) globalThis._MEM_CACHE.members[acc] = members;
-          if (dataStr) globalThis._MEM_CACHE.latest_data = dataStr;
+          // لا تسمح لجهاز جديد فارغ أن يطمس النسخة السحابية الجيدة
+          let prevData = "";
+          prevData = await getBestData(env, acc);
+          // امنع طمس نسخة سحابية جيدة ببيانات فارغة، مع إكمال تسجيل الحساب
+          const keepOld = (dataScore(dataStr) === 0 && dataScore(prevData) > 0);
+
+          // حفظ في D1 + KV + الذاكرة
+          if (!keepOld) {
+            await saveSchoolData(env, acc, dataStr);
+            globalThis._MEM_CACHE.schools[acc] = school;
+            if (members && members.length) globalThis._MEM_CACHE.members[acc] = members;
+            if (dataStr) globalThis._MEM_CACHE.latest_data = dataStr;
+          }
 
           // حفظ في KV إذا كان موجوداً
           if (kv) {
-            await safeKvPut(kv, "data_" + acc, dataStr);
             await safeKvPut(kv, "school_" + acc, school);
             if (members && members.length) {
-              await kv.put("members_" + acc, JSON.stringify(members));
+              await saveSchoolMembers(env, acc, members);
             }
             if (userName) {
               await safeKvPut(kv, "username_" + acc, userName);
             }
-            if (dataStr) await safeKvPut(kv, "data_latest", dataStr);
+            if (dataStr && !keepOld) await safeKvPut(kv, "data_latest", dataStr);
+          }
+
+          // نشر تعديلات العضو المنضم إلى سجل المالك ليراها الجميع
+          if (shareOwner && shareOwner !== acc) {
+            const mems = await fetchSchoolMembers(env, shareOwner, kv);
+            if (mems.some(m => m.account === acc)) {
+              const ownerPrev = await getBestData(env, shareOwner);
+              if (!keepOld && dataScore(dataStr) >= dataScore(ownerPrev)) {
+                await saveSchoolData(env, shareOwner, dataStr);
+              }
+            }
           }
 
           // تحديث قائمة المدارس المشتركة
-          let users = await getUsersList(kv);
+          let users = await getUsersList(env, kv);
           let u = users.find(x => x.acc === acc);
           const nowStr = new Date().toLocaleDateString("ar-IQ");
 
@@ -590,7 +698,7 @@ export default {
               last_sync: nowStr
             };
             users.push(u);
-            await saveUsersList(kv, users);
+            await saveUsersList(env, users);
 
             // إشعار المطور بانضمام مدرسة جديدة
             const adminId = (kv ? await kv.get("admin_chat_id") : null) || globalThis._MEM_CACHE.admin_id;
@@ -606,10 +714,10 @@ export default {
             if (body.subjects_count) u.subjects = body.subjects_count;
             if (members && members.length) u.members_count = members.length;
             if (userName) u.user_name = userName;
-            await saveUsersList(kv, users);
+            await saveUsersList(env, users);
           }
 
-          return new Response(JSON.stringify({ ok: true, sync_time: new Date().toISOString() }), {
+          return new Response(JSON.stringify({ ok: true, kept: keepOld, sync_time: new Date().toISOString() }), {
             headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
           });
         } catch (e) {
@@ -619,13 +727,8 @@ export default {
         // GET Sync
         const acc = url.searchParams.get("acc");
         let data = "";
-        if (kv && acc) {
-          data = await kv.get("data_" + acc);
-          if (!data && acc === "latest") data = await kv.get("data_latest");
-        }
-        if (!data && acc) {
-          data = globalThis._MEM_CACHE.data[acc] || (acc === "latest" ? globalThis._MEM_CACHE.latest_data : "");
-        }
+        if (acc) data = await getBestData(env, acc);
+        if (!data && acc === "latest") data = globalThis._MEM_CACHE.latest_data || "";
         return new Response(JSON.stringify({ ok: true, data: data || "" }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
@@ -656,7 +759,7 @@ export default {
 
     // فحص صحة عمل البوت وسيرفر الـ Worker (GET)
     if (url.pathname === "/" || url.pathname === "/status" || url.pathname === "/ping") {
-      const users = await getUsersList(kv);
+      const users = await getUsersList(env, kv);
       return new Response(JSON.stringify({
         status: "Online 🚀",
         kv_bound: !!kv,
@@ -719,7 +822,7 @@ async function handleTelegramMessage(msg, env, kv) {
         try { await safeKvPut(kv, "chat_acc_" + chatId, boundAcc); } catch (e) { }
       }
       globalThis._MEM_CACHE["chat_acc_" + chatId] = boundAcc;
-      const users = await getUsersList(kv);
+      const users = await getUsersList(env, kv);
       const u = users.find(x => x.acc === boundAcc);
       const sc = u ? u.school : "مدرستك";
       await sendMsg(chatId, `✅ <b>تم ربط البوت بنجاح بمدرستك:</b>\n🏫 <b>${sc}</b>\n📱 الحساب: <code>${boundAcc}</code>\n\n👇 يمكنك الآن استخدام الأزرار أدناه لعرض الجداول وكادر المعلمين:`, kb);
@@ -744,7 +847,7 @@ async function handleTelegramMessage(msg, env, kv) {
       try { await safeKvPut(kv, "chat_acc_" + chatId, boundAcc); } catch (e) { }
     }
     globalThis._MEM_CACHE["chat_acc_" + chatId] = boundAcc;
-    const users = await getUsersList(kv);
+    const users = await getUsersList(env, kv);
     const u = users.find(x => x.acc === boundAcc);
     const sc = u ? u.school : "مدرستك";
     await sendMsg(chatId, `✅ <b>تم ربط البوت بنجاح بمدرستك:</b>\n🏫 <b>${sc}</b>\n📱 رقم الحساب: <code>${boundAcc}</code>\n\n👇 اضغط الآن على أي زر أدناه لعرض جدول وحصص مدرستك:`, kb);
@@ -756,7 +859,7 @@ async function handleTelegramMessage(msg, env, kv) {
   // ===============================================
   if (isDev) {
     if (text === "🏫 استعراض المدارس والجداول" || text === "🏫 اختيار مدرسة") {
-      const users = await getUsersList(kv);
+      const users = await getUsersList(env, kv);
       if (!users || !users.length) {
         await sendMsg(chatId, `⚠️ <b>لا توجد مدارس مسجلة بعد في النظام.</b>`, kb);
         return;
@@ -774,7 +877,7 @@ async function handleTelegramMessage(msg, env, kv) {
     }
 
     if (text === "⚡ تفعيل اشتراك زبون" || text === "🔑 توليد كود تفعيل") {
-      const users = await getUsersList(kv);
+      const users = await getUsersList(env, kv);
       if (users && users.length > 0) {
         const inlineButtons = users.map(u => {
           const badge = u.paid ? "🟢" : "🟡";
@@ -793,7 +896,7 @@ async function handleTelegramMessage(msg, env, kv) {
     }
 
     if (text === "👥 قائمة المشتركين" || text === "/users") {
-      const users = await getUsersList(kv);
+      const users = await getUsersList(env, kv);
       if (!users || !users.length) {
         await sendMsg(chatId, `⚠️ <b>لا توجد مدارس مسجلة حتى الآن.</b>`, kb);
         return;
@@ -836,7 +939,7 @@ async function handleTelegramMessage(msg, env, kv) {
 
   // إذا كان مطوراً، وإذا لم يكن مرتبطاً بمدرسة معينة، نطلب منه اختيار المدرسة أو نأخذ أحدث مدرسة
   if (isDev && !myAcc) {
-    const users = await getUsersList(kv);
+    const users = await getUsersList(env, kv);
     if (users && users.length > 0) {
       // إذا كان المطور يريد التقارير، نعرض له قائمة المدارس ليختار أي مدرسة يريد فحصها
       if (text.includes("جدول") || text.includes("تقرير") || text.includes("ملخص") || text.includes("مراقبة") || text.includes("نسخة احتياطية")) {
@@ -940,9 +1043,7 @@ async function handleTelegramMessage(msg, env, kv) {
 async function fetchDbForAcc(acc, kv) {
   let rawData = null;
   if (acc) {
-    if (kv) {
-      try { rawData = await kv.get("data_" + acc); } catch (e) { }
-    }
+    rawData = await getBestData(globalThis._ENV, acc);
     if (!rawData && globalThis._MEM_CACHE.data[acc]) {
       rawData = globalThis._MEM_CACHE.data[acc];
     }
@@ -964,13 +1065,26 @@ async function fetchDbForAcc(acc, kv) {
 /**
  * جلب قائمة أعضاء ومستخدمي المدرسة
  */
-async function fetchSchoolMembers(acc, db, kv) {
+async function fetchSchoolMembers(envOrAcc, accOrDb, kvArg) {
+  // يدعم النداء القديم fetchSchoolMembers(acc, db, kv) والجديد fetchSchoolMembers(env, acc, kv)
+  let env = null, acc = "", db = null, kv = null;
+  if (typeof accOrDb === "string") {
+    env = envOrAcc; acc = String(accOrDb || "").trim(); kv = kvArg || getKV(envOrAcc);
+  } else if (typeof envOrAcc === "string") {
+    acc = String(envOrAcc || "").trim(); db = accOrDb; kv = kvArg || null;
+  } else {
+    env = envOrAcc;
+    acc = String((envOrAcc && envOrAcc.acc) || "").trim();
+    kv = kvArg || null;
+  }
   let members = [];
-  if (acc && kv) {
-    try {
-      const raw = await kv.get("members_" + acc);
-      if (raw) members = JSON.parse(raw);
-    } catch (e) { }
+  if (acc) {
+    let raw = "";
+    try { raw = await storeGet(globalThis._ENV || env, "members_" + acc); } catch (e) { }
+    if (!raw && kv) {
+      try { raw = await kv.get("members_" + acc); } catch (e) { }
+    }
+    if (raw) { try { members = JSON.parse(raw); } catch (e) { } }
   }
   if ((!members || !members.length) && acc && globalThis._MEM_CACHE.members[acc]) {
     members = globalThis._MEM_CACHE.members[acc];
@@ -1488,10 +1602,10 @@ async function handleCallbackQuery(cq, env, kv) {
   // 1. استعراض تفاصيل مدرسة للمطور
   if (data.startsWith("dev_view_school:")) {
     const acc = data.replace("dev_view_school:", "").trim();
-    const users = await getUsersList(kv);
+    const users = await getUsersList(env, kv);
     const u = users.find(x => x.acc === acc);
     const sc = u ? u.school : "المدرسة";
-    const members = await fetchSchoolMembers(acc, null, kv);
+    const members = await fetchSchoolMembers(env, acc, kv);
 
     const ownerUName = (u && u.user_name) ? ` (${u.user_name})` : "";
     let membersDetail = `   👑 <b>${acc}${ownerUName}</b> (المستخدم الأساسي)\n`;
@@ -1532,7 +1646,7 @@ async function handleCallbackQuery(cq, env, kv) {
 
   // 2. رجوع لقائمة المدارس للمطور
   if (data === "dev_back_schools") {
-    const users = await getUsersList(kv);
+    const users = await getUsersList(env, kv);
     const inlineButtons = users.map(u => {
       const badge = u.paid ? "🟢" : "🟡";
       const uN = u.user_name ? ` [${u.user_name}]` : "";
@@ -1636,7 +1750,7 @@ async function handleCallbackQuery(cq, env, kv) {
       return;
     }
 
-    const users = await getUsersList(kv);
+    const users = await getUsersList(env, kv);
     const u = users.find(x => x.acc === acc);
     const sName = u ? u.school : "المدرسة";
 
@@ -1659,7 +1773,7 @@ async function handleCallbackQuery(cq, env, kv) {
 
     const lic = await generateLicenseCode(acc, months);
 
-    const users = await getUsersList(kv);
+    const users = await getUsersList(env, kv);
     let u = users.find(x => x.acc === acc);
     if (!u) {
       u = { acc: acc, school: "مدرسة مفعّلة", date: new Date().toLocaleDateString("ar-IQ") };
@@ -1669,7 +1783,7 @@ async function handleCallbackQuery(cq, env, kv) {
     u.until = lic.until;
     u.code = lic.code;
     u.activated_at = new Date().toLocaleDateString("ar-IQ");
-    await saveUsersList(kv, users);
+    await saveUsersList(env, users);
 
     if (kv) {
       try {

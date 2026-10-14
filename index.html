@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.46</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.47</div>
     </div>
   </div>
   
@@ -884,7 +884,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.46</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.47</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1761,7 +1761,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.46";
+const APP_VERSION="0.47";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -1931,6 +1931,10 @@ function syncToCloudNow(showToast){
     if(showToast) note("يرجى تسجيل الدخول بحسابك أولاً لتفعيل المزامنة السحابية.");
     return;
   }
+  if(dbScore(db)<=0 && !(((db&&db.settings&&db.settings.schoolName)||"").trim())){
+    if(showToast) note("لا توجد بيانات للمزامنة بعد");
+    return;
+  }
   const s=JSON.stringify(db);
   const school=(db&&db.settings&&db.settings.schoolName)||"مدرسة بدون اسم";
   const tCount=(db&&db.teachers)?db.teachers.length:0;
@@ -1942,6 +1946,7 @@ function syncToCloudNow(showToast){
     body: JSON.stringify({
       acc: acc,
       data: s,
+      share_owner: window._schoolOwner || "",
       school: school,
       teachers_count: tCount,
       classes_count: cCount,
@@ -5370,7 +5375,8 @@ function applyGate(s){
   else {if($("subBox"))$("subBox").hidden=false;}
   const DEV_ACC = "07813332882";
   const isDev = acc && (acc.replace(/\D/g,"").endsWith("7813332882") || acc.indexOf("7813332882") !== -1);
-  if(acc) { try { syncToCloudNow(false); } catch(e){} }
+  // لا ترفع للسحابة قبل تنزيل نسخة الحساب (يمنع طمس السحابة ببيانات فارغة من جهاز جديد)
+  if(acc && !isFirstLoad) { try { syncToCloudNow(false); } catch(e){} }
 
 
   if(isFirstLoad || dbScore(db)<=0){
@@ -5990,47 +5996,68 @@ function renderMembersUI(members, isOwner, schoolCode){
   }).join('');
 }
 
+function cloudFetchData(acc){
+  if(!acc) return Promise.resolve("");
+  return fetch("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc))
+    .then(function(res){return res.json();})
+    .then(function(d){return (d&&d.ok&&d.data)||"";})
+    .catch(function(){return "";});
+}
+function cloudGetSchoolInfo(acc){
+  if(!acc) return Promise.resolve(null);
+  return fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc))
+    .then(function(res){return res.json();})
+    .catch(function(){return null;});
+}
+function bestOfData(a,b){
+  return dbScore(parseDb(b)) > dbScore(parseDb(a)) ? (b||"") : (a||"");
+}
+function mergeSharedIfNewer(raw){
+  if(!raw) return;
+  var s=String(raw);
+  var hh=s.length+"|"+s.slice(0,96)+"|"+s.slice(-96);
+  if(hh===window._lastSharedDataHash) return;
+  if(dbScore(parseDb(s))<=0) return;
+  window._lastSharedDataHash=hh;
+  mergeDisk(s);
+  try { renderSettings(); } catch(e){}
+  try { if(typeof renderViews === "function") renderViews(); } catch(e){}
+  okNote("🔄 تم تحديث جدول وبيانات المدرسة تلقائياً");
+}
+function applySchoolInfo(r){
+  if(!r || !r.ok) return;
+  if(r.owner_acc) window._schoolOwner = r.owner_acc;
+  if(!r.is_owner && r.owner_paid && r.owner_until){
+    var lo=window._linkedOwner||{};
+    if(lo.acc!==(r.owner_acc||"") || lo.paid!==r.owner_paid || lo.until!==r.owner_until){
+      window._linkedOwner = { acc: r.owner_acc || "", paid: r.owner_paid, until: r.owner_until };
+      applyGate(localStatus());
+    }
+  }
+  if(!r.is_owner){
+    if(r.shared_data) mergeSharedIfNewer(r.shared_data);
+    else if(r.owner_acc) cloudFetchData(r.owner_acc).then(mergeSharedIfNewer);
+  }
+  renderMembersUI(r.members || [], r.is_owner, r.school_code);
+}
 function refreshTeamMembers(){
   const myAcc = window._acc || "";
-  const api = pyApi();
-  if(api && api.get_school_info){
-    api.get_school_info().then(function(r){
-      if(!r || !r.ok) return;
-      // توريث اشتراك المالك للعضو المنضم
-      if(!r.is_owner && r.owner_paid && r.owner_until){
-        window._linkedOwner = { acc: r.owner_acc || "", paid: r.owner_paid, until: r.owner_until };
-        applyGate(localStatus());
-      }
-      renderMembersUI(r.members || [], r.is_owner, r.school_code);
-    }).catch(function(){});
-    return;
-  }
-  // جلب سحابي مباشر
   if(!myAcc) return;
-  fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc=" + encodeURIComponent(myAcc))
-    .then(function(res){ return res.json(); })
-    .then(function(r){
-      if(r && r.ok){
-        // توريث اشتراك المالك للعضو المنضم عبر السحابة
-        if(!r.is_owner && r.owner_paid && r.owner_until){
-          window._linkedOwner = { acc: r.owner_acc || "", paid: true, until: r.owner_until };
-          applyGate(localStatus());
-        }
-        // مزامنة بيانات الجدول إذا كان عضواً منضماً وجاءت بيانات جديدة من المالك
-        if(!r.is_owner && r.shared_data){
-          var prev = window._lastSharedDataHash || "";
-          var cur = String(r.shared_data).slice(0,200);
-          if(cur !== prev && dbScore(parseDb(r.shared_data)) > 0){
-            window._lastSharedDataHash = cur;
-            mergeDisk(r.shared_data);
-            try { renderSettings(); } catch(e){}
-            try { if(typeof renderViews === "function") renderViews(); } catch(e){}
-            okNote("🔄 تم تحديث جدول وبيانات المدرسة تلقائياً");
-          }
-        }
-        renderMembersUI(r.members || [], r.is_owner, r.school_code);
+  // الاستعلام السحابي المباشر دائماً لضمان وصول أحدث جدول واشتراك المالك
+  cloudGetSchoolInfo(myAcc).then(function(r){
+    if(r && r.ok){
+      applySchoolInfo(r);
+    } else {
+      // إذا لم يكن العضو مسجلاً في السحابة بعد، نتحقق إن كان قد انضم مسبقاً لمدرسة بكود
+      var savedSchool = (db.settings && db.settings.linkedSchool) || localStorage.getItem("tt_linked_school_" + myAcc) || "";
+      if(savedSchool){
+        cloudGetSchoolInfo(savedSchool).then(applySchoolInfo).catch(function(){});
       }
-    }).catch(function(){});
+    }
+  }).catch(function(){
+    const api = pyApi();
+    if(api && api.get_school_info) api.get_school_info().then(applySchoolInfo).catch(function(){});
+  });
 }
 
 function doLinkSchool(){
@@ -6072,6 +6099,14 @@ function doLinkSchool(){
   }).then(function(r){
     if(r && r.ok){
       if($("mySchoolCode")) $("mySchoolCode").textContent = r.school_code;
+      try {
+        if(!db.settings) db.settings={};
+        window._schoolOwner = r.owner_acc || "";
+        db.settings.linkedSchool = r.owner_acc || r.school_code;
+        db.settings.schoolCode = r.school_code;
+        localStorage.setItem("tt_linked_school_" + myAcc, r.owner_acc || r.school_code);
+        save();
+      } catch(e){}
       if($("schoolTeamMsg")){
         $("schoolTeamMsg").style.color = "#15803d";
         $("schoolTeamMsg").textContent = "✅ تم الانضمام لمدرسة (" + (r.school_name || "") + ") بنجاح!";
@@ -6107,6 +6142,7 @@ function doLinkSchool(){
               $("schoolTeamMsg").textContent = "تم الانضمام للمدرسة بنجاح!";
             }
             okNote("تم الانضمام للمدرسة بنجاح");
+            if(r.owner_acc) window._schoolOwner = r.owner_acc;
             if(r.data) mergeDisk(r.data);
             checkLicenseGate();
             setTimeout(refreshTeamMembers, 1500);
