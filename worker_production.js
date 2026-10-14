@@ -764,7 +764,7 @@ export default {
         status: "Online 🚀",
         kv_bound: !!kv,
         registered_users: users.length,
-        version: "0.42",
+        version: "0.47",
         developer: "Obeida Al-Ithawi"
       }, null, 2), { headers: { "Content-Type": "application/json" } });
     }
