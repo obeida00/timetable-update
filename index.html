@@ -5491,14 +5491,16 @@ function doLogin(){
         okNote("تم الدخول");
         afterAccount(r);
       } else {
-        const m={pass:"كلمة السر أو الكود غير صحيح",nouser:"لا حساب بهذا الرقم — أنشئ حساباً جديداً",account:"أدخل رقم موبايل صحيح"};
-        loginMsg(m[(r&&r.reason)||""]||"تعذر الدخول");
+        // محاولة التحقق سحابياً كخيار احتياطي فوري إذا لم يوجد محلياً
+        checkCloudLogin(acc, pw, r);
       }
-    }).catch(function(){ loginMsg("تعذر الاتصال بخدمة الحسابات"); });
+    }).catch(function(){ checkCloudLogin(acc, pw, null); });
     return;
   }
+  checkCloudLogin(acc, pw, rLocal);
+}
 
-  // 3. التحقق السحابي الفوري والمباشر (للهواتف والأجهزة الجديدة)
+function checkCloudLogin(acc, pw, fallbackLocal){
   loginMsg("جاري التحقق من الحساب سحابياً ☁️...");
   fetch("https://schol-table-bot.obe092.workers.dev/api/auth/login", {
     method: "POST",
@@ -5507,7 +5509,6 @@ function doLogin(){
   }).then(function(res){ return res.json(); })
     .then(function(cloudRes){
       if(cloudRes && cloudRes.ok){
-        // اعتماد الحساب محلياً في الهاتف
         const a = loadAuth();
         if(!a.users) a.users = {};
         if(!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
@@ -5518,13 +5519,11 @@ function doLogin(){
         }
         a.session = acc;
         saveAuth(a);
-
         if(cloudRes.user_name){
           if(!db.settings) db.settings = {};
           db.settings.userName = cloudRes.user_name;
           try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); }catch(e){}
         }
-
         okBeep();
         okNote("✅ تم تسجيل الدخول بنجاح عبر السحابة!");
         afterAccount({ ok: true, account: acc });
@@ -5534,12 +5533,12 @@ function doLogin(){
           nouser: "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد» لإنشائه",
           account: "أدخل رقم موبايل صحيح"
         };
-        loginMsg(m[(cloudRes && cloudRes.reason) || ""] || "تعذر الدخول للحساب");
+        var reason = (cloudRes && cloudRes.reason) || (fallbackLocal && fallbackLocal.reason) || "";
+        loginMsg(m[reason] || "تعذر الدخول للحساب");
       }
     }).catch(function(){
-      // في حال عدم توفر اتصال بالإنترنت
       const m = {pass:"كلمة السر غير صحيحة",nouser:"لا حساب بهذا الرقم — أنشئ حساباً جديداً",account:"أدخل رقم موبايل صحيح"};
-      loginMsg(m[(rLocal && rLocal.reason) || ""] || "تعذر التحقق من الحساب بدون إنترنت");
+      loginMsg(m[(fallbackLocal && fallbackLocal.reason) || ""] || "تعذر التحقق من الحساب بدون إنترنت");
     });
 }
 function iqWaNum(phone){
