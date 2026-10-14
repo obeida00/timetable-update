@@ -399,51 +399,40 @@ export default {
         }
 
         const ownerAcc = targetOwner.acc;
-        let members = await fetchSchoolMembers(env, ownerAcc, kv);
         const nowStr = new Date().toLocaleDateString("ar-IQ");
 
-        // إضافة العضو أو تحديث اسمه إذا كان موجوداً
-        const existingIdx = members.findIndex(m => m.account === memberAcc);
-        if (existingIdx >= 0) {
-          if (memberName) members[existingIdx].name = memberName;
-        } else {
-          members.push({
-            account: memberAcc,
-            name: memberName || "معاون / عضو",
-            joined: nowStr
-          });
+        // المدير نفسه لا يحتاج طلباً
+        if (ownerAcc === memberAcc) {
+          return new Response(JSON.stringify({
+            ok: true, school_code: schoolCode, owner_acc: ownerAcc, school_name: targetOwner.school
+          }), { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
         }
 
-        globalThis._MEM_CACHE.members[ownerAcc] = members;
-        try { await storePut(env, "removed_" + memberAcc, ""); } catch (e) { }
-        if (kv) {
-          try { await saveSchoolMembers(env, ownerAcc, members); } catch(e){}
-          try { (globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {})[memberAcc] = ownerAcc; } catch(e){}
-        }
+        // ==== إنشاء طلب انضمام بانتظار موافقة مدير المدرسة ====
+        const reqs = await getJoinRequests(env, ownerAcc);
+        const dIdx = reqs.findIndex(r => r && r.account === memberAcc);
+        if (dIdx >= 0) { if (memberName) reqs[dIdx].name = memberName; reqs[dIdx].ts = Date.now(); }
+        else reqs.push({ account: memberAcc, name: memberName || "معاون / عضو", at: nowStr, ts: Date.now() });
+        await saveJoinRequests(env, ownerAcc, reqs);
 
-        // تحديث عدد الأعضاء في قائمة المدارس
-        targetOwner.members_count = members.length;
-        if (kv) {
-          try { await saveUsersList(env, users); } catch(e){}
-        }
+        let ownerPaid = false, ownerUntil = "";
+        try { ownerPaid = !!subEndsAt(targetOwner); ownerUntil = targetOwner.until || ""; } catch (e) { }
 
-        // جلب جدول المدرسة للمنضم الجديد
-        let ownerData = "";
-        ownerData = await getBestData(env, ownerAcc);
-
-        // إشعار مطور النظام في التيليجرام بانضمام عضو
+        // إشعار مطور النظام في التيليجرام بطلب الانضمام
         const adminId = (kv ? await kv.get("admin_chat_id") : null) || globalThis._MEM_CACHE.admin_id;
         if (adminId) {
-          await sendMsg(adminId, `👥 <b>انضمام عضو جديد للمدرسة:</b>\n\n🏫 المدرسة: <b>${targetOwner.school}</b>\n👤 الاسم: <b>${memberName || "عضو جديد"}</b>\n📱 رقم الهاتف: <code>${memberAcc}</code>\n🔑 كود المدرسة: <code>${schoolCode}</code>\n📅 التاريخ: ${nowStr}`);
+          await sendMsg(adminId, `🔔 <b>طلب انضمام جديد (بانتظار الموافقة):</b>\n\n🏫 المدرسة: <b>${targetOwner.school}</b>\n👤 الاسم: <b>${memberName || "عضو جديد"}</b>\n📱 رقم الهاتف: <code>${memberAcc}</code>\n🔑 كود المدرسة: <code>${schoolCode}</code>\n📅 التاريخ: ${nowStr}\n\nافتح البرنامج بحساب مدير المدرسة واضغط «قبول» أو «رفض».`);
         }
 
         return new Response(JSON.stringify({
           ok: true,
+          pending: true,
           school_code: schoolCode,
           owner_acc: ownerAcc,
           school_name: targetOwner.school,
-          members: members,
-          data: ownerData || ""
+          owner_paid: ownerPaid,
+          owner_until: ownerUntil,
+          members: await fetchSchoolMembers(env, ownerAcc, kv)
         }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
@@ -584,7 +573,8 @@ export default {
           own_ts: ownTs || 0,
           sub_from: subFrom || "",
           data_from: srcAcc || ownerAcc,
-          removed: (String(await storeGet(env, "removed_" + acc) || "") !== "")
+          removed: (String(await storeGet(env, "removed_" + acc) || "") !== ""),
+          join_requests: (acc === ownerAcc) ? await getJoinRequests(env, ownerAcc) : []
         }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
@@ -598,6 +588,59 @@ export default {
       }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });
+    }
+
+    // ==========================================
+    // API موافقة/رفض طلب انضمام عضو
+    // ==========================================
+    if (url.pathname === "/api/respond_join" && request.method === "POST") {
+      const J = (o, st) => new Response(JSON.stringify(o), {
+        status: st || 200,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+      try {
+        const body = await request.json();
+        const ownerAcc = String(body.owner_acc || "").trim();
+        const memberAcc = String(body.member_acc || "").trim();
+        const action = String(body.action || "").trim();
+        if (!ownerAcc || !memberAcc) return J({ ok: false, error: "missing_params" });
+
+        const reqs = await getJoinRequests(env, ownerAcc);
+        const req = reqs.find(r => r && r.account === memberAcc) || null;
+        await saveJoinRequests(env, ownerAcc, reqs.filter(r => !(r && r.account === memberAcc)));
+
+        if (action !== "approve") {
+          return J({ ok: true, rejected: true, member_acc: memberAcc });
+        }
+
+        let members = await fetchSchoolMembers(env, ownerAcc, kv);
+        if (!members.some(m => m.account === memberAcc)) {
+          members.push({
+            account: memberAcc,
+            name: (req && req.name) || "معاون / عضو",
+            joined: new Date().toLocaleDateString("ar-IQ")
+          });
+        }
+        globalThis._MEM_CACHE.members[ownerAcc] = members;
+        try { await storePut(env, "removed_" + memberAcc, ""); } catch (e) { }
+        try { await saveSchoolMembers(env, ownerAcc, members); } catch (e) { }
+        try { (globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {})[memberAcc] = ownerAcc; } catch (e) { }
+        try {
+          const users2 = await getUsersList(env, kv);
+          const u2 = users2.find(x => x.acc === ownerAcc);
+          if (u2) { u2.members_count = members.length; await saveUsersList(env, users2); }
+        } catch (e) { }
+
+        // إشعار مطور النظام بالموافقة
+        try {
+          const adminId2 = (kv ? await kv.get("admin_chat_id") : null) || globalThis._MEM_CACHE.admin_id;
+          if (adminId2) await sendMsg(adminId2, `✅ تمت الموافقة على انضمام <code>${memberAcc}</code> لمدرسة صاحب الحساب <code>${ownerAcc}</code>.`);
+        } catch (e) { }
+
+        return J({ ok: true, approved: true, member_acc: memberAcc, members: members });
+      } catch (e) {
+        return J({ ok: false, error: e.message }, 500);
+      }
     }
 
     // ==========================================
@@ -823,11 +866,24 @@ export default {
 
           const school = body.school || "مدرسة بدون اسم";
           const dataStr = body.data || "";
-          const members = body.members || [];
+          let members = body.members || [];
           const userName = body.user_name || "";
           const shareOwner = String(body.share_owner || "").trim();
           // طلب قادم من جهاز عضو منضم: لا نسمح له بتخزين قائمة أعضاء المالك تحت حسابه
           const isMemberPush = !!(shareOwner && shareOwner !== acc);
+          // تنظيف قائمة الأعضاء من أي عضو سبق أن أُزيل (جهاز قديم قد يعيد إضافته)
+          if (!isMemberPush && members && Array.isArray(members) && members.length) {
+            try {
+              const cleanM = [];
+              for (const m of members) {
+                if (!m || !m.account) continue;
+                let rmF = "";
+                try { rmF = String(await storeGet(env, "removed_" + m.account) || ""); } catch (e) { }
+                if (!rmF) cleanM.push(m);
+              }
+              members = cleanM;
+            } catch (e) { }
+          }
           // حساب سبق أن أُزيل من فريق: لا نسمح له بإعادة كتابة بياناته أو قائمة أعضاء
           let removedFlag = "";
           try { removedFlag = String(await storeGet(env, "removed_" + acc) || ""); } catch (e) { }
@@ -1269,6 +1325,22 @@ async function fetchDbForAcc(acc, kv) {
     try { return JSON.parse(rawData); } catch (e) { }
   }
   return null;
+}
+
+/**
+ * طلبات الانضمام المعلّقة (بانتظار موافقة مدير المدرسة)
+ */
+async function getJoinRequests(env, ownerAcc) {
+  try {
+    const raw = await storeGet(env, "joinreq_" + ownerAcc);
+    if (!raw) return [];
+    const a = JSON.parse(raw);
+    return Array.isArray(a) ? a : [];
+  } catch (e) { return []; }
+}
+async function saveJoinRequests(env, ownerAcc, list) {
+  try { await storePut(env, "joinreq_" + ownerAcc, JSON.stringify(list || [])); } catch (e) { }
+  return true;
 }
 
 /**

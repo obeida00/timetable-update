@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.51</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.52</div>
     </div>
   </div>
   
@@ -885,7 +885,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.51</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.52</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1762,7 +1762,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.51";
+const APP_VERSION="0.52";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6226,7 +6226,12 @@ function renderMembersUI(members, isOwner, schoolCode){
   if(!box || !list) return;
 
   box.style.display = 'block';
+  try{ if(!window._pendingJoin) window._pendingJoin = (db.settings && db.settings.pendingJoin) || null; }catch(e){}
   if(!members || members.length === 0){
+    if(window._pendingJoin && window._pendingJoin.name){
+      list.innerHTML = '<span style="color:#b45309;font-weight:700">⏳ طلب انضمامك إلى «'+esc(window._pendingJoin.name)+'» بانتظار موافقة مدير المدرسة.</span>';
+      return;
+    }
     list.innerHTML = '<span style="color:#9ca3af">لم ينضم أحد بعد. شارك رمز المدرسة لأعضاء الفريق.</span>';
     return;
   }
@@ -6318,7 +6323,70 @@ function applySchoolInfo(r){
     if(r.shared_data) mergeSharedIfNewer(r.shared_data, r.shared_ts||0);
     else if(r.owner_acc) cloudFetchData(r.owner_acc).then(function(d){ mergeSharedIfNewer(d,0); });
   }
+  try{ renderJoinRequests(r.join_requests || []); }catch(e){}
+  // هل تمت الموافقة على طلب انضمامنا؟
+  try{
+    if(window._pendingJoin && window._pendingJoin.owner_acc && r.owner_acc &&
+       String(r.owner_acc) === String(window._pendingJoin.owner_acc) && !r.is_owner){
+      window._pendingJoin = null;
+      try{ db.settings.pendingJoin = null; save(); }catch(e){}
+      okBeep();
+      okNote("✅ تمت الموافقة على انضمامك للمدرسة — تم تحديث الجدول والاشتراك");
+    }
+  }catch(e){}
   renderMembersUI(r.members || [], r.is_owner, r.school_code);
+}
+// طلبات الانضمام المعلّقة (لمدير المدرسة)
+function renderJoinRequests(list){
+  var box = document.getElementById("joinReqBox");
+  if(!box){
+    box = document.createElement("div");
+    box.id = "joinReqBox";
+    box.style.cssText = "display:none;margin:10px 0;padding:12px;border:1px dashed #f59e0b;border-radius:12px;background:#fffbeb;text-align:right";
+    var anchor = document.getElementById("teamMembersBox");
+    if(anchor && anchor.parentNode) anchor.parentNode.insertBefore(box, anchor);
+    else if($("schoolTeamMsg") && $("schoolTeamMsg").parentNode) $("schoolTeamMsg").parentNode.appendChild(box);
+  }
+  window._joinRequests = list || [];
+  if(!window._isOwner || !window._joinRequests.length){
+    box.style.display = "none"; box.innerHTML = ""; window._joinReqCount = 0; return;
+  }
+  box.style.display = "block";
+  if(window._joinRequests.length > (window._joinReqCount||0)){
+    try{ okBeep(); }catch(e){}
+    okNote("🔔 عندك "+window._joinRequests.length+" طلب انضمام بانتظار موافقتك");
+  }
+  window._joinReqCount = window._joinRequests.length;
+  box.innerHTML = '<div style="font-weight:800;color:#92400e;margin-bottom:8px">🔔 طلبات الانضمام ('+window._joinRequests.length+')</div>'
+   + window._joinRequests.map(function(r){
+      var ac = r.account || '';
+      var nm = r.name || 'عضو جديد';
+      var masked = ac.length > 6 ? ac.slice(0,3)+'****'+ac.slice(-3) : ac;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #fcd34d;border-radius:10px;background:#fff;margin-bottom:6px">'
+        + '<span style="font-weight:700;color:#78350f">👤 '+esc(nm)+' — '+masked+'</span>'
+        + '<span style="margin-right:auto;display:flex;gap:6px">'
+        + '<button onclick="respondJoin(\''+ac+'\',\'approve\')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer">✓ قبول</button>'
+        + '<button onclick="respondJoin(\''+ac+'\',\'reject\')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer">✕ رفض</button>'
+        + '</span></div>';
+     }).join('');
+}
+function respondJoin(acc, action){
+  var ownerAcc = window._acc || "";
+  if(!ownerAcc || !acc) return;
+  if(action==="reject" && !confirm("رفض طلب انضمام هذا العضو؟")) return;
+  fetch("https://schol-table-bot.obe092.workers.dev/api/respond_join", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ owner_acc: ownerAcc, member_acc: acc, action: action })
+  }).then(function(r){ return r.json(); }).then(function(r){
+    if(r && r.ok){
+      okNote(action==="approve" ? "✅ تم قبول العضو في فريق المدرسة" : "تم رفض طلب الانضمام");
+      if(action==="approve" && r.members) renderMembersUI(r.members, true, null);
+      window._joinReqCount = 0;
+      setTimeout(refreshTeamMembers, 400);
+    } else {
+      note("تعذر تنفيذ الطلب: " + ((r && r.error) || ""));
+    }
+  }).catch(function(){ note("تعذر الاتصال بالسيرفر"); });
 }
 function refreshTeamMembers(){
   const myAcc = window._acc || "";
@@ -6385,6 +6453,21 @@ function doLinkSchool(){
     return res.json().catch(function(){ return { ok: false, error: "server_error" }; });
   }).then(function(r){
     if(r && r.ok){
+      // طلب انضمام بانتظار موافقة مدير المدرسة
+      if(r.pending){
+        try{
+          if(!db.settings) db.settings={};
+          window._pendingJoin = { owner_acc: r.owner_acc||"", code: r.school_code||sc, name: r.school_name||"" };
+          db.settings.pendingJoin = window._pendingJoin;
+          save();
+        }catch(e){}
+        if($("schoolTeamMsg")){
+          $("schoolTeamMsg").style.color = "#b45309";
+          $("schoolTeamMsg").textContent = "⏳ أُرسل طلب الانضمام إلى «"+(r.school_name||"")+"» — بانتظار موافقة مدير المدرسة.";
+        }
+        okNote("⏳ طلب الانضمام أُرسل لمدير المدرسة «"+(r.school_name||"")+"» — راح توصلك الموافقة تلقائياً.");
+        return;
+      }
       if($("mySchoolCode")) $("mySchoolCode").textContent = r.school_code;
       try {
         if(!db.settings) db.settings={};
