@@ -293,6 +293,37 @@ async function saveUsersList(env, users, kvFallback) {
   }
 }
 
+// قائمة المدارس الحقيقية للمطور: تستثني حسابات الأعضاء المنضمين والحسابات المُزالة
+async function getRealSchools(env, kv) {
+  const users = await getUsersList(env, kv);
+  const memberAccs = {};
+  const ownerMemberCount = {};
+  try {
+    const d1 = getD1(env);
+    if (d1) {
+      const { results } = await d1.prepare("SELECT k, v FROM keyval WHERE k LIKE 'members_%'").all();
+      (results || []).forEach(function (row) {
+        const oa = String((row && row.k) || "").replace(/^members_/, "");
+        let lst = [];
+        try { lst = JSON.parse((row && row.v) || "[]") || []; } catch (e) { }
+        if (lst.length) ownerMemberCount[oa] = lst.length;
+        lst.forEach(function (m) { if (m && m.account) memberAccs[m.account] = 1; });
+      });
+    }
+  } catch (e) { }
+  const out = [];
+  for (const u of users) {
+    if (!u || !u.acc) continue;
+    if (memberAccs[u.acc]) continue;   // عضو منضم — ليس مدرسة مستقلة
+    let rm = "";
+    try { rm = String(await storeGet(env, "removed_" + u.acc) || ""); } catch (e) { }
+    if (rm) continue;                  // حساب أُزيل من فريق
+    u._members = ownerMemberCount[u.acc] || 0;
+    out.push(u);
+  }
+  return out;
+}
+
 // أيام الأسبوع باللغة العربية
 const AR_DAYS = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
@@ -991,7 +1022,7 @@ async function handleTelegramMessage(msg, env, kv) {
   // ===============================================
   if (isDev) {
     if (text === "🏫 استعراض المدارس والجداول" || text === "🏫 اختيار مدرسة") {
-      const users = await getUsersList(env, kv);
+      const users = await getRealSchools(env, kv);
       if (!users || !users.length) {
         await sendMsg(chatId, `⚠️ <b>لا توجد مدارس مسجلة بعد في النظام.</b>`, kb);
         return;
@@ -1000,7 +1031,7 @@ async function handleTelegramMessage(msg, env, kv) {
       const inlineButtons = users.map(u => {
         const badge = u.paid ? "🟢" : "🟡";
         const uN = u.user_name ? ` [${u.user_name}]` : "";
-        const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}`;
+        const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}${u._members ? " 👥" + u._members : ""}`;
         return [{ text: label, callback_data: `dev_view_school:${u.acc}` }];
       });
 
@@ -1009,12 +1040,12 @@ async function handleTelegramMessage(msg, env, kv) {
     }
 
     if (text === "⚡ تفعيل اشتراك زبون" || text === "🔑 توليد كود تفعيل") {
-      const users = await getUsersList(env, kv);
+      const users = await getRealSchools(env, kv);
       if (users && users.length > 0) {
         const inlineButtons = users.map(u => {
           const badge = u.paid ? "🟢" : "🟡";
           const uN = u.user_name ? ` [${u.user_name}]` : "";
-          const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}`;
+          const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}${u._members ? " 👥" + u._members : ""}`;
           return [{ text: label, callback_data: `sel_user:${u.acc}` }];
         });
         inlineButtons.push([{ text: "➕ تفعيل رقم هاتف يدوي", callback_data: "sel_user:manual" }]);
@@ -1028,7 +1059,7 @@ async function handleTelegramMessage(msg, env, kv) {
     }
 
     if (text === "👥 قائمة المشتركين" || text === "/users") {
-      const users = await getUsersList(env, kv);
+      const users = await getRealSchools(env, kv);
       if (!users || !users.length) {
         await sendMsg(chatId, `⚠️ <b>لا توجد مدارس مسجلة حتى الآن.</b>`, kb);
         return;
@@ -1044,7 +1075,7 @@ async function handleTelegramMessage(msg, env, kv) {
       users.forEach((u, idx) => {
         const badge = u.paid ? "🟢 مُفعّل سنوي" : "🟡 تجربة مجانية";
         const tCount = u.teachers ? ` | 👨‍🏫 ${u.teachers} معلماً` : "";
-        const mCount = u.members_count ? ` | 👥 ${u.members_count} مستخدمين` : "";
+        const mCount = (u._members || u.members_count) ? ` | 👥 ${(u._members || u.members_count)} مستخدمين` : "";
         r += `<b>${idx + 1}. ${u.school || "مدرسة جديدة"}</b>\n`;
         const uN = u.user_name ? ` (${u.user_name})` : "";
         r += `📱 الحساب: <code>${u.acc}</code>${uN}\n`;
@@ -1071,14 +1102,14 @@ async function handleTelegramMessage(msg, env, kv) {
 
   // إذا كان مطوراً، وإذا لم يكن مرتبطاً بمدرسة معينة، نطلب منه اختيار المدرسة أو نأخذ أحدث مدرسة
   if (isDev && !myAcc) {
-    const users = await getUsersList(env, kv);
+    const users = await getRealSchools(env, kv);
     if (users && users.length > 0) {
       // إذا كان المطور يريد التقارير، نعرض له قائمة المدارس ليختار أي مدرسة يريد فحصها
       if (text.includes("جدول") || text.includes("تقرير") || text.includes("ملخص") || text.includes("مراقبة") || text.includes("نسخة احتياطية")) {
         const inlineButtons = users.map(u => {
           const badge = u.paid ? "🟢" : "🟡";
           const uN = u.user_name ? ` [${u.user_name}]` : "";
-          const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}`;
+          const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}${u._members ? " 👥" + u._members : ""}`;
           return [{ text: label, callback_data: `dev_view_school:${u.acc}` }];
         });
         await sendInlineMsg(chatId, `🏫 <b>اختر المدرسة التي تريد عرض ${text} الخاص بها:</b>`, { inline_keyboard: inlineButtons });
@@ -1792,11 +1823,11 @@ async function handleCallbackQuery(cq, env, kv) {
 
   // 2. رجوع لقائمة المدارس للمطور
   if (data === "dev_back_schools") {
-    const users = await getUsersList(env, kv);
+    const users = await getRealSchools(env, kv);
     const inlineButtons = users.map(u => {
       const badge = u.paid ? "🟢" : "🟡";
       const uN = u.user_name ? ` [${u.user_name}]` : "";
-      const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}`;
+      const label = `${badge} ${u.school || "مدرسة"} (${u.acc})${uN}${u._members ? " 👥" + u._members : ""}`;
       return [{ text: label, callback_data: `dev_view_school:${u.acc}` }];
     });
     await sendInlineMsg(chatId, `🏫 <b>قائمة المدارس المسجلة:</b>\nاختر المدرسة لعرض تفاصيلها وجدولها:`, { inline_keyboard: inlineButtons });
