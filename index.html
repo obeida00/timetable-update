@@ -5656,6 +5656,11 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
   }
   if($("loginBox")) $("loginBox").hidden = true;
   applyGate(localStatus());
+  // مزامنة تسجيل الدخول مع سطح المكتب (بايثون) لكي لا يطلب تسجيل الدخول عند إعادة التشغيل
+  const api = pyApi();
+  if(api && api.login_account){
+    try { api.login_account(acc, pw).catch(function(){}); } catch(e){}
+  }
   // تحديث فوري لفريق المدرسة ومعلومات الربط
   try { setTimeout(refreshTeamMembers, 500); } catch(e){}
 }
@@ -6157,12 +6162,18 @@ function checkLicenseGate(){
   const ls=localStatus();
   if(!api||!api.license_status){applyGate(ls);return;}
   api.license_status().then(function(s){
-    if(s && s.account){
+    // إذا كانت الجلسة مسجلة ومحفوظة محلياً أو في بايثون
+    if(ls && ls.account){
+      // دمج بيانات الترخيص من بايثون إن وجدت
+      if(s && s.account === ls.account){
+        applyGate(s);
+      } else {
+        applyGate(ls);
+      }
+    } else if(s && s.account){
       applyGate(s);
-    } else if(ls && ls.account){
-      applyGate(ls);
     } else {
-      applyGate(s || ls);
+      applyGate(ls || s);
     }
   }).catch(function(){applyGate(ls);});
 }
@@ -6214,9 +6225,15 @@ function kickoff(){
 window.addEventListener("pywebviewready",function(){
   kickoff();
   const api=pyApi();
+  const ls=localStatus();
   if(api&&api.license_status){
     api.license_status().then(function(s){
-      applyGate(s);
+      if(ls && ls.account){
+        if(s && s.account === ls.account) applyGate(s);
+        else applyGate(ls);
+      } else {
+        applyGate(s);
+      }
     }).catch(function(){});
   }
 });
