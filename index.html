@@ -1722,17 +1722,7 @@ td.clk:hover .mv button{opacity:.45}
 </div>
 
 
-<div id="guideBox" class="modal no-print" hidden>
-  <div class="modal-card" onclick="event.stopPropagation()" style="width:min(560px,100%)">
-    <h2 id="guideTitle">دليل البدء</h2>
-    <p id="guideStep" class="hint" style="margin:0 0 8px;font-weight:800;color:#6d28d9"></p>
-    <p id="guideMsg" style="margin:0 0 16px;line-height:1.9;color:#374151"></p>
-    <div class="form-actions">
-      <button class="btn" type="button" id="guideNext" onclick="guideNext()">التالي</button>
-      <button class="btn w" type="button" onclick="guideSkip()">تخطي الدليل</button>
-    </div>
-  </div>
-</div>
+
 
 <div id="resetBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="modal-card" onclick="event.stopPropagation()" style="width:min(460px,96vw);text-align:center">
@@ -1771,38 +1761,11 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.44";
+const APP_VERSION="0.45";
 
-const GUIDE_STEPS=[
-  {tab:"classes",title:"1 — الصفوف والشعب",msg:"ابدأ من تبويب الصفوف والشعب. أضف الصف (الأول، الثاني…) ثم أضف الشعب (أ، ب، ج). احذف أي شعبة غير موجودة في مدرستك."},
-  {tab:"teachers",title:"2 — المعلمون",msg:"افتح تبويب المعلمون. أضف كل معلم مع الاختصاص وأيام الأوف إن وُجدت. يمكنك البحث والتعديل والحذف."},
-  {tab:"subjects",title:"3 — المواد",msg:"افتح المواد. لكل مادة اختر المعلم والشعبة وعدد الدروس الأسبوعية (ليس اليومي). يمكنك ربط نفس المادة بعدة شعب."},
-  {tab:"generate",title:"4 — إنشاء الجدول",msg:"اضغط إنشاء الجدول. النظام يوزّع الدروس على أيام الدوام ويتجنب تعارض المعلم والساحة. إن بقي نقص يظهر السبب والتعليمات."},
-  {tab:"views",title:"5 — العرض والتعديل",msg:"من عرض وتصدير اختر جدول اليوم أو الأسبوع. انقر أي خانة لتغيير المادة أو تفريغها. التعديل يُحفظ تلقائياً."},
-  {tab:"views",title:"6 — التصدير والطباعة",msg:"اضغط طباعة وتصدير. اختر JPG بحجم A4 أو A3 والاتجاه. نفّذ للحصول على صورة جاهزة للطباعة. مسافة الحافة تُضبط من الإعدادات."},
-  {tab:"settings",title:"7 — الإعدادات والنسخ",msg:"أيام الدوام وعدد الدروس تُحفظ تلقائياً. احفظ نسخة JSON. من تصفير النظام يمكنك حذف الكل أو المعلمين أو المواد أو الصفوف أو الجدول بعد التأكيد."},
-  {tab:null,title:"تم — جاهز للعمل",msg:"سمِّ مدرستك من الإعدادات. للدعم تواصل مع المطور عبيده العيثاوي من زر المطور في الأعلى."}
-];
-let guideI=0;
-function openGuide(force){
-  try{if(!force&&localStorage.getItem("tt_guide_done")==="1")return;}catch(e){}
-  guideI=0;showGuide();
-}
-function showGuide(){
-  const s=GUIDE_STEPS[guideI];if(!s){closeGuide();return;}
-  if(s.tab){const b=document.querySelector('nav.tabs button[data-tab="'+s.tab+'"]');if(b)tab(b);}
-  if($("guideTitle"))$("guideTitle").textContent=s.title;
-  if($("guideStep"))$("guideStep").textContent="الخطوة "+(guideI+1)+" من "+GUIDE_STEPS.length;
-  if($("guideMsg"))$("guideMsg").textContent=s.msg;
-  if($("guideNext"))$("guideNext").textContent=guideI===GUIDE_STEPS.length-1?"إنهاء":"التالي";
-  if($("guideBox"))$("guideBox").hidden=false;
-}
-function guideNext(){guideI++;if(guideI>=GUIDE_STEPS.length)closeGuide();else showGuide();}
-function guideSkip(){closeGuide();}
-function closeGuide(){
-  if($("guideBox"))$("guideBox").hidden=true;
-  try{localStorage.setItem("tt_guide_done","1");}catch(e){}
-}
+const GUIDE_STEPS=[];
+function openGuide(){}
+function closeGuide(){}
 
 
 
@@ -5739,7 +5702,7 @@ function submitOtpVerification(){
       }
       return;
     }
-    api.register_account(acc,newPw,userNameVal).then(function(r){
+    api.register_account(acc,newPw).then(function(r){
       if(r&&r.ok){
         cancelOtpFlow();
         okNote("تم إنشاء الحساب بنجاح — أهلاً بك " + userNameVal);
@@ -5747,6 +5710,15 @@ function submitOtpVerification(){
       } else {
         const m={taken:"هذا الرقم مسجّل مسبقاً",pass:"كلمة السر قصيرة",account:"رقم الموبايل غير صحيح"};
         loginMsg(m[(r&&r.reason)||""]||"تعذر إنشاء الحساب");
+      }
+    }).catch(function(err){
+      const rLocal = localRegister(acc, newPw);
+      if(rLocal && rLocal.ok){
+        cancelOtpFlow();
+        okNote("تم إنشاء الحساب بنجاح — أهلاً بك " + userNameVal);
+        afterAccount(rLocal, true);
+      } else {
+        loginMsg("تعذر إنشاء الحساب");
       }
     });
   } else {
@@ -6101,7 +6073,7 @@ fillDaySelects();fillSecMulti();fillTeacherSelect();fillClassSelect();
   db.settings.exBy.A3=Object.assign({},exDef("A3"),db.settings.exBy.A3||{});
   loadExProf();
   applyFonts();showDataPath();checkLicenseGate();
-  setTimeout(function(){openGuide(false);},0);
+  
   }catch(e){try{document.body.insertAdjacentHTML("afterbegin","<div class=msg err>"+String(e)+"</div>");}catch(x){}}
 }
 let started=false;
