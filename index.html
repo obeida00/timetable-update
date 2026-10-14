@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub">إصدار 0.42</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.46</div>
     </div>
   </div>
   
@@ -884,7 +884,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip">الإصدار 0.42</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.46</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1137,7 +1137,7 @@ td.clk:hover .mv button{opacity:.45}
       <div class="info-banner">
         <div class="info-banner-item">
           <span class="info-lbl">الإصدار المثبت</span>
-          <strong class="info-val" id="installedVerShow">0.42</strong>
+          <strong class="info-val" id="installedVerShow">0.46</strong>
         </div>
         <div class="info-banner-item">
           <span class="info-lbl">نوع التخزين</span>
@@ -3005,7 +3005,10 @@ function renderSettings(){
   const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || "";
   if($("userNameShow")) $("userNameShow").textContent = curUName || "غير محدد";
   if($("userNameInput")) $("userNameInput").value = curUName;
-  if($("installedVerShow")) $("installedVerShow").textContent = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
+  const effV = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
+  if($("installedVerShow")) $("installedVerShow").textContent = effV;
+  if($("appTopVerShow")) $("appTopVerShow").textContent = "إصدار " + effV;
+  if($("settingsVerChip")) $("settingsVerChip").textContent = "الإصدار " + effV;
   updateLogoUI();
   applyGridColor();
 }
