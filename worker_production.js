@@ -443,9 +443,13 @@ export default {
         const ownerUntil = targetOwner.until || "";
         const isMember = (acc !== ownerAcc) && members.some(m => m.account === acc);
         // جلب بيانات الجدول للمنضم (بيانات المالك)
+        let ownTs = 0;
+        try { ownTs = Number(await storeGet(env, "data_ts_" + acc) || 0) || 0; } catch (e) { }
         let sharedData = "";
+        let sharedTs = 0;
         if (isMember) {
           sharedData = await getBestData(env, ownerAcc);
+          try { sharedTs = Number(await storeGet(env, "data_ts_" + ownerAcc) || 0) || 0; } catch (e) { }
         }
         return new Response(JSON.stringify({
           ok: true,
@@ -456,7 +460,9 @@ export default {
           owner_paid: ownerPaid,
           owner_until: ownerUntil,
           members: members,
-          shared_data: sharedData || ""
+          shared_data: sharedData || "",
+          shared_ts: sharedTs || 0,
+          own_ts: ownTs || 0
         }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
@@ -641,16 +647,26 @@ export default {
           const members = body.members || [];
           const userName = body.user_name || "";
           const shareOwner = String(body.share_owner || "").trim();
+          const updatedAt = Number(body.updated_at || 0) || 0;
 
           // لا تسمح لجهاز جديد فارغ أن يطمس النسخة السحابية الجيدة
           let prevData = "";
           prevData = await getBestData(env, acc);
           // امنع طمس نسخة سحابية جيدة ببيانات فارغة، مع إكمال تسجيل الحساب
           const keepOld = (dataScore(dataStr) === 0 && dataScore(prevData) > 0);
+          // لا تقبل نسخة أقدم من النسخة المخزونة إن كان العميل يرسل بصمة وقت
+          let storedTs = 0;
+          try { storedTs = Number(await storeGet(env, "data_ts_" + acc) || 0) || 0; } catch (e) { }
+          const tsOk = (!updatedAt || !storedTs || updatedAt >= storedTs);
 
           // حفظ في D1 + KV + الذاكرة
-          if (!keepOld) {
+          const sameData = (dataStr === prevData);
+          let acceptedTs = storedTs;
+          if (!keepOld && tsOk && !sameData) {
+            acceptedTs = updatedAt || Date.now();
+            if (storedTs && acceptedTs <= storedTs) acceptedTs = storedTs + 1;
             await saveSchoolData(env, acc, dataStr);
+            await storePut(env, "data_ts_" + acc, String(acceptedTs));
             globalThis._MEM_CACHE.schools[acc] = school;
             if (members && members.length) globalThis._MEM_CACHE.members[acc] = members;
             if (dataStr) globalThis._MEM_CACHE.latest_data = dataStr;
@@ -673,8 +689,14 @@ export default {
             const mems = await fetchSchoolMembers(env, shareOwner, kv);
             if (mems.some(m => m.account === acc)) {
               const ownerPrev = await getBestData(env, shareOwner);
-              if (!keepOld && dataScore(dataStr) >= dataScore(ownerPrev)) {
+              let ownerTs = 0;
+              try { ownerTs = Number(await storeGet(env, "data_ts_" + shareOwner) || 0) || 0; } catch (e) { }
+              // تعديل العضو يُقبل فقط إذا كان أحدث من آخر تعديل للمالك (يمنع ارتداد النسخ القديمة)
+              const newer = updatedAt ? (updatedAt > ownerTs) : (dataScore(dataStr) > dataScore(ownerPrev));
+              if (!keepOld && newer && dataStr !== ownerPrev) {
+                const nts = updatedAt || Date.now();
                 await saveSchoolData(env, shareOwner, dataStr);
+                await storePut(env, "data_ts_" + shareOwner, String(nts > ownerTs ? nts : ownerTs + 1));
               }
             }
           }
@@ -717,7 +739,7 @@ export default {
             await saveUsersList(env, users);
           }
 
-          return new Response(JSON.stringify({ ok: true, kept: keepOld, sync_time: new Date().toISOString() }), {
+          return new Response(JSON.stringify({ ok: true, kept: keepOld, ts: acceptedTs || 0, sync_time: new Date().toISOString() }), {
             headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
           });
         } catch (e) {
@@ -764,7 +786,7 @@ export default {
         status: "Online 🚀",
         kv_bound: !!kv,
         registered_users: users.length,
-        version: "0.47",
+        version: "0.49",
         developer: "Obeida Al-Ithawi"
       }, null, 2), { headers: { "Content-Type": "application/json" } });
     }

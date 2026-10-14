@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.47</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.49</div>
     </div>
   </div>
   
@@ -884,7 +884,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.47</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.49</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1761,7 +1761,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.47";
+const APP_VERSION="0.49";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -1817,7 +1817,7 @@ function parseDb(raw){
     return (x&&typeof x==="object")?x:null;
   }catch(e){return null;}
 }
-function adoptAccount(acc, raw){
+function adoptAccount(acc, raw, force){
   const next=normAcc(acc);
   const prev=window._acc||"";
   if(prev && prev!==next){
@@ -1833,6 +1833,11 @@ function adoptAccount(acc, raw){
   try{if(prevKey) add(parseDb(localStorage.getItem(prevKey)));}catch(e){}
   let best=null,bestN=-1;
   cands.forEach(function(x){const n=dbScore(x);if(n>bestN){best=x;bestN=n;}});
+  // عند التعادل (مثل تغيير اسم معلم بدون تغيير العدد) ترجّح النسخة القادمة من السحابة
+  if(force && raw){
+    const rf=parseDb(raw);
+    if(rf && dbScore(rf)>=bestN){best=rf;bestN=dbScore(rf);}
+  }
   hist=[];
   _lastSaved="";
   if(best){
@@ -1842,7 +1847,8 @@ function adoptAccount(acc, raw){
     db=blankDb();
   }
   _diskReady=!!next;
-  save(true);
+  _adopting=true;
+  try{ save(true); } finally { _adopting=false; }
   try{localStorage.removeItem(KEY+"_guest");}catch(e){}
   try{refreshAll();}catch(e){}
 }
@@ -1925,6 +1931,8 @@ function pyApi(){
 }
 let _diskReady=false;
 let _cloudPushTimer=null;
+// بصمة وقت آخر تعديل محلي حقيقي (لا تتغير عند استلام بيانات من السحابة)
+let _editTs=0, _adopting=false, _sharedTsApplied=0, _ownTsApplied=0;
 function syncToCloudNow(showToast){
   const acc=window._acc||"";
   if(!acc||acc.length<8){
@@ -1946,6 +1954,7 @@ function syncToCloudNow(showToast){
     body: JSON.stringify({
       acc: acc,
       data: s,
+      updated_at: _editTs || 0,
       share_owner: window._schoolOwner || "",
       school: school,
       teachers_count: tCount,
@@ -1956,6 +1965,7 @@ function syncToCloudNow(showToast){
       version: APP_VERSION
     })
   }).then(function(r){return r.json();}).then(function(res){
+    if(res && res.ts) _ownTsApplied=Math.max(_ownTsApplied, res.ts|0);
     if(showToast && res && res.ok){
       okNote("تمت المزامنة مع بوت التيليجرام بنجاح ☁️");
     }
@@ -1987,6 +1997,7 @@ function flushSave(){
   const s=JSON.stringify(db);
   if(s===_lastSaved)return;
   _lastSaved=s;
+  if(!_adopting) _editTs=Date.now();
   try{localStorage.setItem(storageKey(),s);}catch(e){}
   persistDisk(s);
 }
@@ -6012,14 +6023,21 @@ function cloudGetSchoolInfo(acc){
 function bestOfData(a,b){
   return dbScore(parseDb(b)) > dbScore(parseDb(a)) ? (b||"") : (a||"");
 }
-function mergeSharedIfNewer(raw){
+function mergeSharedIfNewer(raw, ts){
   if(!raw) return;
   var s=String(raw);
   var hh=s.length+"|"+s.slice(0,96)+"|"+s.slice(-96);
-  if(hh===window._lastSharedDataHash) return;
+  ts = ts || 0;
+  if(ts){
+    // بصمة وقت أحدث = نسخة جديدة حتى لو التشابه بالحجم والأطراف
+    if(ts<=_sharedTsApplied && hh===window._lastSharedDataHash) return;
+    _sharedTsApplied=ts;
+  } else if(hh===window._lastSharedDataHash){
+    return;
+  }
   if(dbScore(parseDb(s))<=0) return;
   window._lastSharedDataHash=hh;
-  mergeDisk(s);
+  mergeDisk(s,true);
   try { renderSettings(); } catch(e){}
   try { if(typeof renderViews === "function") renderViews(); } catch(e){}
   okNote("🔄 تم تحديث جدول وبيانات المدرسة تلقائياً");
@@ -6034,9 +6052,20 @@ function applySchoolInfo(r){
       applyGate(localStatus());
     }
   }
-  if(!r.is_owner){
-    if(r.shared_data) mergeSharedIfNewer(r.shared_data);
-    else if(r.owner_acc) cloudFetchData(r.owner_acc).then(mergeSharedIfNewer);
+  if(r.is_owner){
+    // المالك: هل عدّل أحد الأعضاء سجل المدرسة بعد آخر تعديل محلي؟
+    if(r.own_ts && r.own_ts > _ownTsApplied && r.own_ts > _editTs){
+      (function(ts){
+        cloudFetchData(window._acc||"").then(function(d){
+          _ownTsApplied=ts;
+          mergeSharedIfNewer(d, ts);
+          _sharedTsApplied=ts;
+        });
+      })(r.own_ts);
+    }
+  } else {
+    if(r.shared_data) mergeSharedIfNewer(r.shared_data, r.shared_ts||0);
+    else if(r.owner_acc) cloudFetchData(r.owner_acc).then(function(d){ mergeSharedIfNewer(d,0); });
   }
   renderMembersUI(r.members || [], r.is_owner, r.school_code);
 }
@@ -6254,9 +6283,9 @@ function startApp(fileRaw){
   started=true;
   boot(fileRaw||"");
 }
-function mergeDisk(txt){
+function mergeDisk(txt, force){
   if(!window._acc){_diskReady=false;return;}
-  adoptAccount(window._acc, txt||"");
+  adoptAccount(window._acc, txt||"", !!force);
 }
 function kickoff(){
   if(!started) startApp("");
