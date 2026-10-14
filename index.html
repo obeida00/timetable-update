@@ -1771,7 +1771,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.43";
+const APP_VERSION="0.44";
 
 const GUIDE_STEPS=[
   {tab:"classes",title:"1 — الصفوف والشعب",msg:"ابدأ من تبويب الصفوف والشعب. أضف الصف (الأول، الثاني…) ثم أضف الشعب (أ، ب، ج). احذف أي شعبة غير موجودة في مدرستك."},
@@ -5275,6 +5275,8 @@ function loadAuth(){
 function saveAuth(a){try{localStorage.setItem(AUTH_KEY,JSON.stringify(a));}catch(e){}}
 function pwHash(acc,pw){return "h:"+normAcc(acc)+"|"+String(pw||"");}
 function ymd(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+// حالة الاشتراك المرثية من المالك (للحساب الثاني المنضم)
+window._linkedOwner = window._linkedOwner || { acc: "", paid: false, until: "" };
 function localStatus(){
   const a=loadAuth();
   const acc=normAcc(a.session||"");
@@ -5285,6 +5287,16 @@ function localStatus(){
     var paidUntil=u.paidUntil||"";var paidDays=365;
     if(paidUntil){var pD=new Date(paidUntil+"T00:00:00");if(!isNaN(pD.getTime())){var tdMs2=new Date();tdMs2.setHours(0,0,0,0);paidDays=Math.ceil((pD.getTime()-tdMs2.getTime())/86400000);if(paidDays<0)paidDays=0;}}
     return {ok:true,mode:"paid",account:acc,days:paidDays,until:paidUntil,code:u.code,price:20000};
+  }
+  // إذا كان الحساب عضواً في مدرسة والمالك لديه اشتراك — يرث الاشتراك
+  if(window._linkedOwner && window._linkedOwner.acc && window._linkedOwner.paid && window._linkedOwner.until){
+    var ownerUntil = window._linkedOwner.until;
+    var pD2=new Date(ownerUntil+"T00:00:00");
+    if(!isNaN(pD2.getTime())){
+      var tdMs3=new Date();tdMs3.setHours(0,0,0,0);
+      var paidDays2=Math.ceil((pD2.getTime()-tdMs3.getTime())/86400000);
+      if(paidDays2>0) return {ok:true,mode:"shared",account:acc,days:paidDays2,until:ownerUntil,price:20000};
+    }
   }
   let first;
   try{first=new Date(u.first+"T00:00:00");}catch(e){first=new Date();}
@@ -5749,16 +5761,19 @@ function showLicRemain(s){
   el.classList.remove("trial","lock");
   if(!s){el.textContent="الاشتراك";return;}
   if(s.mode==="paid"&&s.ok){el.textContent="اشتراك · باقي "+s.days+" يوم";}
+  else if(s.mode==="shared"&&s.ok){el.textContent="مشترك · باقي "+s.days+" يوم";}
   else if(s.mode==="trial"&&s.ok){el.textContent="تجربة · باقي "+s.days+" يوم";el.classList.add("trial");}
   else {el.textContent="انتهى الاشتراك";el.classList.add("lock");}
   if($("licUntilHint")){
-    if(s.ok) $("licUntilHint").textContent=(s.mode==="trial"?"تجربة حتى ":"الاشتراك حتى ")+s.until+" — باقي "+s.days+" يوم";
+    if(s.ok&&s.mode==="shared") $("licUntilHint").textContent="حساب مشترك — الاشتراك حتى "+s.until+" — باقي "+s.days+" يوم";
+    else if(s.ok) $("licUntilHint").textContent=(s.mode==="trial"?"تجربة حتى ":"الاشتراك حتى ")+s.until+" — باقي "+s.days+" يوم";
     else $("licUntilHint").textContent="انتهت التجربة. فعّل الاشتراك السنوي.";
   }
   if($("userAccShow"))$("userAccShow").textContent=(s&&s.account)||window._acc||"—";
   if($("mySchoolCode"))$("mySchoolCode").textContent=(s&&s.school_code)||"SCH-"+String((s&&s.account)||window._acc||"").slice(-4);
   if($("userSubShow")){
     if(s&&s.ok&&s.mode==="paid") $("userSubShow").textContent="اشتراك سنوي — باقي "+s.days+" يوم";
+    else if(s&&s.ok&&s.mode==="shared") $("userSubShow").textContent="حساب مشترك (مرتبط بالمالك) — باقي "+s.days+" يوم حتى "+(s.until||"");
     else if(s&&s.ok&&s.mode==="trial") $("userSubShow").textContent="تجربة — باقي "+s.days+" يوم حتى "+(s.until||"");
     else $("userSubShow").textContent="انتهى الاشتراك — فعّل من شاشة الدفع";
   }
@@ -5796,8 +5811,27 @@ function checkTeamMembersUpdate(members){
   _prevTeamMembersCount = curCount;
 }
 
+function removeMember(memberAcc){
+  const ownerAcc = window._acc || "";
+  if(!ownerAcc) return;
+  if(!confirm("هل تريد إزالة هذا العضو من فريق المدرسة؟")) return;
+  fetch("https://schol-table-bot.obe092.workers.dev/api/remove_member", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ owner_acc: ownerAcc, member_acc: memberAcc })
+  }).then(function(res){ return res.json(); })
+    .then(function(r){
+      if(r && r.ok){
+        okNote("✅ تم إزالة العضو من فريق المدرسة");
+        renderMembersUI(r.members || [], true, null);
+      } else {
+        note("تعذر إزالة العضو: " + (r.error || ""));
+      }
+    }).catch(function(){ note("تعذر الاتصال بالسيرفر"); });
+}
 function renderMembersUI(members, isOwner, schoolCode){
   window._schoolMembers = members || [];
+  window._isOwner = !!isOwner;
   try{if(!db.settings)db.settings={};db.settings.teamMembers=members;}catch(e){}
   if(schoolCode && $("mySchoolCode")) $("mySchoolCode").textContent = schoolCode;
   checkTeamMembersUpdate(members);
@@ -5815,10 +5849,13 @@ function renderMembersUI(members, isOwner, schoolCode){
     var name = m.name ? (' (' + m.name + ')') : '';
     var masked = acc.length > 6 ? acc.slice(0,3) + '****' + acc.slice(-3) : acc;
     var joined = m.joined || '-';
+    var delBtn = isOwner
+      ? '<button onclick="removeMember(\'' + acc + '\')" style="margin-right:auto;background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700" title="إزالة العضو">🗑️ إزالة</button>'
+      : '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">انضم ' + joined + '</span>';
     return '<div style="padding:4px 0;border-bottom:1px dashed #e9d5ff;display:flex;gap:8px;align-items:center">'
       + '<span>👤</span>'
       + '<span style="font-weight:700;color:#5b21b6;direction:rtl">' + masked + name + '</span>'
-      + '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">انضم ' + joined + '</span>'
+      + delBtn
       + '</div>';
   }).join('');
 }
@@ -5829,6 +5866,11 @@ function refreshTeamMembers(){
   if(api && api.get_school_info){
     api.get_school_info().then(function(r){
       if(!r || !r.ok) return;
+      // توريث اشتراك المالك للعضو المنضم
+      if(!r.is_owner && r.owner_paid && r.owner_until){
+        window._linkedOwner = { acc: r.owner_acc || "", paid: r.owner_paid, until: r.owner_until };
+        applyGate(localStatus());
+      }
       renderMembersUI(r.members || [], r.is_owner, r.school_code);
     }).catch(function(){});
     return;
@@ -5839,6 +5881,21 @@ function refreshTeamMembers(){
     .then(function(res){ return res.json(); })
     .then(function(r){
       if(r && r.ok){
+        // توريث اشتراك المالك للعضو المنضم عبر السحابة
+        if(!r.is_owner && r.owner_paid && r.owner_until){
+          window._linkedOwner = { acc: r.owner_acc || "", paid: true, until: r.owner_until };
+          applyGate(localStatus());
+        }
+        // مزامنة بيانات الجدول إذا كان عضواً منضماً وجاءت بيانات جديدة من المالك
+        if(!r.is_owner && r.shared_data){
+          var prev = window._lastSharedDataHash || "";
+          var cur = String(r.shared_data).slice(0,200);
+          if(cur !== prev && dbScore(parseDb(r.shared_data)) > 0){
+            window._lastSharedDataHash = cur;
+            mergeDisk(r.shared_data);
+            okNote("🔄 تم تحديث الجدول من المدرسة تلقائياً");
+          }
+        }
         renderMembersUI(r.members || [], r.is_owner, r.school_code);
       }
     }).catch(function(){});
@@ -6119,11 +6176,18 @@ function doAppUpdate(){
   }).catch(function(){note("تعذر التحديث");});
 }
 setTimeout(function(){checkAppUpdate(false);},600);
-// فحص دوري تلقائي كل 30 ثانية للمزامنة المستمرة السحابية وفحص التحديثات
-setInterval(function(){ try { if(window._acc) syncToCloudNow(false); } catch(e){}
-  try { checkAppUpdate(false); } catch(e){}
+// مزامنة سحابية فورية كل 5 ثوانٍ للأعضاء + كل 20 ثانية للمالك والتحديثات
+var _syncCounter = 0;
+setInterval(function(){
+  _syncCounter++;
+  // مزامنة فريق العمل وجلب بيانات المالك كل 5 ثوانٍ
   try { refreshTeamMembers(); } catch(e){}
-}, 15000);
+  // مزامنة بيانات التطبيق للمالك كل 20 ثانية (كل 4 دورات)
+  if(_syncCounter % 4 === 0){
+    try { if(window._acc) syncToCloudNow(false); } catch(e){}
+    try { checkAppUpdate(false); } catch(e){}
+  }
+}, 5000);
 
 let selectedImages = [];
 
