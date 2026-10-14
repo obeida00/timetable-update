@@ -5498,10 +5498,6 @@ function afterAccount(r,fresh){
           });
       }
     }).catch(function(){
-        adoptAccount(acc, "");
-        done(false);
-      }
-    }).catch(function(){
       adoptAccount(acc, "");
       done(false);
     });
