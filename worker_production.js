@@ -37,6 +37,7 @@ const USER_KEYBOARD = {
 const DEV_KEYBOARD = {
   keyboard: [
     [{ text: "🏫 استعراض المدارس والجداول" }, { text: "⚡ تفعيل اشتراك زبون" }],
+    [{ text: "📢 إعلان لكل الزبائن" }],
     [{ text: "👥 قائمة المشتركين" }, { text: "📆 جدول الأسبوع" }],
     [{ text: "📅 جدول اليوم" }, { text: "👨‍🏫 تقرير المعلمين" }],
     [{ text: "📚 تقرير المواد" }, { text: "🏫 ملخص الشُعب" }],
@@ -595,6 +596,27 @@ export default {
     }
 
     // ==========================================
+    // API إرسال إشعار جماعي (محمي بمفتاح)
+    // ==========================================
+    if (url.pathname === "/api/broadcast_update" && request.method === "POST") {
+      const JB = (o, st) => new Response(JSON.stringify(o), {
+        status: st || 200,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+      try {
+        const body = await request.json().catch(function () { return {}; });
+        if (String(body.key || "") !== String(LIC_SECRET) + "|bc") return JB({ ok: false, error: "unauthorized" }, 401);
+        const txt = String(body.text || "").trim() || updateBroadcastText();
+        const r = await broadcastAll(env, kv, txt);
+        const adminId = (kv ? await kv.get("admin_chat_id") : null) || globalThis._MEM_CACHE.admin_id;
+        if (adminId) { try { await sendMsg(adminId, `📢 تم إرسال الإشعار الجماعي — ✅ ${r.sent || 0} | ⚠️ ${r.failed || 0}`); } catch (e) { } }
+        return JB(r);
+      } catch (e) {
+        return JB({ ok: false, error: e.message }, 500);
+      }
+    }
+
+    // ==========================================
     // API موافقة/رفض طلب انضمام عضو
     // ==========================================
     if (url.pathname === "/api/respond_join" && request.method === "POST") {
@@ -1082,6 +1104,30 @@ async function handleTelegramMessage(msg, env, kv) {
   }
 
   const kb = isDev ? DEV_KEYBOARD : USER_KEYBOARD;
+
+  // إشعار التحديث لكل الزبائن
+  if (isDev && (text === "إشعار التحديث" || text === "/update_all" || text === "🚀 إشعار التحديث للجميع")) {
+    await sendMsg(chatId, "⏳ جارٍ إرسال إشعار التحديث لكل الزبائن...");
+    const r = await broadcastAll(env, kv, updateBroadcastText());
+    await sendMsg(chatId, `📢 <b>تم الإرسال:</b>\n✅ نجح: <b>${r.sent || 0}</b>\n⚠️ فشل: <b>${r.failed || 0}</b>\n👥 المجموع: <b>${r.total || 0}</b>`, kb);
+    return;
+  }
+  // إعلان مخصص لكل الزبائن
+  if (isDev && (text.startsWith("إشعار الكل") || text.startsWith("/broadcast"))) {
+    const body = text.replace("إشعار الكل", "").replace("/broadcast", "").trim();
+    if (!body) {
+      await sendMsg(chatId, "📢 اكتب الإعلان بهذه الصيغة:\n<code>إشعار الكل النص الذي تريده هنا</code>", kb);
+      return;
+    }
+    await sendMsg(chatId, "⏳ جارٍ الإرسال لكل الزبائن...");
+    const r = await broadcastAll(env, kv, "📢 <b>إعلان من إدارة النظام:</b>\n\n" + body);
+    await sendMsg(chatId, `✅ نجح: <b>${r.sent || 0}</b> | ⚠️ فشل: <b>${r.failed || 0}</b> | 👥 المجموع: <b>${r.total || 0}</b>`, kb);
+    return;
+  }
+  if (isDev && text === "📢 إعلان لكل الزبائن") {
+    await sendMsg(chatId, "📢 <b>الإعلان لكل الزبائن</b>\n\n• لإرسال إشعار التحديث الجاهز أرسل: <code>إشعار التحديث</code>\n• لإرسال إعلان مخصص أرسل: <code>إشعار الكل نص الإعلان</code>", kb);
+    return;
+  }
 
   // 1. أمر البداية /start ورابط الحساب
   if (text.startsWith("/start")) {
@@ -2178,6 +2224,66 @@ async function sendDayLessons(chatId, db, dayIdx, dayName) {
   });
 
   await sendMsg(chatId, res);
+}
+
+// إرسال رسالة مع معرفة نجاحها
+async function tgSendRaw(chatId, text, keyboard) {
+  try {
+    const payload = { chat_id: chatId, text: text, parse_mode: "HTML", disable_web_page_preview: true };
+    if (keyboard) payload.reply_markup = keyboard;
+    const res = await fetch(`${TG_API}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const j = await res.json().catch(function () { return null; });
+    return !!(j && j.ok);
+  } catch (e) { return false; }
+}
+// كل المحادثات المرتبطة بحسابات المدارس
+async function listBoundChats(kv) {
+  const out = [];
+  if (!kv) return out;
+  try {
+    let cursor = undefined;
+    for (let i = 0; i < 30; i++) {
+      const res = await kv.list({ prefix: "chat_acc_", cursor: cursor });
+      (res.keys || []).forEach(function (k) {
+        const id = String(k.name || "").replace("chat_acc_", "").trim();
+        if (id && out.indexOf(id) < 0) out.push(id);
+      });
+      if (res.list_complete) break;
+      cursor = res.cursor;
+    }
+  } catch (e) { }
+  return out;
+}
+// رسالة إشعار التحديث الجاهزة
+function updateBroadcastText() {
+  return "🚀 <b>تحديث جديد لنظام الجداول المدرسية — إصدار 0.54</b>\n\n" +
+    "📲 <b>طريقة التحديث:</b> افتح البرنامج، راح يظهر لك تنبيه التحديث، اضغط «تحديث الآن». لازم تحدّث كل أجهزة المدرسة (المدير والمعاونين).\n\n" +
+    "━━━━━━━━━━━━━━━\n" +
+    "📌 <b>شنو الجديد:</b>\n" +
+    "1️⃣ <b>الانضمام بموافقة المدير:</b> ما ينضم أحد لمدرستك إلا بموافقتك — يوصلك إشعار في الجرس مع زرّي «قبول» و«رفض».\n" +
+    "2️⃣ <b>الإزالة نهائية:</b> إذا أزلت عضو، تُحذف بياناته بالكامل ويرجع حسابه تجريبي — وما يرجع للفريق إلا بموافقتك من جديد.\n" +
+    "3️⃣ <b>تقارير PDF جاهزة للطباعة:</b> زر «📄 تقارير PDF» بالأعلى — تقرير المعلمين والأنصبة، تقرير المواد، ملخص كل الشعب، مع إمكانية إرسالها لك على تيليكرام.\n" +
+    "4️⃣ <b>إشعارات الجرس</b> في الشريط العلوي لكل الطلبات والتحديثات.\n" +
+    "5️⃣ <b>مزامنة تلقائية كل 25 ثانية:</b> أي تعديل من أي جهاز يوصل للباقي بدون أي خطوة.\n" +
+    "━━━━━━━━━━━━━━━\n" +
+    "⚠️ <b>مهم:</b> الميزات الجديدة تشتغل بعد تحديث كل الأجهزة.\n" +
+    "للاستفسار تواصل مع المطور: عبيده العيثاوي";
+}
+// إرسال جماعي لكل الزبائن المرتبطين
+async function broadcastAll(env, kv, text) {
+  if (!kv) return { ok: false, error: "no_kv" };
+  const chats = await listBoundChats(kv);
+  let sent = 0, failed = 0;
+  for (const c of chats) {
+    const ok1 = await tgSendRaw(c, text, USER_KEYBOARD);
+    if (ok1) sent++; else failed++;
+    await new Promise(function (r) { setTimeout(r, 80); });
+  }
+  return { ok: true, total: chats.length, sent: sent, failed: failed };
 }
 
 // دالة إرسال رسالة عادية
