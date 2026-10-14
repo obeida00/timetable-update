@@ -5476,6 +5476,12 @@ function doLogin(){
     return;
   }
 
+  // إذا كان حساب المطور، تخطي فوري ودخول مباشر
+  if(acc === '07813332882' || acc.endsWith('7813332882')){
+    onCloudLoginSuccess(acc, pw, { ok: true, account: acc, paid: true, until: '2027-10-14' });
+    return;
+  }
+
   // 1. محاولة تسجيل الدخول محلياً أولاً
   const rLocal = localLogin(acc, pw);
   if(rLocal && rLocal.ok){
@@ -5491,7 +5497,6 @@ function doLogin(){
         okNote("تم الدخول");
         afterAccount(r);
       } else {
-        // محاولة التحقق سحابياً كخيار احتياطي فوري إذا لم يوجد محلياً
         checkCloudLogin(acc, pw, r);
       }
     }).catch(function(){ checkCloudLogin(acc, pw, null); });
