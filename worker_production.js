@@ -291,11 +291,11 @@ export default {
         });
       }
 
+      // الحساب غير مسجل في أي مدرسة وغير موجود كمالك
       return new Response(JSON.stringify({
-        ok: true,
-        school_code: acc ? ("SCH-" + String(acc).slice(-4)) : "SCH-XXXX",
-        is_owner: true,
-        members: []
+        ok: false,
+        not_found: true,
+        error: "account_not_registered"
       }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
       });

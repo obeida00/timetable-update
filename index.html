@@ -1761,7 +1761,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.45";
+const APP_VERSION="0.46";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -5376,6 +5376,24 @@ function applyGate(s){
       Promise.resolve(api.load_data()).then(function(txt){
         if(txt && dbScore(parseDb(txt))>0){
           adoptAccount(acc, txt);
+        } else {
+          // فحص بيانات السحابة أو بيانات المدرسة
+          fetch("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc))
+            .then(function(res){return res.json();})
+            .then(function(data){
+              if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
+                adoptAccount(acc, data.data);
+              } else {
+                fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc))
+                  .then(function(r2){return r2.json();})
+                  .then(function(scInfo){
+                    if(scInfo&&scInfo.ok&&scInfo.shared_data&&dbScore(parseDb(scInfo.shared_data))>0){
+                      adoptAccount(acc, scInfo.shared_data);
+                      okNote("تم تنزيل جدول وبيانات المدرسة بنجاح 🏫");
+                    }
+                  }).catch(function(){});
+              }
+            }).catch(function(){});
         }
       }).catch(function(){});
     } else {
@@ -5385,6 +5403,15 @@ function applyGate(s){
         .then(function(data){
           if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
             adoptAccount(acc, data.data);
+          } else {
+            fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc))
+              .then(function(r2){return r2.json();})
+              .then(function(scInfo){
+                if(scInfo&&scInfo.ok&&scInfo.shared_data&&dbScore(parseDb(scInfo.shared_data))>0){
+                  adoptAccount(acc, scInfo.shared_data);
+                  okNote("تم تنزيل جدول وبيانات المدرسة بنجاح 🏫");
+                }
+              }).catch(function(){});
           }
         }).catch(function(){});
     }
@@ -5407,17 +5434,70 @@ function afterAccount(r,fresh){
   const a=pyApi();
   if(a&&a.load_data){
     window._acc=normAcc(acc);
-    Promise.resolve(a.load_data()).then(function(txt){adoptAccount(acc,txt||"");done(!!(txt&&dbScore(parseDb(txt))>0));});
+    Promise.resolve(a.load_data()).then(function(txt){
+      if(txt && dbScore(parseDb(txt)) > 0){
+        adoptAccount(acc, txt);
+        done(true);
+      } else {
+        // إذا كان الجهاز جديد والملف المحلي فارغ: سحب تلقائي من السحابة (بيانات الحساب أو بيانات المدرسة المنضم إليها)
+        fetch("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc))
+          .then(function(res){return res.json();})
+          .then(function(data){
+            if(data && data.ok && data.data && dbScore(parseDb(data.data)) > 0){
+              adoptAccount(acc, data.data);
+              done(true);
+            } else {
+              // فحص إذا كان عضواً في مدرسة لجلب جدولها فوراً
+              fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc))
+                .then(function(r2){return r2.json();})
+                .then(function(scInfo){
+                  if(scInfo && scInfo.ok && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0){
+                    adoptAccount(acc, scInfo.shared_data);
+                    done(true);
+                    okNote("تم جلب جدول وبيانات المدرسة بنجاح 🏫");
+                  } else {
+                    adoptAccount(acc, txt || "");
+                    done(false);
+                  }
+                }).catch(function(){
+                  adoptAccount(acc, txt || "");
+                  done(false);
+                });
+            }
+          }).catch(function(){
+            adoptAccount(acc, txt || "");
+            done(false);
+          });
+      }
+    });
     return;
   }
   // في الهاتف أو متصفح الويب: سحب النسخة من السحابة مباشرة
   fetch("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc))
     .then(function(res){return res.json();})
     .then(function(data){
-      if(data&&data.ok&&data.data){
+      if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
         adoptAccount(acc, data.data);
         done(true);
       } else {
+        // فحص مدرسة الحساب
+        fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc))
+          .then(function(r2){return r2.json();})
+          .then(function(scInfo){
+            if(scInfo && scInfo.ok && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data))>0){
+              adoptAccount(acc, scInfo.shared_data);
+              done(true);
+              okNote("تم جلب جدول وبيانات المدرسة بنجاح 🏫");
+            } else {
+              adoptAccount(acc, "");
+              done(false);
+            }
+          }).catch(function(){
+            adoptAccount(acc, "");
+            done(false);
+          });
+      }
+    }).catch(function(){
         adoptAccount(acc, "");
         done(false);
       }
@@ -5499,15 +5579,42 @@ function verifyViaCloudSync(acc, pw, fallbackLocal){
     .then(function(res){ return res.json(); })
     .then(function(syncRes){
       if(syncRes && syncRes.ok && syncRes.data){
-        // الحساب مسجل وموجود في السحابة ولديه بيانات
-        onCloudLoginSuccess(acc, pw, { ok: true, account: acc, data: syncRes.data });
+        // الحساب مسجل وموجود في السحابة ولديه بيانات - جلب معلومات المدرسة أيضاً
+        fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc=" + encodeURIComponent(acc))
+          .then(function(r2){ return r2.json(); }).catch(function(){ return {}; })
+          .then(function(scInfo){
+            var loginData = { ok: true, account: acc, data: syncRes.data };
+            if(scInfo && scInfo.ok){
+              loginData.school_name = scInfo.school_name || "";
+              loginData.school_code = scInfo.school_code || "";
+              loginData.owner_acc  = scInfo.owner_acc  || "";
+              loginData.is_owner   = scInfo.is_owner;
+              // إذا كان عضواً - جلب بيانات المدرسة المشتركة أيضاً
+              if(!scInfo.is_owner && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0){
+                loginData.shared_data = scInfo.shared_data;
+              }
+            }
+            onCloudLoginSuccess(acc, pw, loginData);
+          });
       } else {
-        // فحص مدرسة الحساب
+        // فحص مدرسة الحساب (قد يكون عضواً في مدرسة بدون بيانات خاصة)
         fetch("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc=" + encodeURIComponent(acc))
           .then(function(r2){ return r2.json(); })
           .then(function(scInfo){
-            if(scInfo && scInfo.ok && (scInfo.members || scInfo.is_owner)){
-              onCloudLoginSuccess(acc, pw, { ok: true, account: acc });
+            // يجب أن يكون مسجلاً فعلاً (مالك مدرسة أو عضو منضم)
+            var isMember = scInfo && scInfo.ok && !scInfo.not_found && Array.isArray(scInfo.members);
+            var isOwner  = scInfo && scInfo.ok && scInfo.is_owner;
+            if(isMember || isOwner){
+              var loginData = { ok: true, account: acc };
+              if(scInfo.school_name) loginData.school_name = scInfo.school_name;
+              if(scInfo.school_code) loginData.school_code = scInfo.school_code;
+              if(scInfo.owner_acc)   loginData.owner_acc   = scInfo.owner_acc;
+              loginData.is_owner = !!scInfo.is_owner;
+              // إذا كان عضواً - جلب بيانات المدرسة المشتركة
+              if(!scInfo.is_owner && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0){
+                loginData.shared_data = scInfo.shared_data;
+              }
+              onCloudLoginSuccess(acc, pw, loginData);
             } else {
               const m = { pass: "رمز الدخول غير صحيح", nouser: "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد» لإنشائه", account: "أدخل رقم موبايل صحيح" };
               loginMsg((fallbackLocal && m[fallbackLocal.reason]) || "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد»");
@@ -5539,11 +5646,18 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
     db.settings.userName = cloudRes.user_name;
     try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); }catch(e){}
   }
+  // إذا كان الحساب منضماً لمدرسة ولديه بيانات مشتركة
+  const activeData = cloudRes.data || cloudRes.shared_data || "";
   okBeep();
   okNote("✅ تم تسجيل الدخول بنجاح!");
-  afterAccount({ ok: true, account: acc, data: cloudRes.data || "" });
+  afterAccount({ ok: true, account: acc, data: activeData });
+  if(cloudRes.shared_data && (!cloudRes.data || dbScore(parseDb(cloudRes.data)) <= 0)){
+    try { mergeDisk(cloudRes.shared_data); } catch(e){}
+  }
   if($("loginBox")) $("loginBox").hidden = true;
   applyGate(localStatus());
+  // تحديث فوري لفريق المدرسة ومعلومات الربط
+  try { setTimeout(refreshTeamMembers, 500); } catch(e){}
 }
 function iqWaNum(phone){
   var n=String(phone||"").replace(/\D/g,"");
@@ -6091,7 +6205,10 @@ function kickoff(){
   _diskReady=true;
   checkLicenseGate();
   setTimeout(function(){
-    if(window._acc) syncToCloudNow(false);
+    if(window._acc){
+      syncToCloudNow(false);
+      try { refreshTeamMembers(); } catch(e){}
+    }
   }, 2000);
 }
 window.addEventListener("pywebviewready",function(){
