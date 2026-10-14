@@ -601,6 +601,49 @@ export default {
     }
 
     // ==========================================
+    // API رفع تقرير PDF من التطبيق ليُرسل في التيليكرام
+    // ==========================================
+    if (url.pathname === "/api/upload_report" && request.method === "POST") {
+      try {
+        const body = await request.json();
+        const acc = String(body.acc || "").trim();
+        const kind = String(body.kind || "").trim();
+        const name = String(body.name || ("report_" + kind + ".pdf")).trim();
+        const b64 = String(body.b64 || "");
+        if (!kind || !b64) {
+          return new Response(JSON.stringify({ ok: false, error: "bad_args" }), {
+            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+          });
+        }
+        if (b64.length > 12 * 1024 * 1024) {
+          return new Response(JSON.stringify({ ok: false, error: "too_large", max: "9MB" }), {
+            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+          });
+        }
+        const payload = JSON.stringify({ name: name, b64: b64, ts: Date.now(), acc: acc });
+        if (kv) {
+          try { await kv.put("report_latest_" + kind, payload); } catch (e) { }
+          if (acc) { try { await kv.put("report_" + acc + "_" + kind, payload); } catch (e) { } }
+        }
+        // بيانات صغيرة في D1 للفهرسة
+        try { await storePut(env, "report_meta_" + kind, JSON.stringify({ name: name, ts: Date.now(), acc: acc })); } catch (e) { }
+        // إشعار المطور بوصول التقرير
+        const adminId = (kv ? await kv.get("admin_chat_id") : null) || globalThis._MEM_CACHE.admin_id;
+        if (adminId) {
+          try { await sendStoredReport(adminId, kind, "📄 <b>تقرير جديد مرفوع من التطبيق:</b>\n" + (acc || "")); } catch (e) { }
+        }
+        return new Response(JSON.stringify({ ok: true, kind: kind, size: b64.length }), {
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ ok: false, error: e.message }), {
+          status: 500,
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+        });
+      }
+    }
+
+    // ==========================================
     // API إزالة عضو من فريق المدرسة + حذف بياناته
     // ==========================================
     if (url.pathname === "/api/remove_member" && request.method === "POST") {
@@ -1144,6 +1187,7 @@ async function handleTelegramMessage(msg, env, kv) {
     }
 
     case "👨‍🏫 تقرير المعلمين": {
+      if (await sendStoredReport(chatId, "teachers", "📄 <b>تقرير المعلمين (PDF):</b>")) break;
       if (!db || !db.teachers || !db.teachers.length) {
         await sendMsg(chatId, "👨‍🏫 <b>تقرير المعلمين:</b>\nلم يتم العثور على معلمين مسجلين بعد. افتح التطبيق لمزامنة الكادر.", kb);
         return;
@@ -1153,6 +1197,7 @@ async function handleTelegramMessage(msg, env, kv) {
     }
 
     case "📚 تقرير المواد": {
+      if (await sendStoredReport(chatId, "subjects", "📚 <b>تقرير المواد (PDF):</b>")) break;
       if (!db || !db.subjects || !db.subjects.length) {
         await sendMsg(chatId, "📚 <b>تقرير المواد الدراسية:</b>\nلم يتم العثور على مواد مدخلة بعد.", kb);
         return;
@@ -1162,6 +1207,7 @@ async function handleTelegramMessage(msg, env, kv) {
     }
 
     case "🏫 ملخص الشُعب": {
+      if (await sendStoredReport(chatId, "sections", "🏫 <b>ملخص الشُعب (PDF):</b>")) break;
       if (!db || ((!db.sections || !db.sections.length) && (!db.classes || !db.classes.length))) {
         await sendMsg(chatId, "🏫 <b>ملخص الشُعب:</b>\nلم يتم العثور على صفوف أو شُعب مدخلة بعد.", kb);
         return;
@@ -1487,6 +1533,29 @@ async function sendWeekSchedule(chatId, db, sName) {
   docForm.append("document", docBlob, `جدول_الاسبوع_${cleanSc}.html`);
   docForm.append("caption", `📄 <b>مستند جدول الأسبوع الكامل (للطباعة والحفظ كـ PDF):</b>\n${sName}🖨️ افتح الملف لحفظه أو طباعته كـ PDF مباشرة بدون أي برامج.`);
   await fetch(`${TG_API}/sendDocument`, { method: "POST", body: docForm });
+}
+
+/**
+ * إرسال تقرير PDF مخزّن (يرفعه برنامج سطح المكتب عند التصدير)
+ */
+async function sendStoredReport(chatId, kind, caption) {
+  try {
+    const kv = getKV(globalThis._ENV);
+    if (!kv) return false;
+    const raw = await kv.get("report_latest_" + kind);
+    if (!raw) return false;
+    let o = null;
+    try { o = JSON.parse(raw); } catch (e) { return false; }
+    if (!o || !o.b64) return false;
+    const bin = Uint8Array.from(atob(o.b64), function (c) { return c.charCodeAt(0); });
+    const blob = new Blob([bin], { type: "application/pdf" });
+    const fd = new FormData();
+    fd.append("chat_id", chatId);
+    fd.append("document", blob, o.name || ("report_" + kind + ".pdf"));
+    fd.append("caption", caption || "📄 تقرير PDF");
+    const res = await fetch(`${TG_API}/sendDocument`, { method: "POST", body: fd });
+    return !!res.ok;
+  } catch (e) { return false; }
 }
 
 /**

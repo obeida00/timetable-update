@@ -597,12 +597,13 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.50</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.51</div>
     </div>
   </div>
   
   <div class="dev-wrap no-print">
     <button type="button" class="lic-chip" id="licRemain" title="الاشتراك" onclick="openSubInfoOrPayment()">الاشتراك</button>
+    <button type="button" class="dev-btn" onclick="openReportsMenu()">📄 تقارير PDF</button>
     <button type="button" class="bell-btn" id="bellBtn" title="التنبيهات" onclick="openNotif()">
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
@@ -884,7 +885,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.50</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.51</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1761,7 +1762,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.50";
+const APP_VERSION="0.51";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -4377,6 +4378,9 @@ function downloadBlob(name,mime,data){
   if(isIOS()){window.open(url,"_blank");return;}
   const a=document.createElement("a");
   a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){
+    try{ note("💾 تم تنزيل الملف: "+name+"\n📂 تجده في مجلد «التنزيلات (Downloads)» على جهازك"); }catch(e){}
+  },400);
 }
 function exportDataTable(bodyId,title,fmt){
   const tb=$(bodyId);if(!tb){alert("لا جدول");return;}
@@ -5097,6 +5101,200 @@ function copySubInfoCode(){
 
   if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){okNote("تم نسخ كود التفعيل");}).catch(function(){});
 
+}
+
+
+/* ================= تقارير PDF + إرسالها إلى تيليكرام ================= */
+function _fitTxt(ctx, s, maxW){
+  s=String(s==null?"":s);
+  if(ctx.measureText(s).width<=maxW) return s;
+  let t=s;
+  while(t.length>1 && ctx.measureText(t+"…").width>maxW) t=t.slice(0,-1);
+  return t+"…";
+}
+// بناء ملف PDF من صور JPEG (يحافظ على العربية بشكل مثالي)
+function pdfFromJpegPages(pages, wPt, hPt){
+  const enc=new TextEncoder(), parts=[]; let pos=0; const offs={};
+  function raw(u8){ parts.push(u8); pos+=u8.length; }
+  function txt(t){ raw(enc.encode(t)); }
+  function objStart(n){ offs[n]=pos; txt(n+" 0 obj\n"); }
+  const n=pages.length, imgBase=3+2*n;
+  txt("%PDF-1.4\n");
+  objStart(1); txt("<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+  const kids=[]; for(let i=0;i<n;i++) kids.push((3+2*i)+" 0 R");
+  objStart(2); txt("<< /Type /Pages /Count "+n+" /Kids ["+kids.join(" ")+"] >>\nendobj\n");
+  for(let i=0;i<n;i++){
+    objStart(3+2*i);
+    txt("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+wPt+" "+hPt+"] /Resources << /XObject << /Im0 "+(imgBase+i)+" 0 R >> >> /Contents "+(4+2*i)+" 0 R >>\nendobj\n");
+    const cs="q "+wPt+" 0 0 "+hPt+" 0 0 cm /Im0 Do Q\n";
+    objStart(4+2*i);
+    txt("<< /Length "+cs.length+" >>\nstream\n"+cs+"endstream\nendobj\n");
+  }
+  for(let i=0;i<n;i++){
+    objStart(imgBase+i);
+    txt("<< /Type /XObject /Subtype /Image /Width "+pages[i].w+" /Height "+pages[i].h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+pages[i].u8.length+" >>\nstream\n");
+    raw(pages[i].u8);
+    txt("\nendstream\nendobj\n");
+  }
+  const maxObj=imgBase+n-1, xrefPos=pos;
+  let xr="xref\n0 "+(maxObj+1)+"\n0000000000 65535 f \n";
+  for(let k=1;k<=maxObj;k++) xr+=("0000000000"+(offs[k]||0)).slice(-10)+" 00000 n \n";
+  txt(xr);
+  txt("trailer\n<< /Size "+(maxObj+1)+" /Root 1 0 R >>\nstartxref\n"+xrefPos+"\n%%EOF\n");
+  return new Blob(parts,{type:"application/pdf"});
+}
+function _cvJpeg(cv,cb){
+  try{ cv.toBlob(function(b){ if(!b){cb(null);return;} b.arrayBuffer().then(function(ab){cb(new Uint8Array(ab));}); },"image/jpeg",0.85); }
+  catch(e){ cb(null); }
+}
+function reportData(kind){
+  const school=(db.settings&&db.settings.schoolName)||"نظام الجداول المدرسية";
+  const days=(db.settings.days||[]).length||5, P=db.settings.periods||6, cap=days*P;
+  if(kind==="subjects"){
+    return { title:"تقرير المواد الدراسية", school:school,
+      head:["#","المادة","المعلم","الشعبة","عدد الدروس","النوع"],
+      w:[0.05,0.25,0.24,0.24,0.11,0.11],
+      rows:(db.subjects||[]).map((x,i)=>[String(i+1), x.name||"", teacherName(x.teacherId)||"—", secName(x.sectionId)||"—", String(+x.weekly||0), (x.role==="assist"?"مساعدة":"أساسي")]) };
+  }
+  if(kind==="sections"){
+    return { title:"ملخص كل الشعب", school:school,
+      head:["#","الشعبة","الدروس","السعة","الحالة","المعلمون","المواد"],
+      w:[0.05,0.13,0.09,0.08,0.12,0.25,0.28],
+      rows:(db.sections||[]).map((s,i)=>{
+        const list=(db.subjects||[]).filter(x=>x.sectionId===s.id);
+        const mains=list.filter(x=>(x.role||"main")!=="assist");
+        const wk=mains.reduce((a,x)=>a+(+x.weekly||0),0);
+        const gap=cap-wk;
+        const tchs=[]; list.forEach(function(x){ const n=teacherName(x.teacherId); if(n&&tchs.indexOf(n)<0) tchs.push(n); });
+        const mats=[]; mains.forEach(function(x){ if(x.name&&mats.indexOf(x.name)<0) mats.push(x.name); });
+        return [String(i+1), secName(s.id)||"", String(wk), String(cap), gap>0?("ناقص "+gap):(gap<0?("زيادة "+(-gap)):"مكتمل"), tchs.join("، ")||"—", mats.join("، ")||"—"];
+      }) };
+  }
+  return { title:"تقرير المعلمين والأنصبة", school:school,
+    head:["#","اسم المعلم","الاختصاص","الدروس الأسبوعية","الأوقات المحظورة","الشعب وأوقاتها"],
+    w:[0.05,0.22,0.14,0.10,0.16,0.33],
+    rows:(db.teachers||[]).map((t,i)=>[String(i+1), t.name||"", t.specialty||"", String(teacherHours(t.id)), teacherOffDays(t).map(dayName).join("، ")||"—", teacherSecHours(t.id)]) };
+}
+function _repPage(ctx,W,H,pad,d,pg,perPage,total){
+  ctx.fillStyle="#fff"; ctx.fillRect(0,0,W,H);
+  ctx.direction="rtl"; ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  const CW=W-2*pad, x0=W-pad;
+  const cx=function(j){
+    let before=0; for(let i=0;i<j;i++) before+=d.w[i];
+    const right=x0-before*CW, left=right-d.w[j]*CW;
+    return (left+right)/2;
+  };
+  ctx.fillStyle="#4c1d95"; ctx.font="bold 46px Tahoma,Arial";
+  ctx.fillText(d.school, W/2, 74);
+  ctx.fillStyle="#1e1b4b"; ctx.font="bold 36px Tahoma,Arial";
+  ctx.fillText(d.title, W/2, 136);
+  ctx.fillStyle="#6d28d9"; ctx.font="bold 26px Tahoma,Arial";
+  ctx.fillText(d.sub||"", W/2, 182);
+  const rowH=46, headH=54;
+  let y=214;
+  ctx.fillStyle="#5b21b6"; ctx.fillRect(pad,y,CW,headH);
+  ctx.fillStyle="#fff"; ctx.font="bold 27px Tahoma,Arial";
+  d.head.forEach(function(hh,j){ ctx.fillText(_fitTxt(ctx,hh,d.w[j]*CW-14), cx(j), y+headH/2); });
+  y+=headH;
+  const start=pg*perPage, end=Math.min(d.rows.length,start+perPage);
+  for(let i=start;i<end;i++){
+    if((i-start)%2===1){ ctx.fillStyle="#f8fafc"; ctx.fillRect(pad,y,CW,rowH); }
+    ctx.fillStyle="#1e1b4b"; ctx.font="26px Tahoma,Arial";
+    d.rows[i].forEach(function(c,j){ ctx.fillText(_fitTxt(ctx,c,d.w[j]*CW-14), cx(j), y+rowH/2); });
+    ctx.strokeStyle="#e5e7eb"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(pad,y+rowH); ctx.lineTo(pad+CW,y+rowH); ctx.stroke();
+    y+=rowH;
+  }
+  ctx.strokeStyle="#5b21b6"; ctx.lineWidth=3; ctx.strokeRect(pad,214,CW,y-214);
+  ctx.strokeStyle="#ddd6fe"; ctx.lineWidth=2;
+  let acc=0;
+  for(let j=0;j<d.w.length-1;j++){ acc+=d.w[j]; const xx=x0-acc*CW; ctx.beginPath(); ctx.moveTo(xx,214); ctx.lineTo(xx,y); ctx.stroke(); }
+  ctx.fillStyle="#6d28d9"; ctx.font="bold 24px Tahoma,Arial";
+  ctx.fillText("صفحة "+(pg+1)+" من "+total, W/2, H-38);
+  ctx.fillStyle="#9ca3af"; ctx.font="22px Tahoma,Arial";
+  ctx.fillText(d.footer||"", W/2, H-74);
+}
+function buildReportPdf(kind,cb){
+  try{
+    const d=reportData(kind);
+    const today=ymd(new Date());
+    d.sub="عدد السجلات: "+d.rows.length+"   |   التاريخ: "+today;
+    d.footer="نظام الجداول المدرسية";
+    const W=1754,H=1240,PW=842,PH=595,pad=52;
+    const perPage=Math.max(4,Math.floor((H-360)/46));
+    const total=Math.max(1,Math.ceil(d.rows.length/perPage));
+    const pages=[];
+    const pg=pages.length;
+    function draw(i){
+      const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+      const ctx=cv.getContext("2d");
+      _repPage(ctx,W,H,pad,d,i,perPage,total);
+      _cvJpeg(cv,function(u8){
+        if(!u8){ cb&&cb(null); return; }
+        pages.push({u8:u8,w:W,h:H});
+        if(pages.length<total) draw(pages.length);
+        else{
+          const blob=pdfFromJpegPages(pages,PW,PH);
+          const nm=("تقرير_"+d.title).replace(/[\\/:*?"<>|\s]+/g,"_")+"_"+today+".pdf";
+          window._lastReport={kind:kind,blob:blob,name:nm};
+          cb&&cb(blob,nm);
+        }
+      });
+    }
+    if(!d.rows.length){ cb&&cb(null); return; }
+    draw(0);
+  }catch(e){ note("تعذر إنشاء PDF: "+(e&&e.message?e.message:e)); cb&&cb(null); }
+}
+function uploadReportPdf(){
+  const lr=window._lastReport;
+  const m=document.getElementById("repMsg");
+  if(!lr||!lr.blob){ if(m)m.textContent="⚠️ أنشئ التقرير أولاً"; return; }
+  if(m) m.textContent="⏳ جارٍ الإرسال إلى تيليكرام...";
+  const fr=new FileReader();
+  fr.onload=function(){
+    const b64=String(fr.result||"").split(",")[1]||"";
+    fetch("https://schol-table-bot.obe092.workers.dev/api/upload_report",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({acc:window._acc||"",kind:lr.kind,name:lr.name,b64:b64})
+    }).then(function(r){return r.json();}).then(function(r){
+      if(m) m.textContent=(r&&r.ok)?"✅ تم إرسال التقرير إلى تيليكرام — اطلبه من البوت بـ «تقرير المعلمين»":"⚠️ تعذر الإرسال: "+((r&&r.error)||"");
+    }).catch(function(){ if(m) m.textContent="⚠️ تعذر الاتصال بالسحابة"; });
+  };
+  fr.readAsDataURL(lr.blob);
+}
+function reportChoice(kind){
+  const m=document.getElementById("repMsg");
+  if(m) m.textContent="⏳ جارٍ إنشاء ملف PDF...";
+  buildReportPdf(kind,function(blob,nm){
+    if(!blob){ if(m) m.textContent="⚠️ لا توجد بيانات لهذا التقرير"; return; }
+    downloadBlob(nm,"application/pdf",blob);
+    if(m) m.innerHTML="✅ تم إنشاء الملف: <b>"+nm+"</b><br>📂 تجده في مجلد «التنزيلات (Downloads)»";
+    const box=document.getElementById("repMenuBox");
+    if(box && box.firstChild && !document.getElementById("repActions")){
+      const act=document.createElement("div");
+      act.id="repActions";
+      act.style.cssText="display:flex;gap:8px;margin-top:12px";
+      act.innerHTML='<button type="button" class="btn g" style="flex:1" onclick="uploadReportPdf()">📤 إرسال إلى تيليكرام</button>';
+      box.firstChild.appendChild(act);
+    }
+  });
+}
+function openReportsMenu(){
+  const old=document.getElementById("repMenuBox"); if(old) old.remove();
+  const d=document.createElement("div");
+  d.id="repMenuBox";
+  d.style.cssText="position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px";
+  d.innerHTML='<div style="background:#fff;border-radius:18px;padding:18px;width:min(470px,96vw);box-shadow:0 20px 50px rgba(0,0,0,.3);direction:rtl">'
+   +'<div style="font-weight:800;color:#4c1d95;font-size:1.05rem;text-align:center;margin-bottom:6px">📄 تصدير التقارير PDF</div>'
+   +'<div style="font-size:.78rem;color:#6b7280;text-align:center;margin-bottom:12px">يُنشأ الملف بصيغة PDF جاهزة للطباعة، ويمكن إرساله إلى تيليكرام</div>'
+   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'teachers\')">👨‍🏫 تقرير المعلمين والأنصبة</button>'
+   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'subjects\')">📚 تقرير المواد الدراسية</button>'
+   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'sections\')">🏫 ملخص كل الشعب</button>'
+   +'<button type="button" class="btn w" style="width:100%;margin-top:10px" onclick="document.getElementById(\'repMenuBox\').remove()">إغلاق</button>'
+   +'<div id="repMsg" style="margin-top:10px;font-size:.82rem;color:#6d28d9;text-align:center;line-height:1.7"></div>'
+   +'</div>';
+  document.body.appendChild(d);
 }
 
 function exportPDF(){
