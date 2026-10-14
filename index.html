@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.54</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.55</div>
     </div>
   </div>
   
@@ -885,7 +885,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.54</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.55</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1762,7 +1762,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.54";
+const APP_VERSION="0.55";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6170,7 +6170,16 @@ function checkTeamMembersUpdate(members){
 function removeMember(memberAcc){
   const ownerAcc = window._acc || "";
   if(!ownerAcc) return;
-  if(!confirm("هل تريد إزالة هذا العضو من فريق المدرسة؟")) return;
+  if(!confirm("إزالة هذا العضو نهائياً؟\n\nسيتم حذف بياناته فوراً ويرجع حسابه تجريبي 7 أيام.")) return;
+  // إزالة فورية من القائمة قبل انتظار السيرفر
+  var prevList = (window._schoolMembers || []).slice();
+  try{
+    var quick = prevList.filter(function(m){ return m && m.account !== memberAcc; });
+    window._schoolMembers = quick;
+    if(db && db.settings) db.settings.teamMembers = quick;
+    renderMembersUI(quick, true, null);
+    _prevTeamMembersCount = quick.length;
+  }catch(e){}
   fetch("https://schol-table-bot.obe092.workers.dev/api/remove_member", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -6188,8 +6197,12 @@ function removeMember(memberAcc){
         renderMembersUI(r.members || [], true, null);
       } else {
         note("تعذر إزالة العضو: " + (r.error || ""));
+        try{ window._schoolMembers = prevList; renderMembersUI(prevList, true, null); _prevTeamMembersCount = prevList.length; }catch(e){}
       }
-    }).catch(function(){ note("تعذر الاتصال بالسيرفر"); });
+    }).catch(function(){
+      note("تعذر الاتصال بالسيرفر");
+      try{ window._schoolMembers = prevList; renderMembersUI(prevList, true, null); _prevTeamMembersCount = prevList.length; }catch(e){}
+    });
 }
 // عند إزالة العضو من الفريق: تُحذف بياناته المحلية ويرجع لتجربة 7 أيام مع المطالبة بالاشتراك
 function handleRemovedFromSchool(){
@@ -6696,14 +6709,18 @@ else kickoff();
 window.addEventListener("beforeunload",function(){try{clearTimeout(_saveT);flushSave();}catch(e){}});
 document.addEventListener("visibilitychange",function(){if(document.hidden){try{clearTimeout(_saveT);flushSave();}catch(e){}}});
 setInterval(function(){try{flushSave();}catch(e){}},8000);
-// فحص دوري لحالة العضوية: يكشف الإزالة من الفريق أو الموافقة على الانضمام أو تعديلات جديدة
+// فحص سريع لحالة العضوية: يكشف الإزالة من الفريق أو الموافقة أو تعديلات جديدة فوراً
 setInterval(function(){
   try{
     if(!window._acc) return;
     if(document.hidden) return;
     refreshTeamMembers();
   }catch(e){}
-},25000);
+},7000);
+// فحص فوري عند العودة للتطبيق
+document.addEventListener("visibilitychange", function(){
+  try{ if(!document.hidden && window._acc) refreshTeamMembers(); }catch(e){}
+});
 let _updInfo=null;
 function setBell(on){
   const b=$("bellBtn");
