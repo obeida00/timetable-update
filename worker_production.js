@@ -148,12 +148,25 @@ async function getBestData(env, acc) {
   const d1 = getD1(env);
   const kv = getKV(env);
   const cands = [];
+  let d1Row = null, d1Ok = false;
   if (d1) {
     try {
-      const row = await d1.prepare("SELECT v FROM keyval WHERE k = ?").bind("data_" + acc).first();
-      if (row && row.v) cands.push(String(row.v));
-    } catch (e) { }
+      d1Row = await d1.prepare("SELECT v FROM keyval WHERE k = ?").bind("data_" + acc).first();
+      d1Ok = true;
+    } catch (e) { d1Ok = false; }
   }
+  // إذا نجح استعلام D1 ولم يوجد صف = البيانات محذوفة (إزالة عضو) — لا نُرجع نسخة قديمة
+  if (d1Ok && (!d1Row || !d1Row.v)) {
+    try { delete globalThis._MEM_CACHE.data[acc]; } catch (e) { }
+    if (kv) {
+      try {
+        const v0 = await kv.get("data_" + acc);
+        if (v0 && dataScore(v0) > 0) return String(v0);
+      } catch (e) { }
+    }
+    return "";
+  }
+  if (d1Row && d1Row.v) cands.push(String(d1Row.v));
   if (kv) {
     try {
       const v = await kv.get("data_" + acc);
@@ -183,6 +196,24 @@ async function saveSchoolData(env, acc, dataStr) {
   if (kv) {
     try { await kv.put("data_" + acc, String(dataStr)); } catch (e) { }
   }
+  return true;
+}
+
+// حذف بيانات جدول حساب من D1 + KV + الذاكرة (يُستخدم عند إزالة عضو)
+async function deleteSchoolData(env, acc) {
+  try { delete globalThis._MEM_CACHE.data[acc]; } catch (e) { }
+  const d1 = getD1(env);
+  const kv = getKV(env);
+  if (d1) {
+    try {
+      await d1.prepare("DELETE FROM keyval WHERE k = ? OR k = ?").bind("data_" + acc, "data_ts_" + acc).run();
+    } catch (e) { }
+  }
+  if (kv) {
+    try { await kv.delete("data_" + acc); } catch (e) { }
+    try { await kv.delete("data_ts_" + acc); } catch (e) { }
+  }
+  try { await storePut(env, "data_" + acc, ""); } catch (e) { }
   return true;
 }
 
@@ -246,13 +277,13 @@ async function saveUsersList(env, users, kvFallback) {
   globalThis._MEM_CACHE.users = users;
   const d1 = getD1(env);
   if (d1 && Array.isArray(users)) {
-    try {
-      for (const u of users) {
+    for (const u of users) {
+      try {
         await d1.prepare("INSERT OR REPLACE INTO users (acc, pw, user_name, school, date, paid, until, last_sync, members_count) VALUES (?, (SELECT pw FROM users WHERE acc=?), ?, ?, ?, ?, ?, ?, ?)")
           .bind(u.acc, u.acc, u.user_name || "", u.school || "", u.date || "", u.paid ? 1 : 0, u.until || "", u.last_sync || "", u.members_count || 0)
           .run();
-      }
-    } catch(e){}
+      } catch (e) { }
+    }
   }
   const kv = getKV(env) || kvFallback;
   if (kv) {
@@ -353,6 +384,7 @@ export default {
         }
 
         globalThis._MEM_CACHE.members[ownerAcc] = members;
+        try { await storePut(env, "removed_" + memberAcc, ""); } catch (e) { }
         if (kv) {
           try { await saveSchoolMembers(env, ownerAcc, members); } catch(e){}
           try { (globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {})[memberAcc] = ownerAcc; } catch(e){}
@@ -420,6 +452,10 @@ export default {
         if (!targetOwner) {
           for (let u of users) {
             if (u.acc === acc) continue;
+            try {
+              const uRemoved = await storeGet(env, "removed_" + u.acc);
+              if (uRemoved) continue;   // حساب أُزيل من فريق لا يُعتبر مالكاً
+            } catch (e) { }
             const mems = await fetchSchoolMembers(env, u.acc, kv);
             if (mems.some(m => m.account === acc)) {
               targetOwner = u;
@@ -438,18 +474,70 @@ export default {
         const ownerAcc = targetOwner.acc;
         const members = await fetchSchoolMembers(env, ownerAcc, kv);
         const ownerCode = "SCH-" + String(ownerAcc).slice(-4);
-        // جلب حالة اشتراك المالك لتوريثها للأعضاء المنضمين
-        const ownerPaid = !!(targetOwner.paid);
-        const ownerUntil = targetOwner.until || "";
         const isMember = (acc !== ownerAcc) && members.some(m => m.account === acc);
-        // جلب بيانات الجدول للمنضم (بيانات المالك)
+        // كل حسابات الفريق: المالك + المنضمون
+        const groupAccs = [ownerAcc];
+        members.forEach(function (m) { if (m && m.account && groupAccs.indexOf(m.account) < 0) groupAccs.push(m.account); });
+        const todayStart = (function () { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })();
+        function userOf(a) { return users.find(function (x) { return x.acc === a; }) || null; }
+        function subEndsAt(a) {
+          const gu = userOf(a);
+          if (!gu || !gu.paid || !gu.until) return null;
+          const gd = new Date(gu.until + "T00:00:00");
+          if (isNaN(gd.getTime()) || gd.getTime() < todayStart) return null;
+          return gu.until;
+        }
+        // ===== الاشتراك: أي حساب مفعّل داخل الفريق يورّثه للجميع =====
+        let ownerPaid = false, ownerUntil = "", subFrom = "";
+        for (const ga of groupAccs) {
+          const e = subEndsAt(ga);
+          if (!e) continue;
+          if (!ownerPaid || e > ownerUntil) { ownerUntil = e; subFrom = ga; }
+          ownerPaid = true;
+        }
+        // ===== البيانات: أغنى نسخة في الفريق، مع تفضيل حساب مفعّل الاشتراك =====
+        let srcAcc = "", srcData = "", srcScore = -1, srcTs = 0, srcPaid = false;
+        for (const ga of groupAccs) {
+          let gdata = "";
+          try { gdata = await getBestData(env, ga); } catch (e) { }
+          const gscore = dataScore(gdata);
+          if (gscore <= 0) continue;
+          let gts = 0;
+          try { gts = Number(await storeGet(env, "data_ts_" + ga) || 0) || 0; } catch (e) { }
+          const gpaid = !!subEndsAt(ga);
+          // الأحدث زمنياً يفوز (آخر تعديل)، وعند تساوي الوقت نحكّم الوزن ثم الاشتراك
+          const newer = (gts > srcTs);
+          const sameTs = (gts === srcTs);
+          if (srcScore < 0 || newer ||
+              (sameTs && (gscore > srcScore || (gscore === srcScore && gpaid && !srcPaid)))) {
+            srcAcc = ga; srcData = gdata; srcScore = gscore; srcTs = gts; srcPaid = gpaid;
+          }
+        }
+        // ترحيل النسخة المختارة إلى سجل المالك ليكون مرجعاً واحداً للفريق
+        if (srcAcc && srcAcc !== ownerAcc) {
+          try {
+            const ownerNow = await getBestData(env, ownerAcc);
+            let ownerTsNow = 0;
+            try { ownerTsNow = Number(await storeGet(env, "data_ts_" + ownerAcc) || 0) || 0; } catch (e) { }
+            // ننقل النسخة إلى سجل المالك فقط إذا كانت أحدث فعلاً (لا تطمس تعديلاً أحدث منه)
+            if (srcTs > ownerTsNow) {
+              await saveSchoolData(env, ownerAcc, srcData);
+              await storePut(env, "data_ts_" + ownerAcc, String(srcTs));
+            } else if (!ownerTsNow && dataScore(ownerNow) < srcScore) {
+              await saveSchoolData(env, ownerAcc, srcData);
+              await storePut(env, "data_ts_" + ownerAcc, String(Date.now()));
+            }
+          } catch (e) { }
+        }
         let ownTs = 0;
         try { ownTs = Number(await storeGet(env, "data_ts_" + acc) || 0) || 0; } catch (e) { }
         let sharedData = "";
         let sharedTs = 0;
         if (isMember) {
-          sharedData = await getBestData(env, ownerAcc);
-          try { sharedTs = Number(await storeGet(env, "data_ts_" + ownerAcc) || 0) || 0; } catch (e) { }
+          sharedData = srcData;
+          if (!sharedData) { try { sharedData = await getBestData(env, ownerAcc); } catch (e) { } }
+          sharedTs = srcTs;
+          if (!sharedTs) { try { sharedTs = Number(await storeGet(env, "data_ts_" + ownerAcc) || 0) || 0; } catch (e) { } }
         }
         return new Response(JSON.stringify({
           ok: true,
@@ -462,7 +550,10 @@ export default {
           members: members,
           shared_data: sharedData || "",
           shared_ts: sharedTs || 0,
-          own_ts: ownTs || 0
+          own_ts: ownTs || 0,
+          sub_from: subFrom || "",
+          data_from: srcAcc || ownerAcc,
+          removed: (String(await storeGet(env, "removed_" + acc) || "") !== "")
         }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
@@ -479,34 +570,48 @@ export default {
     }
 
     // ==========================================
-    // API حذف عضو من المدرسة (Remove Member)
+    // API إزالة عضو من فريق المدرسة + حذف بياناته
     // ==========================================
     if (url.pathname === "/api/remove_member" && request.method === "POST") {
       try {
         const body = await request.json();
         const ownerAcc = String(body.owner_acc || "").trim();
         const memberAcc = String(body.member_acc || "").trim();
-        if (!ownerAcc || !memberAcc) {
-          return new Response(JSON.stringify({ ok: false, error: "missing_params" }), {
+        if (!ownerAcc || !memberAcc || ownerAcc === memberAcc) {
+          return new Response(JSON.stringify({ ok: false, error: "bad_args" }), {
+            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+          });
+        }
+        const users = await getUsersList(env, kv);
+        const ownerRow = users.find(function (u) { return u.acc === ownerAcc; });
+        if (!ownerRow) {
+          return new Response(JSON.stringify({ ok: false, error: "not_owner" }), {
             headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
           });
         }
         let members = await fetchSchoolMembers(env, ownerAcc, kv);
         const before = members.length;
-        members = members.filter(m => m.account !== memberAcc);
-        if (members.length === before) {
-          return new Response(JSON.stringify({ ok: false, error: "not_found" }), {
-            headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-          });
-        }
-        globalThis._MEM_CACHE.members[ownerAcc] = members;
+        members = members.filter(function (m) { return m.account !== memberAcc; });
         await saveSchoolMembers(env, ownerAcc, members);
-        try { (globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {})[ownerAcc] = ""; } catch (e) { }
-        // تحديث عدد الأعضاء في قائمة المدارس
-        const users = await getUsersList(env, kv);
-        const u = users.find(x => x.acc === ownerAcc);
-        if (u) { u.members_count = members.length; await saveUsersList(env, users); }
-        return new Response(JSON.stringify({ ok: true, members: members }), {
+        globalThis._MEM_CACHE.members[ownerAcc] = members;
+        try { delete (globalThis._MEM_CACHE.memberToOwner = globalThis._MEM_CACHE.memberToOwner || {})[memberAcc]; } catch (e) { }
+        // حذف بيانات العضو من السحابة نهائياً
+        await deleteSchoolData(env, memberAcc);
+        // علامة: هذا الحساب أُزيل من فريق — تمنع جهازه القديم من إعادة الكتابة
+        try { await storePut(env, "removed_" + memberAcc, String(Date.now())); } catch (e) { }
+        try { await storePut(env, "members_" + memberAcc, ""); } catch (e) { }
+        try { delete globalThis._MEM_CACHE.members[memberAcc]; } catch (e) { }
+        // إرجاع العضو لحالة غير مفعّل ليبدأ تجربة جديدة على جهازه
+        const mu = users.find(function (u) { return u.acc === memberAcc; });
+        if (mu) { mu.paid = false; mu.until = ""; mu.members_count = 0; }
+        ownerRow.members_count = members.length;
+        await saveUsersList(env, users);
+        return new Response(JSON.stringify({
+          ok: true,
+          removed: memberAcc,
+          was_member: (before !== members.length),
+          members: members
+        }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
       } catch (e) {
@@ -647,6 +752,11 @@ export default {
           const members = body.members || [];
           const userName = body.user_name || "";
           const shareOwner = String(body.share_owner || "").trim();
+          // طلب قادم من جهاز عضو منضم: لا نسمح له بتخزين قائمة أعضاء المالك تحت حسابه
+          const isMemberPush = !!(shareOwner && shareOwner !== acc);
+          // حساب سبق أن أُزيل من فريق: لا نسمح له بإعادة كتابة بياناته أو قائمة أعضاء
+          let removedFlag = "";
+          try { removedFlag = String(await storeGet(env, "removed_" + acc) || ""); } catch (e) { }
           const updatedAt = Number(body.updated_at || 0) || 0;
 
           // لا تسمح لجهاز جديد فارغ أن يطمس النسخة السحابية الجيدة
@@ -662,20 +772,20 @@ export default {
           // حفظ في D1 + KV + الذاكرة
           const sameData = (dataStr === prevData);
           let acceptedTs = storedTs;
-          if (!keepOld && tsOk && !sameData) {
+          if (!keepOld && tsOk && !sameData && !removedFlag) {
             acceptedTs = updatedAt || Date.now();
             if (storedTs && acceptedTs <= storedTs) acceptedTs = storedTs + 1;
             await saveSchoolData(env, acc, dataStr);
             await storePut(env, "data_ts_" + acc, String(acceptedTs));
             globalThis._MEM_CACHE.schools[acc] = school;
-            if (members && members.length) globalThis._MEM_CACHE.members[acc] = members;
+            if (!isMemberPush && !removedFlag && members && members.length) globalThis._MEM_CACHE.members[acc] = members;
             if (dataStr) globalThis._MEM_CACHE.latest_data = dataStr;
           }
 
           // حفظ في KV إذا كان موجوداً
           if (kv) {
             await safeKvPut(kv, "school_" + acc, school);
-            if (members && members.length) {
+            if (!isMemberPush && !removedFlag && members && members.length) {
               await saveSchoolMembers(env, acc, members);
             }
             if (userName) {
@@ -786,7 +896,7 @@ export default {
         status: "Online 🚀",
         kv_bound: !!kv,
         registered_users: users.length,
-        version: "0.49",
+        version: "0.50",
         developer: "Obeida Al-Ithawi"
       }, null, 2), { headers: { "Content-Type": "application/json" } });
     }
@@ -1102,9 +1212,23 @@ async function fetchSchoolMembers(envOrAcc, accOrDb, kvArg) {
   let members = [];
   if (acc) {
     let raw = "";
-    try { raw = await storeGet(globalThis._ENV || env, "members_" + acc); } catch (e) { }
-    if (!raw && kv) {
-      try { raw = await kv.get("members_" + acc); } catch (e) { }
+    let d1OkM = false, d1RowFound = false;
+    try {
+      const d1m = getD1(globalThis._ENV || env);
+      if (d1m) {
+        const rowM = await d1m.prepare("SELECT v FROM keyval WHERE k = ?").bind("members_" + acc).first();
+        d1OkM = true;
+        if (rowM && rowM.v) { raw = String(rowM.v); d1RowFound = true; }
+      }
+    } catch (e) { d1OkM = false; }
+    // D1 هو المصدر الرسمي: إن نجح استعلامه ولم يوجد صف فالقائمة محذوفة — لا نُرجع نسخة قديمة
+    if (d1OkM && !d1RowFound) {
+      try { delete globalThis._MEM_CACHE.members[acc]; } catch (e) { }
+    } else if (!raw && !d1OkM) {
+      if (kv) {
+        try { raw = await kv.get("members_" + acc); } catch (e) { }
+      }
+      if (!raw) { try { raw = await storeGet(globalThis._ENV || env, "members_" + acc); } catch (e) { } }
     }
     if (raw) { try { members = JSON.parse(raw); } catch (e) { } }
   }

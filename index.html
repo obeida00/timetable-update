@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.49</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.50</div>
     </div>
   </div>
   
@@ -884,7 +884,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.49</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.50</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1761,7 +1761,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.49";
+const APP_VERSION="0.50";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -1933,7 +1933,15 @@ let _diskReady=false;
 let _cloudPushTimer=null;
 // بصمة وقت آخر تعديل محلي حقيقي (لا تتغير عند استلام بيانات من السحابة)
 let _editTs=0, _adopting=false, _sharedTsApplied=0, _ownTsApplied=0;
+function ensureEditTs(){
+  try{
+    if(!window._acc) return;
+    var v=parseInt(localStorage.getItem(KEY+"_ets_"+normAcc(window._acc))||"0",10)||0;
+    if(v>_editTs) _editTs=v;
+  }catch(e){}
+}
 function syncToCloudNow(showToast){
+  ensureEditTs();
   const acc=window._acc||"";
   if(!acc||acc.length<8){
     if(showToast) note("يرجى تسجيل الدخول بحسابك أولاً لتفعيل المزامنة السحابية.");
@@ -1960,7 +1968,7 @@ function syncToCloudNow(showToast){
       teachers_count: tCount,
       classes_count: cCount,
       subjects_count: sCount,
-      members: window._schoolMembers || (db&&db.settings&&db.settings.teamMembers) || [],
+      members: window._isOwner ? (window._schoolMembers || (db&&db.settings&&db.settings.teamMembers) || []) : [],
       user_name: (db&&db.settings&&db.settings.userName) || localStorage.getItem("tt_user_name_" + acc) || "",
       version: APP_VERSION
     })
@@ -1997,7 +2005,10 @@ function flushSave(){
   const s=JSON.stringify(db);
   if(s===_lastSaved)return;
   _lastSaved=s;
-  if(!_adopting) _editTs=Date.now();
+  if(!_adopting){
+    _editTs=Date.now();
+    try{ if(window._acc) localStorage.setItem(KEY+"_ets_"+normAcc(window._acc), String(_editTs)); }catch(e){}
+  }
   try{localStorage.setItem(storageKey(),s);}catch(e){}
   persistDisk(s);
 }
@@ -5976,6 +5987,36 @@ function removeMember(memberAcc){
       }
     }).catch(function(){ note("تعذر الاتصال بالسيرفر"); });
 }
+// عند إزالة العضو من الفريق: تُحذف بياناته المحلية ويرجع لتجربة 7 أيام مع المطالبة بالاشتراك
+function handleRemovedFromSchool(){
+  if(window._removedHandled) return;
+  window._removedHandled = true;
+  try{ flushSave(); }catch(e){}
+  var acc = window._acc || "";
+  try{ localStorage.removeItem(storageKey()); }catch(e){}
+  try{ if(acc) localStorage.removeItem("tt_linked_school_" + acc); }catch(e){}
+  try{
+    const a=loadAuth(); const na=normAcc(a.session||"");
+    if(na && a.users && a.users[na]){
+      a.users[na].first = ymd(new Date());   // بداية تجربة جديدة 7 أيام
+      saveAuth(a);
+    }
+  }catch(e){}
+  try{ db = blankDb(); }catch(e){}
+  _lastSaved=""; _editTs=0; _sharedTsApplied=0; _ownTsApplied=0;
+  window._schoolOwner=""; window._lastSharedDataHash="";
+  window._linkedOwner = { acc:"", paid:false, until:"" };
+  try{ db.settings.linkedSchool=""; }catch(e){}
+  try{ db.settings.teamMembers=[]; }catch(e){}
+  try{ window._schoolMembers=[]; }catch(e){}
+  try{ save(true); }catch(e){}
+  try{ refreshAll(); }catch(e){}
+  try{ renderMembersUI([], false, null); }catch(e){}
+  try{ applyGate(localStatus()); }catch(e){}
+  try{ showLicRemain(localStatus()); }catch(e){}
+  note("⚠️ تمت إزالة حسابك من فريق المدرسة، وحُذفت البيانات المرتبطة به. رجعت للنسخة التجريبية 7 أيام — لتفعيل الاشتراك تواصل مع المطور.");
+}
+
 function renderMembersUI(members, isOwner, schoolCode){
   window._schoolMembers = members || [];
   window._isOwner = !!isOwner;
@@ -6028,6 +6069,10 @@ function mergeSharedIfNewer(raw, ts){
   var s=String(raw);
   var hh=s.length+"|"+s.slice(0,96)+"|"+s.slice(-96);
   ts = ts || 0;
+  ensureEditTs();
+  // تعديلاتنا المحلية أحدث من هذه النسخة السحابية (تعديل أثناء انقطاع الشبكة)
+  // فلا نطمسها بها — سنرفعها نحن عند عودة الاتصال
+  if(ts && _editTs && ts < _editTs) return;
   if(ts){
     // بصمة وقت أحدث = نسخة جديدة حتى لو التشابه بالحجم والأطراف
     if(ts<=_sharedTsApplied && hh===window._lastSharedDataHash) return;
@@ -6044,13 +6089,21 @@ function mergeSharedIfNewer(raw, ts){
 }
 function applySchoolInfo(r){
   if(!r || !r.ok) return;
+  // السيرفر يؤكد أن هذا الحساب أُزيل من الفريق — تُحذف بياناته ويرجع لتجربة 7 أيام
+  if(r.removed){ handleRemovedFromSchool(); return; }
   if(r.owner_acc) window._schoolOwner = r.owner_acc;
-  if(!r.is_owner && r.owner_paid && r.owner_until){
+  // الاشتراك يُورّث من أي حساب مفعّل داخل الفريق (المالك أو أي عضو منضم)
+  if(r.owner_paid && r.owner_until){
     var lo=window._linkedOwner||{};
-    if(lo.acc!==(r.owner_acc||"") || lo.paid!==r.owner_paid || lo.until!==r.owner_until){
-      window._linkedOwner = { acc: r.owner_acc || "", paid: r.owner_paid, until: r.owner_until };
+    var subAcc = r.sub_from || r.owner_acc || "";
+    if(lo.acc!==subAcc || lo.paid!==r.owner_paid || lo.until!==r.owner_until){
+      window._linkedOwner = { acc: subAcc, paid: r.owner_paid, until: r.owner_until };
       applyGate(localStatus());
     }
+  } else if(window._linkedOwner && window._linkedOwner.acc){
+    // لم يبقَ أي حساب مفعّل في الفريق — نرجع لحالة الحساب نفسها (اشتراك/تجربة)
+    window._linkedOwner = { acc:"", paid:false, until:"" };
+    try{ applyGate(localStatus()); }catch(e){}
   }
   if(r.is_owner){
     // المالك: هل عدّل أحد الأعضاء سجل المدرسة بعد آخر تعديل محلي؟
@@ -6072,16 +6125,23 @@ function applySchoolInfo(r){
 function refreshTeamMembers(){
   const myAcc = window._acc || "";
   if(!myAcc) return;
+  var savedSchool = (db.settings && db.settings.linkedSchool) || localStorage.getItem("tt_linked_school_" + myAcc) || "";
   // الاستعلام السحابي المباشر دائماً لضمان وصول أحدث جدول واشتراك المالك
   cloudGetSchoolInfo(myAcc).then(function(r){
     if(r && r.ok){
       applySchoolInfo(r);
-    } else {
-      // إذا لم يكن العضو مسجلاً في السحابة بعد، نتحقق إن كان قد انضم مسبقاً لمدرسة بكود
-      var savedSchool = (db.settings && db.settings.linkedSchool) || localStorage.getItem("tt_linked_school_" + myAcc) || "";
-      if(savedSchool){
-        cloudGetSchoolInfo(savedSchool).then(applySchoolInfo).catch(function(){});
-      }
+    }
+    // تحقق دائم من الفريق: إذا كنا منضمين سابقاً لمدرسة نتأكد أننا ما زلنا من أعضائها
+    if(savedSchool && String(savedSchool) !== String(myAcc)){
+      cloudGetSchoolInfo(savedSchool).then(function(r2){
+        if(!r2) return;
+        if(r2.ok === false && r2.not_found){ handleRemovedFromSchool(); return; }
+        if(r2.ok){
+          var mine = (r2.owner_acc === myAcc) || (r2.members || []).some(function(m){ return m && m.account === myAcc; });
+          if(!mine) handleRemovedFromSchool();
+          else if(!(r && r.ok)) applySchoolInfo(r2);
+        }
+      }).catch(function(){});
     }
   }).catch(function(){
     const api = pyApi();
