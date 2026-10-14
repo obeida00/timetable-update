@@ -45,33 +45,66 @@ const DEV_KEYBOARD = {
   is_persistent: true
 };
 
-// استخراج مساحة التخزين KV من المتغيرات أياً كان اسمها
 function getKV(env) {
   if (!env) return null;
-  if (env.TABLE_KV) return env.TABLE_KV;
-  if (env.DB) return env.DB;
-  if (env.KV) return env.KV;
   if (env.TIMETABLE_KV) return env.TIMETABLE_KV;
-  if (env.TABLES) return env.TABLES;
-  for (const k of Object.keys(env)) {
-    if (env[k] && typeof env[k].get === "function" && typeof env[k].put === "function") {
-      return env[k];
-    }
+  if (env.TABLE_KV) return env.TABLE_KV;
+  if (env.KV) return env.KV;
+  return null;
+}
 
-// دالة كتابة آمنة لا تسقط السيرفر في حال نفاد حد KV اليومي
+function getD1(env) {
+  if (!env) return null;
+  if (env.DB && typeof env.DB.prepare === "function") return env.DB;
+  return null;
+}
+
+// دالة كتابة فائقة القوة: تحفظ في D1 (100 ألف عملية يومياً) مع KV والذاكرة
+async function storePut(env, key, val) {
+  const d1 = getD1(env);
+  const kv = getKV(env);
+  globalThis._MEM_CACHE[key] = val;
+
+  if (d1) {
+    try {
+      await d1.prepare("INSERT OR REPLACE INTO keyval (k, v) VALUES (?, ?)").bind(String(key), String(val)).run();
+    } catch(e){}
+  }
+  if (kv) {
+    try { await kv.put(String(key), String(val)); } catch(e){}
+  }
+  return true;
+}
+
+// دالة قراءة فائقة السرعة من D1 أو KV أو الذاكرة
+async function storeGet(env, key) {
+  const d1 = getD1(env);
+  const kv = getKV(env);
+
+  if (d1) {
+    try {
+      const row = await d1.prepare("SELECT v FROM keyval WHERE k = ?").bind(String(key)).first();
+      if (row && row.v !== null && row.v !== undefined) return row.v;
+    } catch(e){}
+  }
+  if (kv) {
+    try {
+      const val = await kv.get(String(key));
+      if (val !== null && val !== undefined) return val;
+    } catch(e){}
+  }
+  return globalThis._MEM_CACHE[key] || "";
+}
+
+// دالة كتابة آمنة تدعم كلا الواجهتين
 async function safeKvPut(kv, key, val) {
   if (!kv) return false;
   try {
-    await safeKvPut(kv, key, val);
+    await kv.put(key, val);
     return true;
   } catch (e) {
-    console.error('KV put error (limit or offline):', e.message);
     return false;
   }
-}
-
-  }
-  return null;
 }
 
 // دالة توليد كود التفعيل السنوي
@@ -99,8 +132,27 @@ async function generateLicenseCode(phone, months = 12) {
   };
 }
 
-// دالة جلب قائمة المشتركين
-async function getUsersList(kv) {
+// دالة جلب قائمة المشتركين من D1 / KV
+async function getUsersList(env, kvFallback) {
+  const d1 = getD1(env);
+  if (d1) {
+    try {
+      const { results } = await d1.prepare("SELECT * FROM users").all();
+      if (results && results.length > 0) {
+        return results.map(r => ({
+          acc: r.acc,
+          school: r.school || "",
+          user_name: r.user_name || "",
+          date: r.date || "",
+          paid: !!r.paid,
+          until: r.until || "",
+          last_sync: r.last_sync || "",
+          members_count: r.members_count || 0
+        }));
+      }
+    } catch(e){}
+  }
+  const kv = getKV(env) || kvFallback;
   if (kv) {
     try {
       const raw = await kv.get("all_users_list");
@@ -110,9 +162,20 @@ async function getUsersList(kv) {
   return globalThis._MEM_CACHE.users || [];
 }
 
-// دالة حفظ قائمة المشتركين
-async function saveUsersList(kv, users) {
+// دالة حفظ قائمة المشتركين في D1 / KV
+async function saveUsersList(env, users, kvFallback) {
   globalThis._MEM_CACHE.users = users;
+  const d1 = getD1(env);
+  if (d1 && Array.isArray(users)) {
+    try {
+      for (const u of users) {
+        await d1.prepare("INSERT OR REPLACE INTO users (acc, pw, user_name, school, date, paid, until, last_sync, members_count) VALUES (?, (SELECT pw FROM users WHERE acc=?), ?, ?, ?, ?, ?, ?, ?)")
+          .bind(u.acc, u.acc, u.user_name || "", u.school || "", u.date || "", u.paid ? 1 : 0, u.until || "", u.last_sync || "", u.members_count || 0)
+          .run();
+      }
+    } catch(e){}
+  }
+  const kv = getKV(env) || kvFallback;
   if (kv) {
     try {
       await kv.put("all_users_list", JSON.stringify(users));
@@ -373,18 +436,11 @@ export default {
           });
         }
 
-        // فحص كلمة السر المحفوظة سحابياً في الـ KV أو الذاكرة
-        let savedPw = "";
-        let userName = "";
-        if (kv) {
-          savedPw = await kv.get("pw_" + acc);
-          userName = await kv.get("username_" + acc);
-        }
-        if (!savedPw && globalThis._MEM_CACHE["pw_" + acc]) {
-          savedPw = globalThis._MEM_CACHE["pw_" + acc];
-        }
+        // فحص كلمة السر المحفوظة سحابياً في D1 أو الـ KV أو الذاكرة
+        let savedPw = await storeGet(env, "pw_" + acc);
+        let userName = await storeGet(env, "username_" + acc);
 
-        const users = await getUsersList(kv);
+        const users = await getUsersList(env, kv);
         const u = users.find(x => x.acc === acc);
 
         // إذا وُجد الحساب إما في قائمة المستخدمين أو له كلمة سر أو كود تفعيل
@@ -410,8 +466,7 @@ export default {
         if (u) {
           // حفظ كلمة السر المدخلة للمزامنة الدائمة في المرات القادمة
           if (pw && pw.length >= 4) {
-            if (kv) await safeKvPut(kv, "pw_" + acc, pw);
-            globalThis._MEM_CACHE["pw_" + acc] = pw;
+            await storePut(env, "pw_" + acc, pw);
           }
           return new Response(JSON.stringify({
             ok: true,
@@ -448,13 +503,11 @@ export default {
           });
         }
 
-        if (kv) {
-          await safeKvPut(kv, "pw_" + acc, pw);
-          if (name) await safeKvPut(kv, "username_" + acc, name);
-        }
-        globalThis._MEM_CACHE["pw_" + acc] = pw;
+        // الحفظ السحابي الفوري في D1 مع KV والذاكرة
+        await storePut(env, "pw_" + acc, pw);
+        if (name) await storePut(env, "username_" + acc, name);
 
-        let users = await getUsersList(kv);
+        let users = await getUsersList(env, kv);
         let u = users.find(x => x.acc === acc);
         if (u) {
           if (name) u.user_name = name;
@@ -469,7 +522,7 @@ export default {
           };
           users.push(u);
         }
-        await saveUsersList(kv, users);
+        await saveUsersList(env, users, kv);
 
         return new Response(JSON.stringify({ ok: true, account: acc }), {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
