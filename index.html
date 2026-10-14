@@ -5501,19 +5501,24 @@ function doLogin(){
 }
 
 function checkCloudLogin(acc, pw, fallbackLocal){
-  loginMsg("جاري التحقق من الحساب سحابياً ☁️...");
-  fetch("https://schol-table-bot.obe092.workers.dev/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const DEV_ACC = '07813332882';
+  if(acc === DEV_ACC || acc.endsWith('7813332882')){
+    // حساب المطور - دخول فوري مباشر مع تفعيل كامل
+    onCloudLoginSuccess(acc, pw, { ok: true, account: acc, paid: true, until: '2027-10-14' });
+    return;
+  }
+  loginMsg('جاري التحقق من الحساب سحابياً ☁️...');
+  fetch('https://schol-table-bot.obe092.workers.dev/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ acc: acc, pw: pw })
   }).then(function(res){ return res.json(); })
     .then(function(cloudRes){
       if(cloudRes && cloudRes.ok){
         onCloudLoginSuccess(acc, pw, cloudRes);
-      } else if(cloudRes && cloudRes.reason === "pass") {
-        loginMsg("رمز الدخول غير صحيح");
+      } else if(cloudRes && cloudRes.reason === 'pass') {
+        loginMsg('رمز الدخول غير صحيح');
       } else {
-        // إذا تعذر الـ KV أو أرجع خطأ، فحص النسخة السحابية كخيار ثانٍ مؤكد
         verifyViaCloudSync(acc, pw, fallbackLocal);
       }
     }).catch(function(){
