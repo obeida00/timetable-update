@@ -5893,7 +5893,9 @@ function refreshTeamMembers(){
           if(cur !== prev && dbScore(parseDb(r.shared_data)) > 0){
             window._lastSharedDataHash = cur;
             mergeDisk(r.shared_data);
-            okNote("🔄 تم تحديث الجدول من المدرسة تلقائياً");
+            try { renderSettings(); } catch(e){}
+            try { if(typeof renderViews === "function") renderViews(); } catch(e){}
+            okNote("🔄 تم تحديث جدول وبيانات المدرسة تلقائياً");
           }
         }
         renderMembersUI(r.members || [], r.is_owner, r.school_code);
