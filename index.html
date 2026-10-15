@@ -597,13 +597,12 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.57</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.58</div>
     </div>
   </div>
   
   <div class="dev-wrap no-print">
     <button type="button" class="lic-chip" id="licRemain" title="الاشتراك" onclick="openSubInfoOrPayment()">الاشتراك</button>
-    <button type="button" class="dev-btn" onclick="openReportsMenu()">📄 تقارير PDF</button>
     <button type="button" class="bell-btn" id="bellBtn" title="التنبيهات" onclick="openNotif()">
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
@@ -885,7 +884,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.57</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.58</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1351,6 +1350,20 @@ td.clk:hover .mv button{opacity:.45}
         </div>
       </div>
 
+      <!-- تقارير PDF -->
+      <div class="exp-group">
+        <span class="exp-title">تقارير PDF جاهزة للطباعة والإرسال إلى تيليكرام</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button type="button" class="btn g" onclick="reportChoice('timetable')">📆 جدول الأسبوع (PDF)</button>
+          <button type="button" class="btn g" onclick="reportChoice('timetable_day')">📅 جدول اليوم (PDF)</button>
+          <button type="button" class="btn g" onclick="reportChoice('teachers')">👨‍🏫 المعلمون والأنصبة</button>
+          <button type="button" class="btn g" onclick="reportChoice('subjects')">📚 المواد الدراسية</button>
+          <button type="button" class="btn g" style="grid-column:1/-1" onclick="reportChoice('sections')">🏫 ملخص كل الشعب</button>
+        </div>
+        <div id="repMsg" style="margin-top:8px;font-size:.8rem;color:#6d28d9;text-align:center;line-height:1.7"></div>
+        <div id="repActions"></div>
+      </div>
+
       <!-- Feature note banner -->
       <div class="exp-pro-banner">
         <div class="pro-tick">✓</div>
@@ -1762,7 +1775,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.57";
+const APP_VERSION="0.58";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -5295,13 +5308,18 @@ function _repDone(blob,nm){
   if(!blob){ if(m) m.textContent="⚠️ لا توجد بيانات لهذا التقرير"; return; }
   downloadBlob(nm,"application/pdf",blob);
   if(m) m.innerHTML="✅ تم إنشاء الملف: <b>"+nm+"</b><br>📂 تجده في مجلد «التنزيلات (Downloads)»";
-  const box=document.getElementById("repMenuBox");
-  if(box && box.firstChild && !document.getElementById("repActions")){
-    const act=document.createElement("div");
-    act.id="repActions";
-    act.style.cssText="display:flex;gap:8px;margin-top:12px";
-    act.innerHTML='<button type="button" class="btn g" style="flex:1" onclick="uploadReportPdf()">📤 إرسال إلى تيليكرام</button>';
-    box.firstChild.appendChild(act);
+  let host=document.getElementById("repActions");
+  if(!host){
+    const box=document.getElementById("repMenuBox");
+    if(box && box.firstChild){
+      host=document.createElement("div");
+      host.id="repActions";
+      host.style.cssText="display:flex;gap:8px;margin-top:12px";
+      box.firstChild.appendChild(host);
+    }
+  }
+  if(host && !host.querySelector("button")){
+    host.innerHTML='<button type="button" class="btn g" style="width:100%;margin-top:8px" onclick="uploadReportPdf()">📤 إرسال إلى تيليكرام</button>';
   }
 }
 function reportChoice(kind){
@@ -6241,6 +6259,10 @@ function removeMember(memberAcc){
 function handleRemovedFromSchool(){
   if(window._removedHandled) return;
   window._removedHandled = true;
+  window._isRemovedAccount = true;
+  const _seenKey = "tt_removed_seen_" + normAcc(window._acc || "");
+  let _firstTime = true;
+  try{ _firstTime = !localStorage.getItem(_seenKey); localStorage.setItem(_seenKey, "1"); }catch(e){}
   try{ flushSave(); }catch(e){}
   var acc = window._acc || "";
   try{ localStorage.removeItem(storageKey()); }catch(e){}
@@ -6299,7 +6321,9 @@ function handleRemovedFromSchool(){
       if(a&&a.save_data){ try{ a.save_data(JSON.stringify(blankDb())); }catch(e){} }
     }catch(e){}
   }, 2500);
-  note("⚠️ تمت إزالة حسابك من فريق المدرسة، وحُذفت البيانات المرتبطة به. رجعت للنسخة التجريبية 7 أيام — لتفعيل الاشتراك تواصل مع المطور.");
+  if(_firstTime){
+    note("⚠️ تمت إزالة حسابك من فريق المدرسة، وحُذفت البيانات المرتبطة به. رجعت للنسخة التجريبية 7 أيام — لتفعيل الاشتراك تواصل مع المطور.");
+  }
 }
 
 function renderMembersUI(members, isOwner, schoolCode){
@@ -6500,6 +6524,7 @@ function respondJoin(acc, action){
 function refreshTeamMembers(){
   const myAcc = window._acc || "";
   if(!myAcc) return;
+  if(window._isRemovedAccount) return;
   var savedSchool = (db.settings && db.settings.linkedSchool) || localStorage.getItem("tt_linked_school_" + myAcc) || "";
   // الاستعلام السحابي المباشر دائماً لضمان وصول أحدث جدول واشتراك المالك
   cloudGetSchoolInfo(myAcc).then(function(r){
