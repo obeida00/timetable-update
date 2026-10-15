@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.58</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.59</div>
     </div>
   </div>
   
@@ -631,6 +631,7 @@ td.clk:hover .mv button{opacity:.45}
   <div class="toolbar no-print">
     <button class="btn" type="button" onclick="openTeacher()">إضافة معلم</button>
     <button class="btn w" type="button" onclick="openSecOver()">ملخص كل شعبة</button>
+    <button class="btn" type="button" onclick="toggleExport()">&#x1F5A8;&#xFE0F; تصدير / تقارير PDF</button>
     <button class="btn d" type="button" onclick="clearTeachers()">حذف كل المعلمين</button>
     <button class="btn g" type="button" onclick="openIo('teachers','export')">تصدير</button>
     <button class="btn o" type="button" onclick="openIo('teachers','import')">استرداد</button>
@@ -652,6 +653,7 @@ td.clk:hover .mv button{opacity:.45}
   <h2><span>الصفوف والشعب</span></h2>
   <p class="hint">اضغطي <strong>اسم الصف</strong> أو شارة الشعبة (<strong>أ، ب، ج</strong>) لفتح قائمة المعلمين والمادة والدروس في هذه الشعبة. زر حذف يتيح حذف شعبة واحدة أو الصف كله.</p>
   <button class="btn no-print" type="button" onclick="openClass()">إضافة صف</button>
+  <button class="btn" type="button" onclick="toggleExport()">&#x1F5A8;&#xFE0F; تصدير / تقارير PDF</button>
   <div id="classList"></div>
 </section>
 
@@ -661,6 +663,7 @@ td.clk:hover .mv button{opacity:.45}
   <div class="toolbar no-print" id="sBar">
     <button class="btn" type="button" onclick="openSubject()">إضافة مادة</button>
     <button class="btn w" type="button" onclick="openSecOver()">ملخص كل شعبة</button>
+    <button class="btn" type="button" onclick="toggleExport()">&#x1F5A8;&#xFE0F; تصدير / تقارير PDF</button>
     <button class="btn d" type="button" onclick="clearSubjects()">حذف كل المواد</button>
     <button class="btn g" type="button" onclick="openIo('subjects','export')">تصدير</button>
     <button class="btn o" type="button" onclick="openIo('subjects','import')">استرداد</button>
@@ -884,7 +887,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.58</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.59</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1775,7 +1778,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.58";
+const APP_VERSION="0.59";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
