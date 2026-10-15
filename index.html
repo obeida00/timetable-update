@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.60</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.61</div>
     </div>
   </div>
   
@@ -884,7 +884,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.60</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.61</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1386,6 +1386,7 @@ td.clk:hover .mv button{opacity:.45}
       <div class="set-actions">
         <button class="btn g" type="button" onclick="doIoExport('xls')">تصدير Excel</button>
         <button class="btn w" type="button" onclick="doIoExport('doc')">تصدير Word</button>
+        <button class="btn" type="button" style="background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff" onclick="doIoExport('pdf')">🖨️ تصدير PDF</button>
       </div>
     </div>
     <div id="ioImport" hidden>
@@ -1764,7 +1765,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.60";
+const APP_VERSION="0.61";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -4421,6 +4422,10 @@ function openIo(kind,mode){
   }
 }
 function doIoExport(fmt){
+  if(fmt==="pdf"){
+    reportChoice(ioKind==="teachers"?"teachers":"subjects","ioRep");
+    return;
+  }
   if(ioKind==="teachers") exportDataTable("tBody","المعلمون",fmt);
   else exportDataTable("sBody","المواد",fmt);
   $("ioBox").hidden=true;
@@ -5287,7 +5292,7 @@ function buildTimetablePdf(cb, mode){
           const blob=pdfFromJpegPages([{u8:u8,w:cv.width,h:cv.height}], PW, PH);
           const sc=((db.settings&&db.settings.schoolName)||"المدرسة").replace(/[\/:*?"<>|\s]+/g,"_");
           const nm=((mode==="day")?"جدول_اليوم_":"جدول_الاسبوع_")+sc+"_"+ymd(new Date())+".pdf";
-          window._lastReport={kind:"timetable",blob:blob,name:nm};
+          window._lastReport={kind:(mode==="day")?"timetable_day":"timetable",blob:blob,name:nm};
           cb&&cb(blob,nm);
         });
       });

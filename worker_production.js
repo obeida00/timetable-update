@@ -1292,6 +1292,7 @@ async function handleTelegramMessage(msg, env, kv) {
   switch (text) {
     case "📅 جدول اليوم":
     case "📅 تقرير اليوم": {
+      if (await sendStoredReport(chatId, "timetable_day", "📅 <b>جدول اليوم (PDF):</b>")) break;
       if (!db) {
         await sendMsg(chatId, `📅 <b>جدول اليوم:</b>\n\nافتح البرنامج لربط ومزامنة جدول المدرسة أولاً.`, kb);
         return;
@@ -1313,9 +1314,10 @@ async function handleTelegramMessage(msg, env, kv) {
 
     case "👨‍🏫 تقرير المعلمين": {
       if (await sendStoredReport(chatId, "teachers", "📄 <b>تقرير المعلمين (PDF):</b>")) break;
+      await sendMsg(chatId, "ℹ️ ما موجود ملف PDF لتقرير المعلمين بعد.\nمن البرنامج: تبويب «المعلمون» ← «تصدير» ← «🖨️ تصدير PDF» ← «📤 إرسال إلى تيليكرام»، وبعدها يوصلك PDF من هنا دائماً.");
       if (!db || !db.teachers || !db.teachers.length) {
         await sendMsg(chatId, "👨‍🏫 <b>تقرير المعلمين:</b>\nلم يتم العثور على معلمين مسجلين بعد. افتح التطبيق لمزامنة الكادر.", kb);
-        return;
+        break;
       }
       await sendTeachersReport(chatId, db, sName, kb);
       break;
@@ -1323,9 +1325,10 @@ async function handleTelegramMessage(msg, env, kv) {
 
     case "📚 تقرير المواد": {
       if (await sendStoredReport(chatId, "subjects", "📚 <b>تقرير المواد (PDF):</b>")) break;
+      await sendMsg(chatId, "ℹ️ ما موجود ملف PDF لتقرير المواد بعد.\nمن البرنامج: تبويب «المواد» ← «تصدير» ← «🖨️ تصدير PDF» ← «📤 إرسال إلى تيليكرام»، وبعدها يوصلك PDF من هنا دائماً.");
       if (!db || !db.subjects || !db.subjects.length) {
         await sendMsg(chatId, "📚 <b>تقرير المواد الدراسية:</b>\nلم يتم العثور على مواد مدخلة بعد.", kb);
-        return;
+        break;
       }
       await sendSubjectsReport(chatId, db, sName, kb);
       break;
@@ -1333,9 +1336,10 @@ async function handleTelegramMessage(msg, env, kv) {
 
     case "🏫 ملخص الشُعب": {
       if (await sendStoredReport(chatId, "sections", "🏫 <b>ملخص الشُعب (PDF):</b>")) break;
+      await sendMsg(chatId, "ℹ️ ما موجود ملف PDF لملخص الشُعب بعد.\nمن البرنامج: «ملخص كل شعبة» أو «تصدير» ← «🏫 ملخص كل الشعب» ← «📤 إرسال إلى تيليكرام»، وبعدها يوصلك PDF من هنا دائماً.");
       if (!db || ((!db.sections || !db.sections.length) && (!db.classes || !db.classes.length))) {
         await sendMsg(chatId, "🏫 <b>ملخص الشُعب:</b>\nلم يتم العثور على صفوف أو شُعب مدخلة بعد.", kb);
-        return;
+        break;
       }
       await sendSectionsSummary(chatId, db, sName, kb);
       break;
@@ -2274,7 +2278,7 @@ async function listBoundChats(kv) {
 }
 // رسالة إشعار التحديث الجاهزة
 function updateBroadcastText() {
-  return "🚀 <b>تحديث جديد لنظام الجداول المدرسية — إصدار 0.57</b>\n\n" +
+  return "🚀 <b>تحديث جديد لنظام الجداول المدرسية — إصدار 0.61</b>\n\n" +
     "📲 <b>طريقة التحديث:</b> افتح البرنامج، راح يظهر لك تنبيه التحديث، اضغط «تحديث الآن». لازم تحدّث كل أجهزة المدرسة (المدير والمعاونين).\n\n" +
     "━━━━━━━━━━━━━━━\n" +
     "📌 <b>شنو الجديد:</b>\n" +
