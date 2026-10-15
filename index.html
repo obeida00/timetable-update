@@ -597,7 +597,7 @@ td.clk:hover .mv button{opacity:.45}
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
     <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
-    <div class="sub" id="appTopVerShow">إصدار 0.59</div>
+    <div class="sub" id="appTopVerShow">إصدار 0.60</div>
     </div>
   </div>
   
@@ -631,8 +631,7 @@ td.clk:hover .mv button{opacity:.45}
   <div class="toolbar no-print">
     <button class="btn" type="button" onclick="openTeacher()">إضافة معلم</button>
     <button class="btn w" type="button" onclick="openSecOver()">ملخص كل شعبة</button>
-    <button class="btn" type="button" onclick="toggleExport()">&#x1F5A8;&#xFE0F; تصدير / تقارير PDF</button>
-    <button class="btn d" type="button" onclick="clearTeachers()">حذف كل المعلمين</button>
+        <button class="btn d" type="button" onclick="clearTeachers()">حذف كل المعلمين</button>
     <button class="btn g" type="button" onclick="openIo('teachers','export')">تصدير</button>
     <button class="btn o" type="button" onclick="openIo('teachers','import')">استرداد</button>
     <label class="search">بحث<input id="tFilter" placeholder="اسم، اختصاص، شعبة" oninput="renderTeachers()"></label>
@@ -653,8 +652,7 @@ td.clk:hover .mv button{opacity:.45}
   <h2><span>الصفوف والشعب</span></h2>
   <p class="hint">اضغطي <strong>اسم الصف</strong> أو شارة الشعبة (<strong>أ، ب، ج</strong>) لفتح قائمة المعلمين والمادة والدروس في هذه الشعبة. زر حذف يتيح حذف شعبة واحدة أو الصف كله.</p>
   <button class="btn no-print" type="button" onclick="openClass()">إضافة صف</button>
-  <button class="btn" type="button" onclick="toggleExport()">&#x1F5A8;&#xFE0F; تصدير / تقارير PDF</button>
-  <div id="classList"></div>
+    <div id="classList"></div>
 </section>
 
 <section id="subjects" class="card" hidden>
@@ -663,8 +661,7 @@ td.clk:hover .mv button{opacity:.45}
   <div class="toolbar no-print" id="sBar">
     <button class="btn" type="button" onclick="openSubject()">إضافة مادة</button>
     <button class="btn w" type="button" onclick="openSecOver()">ملخص كل شعبة</button>
-    <button class="btn" type="button" onclick="toggleExport()">&#x1F5A8;&#xFE0F; تصدير / تقارير PDF</button>
-    <button class="btn d" type="button" onclick="clearSubjects()">حذف كل المواد</button>
+        <button class="btn d" type="button" onclick="clearSubjects()">حذف كل المواد</button>
     <button class="btn g" type="button" onclick="openIo('subjects','export')">تصدير</button>
     <button class="btn o" type="button" onclick="openIo('subjects','import')">استرداد</button>
     <label class="search">بحث<input id="sFilter" placeholder="معلم، مادة، شعبة" oninput="renderSubjects()"></label>
@@ -887,7 +884,7 @@ td.clk:hover .mv button{opacity:.45}
 <section id="settings" class="card" hidden>
   <div class="set-head">
     <h2><span>لوحة الإعدادات</span></h2>
-    <span class="ver-chip" id="settingsVerChip">الإصدار 0.59</span>
+    <span class="ver-chip" id="settingsVerChip">الإصدار 0.60</span>
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
@@ -1354,18 +1351,7 @@ td.clk:hover .mv button{opacity:.45}
       </div>
 
       <!-- تقارير PDF -->
-      <div class="exp-group">
-        <span class="exp-title">تقارير PDF جاهزة للطباعة والإرسال إلى تيليكرام</span>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <button type="button" class="btn g" onclick="reportChoice('timetable')">📆 جدول الأسبوع (PDF)</button>
-          <button type="button" class="btn g" onclick="reportChoice('timetable_day')">📅 جدول اليوم (PDF)</button>
-          <button type="button" class="btn g" onclick="reportChoice('teachers')">👨‍🏫 المعلمون والأنصبة</button>
-          <button type="button" class="btn g" onclick="reportChoice('subjects')">📚 المواد الدراسية</button>
-          <button type="button" class="btn g" style="grid-column:1/-1" onclick="reportChoice('sections')">🏫 ملخص كل الشعب</button>
-        </div>
-        <div id="repMsg" style="margin-top:8px;font-size:.8rem;color:#6d28d9;text-align:center;line-height:1.7"></div>
-        <div id="repActions"></div>
-      </div>
+      <div id="expRepWrap"></div>
 
       <!-- Feature note banner -->
       <div class="exp-pro-banner">
@@ -1426,7 +1412,7 @@ td.clk:hover .mv button{opacity:.45}
       </div>
     </div>
     <div class="table-wrap"><table id="secOverTable"><thead><tr><th>الشعبة</th><th>الدروس</th><th>السعة</th><th>الفراغ</th><th>المعلمون ودروسهم</th><th>المواد ودروسها</th></tr></thead><tbody id="tSecOver"></tbody></table></div>
-    <div class="form-actions" style="margin-top:12px">
+    <div class="form-actions" style="margin-top:12px" id="secOverFoot">
       <button class="btn g" type="button" onclick="exportSecOverExcel()">📊 تصدير Excel</button>
       <button class="btn w" type="button" onclick="printSecOver()">🖨️ طباعة</button>
       <button class="btn d" type="button" onclick="$('secOverBox').hidden=true">إغلاق</button>
@@ -1778,7 +1764,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="0.59";
+const APP_VERSION="0.60";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -2689,7 +2675,7 @@ function renderTeachers(){
     <td data-l="مجاز / بديل">${t.leave?("مجاز — بديل: "+esc(teacherName(t.subId))):"—"}</td>
     <td class="no-print act"><button class="btn w s" onclick="editTeacher('${t.id}')">تعديل</button><button class="btn d s" onclick="delTeacher('${t.id}')">حذف</button></td></tr>`).join("")||`<tr><td colspan="8" class="muted">لا يوجد معلمون بعد</td></tr>`;
 }
-function openSecOver(){fillSectionSummary("tSecOver");$("secOverBox").hidden=false;}
+function openSecOver(){fillSectionSummary("tSecOver");try{ injectRepBlock("secRep","secOverFoot"); }catch(e){} $("secOverBox").hidden=false;}
 function teacherSecHours(tid){
   const m={};
   db.subjects.filter(s=>s.teacherId===tid).forEach(s=>{
@@ -4371,6 +4357,7 @@ function toggleExDims(){
 }
 function toggleExport(){
   const b=$("exportBox");
+  try{ injectRepBlock("expRep","expRepWrap"); }catch(e){}
   b.hidden=!b.hidden;
   if($("exExtra"))$("exExtra").hidden=true;
   setExSaveVis(false);
@@ -4413,6 +4400,7 @@ function hideDrops(){}
 let ioKind="teachers";
 function openIo(kind,mode){
   ioKind=kind;
+  try{ injectRepBlock("ioRep","ioExport"); }catch(e){}
   const title=kind==="teachers"?"المعلمون":"المواد";
   $("ioTitle").textContent=(mode==="export"?"تصدير ":"استرداد ")+title;
   $("ioExport").hidden=mode!=="export";
@@ -5264,7 +5252,7 @@ function buildReportPdf(kind,cb){
 }
 function uploadReportPdf(){
   const lr=window._lastReport;
-  const m=document.getElementById("repMsg");
+  const m=document.getElementById((window._repHostId||"expRep")+"Msg");
   if(!lr||!lr.blob){ if(m)m.textContent="⚠️ أنشئ التقرير أولاً"; return; }
   if(m) m.textContent="⏳ جارٍ الإرسال إلى تيليكرام...";
   const fr=new FileReader();
@@ -5307,26 +5295,54 @@ function buildTimetablePdf(cb, mode){
   }catch(e){ note("تعذر إنشاء PDF للجدول: "+(e&&e.message?e.message:e)); cb&&cb(null); }
 }
 function _repDone(blob,nm){
-  const m=document.getElementById("repMsg");
+  const hid=window._repHostId||"expRep";
+  const m=document.getElementById(hid+"Msg");
   if(!blob){ if(m) m.textContent="⚠️ لا توجد بيانات لهذا التقرير"; return; }
   downloadBlob(nm,"application/pdf",blob);
   if(m) m.innerHTML="✅ تم إنشاء الملف: <b>"+nm+"</b><br>📂 تجده في مجلد «التنزيلات (Downloads)»";
-  let host=document.getElementById("repActions");
-  if(!host){
-    const box=document.getElementById("repMenuBox");
-    if(box && box.firstChild){
-      host=document.createElement("div");
-      host.id="repActions";
-      host.style.cssText="display:flex;gap:8px;margin-top:12px";
-      box.firstChild.appendChild(host);
-    }
+  let act=document.getElementById(hid+"Act");
+  if(!act && m && m.parentNode){
+    act=document.createElement("div");
+    act.id=hid+"Act";
+    m.parentNode.insertBefore(act, m.nextSibling);
   }
-  if(host && !host.querySelector("button")){
-    host.innerHTML='<button type="button" class="btn g" style="width:100%;margin-top:8px" onclick="uploadReportPdf()">📤 إرسال إلى تيليكرام</button>';
+  if(act && !act.querySelector("button")){
+    act.innerHTML='<button type="button" class="btn g" style="width:100%;margin-top:8px" onclick="uploadReportPdf()">📤 إرسال إلى تيليكرام</button>';
   }
 }
-function reportChoice(kind){
-  const m=document.getElementById("repMsg");
+function _repBtn(kind,label,host,wide){
+  return '<button type="button" class="btn g"'+(wide?' style="grid-column:1/-1"':'')+' onclick="reportChoice(\''+kind+'\',\''+host+'\')">'+label+'</button>';
+}
+function repBlockHtml(host){
+  const hh=host||"expRep";
+  return '<div class="exp-group" style="margin-top:10px">'
+   +'<span class="exp-title">تقارير PDF جاهزة للطباعة والإرسال إلى تيليكرام</span>'
+   +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+   + _repBtn("timetable","📆 جدول الأسبوع (PDF)",hh,false)
+   + _repBtn("timetable_day","📅 جدول اليوم (PDF)",hh,false)
+   + _repBtn("teachers","👨‍🏫 المعلمون والأنصبة",hh,false)
+   + _repBtn("subjects","📚 المواد الدراسية",hh,false)
+   + _repBtn("sections","🏫 ملخص كل الشعب",hh,true)
+   +'</div>'
+   +'<div id="'+hh+'Msg" style="margin-top:8px;font-size:.8rem;color:#6d28d9;text-align:center;line-height:1.7"></div>'
+   +'<div id="'+hh+'Act"></div>'
+   +'</div>';
+}
+function injectRepBlock(host, containerId){
+  try{
+    const c=document.getElementById(containerId);
+    if(!c) return;
+    const old=document.getElementById(host+"Wrap");
+    if(old) old.remove();
+    const d=document.createElement("div");
+    d.id=host+"Wrap";
+    d.innerHTML=repBlockHtml(host);
+    c.appendChild(d);
+  }catch(e){}
+}
+function reportChoice(kind, host){
+  window._repHostId = host || "expRep";
+  const m=document.getElementById(window._repHostId+"Msg");
   if(m) m.textContent="⏳ جارٍ إنشاء ملف PDF...";
   if(kind==="timetable"){ buildTimetablePdf(function(b,n){ _repDone(b,n); },"week"); return; }
   if(kind==="timetable_day"){ buildTimetablePdf(function(b,n){ _repDone(b,n); },"day"); return; }
@@ -5340,13 +5356,8 @@ function openReportsMenu(){
   d.innerHTML='<div style="background:#fff;border-radius:18px;padding:18px;width:min(470px,96vw);box-shadow:0 20px 50px rgba(0,0,0,.3);direction:rtl">'
    +'<div style="font-weight:800;color:#4c1d95;font-size:1.05rem;text-align:center;margin-bottom:6px">📄 تصدير التقارير PDF</div>'
    +'<div style="font-size:.78rem;color:#6b7280;text-align:center;margin-bottom:12px">يُنشأ الملف بصيغة PDF جاهزة للطباعة، ويمكن إرساله إلى تيليكرام</div>'
-   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'timetable\')">📆 جدول الأسبوع (PDF)</button>'
-   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'timetable_day\')">📅 جدول اليوم (PDF)</button>'
-   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'teachers\')">👨‍🏫 تقرير المعلمين والأنصبة</button>'
-   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'subjects\')">📚 تقرير المواد الدراسية</button>'
-   +'<button type="button" class="btn g" style="width:100%;margin:4px 0" onclick="reportChoice(\'sections\')">🏫 ملخص كل الشعب</button>'
+   + repBlockHtml("menuRep")
    +'<button type="button" class="btn w" style="width:100%;margin-top:10px" onclick="document.getElementById(\'repMenuBox\').remove()">إغلاق</button>'
-   +'<div id="repMsg" style="margin-top:10px;font-size:.82rem;color:#6d28d9;text-align:center;line-height:1.7"></div>'
    +'</div>';
   document.body.appendChild(d);
 }
@@ -6263,9 +6274,11 @@ function handleRemovedFromSchool(){
   if(window._removedHandled) return;
   window._removedHandled = true;
   window._isRemovedAccount = true;
-  const _seenKey = "tt_removed_seen_" + normAcc(window._acc || "");
   let _firstTime = true;
-  try{ _firstTime = !localStorage.getItem(_seenKey); localStorage.setItem(_seenKey, "1"); }catch(e){}
+  try{
+    const _a=loadAuth(), _u=_a.users && _a.users[normAcc(window._acc||"")];
+    if(_u && _u.removedSeen) _firstTime=false;
+  }catch(e){}
   try{ flushSave(); }catch(e){}
   var acc = window._acc || "";
   try{ localStorage.removeItem(storageKey()); }catch(e){}
@@ -6324,6 +6337,10 @@ function handleRemovedFromSchool(){
       if(a&&a.save_data){ try{ a.save_data(JSON.stringify(blankDb())); }catch(e){} }
     }catch(e){}
   }, 2500);
+  try{
+    const _a2=loadAuth(), _n2=normAcc(acc);
+    if(_a2.users && _a2.users[_n2]){ _a2.users[_n2].removedSeen=true; saveAuth(_a2); }
+  }catch(e){}
   if(_firstTime){
     note("⚠️ تمت إزالة حسابك من فريق المدرسة، وحُذفت البيانات المرتبطة به. رجعت للنسخة التجريبية 7 أيام — لتفعيل الاشتراك تواصل مع المطور.");
   }
