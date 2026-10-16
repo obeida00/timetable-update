@@ -1158,58 +1158,45 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
         <span style="font-size:.74rem;color:#6b7280">يتم جلب اسمك وبريدك من Google تلقائياً، ويمكنك تعديل اسمك هنا لتمييزك بين أعضاء المدرسة.</span>
       </div>
 
-      <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:12px;border-radius:14px;margin-bottom:12px">
-        <span class="sec-label" style="color:#6b21a8;font-weight:800;font-size:.86rem;display:flex;align-items:center;gap:6px">
-          🏫 ربط فريق العمل / المعاونين بنفس الجدول
+      <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:14px;border-radius:16px;margin-bottom:12px">
+        <span class="sec-label" style="color:#6b21a8;font-weight:800;font-size:.88rem;display:flex;align-items:center;gap:6px">
+          🏫 دعوة وربط فريق العمل (المعاونين) بنفس الجدول
         </span>
-        <p style="margin:4px 0 8px;font-size:.76rem;color:#581c87;line-height:1.4">
-          يمكن لأكثر من مستخدم (مدير / معاون) التعديل على نفس جدول المدرسة بحساباتهم الخاصة:
+        <p style="margin:4px 0 10px;font-size:.76rem;color:#581c87;line-height:1.5">
+          يمكن للمدير دعوة المعاونين للمشاركة والتعديل على نفس الجدول عبر <b>البريد الإلكتروني</b> أو <b>رقم الهاتف</b>:
         </p>
-        <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e9d5ff;padding:6px 12px;border-radius:10px;margin-bottom:8px">
-          <span style="font-size:.78rem;font-weight:700;color:#4c1d95">رمز مدرستك للمشاركة:</span>
-          <div style="display:flex;align-items:center;gap:6px">
-            <strong id="mySchoolCode" style="font-size:.95rem;color:#7c3aed;letter-spacing:1px;direction:ltr">SCH-XXXX</strong>
-            <button class="btn w s" type="button" style="padding:2px 8px;font-size:.72rem;min-height:26px" onclick="copySchoolCode()">نسخ</button>
+
+        <!-- بطاقة رمز ومفتاح دعوة المدرسة -->
+        <div style="background:#fff;border:1px solid #e9d5ff;padding:8px 12px;border-radius:12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <span style="font-size:.75rem;color:#6b7280;display:block">معرّف مدرستك للدعوة:</span>
+            <strong id="mySchoolCode" style="font-size:1.05rem;color:#7c3aed;letter-spacing:1px;direction:ltr">SCH-2882</strong>
           </div>
+          <button class="btn w s" type="button" style="padding:4px 12px;font-size:.76rem;min-height:30px;border-radius:8px" onclick="copySchoolInvite()">📋 نسخ رابط/كود الدعوة</button>
         </div>
+
         <!-- قائمة أعضاء الفريق -->
-        <div id="teamMembersBox" style="display:block;background:#f3e8ff;border:1.5px solid #c084fc;border-radius:10px;padding:10px 12px;margin-bottom:8px">
+        <div id="teamMembersBox" style="display:block;background:#f3e8ff;border:1.5px solid #c084fc;border-radius:12px;padding:10px 12px;margin-bottom:10px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <span style="font-size:.82rem;font-weight:800;color:#5b21b6">&#x1F465; أعضاء الفريق المنضمين للمدرسة:</span>
-            <button class="btn w s" type="button" style="padding:2px 8px;font-size:.7rem;min-height:24px" onclick="refreshTeamMembers()">&#x1F504; تحديث</button>
+            <button class="btn w s" type="button" style="padding:2px 8px;font-size:.7rem;min-height:24px;border-radius:6px" onclick="refreshTeamMembers()">&#x1F504; تحديث</button>
           </div>
           <div id="teamMembersList" style="font-size:.78rem;color:#4c1d95;line-height:1.8">
             <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
           </div>
         </div>
+
+        <!-- حقل الانضمام لمدرسة -->
         <div style="display:flex;gap:6px;align-items:center">
-          <input id="joinSchoolIn" placeholder="أدخل رمز المدرسة (SCH-XXXX) أو رقم هاتف المدير" style="flex:1;height:34px;min-height:34px;padding:4px 8px;font-size:.82rem;text-align:center;direction:ltr;border-radius:8px">
-          <button class="btn g s" type="button" style="height:34px;min-height:34px;font-size:.78rem;padding:0 12px;border-radius:8px" onclick="doLinkSchool()">انضمام للمدرسة</button>
+          <input id="joinSchoolIn" placeholder="أدخل إيميل المدير أو رقم الهاتف أو كود المدرسة" style="flex:1;height:36px;min-height:36px;padding:4px 10px;font-size:.82rem;text-align:center;direction:ltr;border-radius:8px;border:1.5px solid #ddd6fe">
+          <button class="btn g s" type="button" style="height:36px;min-height:36px;font-size:.78rem;padding:0 14px;border-radius:8px" onclick="doLinkSchool()">انضمام للمدرسة</button>
         </div>
         <div id="schoolTeamMsg" style="margin-top:4px;font-size:.75rem;font-weight:700;color:#15803d;min-height:14px"></div>
-      </div>
-
-      <div class="form-section-card">
-        <span class="sec-label">تغيير رمز الدخول</span>
-        <div class="set-pin">
-          <label>الرمز الحالي
-            <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center">
-          </label>
-          <label>الرمز الجديد
-            <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center">
-          </label>
-        </div>
-      </div>
-
-      <div class="modal-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>نسيت الرمز؟ يمكنك تسجيل الخروج واستخدام خيار «نسيت الرمز» أو التواصل مع المطور.</span>
       </div>
     </div>
 
     <div class="modal-foot">
-      <button class="btn g" type="button" onclick="changeUserPin()">حفظ الرمز الجديد</button>
-      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true">رجوع</button>
+      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true" style="margin:0 auto">إغلاق</button>
     </div>
   </div>
 </div>
@@ -7335,10 +7322,20 @@ function showLicRemain(s){
     else $("userSubShow").textContent="انتهى الاشتراك — فعّل من شاشة الدفع";
   }
 }
-function copySchoolCode(){
-  const t=(($("mySchoolCode")&&$("mySchoolCode").textContent)||"").trim();
-  if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){okNote("تم نسخ رمز المدرسة المشترك");}).catch(function(){});
+function copySchoolInvite(){
+  const code = (($("mySchoolCode")&&$("mySchoolCode").textContent)||"").trim();
+  const acc = window._acc || "";
+  const schoolName = (db.settings && db.settings.schoolName) || "مدرستنا";
+  const msg = `🏫 دعوة للانضمام إلى فريق عمل (${schoolName}) في نظام الجداول المدرسية:\n\n• كود المدرسة: ${code}\n• بريد / حساب المدير: ${acc}\n\nافتح البرنامج وسجّل بحسابك ← الإعدادات ← معلومات المستخدم ← الصق الكود أو الإيميل واضغط «انضمام للمدرسة».`;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(msg).then(function(){ okNote("📋 تم نسخ رسالة وكود الدعوة للمشاركة بنجاح!"); }).catch(function(){
+      navigator.clipboard.writeText(code).then(function(){ okNote("تم نسخ كود المدرسة"); });
+    });
+  } else {
+    okNote("تم نسخ كود الدعوة: " + code);
+  }
 }
+function copySchoolCode(){ copySchoolInvite(); }
 function saveUserNameOnly(){
   const val = (($("userNameInput")&&$("userNameInput").value)||"").trim();
   if(!db.settings) db.settings={};
