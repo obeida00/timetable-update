@@ -1953,7 +1953,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.08";
+const APP_VERSION="1.09";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6891,6 +6891,47 @@ function tgReady(){
   const nm=[u.first_name,u.last_name].filter(Boolean).join(" ");
   if(nm) tgMsg("👋 أهلاً <b>"+nm+"</b> — اضغط الزر لتدخل بحسابك مباشرة.","ok");
   return true;
+}
+
+function telegramLoginStart(){
+  const t=tgApp();
+  if(!t||!t.initData){ tgMsg("افتح البرنامج من داخل تيليكرام لتستخدم هذه الطريقة.","warn"); return; }
+  const u=(t.initDataUnsafe&&t.initDataUnsafe.user)||{};
+  const showing=($("tgNewForm")&&$("tgNewForm").style.display!=="none");
+  const body={
+    initData:t.initData,
+    chat_id:u.id?String(u.id):"",
+    acc:(($("loginAcc")&&$("loginAcc").value.trim())||""),
+    pw:showing?(($("tgPw")&&$("tgPw").value.trim())||""):(($("loginPw")&&$("loginPw").value)||""),
+    school:showing?(($("tgSchool")&&$("tgSchool").value.trim())||""):""
+  };
+  if(!body.acc || body.acc.replace(/\D/g,"").length<8){
+    tgMsg("اكتب أولاً <b>رقم الموبايل</b> المسجّل في البرنامج ثم اضغط الزر.","warn");
+    const la=$("loginAcc"); if(la){ la.focus(); }
+    return;
+  }
+  tgMsg("⏳ جاري التحقق من هويتك في تيليكرام…","ok");
+  fetch(CLOUD_BASE+"/api/auth/telegram_login",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
+  }).then(function(r){return r.json();}).then(function(j){
+    if(!j||!j.ok){
+      const m={signature:"التوقيع غير صحيح — افتح البرنامج من داخل تيليكرام.",
+               stale:"انتهت صلاحية الجلسة — أعد فتح البرنامج من تيليكرام.",
+               pass:"هذا الرقم له حساب — اكتب <b>رمز الدخول</b> بخانة رمز الدخول ثم اضغط الزر.",
+               trial_expired:"انتهت التجربة المجانية",deleted:"هذا الحساب محذوف"};
+      tgMsg("⚠️ "+(m[(j&&j.reason)||""]||("تعذّر الدخول ("+((j&&j.reason)||"خطأ")+")")),"err");
+      return;
+    }
+    if(j.is_new && !showing){
+      if($("tgNewForm")) $("tgNewForm").style.display="flex";
+      if($("tgSchool")) $("tgSchool").focus();
+      tgMsg("👋 أهلاً <b>"+(j.name||"")+"</b> — اكتب <b>اسم مدرستك</b> ثم اضغط الزر مرة ثانية.","ok");
+      return;
+    }
+    tgMsg("✅ تم ربط حسابك بتيليكرام — أهلاً بك 🌿","ok");
+    try{ onCloudLoginSuccess(j.account, body.pw||("TG"+String(u.id||"")), j); }catch(e){}
+    try{ if($("tgCard")) $("tgCard").style.display="none"; }catch(e){}
+  }).catch(function(){ tgMsg("⚠️ لا يوجد اتصال بالإنترنت.","err"); });
 }
 
 try{
