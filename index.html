@@ -1891,7 +1891,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.22";
+const APP_VERSION="1.23";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -8492,5 +8492,82 @@ function offRun(kind){
   buildOfficialPdf(function(blob,nm){ _repDone(blob,nm); });
 }
 </script>
+
+<!-- ===== نقل حساب الهاتف إلى الإيميل (إضافة مستقلة) ===== -->
+<style id="mgStyle">
+#mgBtn{position:fixed;left:12px;bottom:64px;z-index:9990;background:#fff;color:#4c1d95;border:1.5px solid #ddd8f0;
+ border-radius:14px;height:44px;padding:0 14px;font-weight:800;font-size:.8rem;cursor:pointer;
+ box-shadow:0 6px 20px rgba(76,29,149,.18)}
+@media print{#mgBtn{display:none!important}}
+#mgModal{position:fixed;inset:0;z-index:9995;background:rgba(76,29,149,.45);display:none;align-items:center;justify-content:center;padding:10px}
+#mgModal.on{display:flex}
+#mgModal .mg-c{background:#fff;width:min(520px,96vw);border-radius:16px;overflow:hidden;box-shadow:0 18px 50px rgba(76,29,149,.28)}
+#mgModal .mg-h{padding:12px 16px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+#mgModal .mg-b{padding:14px 16px;display:flex;flex-direction:column;gap:11px}
+#mgModal label{font-size:.75rem;font-weight:800;color:#4c1d95;display:block;margin-bottom:4px}
+#mgModal input{width:100%;font-family:inherit;font-weight:700;border:1.5px solid #e4e0f3;border-radius:11px;padding:9px 11px;min-height:42px}
+#mgModal input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.13)}
+#mgGo{background:#059669;color:#fff;border:none;border-radius:12px;height:44px;font-weight:800;cursor:pointer;font-size:.86rem}
+#mgOut{font-size:.78rem;font-weight:700;color:#374151;line-height:1.7;white-space:pre-wrap}
+#mgX{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:9px;font-weight:800;cursor:pointer}
+</style>
+<script id="mgJs">
+(function(){
+  var BASE="https://schol-table-bot.iq-school-timetable.workers.dev";
+  function q(id){return document.getElementById(id);}
+  function build(){
+    if(q("mgModal")) return;
+    var b=document.createElement("button");
+    b.id="mgBtn"; b.type="button"; b.innerHTML="🔄 نقل حساب الهاتف للإيميل";
+    document.body.appendChild(b);
+    var d=document.createElement("div");
+    d.id="mgModal";
+    d.innerHTML='<div class="mg-c">'+
+      '<div class="mg-h"><span>🔄 نقل حساب الهاتف إلى الإيميل</span><button id="mgX" type="button">✕</button></div>'+
+      '<div class="mg-b">'+
+      '<div style="font-size:.76rem;color:#6b7280;font-weight:700">هذي العملية تنقل حسابك القديم (رقمه ✗ مدرسته ✗ اشتراكه ✗ بياناته) إلى حساب الإيميل الحالي ✗ حتى ترجع تشوف كل شغلك ✔.</div>'+
+      '<div><label>رقم الهاتف القديم</label><input id="mgPhone" inputmode="numeric" dir="ltr" placeholder="07XXXXXXXXX"></div>'+
+      '<div><label>رمز المرور القديم (اتركه فارغاً إذا ما تعرفه)</label><input id="mgPw" type="text" dir="ltr" placeholder="اختياري"></div>'+
+      '<div><label>إيميل حساب جوجل الحالي</label><input id="mgMail" type="email" dir="ltr" placeholder="name@gmail.com"></div>'+
+      '<button id="mgGo" type="button">🚀 ابدأ النقل</button>'+
+      '<div id="mgOut"></div>'+
+      '</div></div>';
+    document.body.appendChild(d);
+    b.addEventListener("click",function(){
+      d.classList.add("on");
+      try{
+        if(!q("mgMail").value){
+          for(var i=0;i<localStorage.length;i++){
+            var v=String(localStorage.getItem(localStorage.key(i))||"");
+            var mm=v.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/);
+            if(mm){ q("mgMail").value=mm[0].toLowerCase(); break; }
+          }
+        }
+      }catch(e){}
+    });
+    q("mgX").addEventListener("click",function(){ d.classList.remove("on"); });
+    q("mgGo").addEventListener("click",function(){
+      var ph=(q("mgPhone").value||"").replace(/\D/g,"");
+      var pw=(q("mgPw").value||"").trim();
+      var ml=(q("mgMail").value||"").trim().toLowerCase();
+      var out=q("mgOut");
+      if(ph.length<8||ml.indexOf("@")<0){ out.textContent="⚠️ أدخل رقم هاتف صحيح وإيميل صحيح"; return; }
+      out.textContent="⏳ جاري النقل... لا تسكّر النافذة";
+      fetch(BASE+"/api/migrate_phone_to_google",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({phone:ph,pw:pw,google_acc:ml})})
+        .then(function(r){return r.json();})
+        .then(function(j){
+          out.textContent=(j&&j.ok?"✅ تم النقل بنجاح ✔\n\n":"⚠️ ")+JSON.stringify(j,null,1)+
+            "\n\n➡️ بعد النجاح ✗ سكّر البرنامج وافتحه ✗ وسجّل دخول بنفس الإيميل ✗ وراح تلقى مدرستك وبياناتك ✔";
+        })
+        .catch(function(e){ out.textContent="❌ ما وصلنا للبوت: "+e+"\n\nتأكد من الإنترنت وجرّب مرة ثانية ✗"; });
+    });
+  }
+  build();
+  document.addEventListener("DOMContentLoaded",build);
+  setTimeout(build,1200); setTimeout(build,3000);
+})();
+</script>
+
 </body>
 </html>
