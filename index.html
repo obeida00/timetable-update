@@ -1150,12 +1150,21 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       </div>
 
       <div class="form-section-card" style="margin-bottom:12px">
-        <span class="sec-label">👤 اسم المستخدم الحالي</span>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي / المعاون)" style="flex:1;height:38px;min-height:38px;padding:6px 12px;border-radius:10px;font-weight:700">
-          <button class="btn g s" type="button" style="height:38px;min-height:38px;padding:0 14px;border-radius:10px" onclick="saveUserNameOnly()">حفظ الاسم</button>
+        <span class="sec-label">👤 بيانات الحساب والتواصل</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <label style="font-size:.72rem;color:#64748b;font-weight:700;display:block;margin-bottom:3px">اسم المستخدم</label>
+            <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي)" style="width:100%;height:38px;min-height:38px;padding:6px 10px;border-radius:10px;font-weight:700;border:1px solid #cbd5e1">
+          </div>
+          <div>
+            <label style="font-size:.72rem;color:#64748b;font-weight:700;display:block;margin-bottom:3px">رقم هاتف المدرسة للدعوة والتواصل</label>
+            <input id="userPhoneInput" placeholder="078XXXXXXXX" style="width:100%;height:38px;min-height:38px;padding:6px 10px;border-radius:10px;font-weight:700;border:1px solid #cbd5e1;direction:ltr;text-align:center">
+          </div>
         </div>
-        <span style="font-size:.74rem;color:#6b7280">يتم جلب اسمك وبريدك من Google تلقائياً، ويمكنك تعديل اسمك هنا لتمييزك بين أعضاء المدرسة.</span>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:.72rem;color:#6b7280">يمكنك كتابة رقم هاتفك لتسهيل دعوة المعاونين للانضمام لمدرستك عبر الرقم.</span>
+          <button class="btn g s" type="button" style="height:34px;min-height:34px;padding:0 14px;border-radius:8px" onclick="saveUserProfile()">حفظ البيانات</button>
+        </div>
       </div>
 
       <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:14px;border-radius:16px;margin-bottom:12px">
@@ -2166,6 +2175,7 @@ function syncToCloudNow(showToast){
       subjects_count: sCount,
       members: window._isOwner ? (window._schoolMembers || (db&&db.settings&&db.settings.teamMembers) || []) : [],
       user_name: (db&&db.settings&&db.settings.userName) || localStorage.getItem("tt_user_name_" + acc) || "",
+      phone: (db&&db.settings&&db.settings.userPhone) || localStorage.getItem("tt_user_phone_" + acc) || "",
       version: APP_VERSION
     })
   }).then(function(r){return r.json();}).then(function(res){
@@ -3661,6 +3671,8 @@ function renderSettings(){
   const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || localStorage.getItem("tt_user_name_" + normAcc(window._acc||"")) || "";
   if($("userNameShow")) $("userNameShow").textContent = curUName || "غير محدد";
   if($("userNameInput")) $("userNameInput").value = curUName;
+  const curPhone = (db.settings && db.settings.userPhone) || localStorage.getItem("tt_user_phone_" + (window._acc||"")) || "07813332882";
+  if($("userPhoneInput")) $("userPhoneInput").value = curPhone;
   const effV = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
   if($("installedVerShow")) $("installedVerShow").textContent = effV;
   if($("appTopVerShow")) $("appTopVerShow").textContent = "إصدار " + effV;
@@ -7336,16 +7348,22 @@ function copySchoolInvite(){
   }
 }
 function copySchoolCode(){ copySchoolInvite(); }
-function saveUserNameOnly(){
+function saveUserProfile(){
   const val = (($("userNameInput")&&$("userNameInput").value)||"").trim();
+  const phone = (($("userPhoneInput")&&$("userPhoneInput").value)||"").trim();
   if(!db.settings) db.settings={};
   db.settings.userName = val;
-  if(window._acc) localStorage.setItem("tt_user_name_" + window._acc, val);
+  db.settings.userPhone = phone;
+  if(window._acc){
+    localStorage.setItem("tt_user_name_" + window._acc, val);
+    localStorage.setItem("tt_user_phone_" + window._acc, phone);
+  }
   if($("userNameShow")) $("userNameShow").textContent = val || "غير محدد";
   save();
-  okNote("تم حفظ اسم المستخدم بنجاح ومزامنته سحابياً ☁️");
+  okNote("✅ تم حفظ البيانات ورقم الهاتف بنجاح ومزامنتهما سحابياً ☁️");
   try { syncToCloudNow(false); } catch(e){}
 }
+function saveUserNameOnly(){ saveUserProfile(); }
 
 let _prevTeamMembersCount = -1;
 function checkTeamMembersUpdate(members){
