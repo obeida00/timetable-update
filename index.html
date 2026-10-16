@@ -802,7 +802,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 
 <div id="loginBox" class="modal no-print">
-  <div class="modal-card" style="width:min(400px,94vw);max-height:96vh;overflow:hidden;padding:16px 20px 14px;text-align:center;border-radius:20px;box-shadow:0 20px 50px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#fbf9ff 100%)" onclick="event.stopPropagation()">
+  <div class="modal-card" style="width:min(400px,94vw);max-height:96vh;overflow-y:auto;overscroll-behavior:contain;padding:16px 20px 14px;text-align:center;border-radius:20px;box-shadow:0 20px 50px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#fbf9ff 100%)" onclick="event.stopPropagation()">
     <style>
       #loginBox .lg-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}
       #loginBox .lg-logo{width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #ede9fe;box-shadow:0 4px 14px rgba(109,40,217,.14)}
@@ -833,6 +833,13 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       #loginBox .lg-link{background:none;border:none;color:#6b21a8;font-size:.78rem;font-weight:700;cursor:pointer;padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
       #loginBox .lg-foot{margin-top:7px;text-align:center}
       #loginBox .lg-mini{font-size:.7rem;font-weight:600;color:#6b7280;line-height:1.55}
+      #loginBox .lg-status{font-size:.74rem;font-weight:700;border-radius:11px;padding:7px 10px;line-height:1.55;text-align:right;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0}
+      #loginBox .lg-mini-btn{width:100%;height:32px;min-height:32px;margin-top:7px;border:1px solid #e9e7f3;border-radius:10px;background:#f8f8fc;color:#4c1d95;font-size:.74rem;font-weight:800;cursor:pointer}
+      #loginBox .lg-mini-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+      #loginBox .lg-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:2px}
+      #loginBox .lg-actions{display:grid;grid-template-columns:1.6fr 1fr;gap:8px;margin-top:11px}
+      #loginBox .lg-ghost{background:#fff;color:#b91c1c;border:1.5px solid #fecaca}
+      #loginBox .lg-code{text-align:center;font-size:1.05rem;font-weight:800;letter-spacing:4px;font-variant-numeric:tabular-nums}
     </style>
 
     <div class="lg-head">
@@ -884,49 +891,38 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
         <button type="button" class="lg-link" onclick="startOtpFlow('reset')">نسيت رمز الدخول؟</button>
       </div>
     </div>
-    </div>
 
     <!-- OTP Step Screen -->
     <div id="otpStep" hidden>
-      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:9px;padding:6px 10px;margin-bottom:10px;text-align:right">
-        <p style="margin:0;font-size:.74rem;color:#1e40af;line-height:1.4;font-weight:600">
-          🤖 رمز التحقق يوصلك <b>تلقائياً</b> على تيليكرام (رسالة من البوت) — انسخه واكتبه هنا:
-        </p>
+      <div class="lg-note" style="margin-bottom:9px">
+        <i>🤖</i><span>رمز التحقق يوصلك <b>تلقائياً</b> على تيليكرام — انسخه واكتبه هنا.</span>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
-        <div id="otpStatus" style="font-size:.74rem;font-weight:700;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:6px 8px;line-height:1.5">⏳ جاري إرسال الرمز…</div>
-        <button type="button" class="btn w s" style="height:30px;min-height:30px;font-size:.75rem" onclick="requestOtp(true)">🔄 إرسال رمز جديد</button>
-        <div id="otpBotWrap" style="display:none">
-        <button type="button" class="btn" style="height:35px;min-height:35px;background:#0284c7;color:#fff;font-size:.8rem;font-weight:800;border-radius:9px;border:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:0" onclick="openBotOtp()">
-          <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06-.01.19-.03.32z"/></svg>
-          ما وصلك الرمز؟ اضغط هنا مرة واحدة (أول مرة فقط)
-        </button>
-        </div>
+      <div id="otpStatus" class="lg-status">⏳ جاري إرسال الرمز…</div>
+      <button type="button" class="lg-mini-btn" onclick="requestOtp(true)">🔄 إرسال رمز جديد</button>
+      <div id="otpBotWrap" style="display:none">
+        <button type="button" class="lg-mini-btn lg-mini-blue" onclick="openBotOtp()">✈️ ما وصلك الرمز؟ اضغط هنا مرة واحدة (أول مرة فقط)</button>
+      </div>
 
-        <div id="otpNameRow">
-          <label style="display:block;font-size:.76rem;font-weight:700;color:#374151;margin-bottom:2px">اسم المستخدم (الاسم الكامل أو الصفة)</label>
-          <input id="otpUserName" placeholder="مثال: أستاذ علي / المعاون أحمد" style="width:100%;height:35px;min-height:35px;padding:4px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:.88rem;text-align:center;font-weight:700">
-        </div>
+      <div id="otpNameRow" class="lg-field" style="margin-top:9px">
+        <label class="lg-lab">اسم المستخدم (الاسم الكامل أو الصفة)</label>
+        <input id="otpUserName" class="lg-in" placeholder="مثال: أستاذ علي / المعاون أحمد">
+      </div>
 
-        <div>
-          <label style="display:block;font-size:.76rem;font-weight:700;color:#374151;margin-bottom:2px">كود التحقق المستلم</label>
-          <input id="otpCodeIn" placeholder="5 أرقام" maxlength="6" style="width:100%;height:35px;min-height:35px;border:1.5px solid #d1d5db;border-radius:8px;text-align:center;font-size:1.05rem;font-weight:800;letter-spacing:4px">
+      <div class="lg-grid">
+        <div class="lg-field">
+          <label class="lg-lab">كود التحقق المستلم</label>
+          <input id="otpCodeIn" class="lg-in lg-code" placeholder="5 أرقام" maxlength="6">
         </div>
-
-        <div>
-          <label style="display:block;font-size:.76rem;font-weight:700;color:#374151;margin-bottom:2px">رمز الدخول (الجديد)</label>
-          <input id="otpNewPw" type="password" placeholder="٤ أحرف أو أرقام على الأقل" style="width:100%;height:35px;min-height:35px;border:1.5px solid #d1d5db;border-radius:8px;text-align:center;font-size:.88rem">
+        <div class="lg-field">
+          <label class="lg-lab">رمز الدخول (الجديد)</label>
+          <input id="otpNewPw" type="password" class="lg-in pw" placeholder="٤ أحرف أو أرقام">
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:8px;margin-top:10px">
-        <button class="btn g" type="button" style="height:35px;min-height:35px;font-size:.85rem;font-weight:800;border-radius:8px;padding:0" onclick="submitOtpVerification()">
-          تأكيد وحفظ الرمز
-        </button>
-        <button class="btn d" type="button" style="height:35px;min-height:35px;font-size:.85rem;font-weight:700;border-radius:8px;padding:0" onclick="cancelOtpFlow()">
-          إلغاء
-        </button>
+      <div class="lg-actions">
+        <button class="lg-btn lg-main" type="button" onclick="submitOtpVerification()">تأكيد وحفظ الرمز</button>
+        <button class="lg-btn lg-ghost" type="button" onclick="cancelOtpFlow()">إلغاء</button>
       </div>
     </div>
 
@@ -1957,7 +1953,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.07";
+const APP_VERSION="1.08";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
