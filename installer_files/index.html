@@ -6401,32 +6401,39 @@ function applyGate(s){
 
 
   if(isFirstLoad || dbScore(db)<=0){
-    const api=pyApi();
-    if(api&&api.load_data){
-      Promise.resolve(api.load_data()).then(function(txt){
-        if(txt && dbScore(parseDb(txt))>0){
-          adoptAccount(acc, txt);
+    // سحب بيانات هذا الحساب تحديداً من السحابة (بيانات الحساب أو بيانات المدرسة المنضم إليها)
+    fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
+      .then(function(res){return res.json();})
+      .then(function(data){
+        if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
+          adoptAccount(acc, data.data, true);
         } else {
-          // فحص بيانات السحابة أو بيانات المدرسة
-          fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
-            .then(function(res){return res.json();})
-            .then(function(data){
-              if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
-                adoptAccount(acc, data.data);
+          fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
+            .then(function(r2){return r2.json();})
+            .then(function(scInfo){
+              if(scInfo&&scInfo.ok&&scInfo.shared_data&&dbScore(parseDb(scInfo.shared_data))>0){
+                adoptAccount(acc, scInfo.shared_data, true);
+                okNote("تم تنزيل جدول وبيانات المدرسة بنجاح 🏫");
               } else {
-                fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
-                  .then(function(r2){return r2.json();})
-                  .then(function(scInfo){
-                    if(scInfo&&scInfo.ok&&scInfo.shared_data&&dbScore(parseDb(scInfo.shared_data))>0){
-                      adoptAccount(acc, scInfo.shared_data);
-                      okNote("تم تنزيل جدول وبيانات المدرسة بنجاح 🏫");
-                    }
-                  }).catch(function(){});
+                // إذا كان الحساب جديداً تماماً، يفتح فارغاً ولا يسحب ملف المستخدم السابق من الجهاز
+                const myLocal = localStorage.getItem(storageKey());
+                if(myLocal && dbScore(parseDb(myLocal))>0){
+                  adoptAccount(acc, myLocal);
+                } else if(acc === "07813332882" || acc === "obe092@gmail.com") {
+                  const api=pyApi();
+                  if(api&&api.load_data){
+                    Promise.resolve(api.load_data()).then(function(txt){
+                      if(txt && dbScore(parseDb(txt))>0) adoptAccount(acc, txt);
+                    }).catch(function(){});
+                  }
+                } else {
+                  adoptAccount(acc, "");
+                }
               }
-            }).catch(function(){});
+            }).catch(function(){ adoptAccount(acc, ""); });
         }
-      }).catch(function(){});
-    } else {
+      }).catch(function(){ adoptAccount(acc, ""); });
+  }
       // في متصفح الهاتف: سحب النسخة من السحابة مباشرة عند فتح الصفحة
       fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
         .then(function(res){return res.json();})
@@ -6460,48 +6467,44 @@ function afterAccount(r,fresh){
       });
     }
   }
-  if(r&&r.data){adoptAccount(acc,r.data);done(true);return;}
-  const a=pyApi();
-  if(a&&a.load_data){
-    window._acc=normAcc(acc);
-    Promise.resolve(a.load_data()).then(function(txt){
-      if(txt && dbScore(parseDb(txt)) > 0){
-        adoptAccount(acc, txt);
+  if(r&&r.data){adoptAccount(acc,r.data,true);done(true);return;}
+  // سحب سحابي للحساب الجديد
+  fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
+    .then(function(res){return res.json();})
+    .then(function(data){
+      if(data && data.ok && data.data && dbScore(parseDb(data.data)) > 0){
+        adoptAccount(acc, data.data, true);
         done(true);
       } else {
-        // إذا كان الجهاز جديد والملف المحلي فارغ: سحب تلقائي من السحابة (بيانات الحساب أو بيانات المدرسة المنضم إليها)
-        fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
-          .then(function(res){return res.json();})
-          .then(function(data){
-            if(data && data.ok && data.data && dbScore(parseDb(data.data)) > 0){
-              adoptAccount(acc, data.data);
+        // فحص إذا كان عضواً في مدرسة لجلب جدولها فوراً
+        fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
+          .then(function(r2){return r2.json();})
+          .then(function(scInfo){
+            if(scInfo && scInfo.ok && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0){
+              adoptAccount(acc, scInfo.shared_data, true);
               done(true);
+              okNote("تم جلب جدول وبيانات المدرسة بنجاح 🏫");
             } else {
-              // فحص إذا كان عضواً في مدرسة لجلب جدولها فوراً
-              fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
-                .then(function(r2){return r2.json();})
-                .then(function(scInfo){
-                  if(scInfo && scInfo.ok && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0){
-                    adoptAccount(acc, scInfo.shared_data);
-                    done(true);
-                    okNote("تم جلب جدول وبيانات المدرسة بنجاح 🏫");
-                  } else {
-                    adoptAccount(acc, txt || "");
-                    done(false);
-                  }
-                }).catch(function(){
-                  adoptAccount(acc, txt || "");
-                  done(false);
-                });
+              const myLocal = localStorage.getItem(storageKey());
+              if(myLocal && dbScore(parseDb(myLocal))>0){
+                adoptAccount(acc, myLocal);
+                done(true);
+              } else if(acc === "07813332882" || acc === "obe092@gmail.com"){
+                const a=pyApi();
+                if(a&&a.load_data){
+                  Promise.resolve(a.load_data()).then(function(txt){
+                    if(txt && dbScore(parseDb(txt))>0) adoptAccount(acc, txt);
+                    done(!!(txt && dbScore(parseDb(txt))>0));
+                  }).catch(function(){ adoptAccount(acc, ""); done(false); });
+                } else { adoptAccount(acc, ""); done(false); }
+              } else {
+                adoptAccount(acc, "");
+                done(false);
+              }
             }
-          }).catch(function(){
-            adoptAccount(acc, txt || "");
-            done(false);
-          });
+          }).catch(function(){ adoptAccount(acc, ""); done(false); });
       }
-    });
-    return;
-  }
+    }).catch(function(){ adoptAccount(acc, ""); done(false); });
   // في الهاتف أو متصفح الويب: سحب النسخة من السحابة مباشرة
   fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
     .then(function(res){return res.json();})
