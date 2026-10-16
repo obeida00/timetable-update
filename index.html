@@ -821,7 +821,8 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
         <div>
           <label style="display:block;font-size:.78rem;font-weight:700;color:#374151;margin-bottom:2px">رقم الموبايل</label>
-          <input id="loginAcc" placeholder="07XXXXXXXXX" style="width:100%;height:36px;min-height:36px;padding:4px 10px;border:1.5px solid #d1d5db;border-radius:9px;font-size:.92rem;direction:ltr;text-align:center;font-weight:700;letter-spacing:1px;background:#fff" autocomplete="username">
+          <input id="loginAcc" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" style="width:100%;height:36px;min-height:36px;padding:4px 10px;border:1.5px solid #d1d5db;border-radius:9px;font-size:.92rem;direction:ltr;text-align:center;font-weight:700;letter-spacing:1px;background:#fff" autocomplete="username">
+          <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:4px;border-radius:8px;padding:5px 8px;line-height:1.5"></div>
         </div>
         <div>
           <label style="display:block;font-size:.78rem;font-weight:700;color:#374151;margin-bottom:2px">رمز الدخول</label>
@@ -856,10 +857,12 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
         <div id="otpStatus" style="font-size:.74rem;font-weight:700;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:6px 8px;line-height:1.5">⏳ جاري إرسال الرمز…</div>
         <button type="button" class="btn w s" style="height:30px;min-height:30px;font-size:.75rem" onclick="requestOtp(true)">🔄 إرسال رمز جديد</button>
+        <div id="otpBotWrap" style="display:none">
         <button type="button" class="btn" style="height:35px;min-height:35px;background:#0284c7;color:#fff;font-size:.8rem;font-weight:800;border-radius:9px;border:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:0" onclick="openBotOtp()">
           <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06-.01.19-.03.32z"/></svg>
           ما وصلك الرمز؟ اضغط هنا مرة واحدة (أول مرة فقط)
         </button>
+        </div>
 
         <div id="otpNameRow">
           <label style="display:block;font-size:.76rem;font-weight:700;color:#374151;margin-bottom:2px">اسم المستخدم (الاسم الكامل أو الصفة)</label>
@@ -1914,7 +1917,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.02";
+const APP_VERSION="1.03";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6683,11 +6686,72 @@ function otpStatus(msg,kind){
   el.innerHTML=msg;
 }
 
+// إرسال تلقائي: بمجرد كتابة رقم الهاتف كاملاً يوصلك الرمز على تيليكرام بدون أي زر
+let _otpPre={acc:"",at:0,delivered:false};
+let _phoneTimer=null;
+function phoneHint(msg,kind){
+  const el=$("phoneHint");
+  if(!el)return;
+  if(!msg){el.style.display="none";el.textContent="";return;}
+  const c={ok:["#065f46","#ecfdf5","#a7f3d0"],warn:["#92400e","#fffbeb","#fcd34d"],err:["#991b1b","#fef2f2","#fca5a5"]}[kind||"ok"];
+  el.style.display="block";el.style.color=c[0];el.style.background=c[1];el.style.border="1px solid "+c[2];
+  el.innerHTML=msg;
+}
+function onPhoneTyped(){
+  const raw=($("loginAcc")&&$("loginAcc").value)||"";
+  const acc=normAcc(raw);
+  if(acc.length<11){phoneHint("");_otpPre={acc:"",at:0,delivered:false};return;}
+  if(_otpPre.acc===acc && (Date.now()-_otpPre.at)<600000)return;   // طُلب قبل قليل
+  if(_phoneTimer)clearTimeout(_phoneTimer);
+  phoneHint("⏳ جاري إرسال رمز التحقق على تيليكرام…","ok");
+  _phoneTimer=setTimeout(function(){
+    const name=(($("otpUserName")&&$("otpUserName").value)||"").trim();
+    fetch(CLOUD_BASE+"/api/otp_request",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({acc:acc,name:name})
+    }).then(function(r){return r.json();}).then(function(j){
+      if(j&&j.ok&&j.delivered){
+        _otpPre={acc:acc,at:Date.now(),delivered:true};
+        phoneHint("✅ <b>وصل رمز التحقق على تيليكرام</b> — انسخه واكتبه في خانة الكود.","ok");
+        if(_otpFlow&&_otpFlow.acc===acc){
+          otpStatus("✅ <b>الرمز وصل على تيليكرام</b> — انسخه واكتبه هنا (صالح ١٥ دقيقة).","ok");
+          if($("otpBotWrap"))$("otpBotWrap").style.display="none";
+        }
+      }else if(j&&j.ok&&j.reason==="throttle"){
+        phoneHint("⏳ الرمز أُرسل قبل قليل — انتظر "+(j.wait||25)+" ثانية.","warn");
+      }else if(j&&j.ok){
+        _otpPre={acc:acc,at:Date.now(),delivered:false};
+        phoneHint("ℹ️ <b>أول مرة:</b> اضغط «إنشاء حساب جديد» ثم الزر الأزرق ليفتح البوت مرة واحدة — وبعدها يجيك الرمز تلقائياً كل مرة.","warn");
+        if(_otpFlow&&_otpFlow.acc===acc){
+          otpStatus("ℹ️ اضغط الزر الأزرق أدناه <b>مرة واحدة</b> ليفتح البوت ويوصلك الرمز — ومن بعدها يجيك تلقائياً.","warn");
+          if($("otpBotWrap"))$("otpBotWrap").style.display="block";
+        }
+      }else{
+        phoneHint("⚠️ تعذّر إرسال الرمز — تأكد من الرقم أو الاتصال بالإنترنت.","err");
+      }
+    }).catch(function(){
+      phoneHint("⚠️ لا يوجد اتصال بالإنترنت — الرمز يحتاج اتصالاً ليصلك على تيليكرام.","err");
+    });
+  },450);
+}
+
 // طلب رمز تحقق جديد: يُرسله البوت تلقائياً على تيليكرام إن كانت هناك محادثة مرتبطة بالرقم
 function requestOtp(manual){
   const acc=_otpFlow.acc;
   if(!acc)return;
   const name=(($("otpUserName")&&$("otpUserName").value)||"").trim();
+  // إذا أُرسل الرمز تلقائياً قبل قليل: نعرض النتيجة مباشرة بدون إرسال جديد
+  if(_otpPre.acc===acc && (Date.now()-_otpPre.at)<600000){
+    if(_otpPre.delivered){
+      otpStatus("✅ <b>الرمز وصل على تيليكرام</b> — انسخه واكتبه هنا (صالح ١٥ دقيقة).","ok");
+      if($("otpBotWrap"))$("otpBotWrap").style.display="none";
+    }else{
+      otpStatus("ℹ️ اضغط الزر الأزرق أدناه <b>مرة واحدة</b> ليفتح البوت ويوصلك الرمز — ومن بعدها يجيك تلقائياً.","warn");
+      if($("otpBotWrap"))$("otpBotWrap").style.display="block";
+    }
+    if($("otpCodeIn"))$("otpCodeIn").focus();
+    return;
+  }
   otpStatus("⏳ جاري إرسال الرمز…","ok");
   fetch(CLOUD_BASE+"/api/otp_request",{
     method:"POST",headers:{"Content-Type":"application/json"},
@@ -6695,11 +6759,14 @@ function requestOtp(manual){
   }).then(function(r){return r.json();}).then(function(j){
     if(j&&j.ok&&j.delivered){
       otpStatus("✅ <b>أرسلنا رمز التحقق على تيليكرام</b> — افتح تيليكرام وانسخ الرمز (صالح ١٥ دقيقة).","ok");
+      if($("otpBotWrap"))$("otpBotWrap").style.display="none";
+      _otpPre={acc:acc,at:Date.now(),delivered:true};
       if($("otpCodeIn"))$("otpCodeIn").focus();
     }else if(j&&j.ok&&j.reason==="throttle"){
       otpStatus("⏳ انتظر "+(j.wait||25)+" ثانية ثم أعد المحاولة.","warn");
     }else if(j&&j.ok){
-      otpStatus("⚠️ <b>ما لقينا محادثة تيليكرام لهذا الرقم بعد.</b><br>اضغط الزر الأزرق أدناه <b>مرة واحدة</b> ليوصلك الرمز، ومن بعدها يجيك تلقائياً.","warn");
+      otpStatus("ℹ️ <b>أول مرة لهذا الرقم:</b> اضغط الزر الأزرق أدناه <b>مرة واحدة</b> ليوصلك الرمز، ومن بعدها يجيك تلقائياً كل مرة.","warn");
+      if($("otpBotWrap"))$("otpBotWrap").style.display="block";
     }else{
       otpStatus("⚠️ تعذّر إرسال الرمز — تأكد من رقم الموبايل ثم أعد المحاولة."+(j&&j.message?"<br>"+j.message:""),"err");
     }
@@ -6732,6 +6799,7 @@ function startOtpFlow(type){
     if(type === "register" && $("otpUserName")){ $("otpUserName").focus(); }
     else if($("otpCodeIn")){ $("otpCodeIn").value=""; $("otpCodeIn").focus(); }
     if($("otpNewPw"))$("otpNewPw").value="";
+    if($("otpBotWrap"))$("otpBotWrap").style.display="none";
     loginMsg("");
     requestOtp();
   }
