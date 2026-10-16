@@ -7218,7 +7218,16 @@ function showLicRemain(s){
   }
   if($("userAccShow"))$("userAccShow").textContent=formatAcc((s&&s.account)||window._acc);
   if($("userAccLbl") && ((s&&s.account)||window._acc||"").includes("@")) $("userAccLbl").textContent = "البريد الإلكتروني (الحساب)";
-  if($("mySchoolCode"))$("mySchoolCode").textContent=(s&&s.school_code)||"SCH-"+String((s&&s.account)||window._acc||"").slice(-4);
+  if($("mySchoolCode")){
+    let sc = (s&&s.school_code)||"";
+    if(!sc || sc.endsWith(".COM") || sc === "SCH-.COM"){
+      const a = String((s&&s.account)||window._acc||"").trim();
+      const p = a.includes("@") ? a.split("@")[0].replace(/[^a-zA-Z0-9]/g,"") : a.replace(/[^0-9]/g,"");
+      const sfx = p.length >= 4 ? p.slice(-4).toUpperCase() : (p + "99").slice(0, 4).toUpperCase();
+      sc = "SCH-" + sfx;
+    }
+    $("mySchoolCode").textContent = sc;
+  }
   if($("userSubShow")){
     if(s&&s.ok&&s.mode==="paid") $("userSubShow").textContent="اشتراك سنوي — باقي "+s.days+" يوم";
     else if(s&&s.ok&&s.mode==="shared") $("userSubShow").textContent="حساب مشترك (مرتبط بالمالك) — باقي "+s.days+" يوم حتى "+(s.until||"");
