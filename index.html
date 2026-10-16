@@ -802,72 +802,35 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 
 <div id="loginBox" class="modal no-print">
-  <div class="modal-card" style="width:min(380px,94vw);max-height:92vh;overflow-y:auto;padding:18px 20px 16px;text-align:center;border-radius:24px;box-shadow:0 24px 60px rgba(76,29,149,.2);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#faf8ff 100%)" onclick="event.stopPropagation()">
+  <div class="modal-card" style="width:min(420px,94vw);padding:26px 24px 22px;text-align:center;border-radius:26px;box-shadow:0 24px 60px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#faf8ff 100%)" onclick="event.stopPropagation()">
     <style>
-      #loginBox .lg-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
-      #loginBox .lg-logo{width:42px;height:42px;object-fit:contain;border-radius:12px;background:#fff;padding:3px;border:1px solid #ede9fe;box-shadow:0 4px 12px rgba(109,40,217,.12)}
-      #loginBox .lg-title{margin:0;font-size:1.08rem;font-weight:800;color:#1e1b4b;line-height:1.2}
-      #loginBox .lg-sub{margin-top:2px;font-size:.7rem;font-weight:700;color:#7c3aed;display:flex;align-items:center;gap:4px}
-      
-      /* شريط التبويبات المختصر */
-      #loginBox .lg-tabs{display:flex;background:#f1effa;padding:3px;border-radius:12px;margin-bottom:12px;gap:3px}
-      #loginBox .lg-tab{flex:1;border:none;background:transparent;padding:7px 0;font-size:.78rem;font-weight:800;color:#6b7280;border-radius:10px;cursor:pointer;transition:all .15s}
-      #loginBox .lg-tab.active{background:#fff;color:#6d28d9;box-shadow:0 2px 6px rgba(109,40,217,.12)}
+      #loginBox .lg-head{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px}
+      #loginBox .lg-logo{width:48px;height:48px;object-fit:contain;border-radius:14px;background:#fff;padding:4px;border:1px solid #ede9fe;box-shadow:0 6px 16px rgba(109,40,217,.15)}
+      #loginBox .lg-title{margin:0;font-size:1.18rem;font-weight:800;color:#1e1b4b;line-height:1.2}
+      #loginBox .lg-sub{margin-top:4px;font-size:.76rem;font-weight:700;color:#7c3aed;display:flex;align-items:center;gap:5px}
 
-      #loginBox .lg-badge-secure{display:inline-flex;align-items:center;gap:5px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:800;margin-bottom:11px}
+      #loginBox .lg-google-btn{width:100%;height:48px;min-height:48px;background:#ffffff;color:#1f2937;border:1.8px solid #e5e7eb;border-radius:14px;font-size:.92rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:11px;box-shadow:0 3px 12px rgba(0,0,0,.06);transition:all .18s;margin:16px 0 12px}
+      #loginBox .lg-google-btn:hover{background:#f9fafb;border-color:#c7d2fe;box-shadow:0 6px 20px rgba(99,102,241,.15);transform:translateY(-1px)}
+      #loginBox .lg-google-btn:active{transform:translateY(1px)}
+      #loginBox .lg-google-btn svg{width:22px;height:22px;flex:0 0 22px}
 
-      #loginBox .lg-field{text-align:right;margin-bottom:9px}
-      #loginBox .lg-lab{display:block;font-size:.73rem;font-weight:700;color:#4b5563;margin-bottom:4px}
-      #loginBox .lg-in{width:100%;height:39px;min-height:39px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:11px;background:#fcfcfe;font-size:.9rem;font-weight:600;color:#111827;transition:border-color .15s,box-shadow .15s,background .15s}
-      #loginBox .lg-in:focus{outline:none;border-color:#a78bfa;background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,.14)}
-      #loginBox .lg-in.ph{direction:ltr;text-align:center;font-weight:800;letter-spacing:1.5px;font-variant-numeric:tabular-nums}
-      #loginBox .lg-in.pw{text-align:center;letter-spacing:3px}
-      #loginBox .lg-btn{width:100%;height:41px;min-height:41px;border:none;border-radius:12px;font-size:.88rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .12s,box-shadow .15s,filter .15s}
-      #loginBox .lg-btn:active{transform:translateY(1px)}
-      #loginBox .lg-btn:hover{filter:brightness(1.04)}
-      #loginBox .lg-main{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 6px 16px rgba(22,163,74,.25)}
-      #loginBox .lg-alt{background:#fff;color:#6d28d9;border:1.5px solid #ddd6fe;box-shadow:0 2px 8px rgba(109,40,217,.06)}
-      #loginBox .lg-link{background:none;border:none;color:#6b21a8;font-size:.76rem;font-weight:700;cursor:pointer;padding:5px 4px;text-decoration:underline;text-underline-offset:3px}
-      #loginBox .lg-foot{margin-top:6px;text-align:center}
-      #loginBox .lg-status{font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 10px;line-height:1.5;text-align:right;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0}
-      #loginBox .lg-mini-btn{width:100%;height:32px;min-height:32px;margin-top:7px;border:1px solid #e9e7f3;border-radius:10px;background:#f8f8fc;color:#4c1d95;font-size:.73rem;font-weight:800;cursor:pointer}
-      #loginBox .lg-mini-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
-      #loginBox .lg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
-      #loginBox .lg-actions{display:grid;grid-template-columns:1.6fr 1fr;gap:8px;margin-top:10px}
-      #loginBox .lg-ghost{background:#fff;color:#b91c1c;border:1.5px solid #fecaca}
-      #loginBox .lg-code{text-align:center;font-size:1.02rem;font-weight:800;letter-spacing:4px;font-variant-numeric:tabular-nums}
-      
-      /* إشعار تيليكرام المدمج والمختصر عند الحاجة فقط */
-      #loginBox .lg-tg-strip{display:none;align-items:center;justify-content:space-between;background:#f0f5ff;border:1px solid #bfdbfe;border-radius:10px;padding:6px 10px;margin-bottom:10px;text-align:right}
-      #loginBox .lg-tg-strip button{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:4px 9px;font-size:.72rem;font-weight:800;cursor:pointer}
+      #loginBox .lg-features{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px 14px;margin-top:10px;text-align:right}
+      #loginBox .lg-feat-item{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:#475569;margin-bottom:6px}
+      #loginBox .lg-feat-item:last-child{margin-bottom:0}
+      #loginBox .lg-feat-item span.icon{color:#10b981;font-size:.95rem}
     </style>
 
     <div class="lg-head">
       <img src="logo.png" alt="" class="lg-logo">
       <div style="text-align:right">
         <h2 class="lg-title">نظام الجداول المدرسية</h2>
-        <div class="lg-sub"><span>🔐 تسجيل آمن ومشفّر 100%</span></div>
+        <div class="lg-sub"><span>🔐 تسجيل دخول موثّق وآمن 100%</span></div>
       </div>
     </div>
 
-    <!-- بطاقة تيليكرام الذكية (تظهر فقط عند الفتح داخل تيليكرام أو عند الحاجة) -->
-    <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-    <div id="tgCard" class="lg-tg-strip">
-      <div style="font-size:.73rem;font-weight:700;color:#1e40af" id="tgDesc">دخول سريع بهوية تيليكرام</div>
-      <button type="button" id="tgBtn" onclick="telegramLoginStart()">دخول فوري</button>
-      <div id="tgTitle" style="display:none"></div>
-      <div id="tgMsg" style="display:none"></div>
-      <div id="tgNewForm" style="display:none"></div>
-    </div>
-
-    <style>
-      #loginBox .lg-google-btn{width:100%;height:41px;min-height:41px;background:#fff;color:#374151;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:all .15s;margin-bottom:12px}
-      #loginBox .lg-google-btn:hover{background:#f9fafb;border-color:#d1d5db;box-shadow:0 3px 8px rgba(0,0,0,.08)}
-      #loginBox .lg-google-btn:active{transform:translateY(1px)}
-      #loginBox .lg-google-btn svg{width:18px;height:18px;flex:0 0 18px}
-      #loginBox .lg-divider{display:flex;align-items:center;gap:8px;color:#9ca3af;font-size:.69rem;font-weight:700;margin:4px 0 11px}
-      #loginBox .lg-divider::before,#loginBox .lg-divider::after{content:"";flex:1;height:1px;background:#e5e7eb}
-    </style>
+    <p style="font-size:.84rem;color:#4b5563;line-height:1.6;margin:0 0 4px">
+      سجّل الدخول بحسابك في Google لحفظ جدولك ومزامنته تلقائياً بين أجهزتك ومع فريق المدرسة.
+    </p>
 
     <!-- زر تسجيل الدخول المباشر بحساب Google -->
     <button type="button" class="lg-google-btn" onclick="startGoogleSignIn()">
@@ -877,78 +840,31 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
       </svg>
-      <span>تسجيل الدخول السريع بحساب Google</span>
+      <span>تسجيل الدخول باستخدام Google</span>
     </button>
 
-    <div class="lg-divider">أو عبر رقم الموبايل</div>
-
-    <!-- تبويبات التبديل السريع -->
-    <div class="lg-tabs">
-      <button type="button" class="lg-tab active" id="tabLoginBtn" onclick="switchLoginTab('login')">تسجيل الدخول</button>
-      <button type="button" class="lg-tab" id="tabRegBtn" onclick="switchLoginTab('register')">إنشاء حساب جديد</button>
-    </div>
-
-    <div id="loginMain">
-      <div class="lg-field">
-        <label class="lg-lab">رقم الموبايل</label>
-        <input id="loginAcc" class="lg-in ph" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" autocomplete="username" inputmode="numeric">
-        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:9px;padding:5px 8px;line-height:1.4;text-align:right"></div>
+    <div class="lg-features">
+      <div class="lg-feat-item">
+        <span class="icon">✓</span>
+        <span>مزامنة فورية وسحابية آمنة 100%</span>
       </div>
-      <div class="lg-field" id="loginPwWrap">
-        <label class="lg-lab">رمز الدخول</label>
-        <input id="loginPw" type="password" class="lg-in pw" placeholder="••••••••" autocomplete="current-password">
+      <div class="lg-feat-item">
+        <span class="icon">✓</span>
+        <span>ربط مباشر مع فريق العمل ومعاوني المدرسة</span>
       </div>
-      
-      <div id="loginSubmitWrap">
-        <button class="lg-btn lg-main" id="loginActionBtn" type="button" onclick="doLogin()">تسجيل الدخول</button>
-      </div>
-
-      <div class="lg-foot" id="loginFootWrap">
-        <button type="button" class="lg-link" onclick="startOtpFlow('reset')">نسيت رمز الدخول؟</button>
+      <div class="lg-feat-item">
+        <span class="icon">✓</span>
+        <span>حفظ تلقائي للبيانات والجدول دون فقدان</span>
       </div>
     </div>
 
-    <!-- OTP Step Screen (آمن وموثّق 100% عبر واتساب أو تيليكرام) -->
-    <div id="otpStep" hidden>
-      <div class="lg-badge-secure">🛡️ تحقق آمن وموثّق 100% (WhatsApp & Telegram)</div>
+    <!-- حقول خفية للحفاظ على التوافق البرمجي إن دعت الحاجة -->
+    <input id="loginAcc" type="hidden">
+    <input id="loginPw" type="hidden">
+    <div id="otpStep" hidden></div>
+    <div id="loginMain" hidden></div>
 
-      <div id="otpStatus" class="lg-status">⏳ جاري التحقق من الرقم…</div>
-
-      <!-- خيارات استلام الرمز الفورية -->
-      <div id="otpChannels" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0 6px">
-        <button type="button" class="lg-mini-btn" style="background:#ecfdf5;border-color:#a7f3d0;color:#065f46;height:36px;margin:0;display:flex;align-items:center;justify-content:center;gap:5px" onclick="openWaOtp()">
-          <span style="font-size:1rem">💬</span> واتساب WhatsApp
-        </button>
-        <button type="button" class="lg-mini-btn lg-mini-blue" style="height:36px;margin:0;display:flex;align-items:center;justify-content:center;gap:5px" onclick="openBotOtp()">
-          <span style="font-size:1rem">✈️</span> تيليكرام Telegram
-        </button>
-      </div>
-
-      <div id="otpNameRow" class="lg-field" style="margin-top:7px">
-        <label class="lg-lab">اسم المستخدم أو المدرسة</label>
-        <input id="otpUserName" class="lg-in" placeholder="مثال: أستاذ علي / ثانوية المتميزين">
-      </div>
-
-      <div class="lg-grid">
-        <div class="lg-field">
-          <label class="lg-lab">رمز التحقق المستلم</label>
-          <input id="otpCodeIn" class="lg-in lg-code" placeholder="5 أرقام" maxlength="6">
-        </div>
-        <div class="lg-field">
-          <label class="lg-lab">رمز الدخول الجديد</label>
-          <input id="otpNewPw" type="password" class="lg-in pw" placeholder="٤ أحرف أو أرقام">
-        </div>
-      </div>
-
-      <button type="button" class="lg-mini-btn" onclick="requestOtp(true)">🔄 إعادة إرسال رمز جديد</button>
-
-      <div class="lg-actions">
-        <button class="lg-btn lg-main" type="button" onclick="submitOtpVerification()">تأكيد وتفعيل الحساب</button>
-        <button class="lg-btn lg-ghost" type="button" onclick="cancelOtpFlow()">رجوع</button>
-      </div>
-    </div>
-
-    <p id="loginMsg" class="hint" style="margin-top:6px;margin-bottom:0;min-height:14px;color:#dc2626;font-weight:700;font-size:.76rem;padding:0;background:transparent;border:none"></p>
+    <p id="loginMsg" class="hint" style="margin-top:10px;margin-bottom:0;min-height:16px;color:#dc2626;font-weight:700;font-size:.78rem;padding:0;background:transparent;border:none"></p>
   </div>
 </div>
 
@@ -1153,8 +1069,8 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
           <strong id="userNameShow" class="info-val" style="color:#6d28d9">—</strong>
         </div>
         <div class="info-banner-item">
-          <span class="info-lbl">رقم الهاتف (الحساب)</span>
-          <strong id="userAccShow" class="info-val" dir="ltr">—</strong>
+          <span class="info-lbl" id="userAccLbl">البريد الإلكتروني (الحساب)</span>
+          <strong id="userAccShow" class="info-val" dir="ltr" style="font-size:.82rem;word-break:break-all">—</strong>
         </div>
         <div class="info-banner-item">
           <span class="info-lbl">حالة الاشتراك</span>
@@ -1168,7 +1084,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
           <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي / المعاون)" style="flex:1;height:38px;min-height:38px;padding:6px 12px;border-radius:10px;font-weight:700">
           <button class="btn g s" type="button" style="height:38px;min-height:38px;padding:0 14px;border-radius:10px" onclick="saveUserNameOnly()">حفظ الاسم</button>
         </div>
-        <span style="font-size:.74rem;color:#6b7280">يبقى رقم الهاتف هو المعرّف الأساسي للحساب، ويظهر اسمك لتسهيل تمييزك بين أعضاء المدرسة.</span>
+        <span style="font-size:.74rem;color:#6b7280">يتم جلب اسمك وبريدك من Google تلقائياً، ويمكنك تعديل اسمك هنا لتمييزك بين أعضاء المدرسة.</span>
       </div>
 
       <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:12px;border-radius:14px;margin-bottom:12px">
@@ -1970,12 +1886,20 @@ const KEY="school_tt_v4";
 window._acc=(function(){
   try{
     const a=JSON.parse(localStorage.getItem("school_tt_auth_v1")||"{}");
-    if(a&&a.session) return String(a.session).toUpperCase().replace(/[^A-Z0-9]/g,"");
+    if(a&&a.session){
+      const s = String(a.session).trim();
+      return s.includes("@") ? s.toLowerCase() : s.toUpperCase().replace(/[^A-Z0-9]/g,"");
+    }
   }catch(e){}
   return "";
 })();
+function formatAcc(s){
+  if(!s) return "—";
+  const str = String(s).trim();
+  return str.includes("@") ? str.toLowerCase() : str;
+}
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.11";
+const APP_VERSION="1.12";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -3675,8 +3599,8 @@ function renderSettings(){
   if($("schoolManager"))$("schoolManager").value=db.settings.schoolManager||"";
   if($("yardMax"))$("yardMax").value=db.settings.maxYard||"";
   if($("gridColor"))$("gridColor").value=db.settings.gridColor||"#5b21b6";
-  if($("userAccShow"))$("userAccShow").textContent=window._acc||"—";
-  const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || "";
+  if($("userAccShow"))$("userAccShow").textContent=formatAcc(window._acc);
+  const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || localStorage.getItem("tt_user_name_" + normAcc(window._acc||"")) || "";
   if($("userNameShow")) $("userNameShow").textContent = curUName || "غير محدد";
   if($("userNameInput")) $("userNameInput").value = curUName;
   const effV = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
@@ -6236,7 +6160,12 @@ window.addEventListener("error",function(ev){try{console.error(ev.error||ev.mess
 
 const AUTH_KEY="school_tt_auth_v1";
 function loginMsg(s){if($("loginMsg"))$("loginMsg").textContent=s||"";}
-function normAcc(s){return String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
+function normAcc(s){
+  if(!s) return "";
+  const str = String(s).trim();
+  if(str.includes("@")) return str.toLowerCase();
+  return str.toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
 function loadAuth(){
   try{return JSON.parse(localStorage.getItem(AUTH_KEY)||"{}")||{};}catch(e){return {};}
 }
@@ -6247,9 +6176,10 @@ function ymd(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+
 window._linkedOwner = window._linkedOwner || { acc: "", paid: false, until: "" };
 function localStatus(){
   const a=loadAuth();
-  const acc=normAcc(a.session||"");
+  const rawAcc=String(a.session||"").trim();
+  const acc=normAcc(rawAcc);
   if(!acc) return {ok:false,mode:"login",account:"",days:0,until:"",price:50000};
-  const u=(a.users&&a.users[acc])||{};
+  const u=(a.users&& (a.users[rawAcc] || a.users[acc] || a.users[acc.replace(/[^A-Z0-9]/gi,"")]))||{};
   if(u.code){
     // حساب أيام الاشتراك المدفوع — والأخذ بتاريخ السحابة (يبدأ من يوم التفعيل) إن كان أبعد
     var paidUntil=u.paidUntil||"";
@@ -6947,15 +6877,25 @@ function startGoogleSignIn(){
     const handleGoogleDone = function(acc, name, tok, extra){
       if (_googlePollTimer) { clearInterval(_googlePollTimer); _googlePollTimer = null; }
       loginMsg("");
+      const resolvedName = (name || (extra && extra.user_name) || acc.split("@")[0] || "").trim();
       const payload = {
         ok: true,
         account: acc,
-        user_name: name || acc.split("@")[0],
-        school: (extra && extra.school) || ("مدرسة " + (name || acc.split("@")[0])),
-        bind_token: tok || ""
+        user_name: resolvedName,
+        school: (extra && extra.school) || ("مدرسة " + resolvedName),
+        bind_token: tok || (extra && extra.bind_token) || "",
+        paid: extra && extra.paid,
+        until: extra && extra.until
       };
+      if(resolvedName){
+        if(!db.settings) db.settings={};
+        db.settings.userName = resolvedName;
+        try{ localStorage.setItem("tt_user_name_" + acc, resolvedName); }catch(e){}
+        try{ localStorage.setItem("tt_user_name_" + normAcc(acc), resolvedName); }catch(e){}
+      }
       onCloudLoginSuccess(acc, "GGL_" + acc, payload);
-      okNote("✅ تم تسجيل الدخول بحساب Google بنجاح!");
+      try{ renderSettings(); }catch(e){}
+      okNote("✅ تم تسجيل الدخول بحساب Google بنجاح: " + (resolvedName || acc));
     };
 
     window.addEventListener("message", function(e){
@@ -6973,7 +6913,7 @@ function startGoogleSignIn(){
           localStorage.removeItem("tt_google_auth_done");
           const parsed = JSON.parse(doneStr);
           if (parsed && parsed.account && (Date.now() - parsed.at) < 60000) {
-            handleGoogleDone(parsed.account, parsed.user_name, parsed.bind_token);
+            handleGoogleDone(parsed.account, parsed.user_name, parsed.bind_token, parsed);
           }
         }
       } catch(e){}
@@ -7253,7 +7193,8 @@ function showLicRemain(s){
     else if(s.ok) $("licUntilHint").textContent=(s.mode==="trial"?"تجربة حتى ":"الاشتراك حتى ")+s.until+" — باقي "+s.days+" يوم";
     else $("licUntilHint").textContent="انتهت التجربة. فعّل الاشتراك السنوي.";
   }
-  if($("userAccShow"))$("userAccShow").textContent=(s&&s.account)||window._acc||"—";
+  if($("userAccShow"))$("userAccShow").textContent=formatAcc((s&&s.account)||window._acc);
+  if($("userAccLbl") && ((s&&s.account)||window._acc||"").includes("@")) $("userAccLbl").textContent = "البريد الإلكتروني (الحساب)";
   if($("mySchoolCode"))$("mySchoolCode").textContent=(s&&s.school_code)||"SCH-"+String((s&&s.account)||window._acc||"").slice(-4);
   if($("userSubShow")){
     if(s&&s.ok&&s.mode==="paid") $("userSubShow").textContent="اشتراك سنوي — باقي "+s.days+" يوم";
