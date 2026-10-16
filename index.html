@@ -1953,7 +1953,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.11";
+const APP_VERSION="1.12";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -8426,6 +8426,38 @@ function offRun(kind){
       kill();
       document.addEventListener("DOMContentLoaded",kill);
       setInterval(kill,400);
+    })();
+    </script>
+
+
+    <style id="noAccStyles">
+      /* إخفاء كل ما يتعلق بالحساب ورمز المرور والاشتراك */
+      #licRemain,#logoutTop,#subBox,#subOpen,#licChip{display:none!important}
+    </style>
+    <script id="noAccJs">
+    (function(){
+      var WORDS=["إدارة الحساب", "رمز المرور", "حالة الاشتراك", "تسجيل الخروج", "نسيت الرمز", "رقم الحساب", "سجّل دخول", "حسابك"];
+      function hideAll(){
+        try{
+          Array.prototype.forEach.call(document.querySelectorAll("button,a,div,section,li,span"),function(el){
+            if(el.dataset && el.dataset.accKilled) return;
+            var t=(el.textContent||"").trim();
+            if(!t || t.length>60) return;
+            for(var i=0;i<WORDS.length;i++){
+              if(t.indexOf(WORDS[i])>=0){
+                var target=el.closest(".modal,.card,.panel,section,form") || el.parentElement || el;
+                if(target===document.body) target=el;
+                target.style.display="none";
+                target.dataset.accKilled="1";
+                break;
+              }
+            }
+          });
+        }catch(e){}
+      }
+      hideAll();
+      document.addEventListener("DOMContentLoaded",hideAll);
+      setInterval(hideAll,700);
     })();
     </script>
 
