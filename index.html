@@ -1953,7 +1953,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.13";
+const APP_VERSION="1.14";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -8492,6 +8492,276 @@ function offRun(kind){
       setInterval(kill,700);
     })();
     </script>
+
+
+<style id="asStyles">
+#asBtn{position:fixed;inset-inline-start:14px;bottom:78px;z-index:9998;width:46px;height:46px;border-radius:50%;
+ border:none;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:1.25rem;cursor:pointer;
+ box-shadow:0 8px 20px rgba(79,70,229,.35)}
+#asModal{position:fixed;inset:0;z-index:9999;background:rgba(17,24,39,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+#asModal[hidden]{display:none}
+.as-card{background:#fff;width:min(680px,96vw);max-height:92vh;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.as-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff}
+.as-head b{font-size:1.05rem}
+.as-x{border:none;background:rgba(255,255,255,.2);color:#fff;width:30px;height:30px;border-radius:9px;font-size:1rem;cursor:pointer}
+.as-tabs{display:flex;gap:6px;padding:8px 12px;background:#f8f8fc;border-bottom:1px solid #ecebf5;overflow:auto}
+.as-tab{border:1px solid #e9e7f3;background:#fff;color:#4c1d95;font-weight:800;font-size:.78rem;padding:7px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.as-tab.on{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.as-body{padding:14px 16px;overflow:auto}
+.as-sec{display:none;flex-direction:column;gap:10px}
+.as-sec.on{display:flex}
+.as-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.as-lab{display:block;font-size:.74rem;font-weight:800;color:#374151;margin-bottom:4px}
+.as-in,.as-sel{width:100%;height:36px;min-height:36px;border:1.5px solid #e4e2ef;border-radius:10px;background:#fbfbfe;padding:0 10px;font-family:inherit;font-size:.85rem;font-weight:700;color:#1f2937}
+.as-in:focus,.as-sel:focus{outline:none;border-color:#7c3aed;background:#fff;box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.as-days{display:flex;flex-wrap:wrap;gap:6px}
+.as-day{border:1.5px solid #e4e2ef;background:#fff;border-radius:9px;padding:6px 10px;font-size:.76rem;font-weight:800;cursor:pointer;color:#4b5563}
+.as-day.on{background:#ecfdf5;border-color:#34d399;color:#065f46}
+.as-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #eee9f8;border-radius:10px;padding:8px 10px;background:#fdfdff}
+.as-row span{font-size:.78rem;font-weight:700;color:#374151}
+.as-sw{position:relative;width:46px;height:26px;flex:0 0 auto}
+.as-sw input{opacity:0;width:0;height:0}
+.as-sw i{position:absolute;inset:0;background:#d1d5db;border-radius:20px;transition:.2s;cursor:pointer}
+.as-sw i:before{content:"";position:absolute;width:20px;height:20px;inset-inline-start:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.as-sw input:checked + i{background:#10b981}
+.as-sw input:checked + i:before{transform:translateX(-20px)}
+[dir] .as-sw input:checked + i:before{transform:translateX(-20px)}
+.as-foot{display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid #ecebf5;background:#fafaff;flex-wrap:wrap}
+.as-save{background:#059669;color:#fff;border:none;border-radius:11px;height:38px;padding:0 18px;font-weight:800;font-size:.85rem;cursor:pointer}
+.as-alt{background:#fff;color:#4c1d95;border:1.5px solid #ddd8f0;border-radius:11px;height:38px;padding:0 14px;font-weight:800;font-size:.8rem;cursor:pointer}
+.as-msg{font-size:.76rem;font-weight:800;color:#065f46}
+.as-hint{font-size:.72rem;color:#6b7280;font-weight:600;line-height:1.6}
+html.as-dark{filter:invert(.92) hue-rotate(180deg)}
+html.as-dark img{filter:invert(1) hue-rotate(180deg)}
+</style>
+<button id="asBtn" type="button" title="إعدادات البرنامج">⚙️</button>
+<div id="asModal" hidden>
+  <div class="as-card">
+    <div class="as-head"><b>⚙️ إعدادات البرنامج</b><button class="as-x" type="button" id="asClose">✕</button></div>
+    <div class="as-tabs">
+      <button class="as-tab on" type="button" data-s="school">🏫 المدرسة</button>
+      <button class="as-tab" type="button" data-s="time">⏰ الدوام والحصص</button>
+      <button class="as-tab" type="button" data-s="print">🖨️ الطباعة</button>
+      <button class="as-tab" type="button" data-s="data">💾 البيانات</button>
+      <button class="as-tab" type="button" data-s="look">🎨 المظهر</button>
+    </div>
+    <div class="as-body">
+      <div class="as-sec on" data-s="school">
+        <div class="as-grid">
+          <div><label class="as-lab">اسم المدرسة</label><input id="asSchool" class="as-in" placeholder="مدرسة …"></div>
+          <div><label class="as-lab">اسم المدير</label><input id="asPrincipal" class="as-in" placeholder="الأستاذ …"></div>
+          <div><label class="as-lab">المعاون / المعاونون</label><input id="asVice" class="as-in" placeholder="الأستاذ …"></div>
+          <div><label class="as-lab">العام الدراسي</label><input id="asYear" class="as-in" placeholder="2026 - 2027"></div>
+          <div><label class="as-lab">الفصل الدراسي</label>
+            <select id="asTerm" class="as-sel"><option>الفصل الأول</option><option>الفصل الثاني</option><option>السنة كاملة</option></select></div>
+          <div><label class="as-lab">هاتف المدرسة</label><input id="asPhone" class="as-in" placeholder="07XXXXXXXXX"></div>
+        </div>
+        <div><label class="as-lab">العنوان</label><input id="asAddress" class="as-in" placeholder="بغداد - …"></div>
+        <div><label class="as-lab">نص أسفل الجدول (توقيع/ملاحظة)</label><input id="asFooter" class="as-in" placeholder="مثال: إعداد المعاون …"></div>
+      </div>
+
+      <div class="as-sec" data-s="time">
+        <div><label class="as-lab">أيام الدوام</label><div class="as-days" id="asDays"></div></div>
+        <div class="as-grid">
+          <div><label class="as-lab">عدد الحصص باليوم</label><input id="asLessons" type="number" min="1" max="12" class="as-in"></div>
+          <div><label class="as-lab">مدة الحصة (دقيقة)</label><input id="asMinutes" type="number" min="20" max="90" class="as-in"></div>
+          <div><label class="as-lab">بداية الدوام</label><input id="asStart" type="time" class="as-in"></div>
+          <div><label class="as-lab">الاستراحة بعد الحصة رقم</label><input id="asBreakAfter" type="number" min="0" max="12" class="as-in"></div>
+          <div><label class="as-lab">مدة الاستراحة (دقيقة)</label><input id="asBreakLen" type="number" min="0" max="60" class="as-in"></div>
+          <div><label class="as-lab">حد الحصص المتتالية للمعلم</label><input id="asMaxRow" type="number" min="1" max="8" class="as-in"></div>
+        </div>
+        <div class="as-hint">تُستخدم أوقات الحصص تلقائياً في الطباعة وفي جدول المعلمين.</div>
+      </div>
+
+      <div class="as-sec" data-s="print">
+        <div class="as-grid">
+          <div><label class="as-lab">مقاس الورق</label><select id="asPaper" class="as-sel"><option>A4</option><option>A3</option></select></div>
+          <div><label class="as-lab">الاتجاه</label><select id="asOrient" class="as-sel"><option value="portrait">طولي</option><option value="landscape">عرضي</option></select></div>
+          <div><label class="as-lab">حجم الخط</label><select id="asFont" class="as-sel"><option value="s">صغير</option><option value="m">متوسط</option><option value="l">كبير</option></select></div>
+          <div><label class="as-lab">الهوامش (ملم)</label><input id="asMargin" type="number" min="0" max="30" class="as-in"></div>
+        </div>
+        <div class="as-row"><span>إظهار الشعار في الطباعة</span><label class="as-sw"><input type="checkbox" id="asShowLogo"><i></i></label></div>
+        <div class="as-row"><span>إظهار أسماء المعلمين في جدول المدرسة</span><label class="as-sw"><input type="checkbox" id="asShowTeachers"><i></i></label></div>
+        <div class="as-row"><span>إظهار النصاب الأسبوعي</span><label class="as-sw"><input type="checkbox" id="asShowLoad"><i></i></label></div>
+        <div class="as-row"><span>تلوين المواد تلقائياً</span><label class="as-sw"><input type="checkbox" id="asColors"><i></i></label></div>
+        <div class="as-row"><span>كل معلم بصفحة مستقلة</span><label class="as-sw"><input type="checkbox" id="asTeacherPage"><i></i></label></div>
+      </div>
+
+      <div class="as-sec" data-s="data">
+        <div class="as-hint">البيانات محفوظة على جهازك فقط ✗ — خذ نسخة احتياطية دورياً ✔.</div>
+        <div class="as-row"><span>نسخة احتياطية تلقائية عند الإغلاق</span><label class="as-sw"><input type="checkbox" id="asAutoBak"><i></i></label></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="as-alt" id="asExport">⬇️ تنزيل نسخة احتياطية</button>
+          <button type="button" class="as-alt" id="asImportBtn">⬆️ استيراد نسخة</button>
+          <input type="file" id="asImport" accept=".json,application/json" style="display:none">
+          <button type="button" class="as-alt" id="asPrintAll">🖨️ طباعة سريعة</button>
+        </div>
+        <div class="as-hint" id="asBakInfo"></div>
+      </div>
+
+      <div class="as-sec" data-s="look">
+        <div class="as-row"><span>الوضع الليلي</span><label class="as-sw"><input type="checkbox" id="asDark"><i></i></label></div>
+        <div class="as-grid">
+          <div><label class="as-lab">اللون الرئيسي</label><select id="asAccent" class="as-sel">
+            <option value="#4f46e5">بنفسجي</option><option value="#0ea5e9">أزرق</option>
+            <option value="#059669">أخضر</option><option value="#b45309">برتقالي</option></select></div>
+          <div><label class="as-lab">حجم واجهة البرنامج</label><select id="asUi" class="as-sel">
+            <option value="0.95">صغير</option><option value="1">وسط</option><option value="1.08">كبير</option></select></div>
+        </div>
+        <div class="as-row"><span>إخفاء التلميحات الجانبية</span><label class="as-sw"><input type="checkbox" id="asHideHints"><i></i></label></div>
+      </div>
+    </div>
+    <div class="as-foot">
+      <button class="as-save" type="button" id="asSave">💾 حفظ الإعدادات</button>
+      <button class="as-alt" type="button" id="asReset">↺ استعادة الافتراضي</button>
+      <span class="as-msg" id="asMsg"></span>
+    </div>
+  </div>
+</div>
+<script id="asJs">
+(function(){
+  var KEY="__app_settings_v1";
+  var DEF={school:"",principal:"",vice:"",year:"2026 - 2027",term:"الفصل الأول",phone:"",address:"",footer:"",
+    days:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس"],lessons:7,minutes:45,start:"08:00",
+    breakAfter:3,breakLen:20,maxRow:4,paper:"A4",orient:"portrait",font:"m",margin:10,
+    showLogo:true,showTeachers:true,showLoad:true,colors:true,teacherPage:false,autoBak:true,
+    dark:false,accent:"#4f46e5",ui:1,hideHints:false};
+  var ALLDAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  var S={};
+  function load(){ try{ S=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){ S=Object.assign({},DEF); } }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); window.APP_SETTINGS=S; }catch(e){} }
+  function $(id){ return document.getElementById(id); }
+  function msg(t,ok){ var m=$("asMsg"); if(!m) return; m.textContent=t; m.style.color=ok?"#065f46":"#b91c1c"; setTimeout(function(){ if(m.textContent===t) m.textContent=""; },2600); }
+
+  function buildDays(){
+    var w=$("asDays"); if(!w) return; w.innerHTML="";
+    ALLDAYS.forEach(function(d){
+      var b=document.createElement("button"); b.type="button"; b.className="as-day"+(S.days.indexOf(d)>=0?" on":"");
+      b.textContent=d;
+      b.onclick=function(){ var i=S.days.indexOf(d); if(i>=0) S.days.splice(i,1); else S.days.push(d); b.className="as-day"+(i>=0?"":" on"); };
+      w.appendChild(b);
+    });
+  }
+  function fill(){
+    [["asSchool","school"],["asPrincipal","principal"],["asVice","vice"],["asYear","year"],["asPhone","phone"],
+     ["asAddress","address"],["asFooter","footer"],["asLessons","lessons"],["asMinutes","minutes"],["asStart","start"],
+     ["asBreakAfter","breakAfter"],["asBreakLen","breakLen"],["asMaxRow","maxRow"],["asMargin","margin"]].forEach(function(p){
+      var el=$(p[0]); if(el) el.value=S[p[1]]===undefined?"":S[p[1]];
+    });
+    [["asTerm","term"],["asPaper","paper"],["asOrient","orient"],["asFont","font"],["asAccent","accent"],["asUi","ui"]].forEach(function(p){
+      var el=$(p[0]); if(el) el.value=S[p[1]];
+    });
+    ["showLogo","showTeachers","showLoad","colors","teacherPage","autoBak","dark","hideHints"].forEach(function(k){
+      var el=$(k); if(el) el.checked=!!S[k];
+    });
+    buildDays();
+    try{ var b=localStorage.getItem(KEY+"__bak"); if($("asBakInfo")) $("asBakInfo").textContent=b?("آخر نسخة احتياطية: "+b):"لم تُؤخذ نسخة بعد."; }catch(e){}
+  }
+  function collect(){
+    [["asSchool","school"],["asPrincipal","principal"],["asVice","vice"],["asYear","year"],["asPhone","phone"],
+     ["asAddress","address"],["asFooter","footer"],["asLessons","lessons"],["asMinutes","minutes"],["asStart","start"],
+     ["asBreakAfter","breakAfter"],["asBreakLen","breakLen"],["asMaxRow","maxRow"],["asMargin","margin"]].forEach(function(p){
+      var el=$(p[0]); if(el) S[p[1]]=(el.type==="number")?(+el.value||0):el.value.trim();
+    });
+    [["asTerm","term"],["asPaper","paper"],["asOrient","orient"],["asFont","font"],["asAccent","accent"],["asUi","ui"]].forEach(function(p){
+      var el=$(p[0]); if(el) S[p[1]]=el.value;
+    });
+    S.ui=+S.ui||1;
+    ["showLogo","showTeachers","showLoad","colors","teacherPage","autoBak","dark","hideHints"].forEach(function(k){
+      var el=$(k); if(el) S[k]=!!el.checked;
+    });
+  }
+  function apply(){
+    try{
+      // حجم الواجهة
+      document.documentElement.style.fontSize=(16*S.ui)+"px";
+      // الوضع الليلي
+      document.documentElement.classList.toggle("as-dark",!!S.dark);
+      // اللون الرئيسي
+      document.documentElement.style.setProperty("--as-accent",S.accent);
+      // مقاس الطباعة
+      var st=$("asPrintRule")||document.createElement("style");
+      st.id="asPrintRule";
+      st.textContent="@page{size:"+S.paper+" "+S.orient+";margin:"+(+S.margin||10)+"mm}";
+      document.head.appendChild(st);
+      // اسم المدرسة على الترويسة إن وُجد
+      if(S.school){
+        var cands=document.querySelectorAll(".brand,.logo-text,.app-title,.school-name,header h1,header h2");
+        Array.prototype.forEach.call(cands,function(el){
+          if(!el.dataset.asOrig) el.dataset.asOrig=el.textContent;
+          if(el.dataset.asOrig.indexOf("نظام الجداول")>=0) el.textContent=S.school;
+        });
+        if(S.school) document.title=S.school+" — نظام الجداول";
+      }
+      // إخفاء التلميحات
+      Array.prototype.forEach.call(document.querySelectorAll(".hint,.note,.muted"),function(el){
+        if(el.dataset.asFixed) return;
+        if(S.hideHints) el.style.display="none";
+      });
+      window.APP_SETTINGS=S;
+    }catch(e){}
+  }
+  function backup(silent){
+    try{
+      var out={_meta:{app:"timetable",at:new Date().toISOString(),settings:S},data:{}};
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i);
+        if(k===KEY) continue;
+        out.data[k]=localStorage.getItem(k);
+      }
+      var txt=JSON.stringify(out);
+      try{ localStorage.setItem(KEY+"__bak",new Date().toLocaleString()); }catch(e){}
+      if(silent) return txt;
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));
+      a.download="نسخة_احتياطية_"+new Date().toISOString().slice(0,10)+".json";
+      document.body.appendChild(a); a.click(); a.remove();
+      msg("✅ تم تنزيل النسخة الاحتياطية",1);
+    }catch(e){ msg("⚠️ تعذّر أخذ النسخة",0); }
+  }
+  function restore(file){
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{
+        var o=JSON.parse(fr.result);
+        var d=o&&o.data?o.data:o;
+        Object.keys(d).forEach(function(k){ try{ localStorage.setItem(k,d[k]); }catch(e){} });
+        if(o&&o._meta&&o._meta.settings){ S=Object.assign({},DEF,o._meta.settings); save(); }
+        msg("✅ تم الاستيراد — جاري إعادة التحميل…",1);
+        setTimeout(function(){ location.reload(); },900);
+      }catch(e){ msg("⚠️ ملف غير صالح",0); }
+    };
+    fr.readAsText(file);
+  }
+  function open(){ var m=$("asModal"); if(!m) return; load(); fill(); m.hidden=false; }
+  function close(){ var m=$("asModal"); if(m) m.hidden=true; }
+
+  document.addEventListener("click",function(e){
+    var t=e.target;
+    if(t&&t.id==="asBtn") return open();
+    if(t&&t.id==="asClose") return close();
+    if(t&&t.classList&&t.classList.contains("as-tab")){
+      var s=t.getAttribute("data-s");
+      Array.prototype.forEach.call(document.querySelectorAll(".as-tab"),function(b){ b.classList.toggle("on",b===t); });
+      Array.prototype.forEach.call(document.querySelectorAll(".as-sec"),function(x){ x.classList.toggle("on",x.getAttribute("data-s")===s); });
+      return;
+    }
+    if(t&&t.id==="asModal") return close();
+    if(t&&t.id==="asSave"){ collect(); save(); apply(); msg("✅ حُفظت الإعدادات",1); return; }
+    if(t&&t.id==="asReset"){ S=Object.assign({},DEF); save(); fill(); apply(); msg("↺ رُجّع الافتراضي",1); return; }
+    if(t&&t.id==="asExport") return backup(false);
+    if(t&&t.id==="asImportBtn"){ var f=$("asImport"); if(f) f.click(); return; }
+    if(t&&t.id==="asPrintAll"){ try{ window.print(); }catch(e){} return; }
+  });
+  document.addEventListener("change",function(e){
+    if(e.target&&e.target.id==="asImport"&&e.target.files&&e.target.files[0]) restore(e.target.files[0]);
+  });
+  window.addEventListener("beforeunload",function(){ try{ collect(); save(); if(S.autoBak) backup(true); }catch(e){} });
+  load(); save();
+  document.addEventListener("DOMContentLoaded",function(){ load(); apply(); });
+  setTimeout(function(){ load(); apply(); },900);
+})();
+</script>
 
 </body>
 </html>
