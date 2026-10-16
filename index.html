@@ -675,9 +675,14 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 }
 @page{margin:0}
 </style>
-<style id="asOldTheme">/* هوية تصميم v0.61 (ما قبل 0.95) */
-:root{}
-body{font-family:'Cairo','Tahoma',Arial}
+
+<style id="asOldTheme">/* تصميم ما قبل 0.95 (v0.61) — القواعد المختلفة */
+#dlgMsg{margin:8px 0 18px;color:#374151;font-size:1.02rem;line-height:1.7;white-space:pre-line}
+#sBox .modal-card,#tBox .modal-card{width:min(860px,96vw);padding:22px 22px 16px}
+#sBox form,#tBox form{display:flex;flex-direction:column;gap:18px;width:100%}
+#subBox .modal-card{width:min(820px,96vw)!important;max-height:none!important;overflow:hidden!important; display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center; padding:28px 24px 24px 24px;text-align:right;position:relative}
+.s-top input,.s-top select,.t-top input,.t-top select,#tAssign .asg input,#tAssign .asg select{width:100%;min-height:46px;box-sizing:border-box}
+.s-top,.t-top{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%;align-items:end}
 </style>
 </head>
 <body>
@@ -1957,7 +1962,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.19";
+const APP_VERSION="1.20";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
