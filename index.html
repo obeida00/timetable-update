@@ -2094,7 +2094,7 @@ function syncToCloudNow(showToast){
   const tCount=(db&&db.teachers)?db.teachers.length:0;
   const cCount=(db&&db.classes)?db.classes.length:0;
   const sCount=(db&&db.subjects)?db.subjects.length:0;
-  fetch("https://schol-table-bot.obe092.workers.dev/api/sync", {
+  fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
@@ -5646,18 +5646,41 @@ function withTok(url, acc){
   return url+(t?("&tok="+encodeURIComponent(t)):"");
 }
 function openBotBind(){
-  const acc=String(window._acc||(loadAuth().session||"")||(($('accIn')&&$('accIn').value)||"")).replace(/[^A-Za-z0-9]/g,"").toUpperCase();
-  let tok="";
-  try{ tok=localStorage.getItem("tt_bind_tok_"+acc)||""; }catch(e){}
-  if(!acc||!tok){
-    const m=$('licMsg'); if(m){m.style.color="#b45309";m.textContent="سجّل دخول بحساب مدرستك أولاً ثم اضغط الزر مرة أخرى.";}
-    okNote("سجّل دخول بحساب مدرستك أولاً");
+  const raw = String(window._acc||(loadAuth().session||"")||"").trim();
+  const acc = raw.includes("@") ? raw.toLowerCase() : normAcc(raw);
+  if(!acc){
+    okNote("سجّل دخول بحساب Google أولاً");
     return;
   }
-  const url="https://t.me/ScholTableBot?start=acc_"+encodeURIComponent(acc)+"_"+encodeURIComponent(tok);
-  const api=pyApi();
-  if(api&&api.open_url) api.open_url(url);
-  else { try{window.open(url,"_blank");}catch(e){location.href=url;} }
+  let tok = "";
+  try{ tok = localStorage.getItem("tt_bind_tok_" + acc) || localStorage.getItem("tt_sess_tok_" + acc) || ""; }catch(e){}
+  
+  function doOpenWithTok(validTok){
+    const safeAcc = encodeURIComponent(acc);
+    const url = "https://t.me/ScholTableBot?start=acc_" + safeAcc + "_" + encodeURIComponent(validTok);
+    const api = pyApi();
+    if(api && api.open_url) api.open_url(url);
+    else { try{ window.open(url, "_blank"); }catch(e){ location.href = url; } }
+    okNote("جاري فتح البوت لتأكيد ربط حساب مدرستك 🔐");
+  }
+
+  if(tok){
+    doOpenWithTok(tok);
+  } else {
+    // جلب أو تجديد توكن ربط مؤقت وآمن من السيرفر
+    fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_bind_token?acc=" + encodeURIComponent(acc))
+      .then(r => r.json())
+      .then(data => {
+        if(data && data.ok && data.bind_token){
+          try{ localStorage.setItem("tt_bind_tok_" + acc, data.bind_token); }catch(e){}
+          doOpenWithTok(data.bind_token);
+        } else {
+          okNote("يرجى إعادة تسجيل الدخول بحساب Google لتجديد رمز الربط الآمن.");
+        }
+      }).catch(() => {
+        okNote("تأكد من الاتصال بالإنترنت للمتابعة.");
+      });
+  }
 }
 function openSubInfoOrPayment(){
   const s=localStatus();
@@ -5888,7 +5911,7 @@ function uploadReportPdf(){
   const fr=new FileReader();
   fr.onload=function(){
     const b64=String(fr.result||"").split(",")[1]||"";
-    fetch("https://schol-table-bot.obe092.workers.dev/api/upload_report",{
+    fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/upload_report",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({acc:window._acc||"",kind:lr.kind,name:lr.name,b64:b64})
     }).then(function(r){return r.json();}).then(function(r){
@@ -6316,13 +6339,13 @@ function applyGate(s){
           adoptAccount(acc, txt);
         } else {
           // فحص بيانات السحابة أو بيانات المدرسة
-          fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
+          fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
             .then(function(res){return res.json();})
             .then(function(data){
               if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
                 adoptAccount(acc, data.data);
               } else {
-                fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
+                fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
                   .then(function(r2){return r2.json();})
                   .then(function(scInfo){
                     if(scInfo&&scInfo.ok&&scInfo.shared_data&&dbScore(parseDb(scInfo.shared_data))>0){
@@ -6336,13 +6359,13 @@ function applyGate(s){
       }).catch(function(){});
     } else {
       // في متصفح الهاتف: سحب النسخة من السحابة مباشرة عند فتح الصفحة
-      fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
+      fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
         .then(function(res){return res.json();})
         .then(function(data){
           if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
             adoptAccount(acc, data.data);
           } else {
-            fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
+            fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
               .then(function(r2){return r2.json();})
               .then(function(scInfo){
                 if(scInfo&&scInfo.ok&&scInfo.shared_data&&dbScore(parseDb(scInfo.shared_data))>0){
@@ -6378,7 +6401,7 @@ function afterAccount(r,fresh){
         done(true);
       } else {
         // إذا كان الجهاز جديد والملف المحلي فارغ: سحب تلقائي من السحابة (بيانات الحساب أو بيانات المدرسة المنضم إليها)
-        fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
+        fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
           .then(function(res){return res.json();})
           .then(function(data){
             if(data && data.ok && data.data && dbScore(parseDb(data.data)) > 0){
@@ -6386,7 +6409,7 @@ function afterAccount(r,fresh){
               done(true);
             } else {
               // فحص إذا كان عضواً في مدرسة لجلب جدولها فوراً
-              fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
+              fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
                 .then(function(r2){return r2.json();})
                 .then(function(scInfo){
                   if(scInfo && scInfo.ok && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0){
@@ -6411,7 +6434,7 @@ function afterAccount(r,fresh){
     return;
   }
   // في الهاتف أو متصفح الويب: سحب النسخة من السحابة مباشرة
-  fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
+  fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
     .then(function(res){return res.json();})
     .then(function(data){
       if(data&&data.ok&&data.data&&dbScore(parseDb(data.data))>0){
@@ -6419,7 +6442,7 @@ function afterAccount(r,fresh){
         done(true);
       } else {
         // فحص مدرسة الحساب
-        fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
+        fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
           .then(function(r2){return r2.json();})
           .then(function(scInfo){
             if(scInfo && scInfo.ok && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data))>0){
@@ -6490,7 +6513,7 @@ function checkCloudLogin(acc, pw, fallbackLocal){
     return;
   }
   loginMsg('جاري التحقق من الحساب سحابياً ☁️...');
-  fetch('https://schol-table-bot.obe092.workers.dev/api/auth/login', {
+  fetch('https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ acc: acc, pw: pw })
@@ -6519,12 +6542,12 @@ function checkCloudLogin(acc, pw, fallbackLocal){
 }
 
 function verifyViaCloudSync(acc, pw, fallbackLocal){
-  fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/sync?acc=" + encodeURIComponent(acc), acc), acc))
+  fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc=" + encodeURIComponent(acc), acc), acc))
     .then(function(res){ return res.json(); })
     .then(function(syncRes){
       if(syncRes && syncRes.ok && syncRes.data){
         // الحساب مسجل وموجود في السحابة ولديه بيانات - جلب معلومات المدرسة أيضاً
-        fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc=" + encodeURIComponent(acc), acc), acc))
+        fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc=" + encodeURIComponent(acc), acc), acc))
           .then(function(r2){ return r2.json(); }).catch(function(){ return {}; })
           .then(function(scInfo){
             var loginData = { ok: true, account: acc, data: syncRes.data };
@@ -6542,7 +6565,7 @@ function verifyViaCloudSync(acc, pw, fallbackLocal){
           });
       } else {
         // فحص مدرسة الحساب (قد يكون عضواً في مدرسة بدون بيانات خاصة)
-        fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc=" + encodeURIComponent(acc), acc), acc))
+        fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc=" + encodeURIComponent(acc), acc), acc))
           .then(function(r2){ return r2.json(); })
           .then(function(scInfo){
             // يجب أن يكون مسجلاً فعلاً (مالك مدرسة أو عضو منضم)
@@ -6653,7 +6676,7 @@ function reopenWa(){
 let _otpFlow={type:"",acc:"",expected:"",ticket:"",busy:false};
 
 // عنوان خدمة البوت السحابية
-const CLOUD_BASE="https://schol-table-bot.obe092.workers.dev";
+const CLOUD_BASE="https://schol-table-bot.iq-school-timetable.workers.dev";
 
 // ملاحظة: دالة withTok معرّفة أسفل (مع توكن الجهاز sessTok) وتُستخدم لقراءات السحابة
 
@@ -7249,7 +7272,7 @@ function removeMember(memberAcc){
     renderMembersUI(quick, true, null);
     _prevTeamMembersCount = quick.length;
   }catch(e){}
-  fetch("https://schol-table-bot.obe092.workers.dev/api/remove_member", {
+  fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/remove_member", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ owner_acc: ownerAcc, member_acc: memberAcc })
@@ -7388,14 +7411,14 @@ function renderMembersUI(members, isOwner, schoolCode){
 
 function cloudFetchData(acc){
   if(!acc) return Promise.resolve("");
-  return fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
+  return fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc="+encodeURIComponent(acc), acc), acc))
     .then(function(res){return res.json();})
     .then(function(d){return (d&&d.ok&&d.data)||"";})
     .catch(function(){return "";});
 }
 function cloudGetSchoolInfo(acc){
   if(!acc) return Promise.resolve(null);
-  return fetch(withTok(withTok("https://schol-table-bot.obe092.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
+  return fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_school_info?acc="+encodeURIComponent(acc), acc), acc))
     .then(function(res){return res.json();})
     .catch(function(){return null;});
 }
@@ -7524,7 +7547,7 @@ function respondJoin(acc, action){
   var ownerAcc = window._acc || "";
   if(!ownerAcc || !acc) return;
   if(action==="reject" && !confirm("رفض طلب انضمام هذا العضو؟")) return;
-  fetch("https://schol-table-bot.obe092.workers.dev/api/respond_join", {
+  fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/respond_join", {
     method:"POST", headers:{"Content-Type":"application/json"},
     body: JSON.stringify({ owner_acc: ownerAcc, member_acc: acc, action: action })
   }).then(function(r){ return r.json(); }).then(function(r){
@@ -7600,7 +7623,7 @@ function doLinkSchool(){
   }
 
   // دعم الربط السحابي المباشر لجميع المنصات
-  fetch("https://schol-table-bot.obe092.workers.dev/api/link_school", {
+  fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/link_school", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
