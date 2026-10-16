@@ -807,30 +807,111 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       #loginBox .lg-head{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px}
       #loginBox .lg-logo{width:48px;height:48px;object-fit:contain;border-radius:14px;background:#fff;padding:4px;border:1px solid #ede9fe;box-shadow:0 6px 16px rgba(109,40,217,.15)}
       #loginBox .lg-title{margin:0;font-size:1.18rem;font-weight:800;color:#1e1b4b;line-height:1.2}
-      #loginBox .lg-sub{margin-top:4px;font-size:.76rem;font-weight:700;color:#7c3aed;display:flex;align-items:center;gap:5px}
-
-      #loginBox .lg-google-btn{width:100%;height:48px;min-height:48px;background:#ffffff;color:#1f2937;border:1.8px solid #e5e7eb;border-radius:14px;font-size:.92rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:11px;box-shadow:0 3px 12px rgba(0,0,0,.06);transition:all .18s;margin:16px 0 12px}
-      #loginBox .lg-google-btn:hover{background:#f9fafb;border-color:#c7d2fe;box-shadow:0 6px 20px rgba(99,102,241,.15);transform:translateY(-1px)}
-      #loginBox .lg-google-btn:active{transform:translateY(1px)}
-      #loginBox .lg-google-btn svg{width:22px;height:22px;flex:0 0 22px}
-
-      #loginBox .lg-features{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px 14px;margin-top:10px;text-align:right}
-      #loginBox .lg-feat-item{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:#475569;margin-bottom:6px}
-      #loginBox .lg-feat-item:last-child{margin-bottom:0}
-      #loginBox .lg-feat-item span.icon{color:#10b981;font-size:.95rem}
+    <style>
+      #loginBox .modal-card{
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 32px 28px 24px;
+        max-width: 410px;
+        box-shadow: 0 25px 60px -15px rgba(99, 102, 241, 0.18), 0 0 0 1px rgba(226, 232, 240, 0.8);
+        border: none;
+        text-align: center;
+      }
+      #loginBox .lg-badge{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f5f3ff;
+        color: #7c3aed;
+        font-size: .74rem;
+        font-weight: 800;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin-bottom: 14px;
+        border: 1px solid #ddd6fe;
+      }
+      #loginBox .lg-icon-wrap{
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 12px;
+        background: linear-gradient(135deg, #ede9fe 0%, #fae8ff 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px -4px rgba(139, 92, 246, 0.25);
+      }
+      #loginBox .lg-icon-wrap img{
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+      }
+      #loginBox h2.lg-title{
+        font-size: 1.35rem;
+        font-weight: 900;
+        color: #0f172a;
+        margin: 0 0 6px;
+        letter-spacing: -.3px;
+      }
+      #loginBox p.lg-desc{
+        font-size: .84rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin: 0 0 22px;
+        padding: 0 8px;
+      }
+      #loginBox .lg-google-btn{
+        width: 100%;
+        height: 50px;
+        background: #ffffff;
+        color: #1e293b;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        font-size: .95rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.04);
+        transition: all .2s cubic-bezier(.4, 0, .2, 1);
+      }
+      #loginBox .lg-google-btn:hover{
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        box-shadow: 0 8px 24px rgba(99, 102, 241, .14);
+        transform: translateY(-1.5px);
+      }
+      #loginBox .lg-google-btn:active{
+        transform: translateY(0);
+      }
+      #loginBox .lg-google-btn svg{
+        width: 22px;
+        height: 22px;
+      }
+      #loginBox .lg-security-note{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 18px;
+        font-size: .75rem;
+        font-weight: 700;
+        color: #059669;
+      }
     </style>
 
-    <div class="lg-head">
-      <img src="logo.png" alt="" class="lg-logo">
-      <div style="text-align:right">
-        <h2 class="lg-title">نظام الجداول المدرسية</h2>
-        <div class="lg-sub"><span>🔐 تسجيل دخول موثّق وآمن 100%</span></div>
-      </div>
+    <div class="lg-badge">
+      <span>🛡️ مصادقة مشفرة وسحابية 100%</span>
     </div>
 
-    <p style="font-size:.84rem;color:#4b5563;line-height:1.6;margin:0 0 4px">
-      سجّل الدخول بحسابك في Google لحفظ جدولك ومزامنته تلقائياً بين أجهزتك ومع فريق المدرسة.
-    </p>
+    <div class="lg-icon-wrap">
+      <img src="logo.png" alt="الشعار">
+    </div>
+
+    <h2 class="lg-title">نظام الجداول المدرسية</h2>
+    <p class="lg-desc">سجّل دخولك بحساب Google لمزامنة جداول مدرستك وكادر المعلمين فورياً عبر السحابة.</p>
 
     <!-- زر تسجيل الدخول المباشر بحساب Google -->
     <button type="button" class="lg-google-btn" onclick="startGoogleSignIn()">
@@ -843,28 +924,12 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <span>تسجيل الدخول باستخدام Google</span>
     </button>
 
-    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9;text-align:center">
-      <button type="button" class="btn w s" onclick="openPhoneMigration()" style="font-size:.78rem;padding:6px 14px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;color:#475569">
-        🔄 نقل وترقية حساب برقم هاتف سابق إلى Google
-      </button>
+    <div class="lg-security-note">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>بياناتك معزولة ومحمية بأعلى معايير الخصوصية</span>
     </div>
 
-    <div class="lg-features">
-      <div class="lg-feat-item">
-        <span class="icon">✓</span>
-        <span>مزامنة فورية وسحابية آمنة 100%</span>
-      </div>
-      <div class="lg-feat-item">
-        <span class="icon">✓</span>
-        <span>ربط مباشر مع فريق العمل ومعاوني المدرسة</span>
-      </div>
-      <div class="lg-feat-item">
-        <span class="icon">✓</span>
-        <span>حفظ تلقائي للبيانات والجدول دون فقدان</span>
-      </div>
-    </div>
-
-    <!-- حقول خفية للحفاظ على التوافق البرمجي إن دعت الحاجة -->
+    <!-- حقول خفية للحفاظ على التوافق البرمجي -->
     <input id="loginAcc" type="hidden">
     <input id="loginPw" type="hidden">
     <div id="otpStep" hidden></div>
