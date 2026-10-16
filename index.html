@@ -1953,7 +1953,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.16";
+const APP_VERSION="1.17";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -8601,6 +8601,7 @@ html.as-dark img{filter:invert(1) hue-rotate(180deg)}
         <div class="as-row"><span>نسخة احتياطية تلقائية عند الإغلاق</span><label class="as-sw"><input type="checkbox" id="asAutoBak"><i></i></label></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button type="button" class="as-alt" id="asExport">⬇️ تنزيل نسخة احتياطية</button>
+          <button type="button" class="as-alt" id="asExportText">📋 حفظ يدوي (نص)</button>
           <button type="button" class="as-alt" id="asImportBtn">⬆️ استيراد نسخة</button>
           <input type="file" id="asImport" accept=".json,application/json" style="display:none">
           <button type="button" class="as-alt" id="asPrintAll">🖨️ طباعة سريعة</button>
@@ -8710,24 +8711,96 @@ html.as-dark img{filter:invert(1) hue-rotate(180deg)}
       window.APP_SETTINGS=S;
     }catch(e){}
   }
-  function backup(silent){
+  function pickName(){
+    return "نسخة_احتياطية_"+new Date().toISOString().slice(0,10)+".json";
+  }
+  function viaBridge(txt,name){
+    // يحاول الحفظ عبر جسر برنامج الكمبيوتر (pywebview)
+    try{
+      var api=(window.pywebview&&window.pywebview.api)||null;
+      if(!api) return false;
+      var keys=Object.keys(api).filter(function(k){ return /save|write|backup|export|download|file/i.test(k); });
+      for(var i=0;i<keys.length;i++){
+        try{
+          var r=api[keys[i]](name,txt);
+          if(r&&r.then) r.then(function(){},function(){});
+          return true;
+        }catch(e){}
+      }
+    }catch(e){}
+    return false;
+  }
+  function viaLink(txt,name){
+    try{
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));
+      a.download=name;
+      a.style.display="none";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ try{ URL.revokeObjectURL(a.href); a.remove(); }catch(e){} },4000);
+      return true;
+    }catch(e){ return false; }
+  }
+  function showText(txt,name){
+    try{
+      var old=document.getElementById("asTextModal");
+      if(old) old.remove();
+      var w=document.createElement("div");
+      w.id="asTextModal";
+      w.style.cssText="position:fixed;inset:0;z-index:10000;background:rgba(76,29,149,.5);display:flex;align-items:center;justify-content:center;padding:10px";
+      w.innerHTML='<div style="background:#fff;width:min(640px,96vw);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">'+
+        '<div style="padding:11px 14px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;font-weight:800">💾 نسخة احتياطية — احفظها كملف</div>'+
+        '<div style="padding:10px 14px;font-size:.75rem;color:#6b7280;font-weight:700">انسخ النص كامل ← والصقه في ملف نصي واحفظه بامتداد .json ← وللاسترداد استخدم «استيراد نسخة».</div>'+
+        '<textarea id="asTextArea" dir="ltr" style="margin:0 14px;height:44vh;border:1.5px solid #e4e0f3;border-radius:11px;padding:9px;font-family:monospace;font-size:.72rem"></textarea>'+
+        '<div style="display:flex;gap:8px;padding:11px 14px;flex-wrap:wrap">'+
+        '<button type="button" id="asCopyBtn" style="background:#059669;color:#fff;border:none;border-radius:12px;height:40px;padding:0 18px;font-weight:800;cursor:pointer">📋 انسخ الكل</button>'+
+        '<button type="button" id="asDlBtn" style="background:#fff;color:#4c1d95;border:1.5px solid #ddd8f0;border-radius:12px;height:40px;padding:0 15px;font-weight:800;cursor:pointer">⬇️ جرّب التنزيل مرة ثانية</button>'+
+        '<button type="button" id="asCloseText" style="background:#fff;color:#b91c1c;border:1.5px solid #fecaca;border-radius:12px;height:40px;padding:0 15px;font-weight:800;cursor:pointer">إغلاق</button>'+
+        '<span id="asTextMsg" style="font-size:.75rem;font-weight:800;color:#065f46;align-self:center"></span></div>'+
+        '</div>';
+      document.body.appendChild(w);
+      var ta=document.getElementById("asTextArea");
+      ta.value=txt;
+      document.getElementById("asCopyBtn").onclick=function(){
+        try{
+          ta.focus(); ta.select();
+          var done=document.execCommand("copy");
+          if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){},function(){}); done=true; }
+          document.getElementById("asTextMsg").textContent=done?"✅ انُسخ — الصقه بملف واحفظه":"⚠️ انسخ يدوياً (Ctrl+A ثم Ctrl+C)";
+        }catch(e){}
+      };
+      document.getElementById("asDlBtn").onclick=function(){
+        var ok2=viaBridge(txt,name)||viaLink(txt,name);
+        document.getElementById("asTextMsg").textContent=ok2?"✅ جُرّب التنزيل — شوف مجلد التنزيلات":"⚠️ ما نزل — انسخ النص يدوياً";
+      };
+      document.getElementById("asCloseText").onclick=function(){ w.remove(); };
+      var fr=new FileReader();
+    }catch(e){}
+  }
+  function backup(silent, forceText){
     try{
       var out={_meta:{app:"timetable",at:new Date().toISOString(),settings:S},data:{}};
       for(var i=0;i<localStorage.length;i++){
         var k=localStorage.key(i);
-        if(k===KEY) continue;
+        if(k===KEY||k===KEY+"__bak") continue;
         out.data[k]=localStorage.getItem(k);
       }
       var txt=JSON.stringify(out);
       try{ localStorage.setItem(KEY+"__bak",new Date().toLocaleString()); }catch(e){}
       if(silent) return txt;
-      var a=document.createElement("a");
-      a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));
-      a.download="نسخة_احتياطية_"+new Date().toISOString().slice(0,10)+".json";
-      document.body.appendChild(a); a.click(); a.remove();
-      msg("✅ تم تنزيل النسخة الاحتياطية",1);
+      var name=pickName();
+      var ok1=viaBridge(txt,name);
+      if(!ok1) ok1=viaLink(txt,name);
+      if(ok1){
+        msg("✅ طلبنا تنزيل النسخة — إذا ما نزلت اضغط «حفظ يدوي»",1);
+        if(!forceText) setTimeout(function(){ if(confirm("هل نزلت النسخة الاحتياطية بنجاح؟\n\nإذا لا ✗ اضغط Cancel وعرض لك النص لحفظه يدوياً.")) {} else { showText(txt,name); } },900);
+      }else{
+        showText(txt,name);
+      }
     }catch(e){ msg("⚠️ تعذّر أخذ النسخة",0); }
   }
+
   function restore(file){
     var fr=new FileReader();
     fr.onload=function(){
@@ -8759,6 +8832,7 @@ html.as-dark img{filter:invert(1) hue-rotate(180deg)}
     if(t&&t.id==="asSave"){ collect(); save(); apply(); msg("✅ حُفظت الإعدادات",1); return; }
     if(t&&t.id==="asReset"){ S=Object.assign({},DEF); save(); fill(); apply(); msg("↺ رُجّع الافتراضي",1); return; }
     if(t&&t.id==="asExport") return backup(false);
+    if(t&&t.id==="asExportText") return backup(false,true);
     if(t&&t.id==="asImportBtn"){ var f=$("asImport"); if(f) f.click(); return; }
     if(t&&t.id==="asPrintAll"){ try{ window.print(); }catch(e){} return; }
   });
