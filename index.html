@@ -839,12 +839,8 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <img src="logo.png" alt="" class="lg-logo">
       <div style="text-align:right">
         <h2 class="lg-title">نظام الجداول المدرسية</h2>
-        <div class="lg-sub">🔐 تسجيل الدخول والمزامنة السحابية</div>
+        <div class="lg-sub">🔐 تسجيل الدخول والمزامنة</div>
       </div>
-    </div>
-
-    <div class="lg-note">
-      <i>💡</i><span>سجّل برقم هاتفك لحفظ جدولك سحابياً ومحلياً — مع <b>تجربة مجانية 7 أيام</b>.</span>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
@@ -852,25 +848,22 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <div class="lg-tg-top">
         <div class="lg-tg-ico">✈️</div>
         <div style="flex:1">
-          <div id="tgTitle" class="lg-tg-tt">🚀 أنت داخل تيليكرام</div>
-          <div id="tgDesc" class="lg-tg-dd">تسجيل حقيقي <b>100%</b> بضغطة واحدة — بلا رقم وبلا كود تحقق، ويُربط هذا الشات بمدرستك تلقائياً.</div>
+          <div id="tgTitle" class="lg-tg-tt">🚀 تسجيل حقيقي بضغطة واحدة</div>
+          <div id="tgDesc" class="lg-tg-dd">بهوية تيليكرام — بلا رقم وبلا كود.</div>
         </div>
       </div>
-      <div id="tgMsg" style="display:none;font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 9px;line-height:1.55;margin-top:9px;text-align:right"></div>
-      <div id="tgNewForm" style="display:none;flex-direction:column;gap:7px;text-align:right;margin-top:9px">
+      <div id="tgMsg" style="display:none;font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 9px;line-height:1.5;margin-top:8px;text-align:right"></div>
+      <div id="tgNewForm" style="display:none;flex-direction:column;gap:7px;text-align:right;margin-top:8px">
         <div>
           <label class="lg-lab">اسم المدرسة</label>
-          <input id="tgSchool" class="lg-in" placeholder="مثال: مدرسة بدور بغداد الابتدائية">
+          <input id="tgSchool" class="lg-in" placeholder="مدرسة …">
         </div>
         <div>
-          <label class="lg-lab">رمز دخول للكمبيوتر (اختياري)</label>
+          <label class="lg-lab">رمز للكمبيوتر (اختياري)</label>
           <input id="tgPw" class="lg-in pw" placeholder="4 أحرف أو أرقام">
         </div>
       </div>
-      <button type="button" id="tgBtn" class="lg-btn lg-tgbtn" onclick="telegramLoginStart()">
-        🚀 إنشاء/دخول بحسابي في تيليكرام
-      </button>
-      <div class="lg-mini" style="margin-top:8px;text-align:center">أو أكمل برقم هاتفك ورمز الدخول من الأسفل</div>
+      <button type="button" id="tgBtn" class="lg-btn lg-tgbtn" onclick="telegramLoginStart()">🚀 متابعة بتيليكرام</button>
     </div>
 
     <div class="lg-div">أو</div>
@@ -879,16 +872,14 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <div class="lg-field">
         <label class="lg-lab">رقم الموبايل</label>
         <input id="loginAcc" class="lg-in ph" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" autocomplete="username" inputmode="numeric">
-        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:10px;padding:6px 9px;line-height:1.55;text-align:right"></div>
+        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:10px;padding:6px 9px;line-height:1.5;text-align:right"></div>
       </div>
       <div class="lg-field">
         <label class="lg-lab">رمز الدخول</label>
         <input id="loginPw" type="password" class="lg-in pw" placeholder="••••••••" autocomplete="current-password">
       </div>
-
       <button class="lg-btn lg-main" type="button" onclick="doLogin()">دخول</button>
-      <button class="lg-btn lg-alt" type="button" onclick="startOtpFlow('register')">✨ إنشاء حساب جديد</button>
-
+      <button class="lg-btn lg-alt" type="button" onclick="startOtpFlow('register')">✨ حساب جديد</button>
       <div class="lg-foot">
         <button type="button" class="lg-link" onclick="startOtpFlow('reset')">نسيت رمز الدخول؟</button>
       </div>
@@ -1966,7 +1957,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.06";
+const APP_VERSION="1.07";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6649,7 +6640,6 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
     try{ localStorage.setItem("tt_bind_tok_"+acc, cloudRes.bind_token); }catch(e){}
     try{ localStorage.setItem("tt_sess_tok_"+normAcc(acc), cloudRes.bind_token); }catch(e){}
   }
-  try{ maybePromptTgLink(cloudRes); }catch(e){}
   a.session = acc;
   saveAuth(a);
   if(cloudRes.user_name){
@@ -6906,69 +6896,11 @@ function tgReady(){
   if(nm) tgMsg("👋 أهلاً <b>"+nm+"</b> — اضغط الزر لتدخل بحسابك مباشرة.","ok");
   return true;
 }
-// مطالبة الحسابات القديمة بتحديث حسابها (مرة كل جلسة حتى تُربط بهوية تيليكرام)
-function maybePromptTgLink(res){
-  try{
-    if(!res || res.tg_linked !== false) return;
-    if(sessionStorage.getItem("tt_tg_upg_done")==="1") return;
-    if($("tgUpg")) return;
-    const d=document.createElement("div");
-    d.id="tgUpg";
-    d.style.cssText="position:fixed;left:10px;right:10px;bottom:12px;z-index:9999;background:linear-gradient(135deg,#312e81,#6d28d9);color:#fff;border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(49,46,129,.35);text-align:right;font-family:inherit";
-    d.innerHTML='<div style="font-size:.86rem;font-weight:800;margin-bottom:4px">🔐 حدّث حسابك واربطه بهوية تيليكرام</div>'+
-      '<div style="font-size:.76rem;font-weight:600;line-height:1.7;opacity:.95">حسابك مسجّل بالطريقة القديمة. اضغط الزر أدناه فتفتح تيليكرام، وبضغطة واحدة يُربط حسابك بهويتك الحقيقية ويصير الإرسال والتسجيل تلقائياً 100%.</div>'+
-      '<div style="display:flex;gap:8px;margin-top:9px">'+
-      '<button id="tgUpgGo" style="flex:2;height:36px;border:none;border-radius:10px;background:#fff;color:#4c1d95;font-weight:800;font-size:.82rem">🚀 تحديث حسابي الآن</button>'+
-      '<button id="tgUpgNo" style="flex:1;height:36px;border:none;border-radius:10px;background:rgba(255,255,255,.18);color:#fff;font-weight:700;font-size:.8rem">لاحقاً</button>'+
-      '</div>';
-    document.body.appendChild(d);
-    const go=$("tgUpgGo"), no=$("tgUpgNo");
-    if(go) go.onclick=function(){
-      const t=tgApp();
-      if(t&&t.initData){ d.remove(); try{ telegramLoginStart(); }catch(e){} }
-      else window.open(TG_START,"_blank");
-    };
-    if(no) no.onclick=function(){ try{ sessionStorage.setItem("tt_tg_upg_done","1"); }catch(e){} d.remove(); };
-  }catch(e){}
-}
-function telegramLoginStart(){
-  const t=tgApp();
-  if(!t||!t.initData){ tgMsg("افتح البرنامج من داخل تيليكرام لتستخدم هذه الطريقة.","warn"); return; }
-  const u=(t.initDataUnsafe&&t.initDataUnsafe.user)||{};
-  const showing=($("tgNewForm")&&$("tgNewForm").style.display!=="none");
-  const body={
-    initData:t.initData,
-    chat_id:u.id?String(u.id):"",
-    acc:(($("loginAcc")&&$("loginAcc").value.trim())||""),
-    school:showing?(($("tgSchool")&&$("tgSchool").value.trim())||""):"",
-    pw:showing?(($("tgPw")&&$("tgPw").value.trim())||""):""
-  };
-  if(showing && !body.school){ tgMsg("اكتب اسم مدرستك أولاً حتى يظهر اسمك الصحيح في البوت.","warn"); return; }
-  tgMsg("⏳ جاري التحقق من هويتك في تيليكرام…","ok");
-  fetch(CLOUD_BASE+"/api/auth/telegram_login",{
-    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
-  }).then(function(r){return r.json();}).then(function(j){
-    if(!j||!j.ok){
-      const m={signature:"التوقيع غير صحيح — افتح البرنامج من داخل تيليكرام.",stale:"انتهت صلاحية الجلسة — أعد فتح البرنامج من تيليكرام.",
-               trial_expired:"انتهت التجربة المجانية",deleted:"هذا الحساب محذوف"};
-      tgMsg("⚠️ "+(m[(j&&j.reason)||""]||("تعذّر الدخول ("+((j&&j.reason)||"خطأ")+")")),"err");
-      return;
-    }
-    if(j.is_new && !showing){
-      if($("tgNewForm")) $("tgNewForm").style.display="flex";
-      if($("tgSchool")) $("tgSchool").focus();
-      tgMsg("👋 أهلاً <b>"+(j.name||"")+"</b> — هذه أول مرة، اكتب <b>اسم مدرستك</b> ثم اضغط الزر مرة ثانية لإنشاء حسابك.","ok");
-      return;
-    }
-    tgMsg("✅ تم الدخول بحساب تيليكرام — أهلاً بك 🌿","ok");
-    try{ onCloudLoginSuccess(j.account, body.pw||("TG"+String(u.id||"")), j); }catch(e){}
-    try{ if($("tgCard")) $("tgCard").style.display="none"; }catch(e){}
-  }).catch(function(){ tgMsg("⚠️ لا يوجد اتصال بالإنترنت.","err"); });
-}
+
 try{
-  setTimeout(tgReady,1200);
-  setTimeout(tgReady,2500);
-  setTimeout(tgReady,5000);
+  setTimeout(tgReady,1000);
+  setTimeout(tgReady,2200);
+  setTimeout(tgReady,4500);
   document.addEventListener("DOMContentLoaded",function(){ setTimeout(tgReady,300); });
 }catch(e){}
 
