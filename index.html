@@ -6906,9 +6906,11 @@ function startGoogleSignIn(){
         account: acc,
         user_name: resolvedName,
         school: (extra && extra.school) || ("مدرسة " + resolvedName),
+        school_code: (extra && extra.school_code) || "",
         bind_token: tok || (extra && extra.bind_token) || "",
         paid: extra && extra.paid,
-        until: extra && extra.until
+        until: extra && extra.until,
+        data: (extra && extra.data) || ""
       };
       if(resolvedName){
         if(!db.settings) db.settings={};
