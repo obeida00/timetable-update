@@ -802,131 +802,131 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 
 <div id="loginBox" class="modal no-print">
-  <div class="modal-card" style="width:min(400px,94vw);max-height:96vh;overflow-y:auto;overscroll-behavior:contain;padding:16px 20px 14px;text-align:center;border-radius:20px;box-shadow:0 20px 50px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#fbf9ff 100%)" onclick="event.stopPropagation()">
+  <div class="modal-card" style="width:min(380px,94vw);max-height:92vh;overflow-y:auto;padding:18px 20px 16px;text-align:center;border-radius:24px;box-shadow:0 24px 60px rgba(76,29,149,.2);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#faf8ff 100%)" onclick="event.stopPropagation()">
     <style>
-      #loginBox .lg-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}
-      #loginBox .lg-logo{width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #ede9fe;box-shadow:0 4px 14px rgba(109,40,217,.14)}
-      #loginBox .lg-title{margin:0;font-size:1.1rem;font-weight:800;color:#1e1b4b;letter-spacing:-.2px;line-height:1.25}
-      #loginBox .lg-sub{margin-top:2px;font-size:.71rem;font-weight:700;color:#7c3aed}
-      #loginBox .lg-note{display:flex;gap:8px;align-items:flex-start;text-align:right;background:#f7f5ff;border:1px solid #ede9fe;border-radius:12px;padding:8px 10px;margin-bottom:11px}
-      #loginBox .lg-note i{font-style:normal;font-size:.95rem;line-height:1.2}
-      #loginBox .lg-note span{font-size:.73rem;font-weight:600;color:#4c1d95;line-height:1.55}
-      #loginBox .lg-tg{background:linear-gradient(150deg,#eef2ff,#f5f3ff);border:1.5px solid #dbe3fe;border-radius:16px;padding:12px 12px 11px;margin-bottom:4px;text-align:right}
-      #loginBox .lg-tg-top{display:flex;gap:10px;align-items:flex-start}
-      #loginBox .lg-tg-ico{flex:0 0 auto;width:36px;height:36px;border-radius:11px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:1.05rem}
-      #loginBox .lg-tg-tt{font-size:.86rem;font-weight:800;color:#312e81;line-height:1.35}
-      #loginBox .lg-tg-dd{font-size:.72rem;font-weight:600;color:#4f46e5;line-height:1.6;margin-top:2px}
-      #loginBox .lg-div{display:flex;align-items:center;gap:9px;margin:11px 0 10px;color:#9ca3af;font-size:.7rem;font-weight:800}
-      #loginBox .lg-div:before,#loginBox .lg-div:after{content:"";flex:1;height:1px;background:#e9e7f3}
+      #loginBox .lg-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+      #loginBox .lg-logo{width:42px;height:42px;object-fit:contain;border-radius:12px;background:#fff;padding:3px;border:1px solid #ede9fe;box-shadow:0 4px 12px rgba(109,40,217,.12)}
+      #loginBox .lg-title{margin:0;font-size:1.08rem;font-weight:800;color:#1e1b4b;line-height:1.2}
+      #loginBox .lg-sub{margin-top:2px;font-size:.7rem;font-weight:700;color:#7c3aed;display:flex;align-items:center;gap:4px}
+      
+      /* شريط التبويبات المختصر */
+      #loginBox .lg-tabs{display:flex;background:#f1effa;padding:3px;border-radius:12px;margin-bottom:12px;gap:3px}
+      #loginBox .lg-tab{flex:1;border:none;background:transparent;padding:7px 0;font-size:.78rem;font-weight:800;color:#6b7280;border-radius:10px;cursor:pointer;transition:all .15s}
+      #loginBox .lg-tab.active{background:#fff;color:#6d28d9;box-shadow:0 2px 6px rgba(109,40,217,.12)}
+
+      #loginBox .lg-badge-secure{display:inline-flex;align-items:center;gap:5px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:800;margin-bottom:11px}
+
       #loginBox .lg-field{text-align:right;margin-bottom:9px}
-      #loginBox .lg-lab{display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px}
-      #loginBox .lg-in{width:100%;height:41px;min-height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;color:#111827;transition:border-color .15s,box-shadow .15s,background .15s}
+      #loginBox .lg-lab{display:block;font-size:.73rem;font-weight:700;color:#4b5563;margin-bottom:4px}
+      #loginBox .lg-in{width:100%;height:39px;min-height:39px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:11px;background:#fcfcfe;font-size:.9rem;font-weight:600;color:#111827;transition:border-color .15s,box-shadow .15s,background .15s}
       #loginBox .lg-in:focus{outline:none;border-color:#a78bfa;background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,.14)}
       #loginBox .lg-in.ph{direction:ltr;text-align:center;font-weight:800;letter-spacing:1.5px;font-variant-numeric:tabular-nums}
       #loginBox .lg-in.pw{text-align:center;letter-spacing:3px}
-      #loginBox .lg-btn{width:100%;height:43px;min-height:43px;border:none;border-radius:12px;font-size:.89rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .12s,box-shadow .15s,filter .15s}
+      #loginBox .lg-btn{width:100%;height:41px;min-height:41px;border:none;border-radius:12px;font-size:.88rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .12s,box-shadow .15s,filter .15s}
       #loginBox .lg-btn:active{transform:translateY(1px)}
       #loginBox .lg-btn:hover{filter:brightness(1.04)}
-      #loginBox .lg-main{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 7px 18px rgba(22,163,74,.26)}
-      #loginBox .lg-alt{background:#fff;color:#6d28d9;border:1.5px solid #ddd6fe;box-shadow:0 2px 8px rgba(109,40,217,.06);margin-top:8px}
-      #loginBox .lg-tgbtn{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;box-shadow:0 7px 18px rgba(99,102,241,.3);margin-top:10px}
-      #loginBox .lg-link{background:none;border:none;color:#6b21a8;font-size:.78rem;font-weight:700;cursor:pointer;padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
-      #loginBox .lg-foot{margin-top:7px;text-align:center}
-      #loginBox .lg-mini{font-size:.7rem;font-weight:600;color:#6b7280;line-height:1.55}
-      #loginBox .lg-status{font-size:.74rem;font-weight:700;border-radius:11px;padding:7px 10px;line-height:1.55;text-align:right;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0}
-      #loginBox .lg-mini-btn{width:100%;height:32px;min-height:32px;margin-top:7px;border:1px solid #e9e7f3;border-radius:10px;background:#f8f8fc;color:#4c1d95;font-size:.74rem;font-weight:800;cursor:pointer}
+      #loginBox .lg-main{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 6px 16px rgba(22,163,74,.25)}
+      #loginBox .lg-alt{background:#fff;color:#6d28d9;border:1.5px solid #ddd6fe;box-shadow:0 2px 8px rgba(109,40,217,.06)}
+      #loginBox .lg-link{background:none;border:none;color:#6b21a8;font-size:.76rem;font-weight:700;cursor:pointer;padding:5px 4px;text-decoration:underline;text-underline-offset:3px}
+      #loginBox .lg-foot{margin-top:6px;text-align:center}
+      #loginBox .lg-status{font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 10px;line-height:1.5;text-align:right;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0}
+      #loginBox .lg-mini-btn{width:100%;height:32px;min-height:32px;margin-top:7px;border:1px solid #e9e7f3;border-radius:10px;background:#f8f8fc;color:#4c1d95;font-size:.73rem;font-weight:800;cursor:pointer}
       #loginBox .lg-mini-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
-      #loginBox .lg-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:2px}
-      #loginBox .lg-actions{display:grid;grid-template-columns:1.6fr 1fr;gap:8px;margin-top:11px}
+      #loginBox .lg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+      #loginBox .lg-actions{display:grid;grid-template-columns:1.6fr 1fr;gap:8px;margin-top:10px}
       #loginBox .lg-ghost{background:#fff;color:#b91c1c;border:1.5px solid #fecaca}
-      #loginBox .lg-code{text-align:center;font-size:1.05rem;font-weight:800;letter-spacing:4px;font-variant-numeric:tabular-nums}
+      #loginBox .lg-code{text-align:center;font-size:1.02rem;font-weight:800;letter-spacing:4px;font-variant-numeric:tabular-nums}
+      
+      /* إشعار تيليكرام المدمج والمختصر عند الحاجة فقط */
+      #loginBox .lg-tg-strip{display:none;align-items:center;justify-content:space-between;background:#f0f5ff;border:1px solid #bfdbfe;border-radius:10px;padding:6px 10px;margin-bottom:10px;text-align:right}
+      #loginBox .lg-tg-strip button{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:4px 9px;font-size:.72rem;font-weight:800;cursor:pointer}
     </style>
 
     <div class="lg-head">
       <img src="logo.png" alt="" class="lg-logo">
       <div style="text-align:right">
         <h2 class="lg-title">نظام الجداول المدرسية</h2>
-        <div class="lg-sub">🔐 تسجيل الدخول والمزامنة</div>
+        <div class="lg-sub"><span>🔐 تسجيل آمن ومشفّر 100%</span></div>
       </div>
     </div>
 
+    <!-- بطاقة تيليكرام الذكية (تظهر فقط عند الفتح داخل تيليكرام أو عند الحاجة) -->
     <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-    <div id="tgCard" class="lg-tg" style="display:none;flex-direction:column">
-      <div class="lg-tg-top">
-        <div class="lg-tg-ico">✈️</div>
-        <div style="flex:1">
-          <div id="tgTitle" class="lg-tg-tt">🚀 تسجيل حقيقي بضغطة واحدة</div>
-          <div id="tgDesc" class="lg-tg-dd">بهوية تيليكرام — بلا رقم وبلا كود.</div>
-        </div>
-      </div>
-      <div id="tgMsg" style="display:none;font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 9px;line-height:1.5;margin-top:8px;text-align:right"></div>
-      <div id="tgNewForm" style="display:none;flex-direction:column;gap:7px;text-align:right;margin-top:8px">
-        <div>
-          <label class="lg-lab">اسم المدرسة</label>
-          <input id="tgSchool" class="lg-in" placeholder="مدرسة …">
-        </div>
-        <div>
-          <label class="lg-lab">رمز للكمبيوتر (اختياري)</label>
-          <input id="tgPw" class="lg-in pw" placeholder="4 أحرف أو أرقام">
-        </div>
-      </div>
-      <button type="button" id="tgBtn" class="lg-btn lg-tgbtn" onclick="telegramLoginStart()">🚀 متابعة بتيليكرام</button>
+    <div id="tgCard" class="lg-tg-strip">
+      <div style="font-size:.73rem;font-weight:700;color:#1e40af" id="tgDesc">دخول سريع بهوية تيليكرام</div>
+      <button type="button" id="tgBtn" onclick="telegramLoginStart()">دخول فوري</button>
+      <div id="tgTitle" style="display:none"></div>
+      <div id="tgMsg" style="display:none"></div>
+      <div id="tgNewForm" style="display:none"></div>
     </div>
 
-    <div class="lg-div">أو</div>
+    <!-- تبويبات التبديل السريع -->
+    <div class="lg-tabs">
+      <button type="button" class="lg-tab active" id="tabLoginBtn" onclick="switchLoginTab('login')">تسجيل الدخول</button>
+      <button type="button" class="lg-tab" id="tabRegBtn" onclick="switchLoginTab('register')">إنشاء حساب جديد</button>
+    </div>
 
     <div id="loginMain">
       <div class="lg-field">
         <label class="lg-lab">رقم الموبايل</label>
         <input id="loginAcc" class="lg-in ph" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" autocomplete="username" inputmode="numeric">
-        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:10px;padding:6px 9px;line-height:1.5;text-align:right"></div>
+        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:9px;padding:5px 8px;line-height:1.4;text-align:right"></div>
       </div>
-      <div class="lg-field">
+      <div class="lg-field" id="loginPwWrap">
         <label class="lg-lab">رمز الدخول</label>
         <input id="loginPw" type="password" class="lg-in pw" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <button class="lg-btn lg-main" type="button" onclick="doLogin()">دخول</button>
-      <button class="lg-btn lg-alt" type="button" onclick="startOtpFlow('register')">✨ حساب جديد</button>
-      <div class="lg-foot">
+      
+      <div id="loginSubmitWrap">
+        <button class="lg-btn lg-main" id="loginActionBtn" type="button" onclick="doLogin()">تسجيل الدخول</button>
+      </div>
+
+      <div class="lg-foot" id="loginFootWrap">
         <button type="button" class="lg-link" onclick="startOtpFlow('reset')">نسيت رمز الدخول؟</button>
       </div>
     </div>
 
-    <!-- OTP Step Screen -->
+    <!-- OTP Step Screen (آمن وموثّق 100% عبر واتساب أو تيليكرام) -->
     <div id="otpStep" hidden>
-      <div class="lg-note" style="margin-bottom:9px">
-        <i>🤖</i><span>رمز التحقق يوصلك <b>تلقائياً</b> على تيليكرام — انسخه واكتبه هنا.</span>
+      <div class="lg-badge-secure">🛡️ تحقق آمن وموثّق 100% (WhatsApp & Telegram)</div>
+
+      <div id="otpStatus" class="lg-status">⏳ جاري التحقق من الرقم…</div>
+
+      <!-- خيارات استلام الرمز الفورية -->
+      <div id="otpChannels" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0 6px">
+        <button type="button" class="lg-mini-btn" style="background:#ecfdf5;border-color:#a7f3d0;color:#065f46;height:36px;margin:0;display:flex;align-items:center;justify-content:center;gap:5px" onclick="openWaOtp()">
+          <span style="font-size:1rem">💬</span> واتساب WhatsApp
+        </button>
+        <button type="button" class="lg-mini-btn lg-mini-blue" style="height:36px;margin:0;display:flex;align-items:center;justify-content:center;gap:5px" onclick="openBotOtp()">
+          <span style="font-size:1rem">✈️</span> تيليكرام Telegram
+        </button>
       </div>
 
-      <div id="otpStatus" class="lg-status">⏳ جاري إرسال الرمز…</div>
-      <button type="button" class="lg-mini-btn" onclick="requestOtp(true)">🔄 إرسال رمز جديد</button>
-      <div id="otpBotWrap" style="display:none">
-        <button type="button" class="lg-mini-btn lg-mini-blue" onclick="openBotOtp()">✈️ ما وصلك الرمز؟ اضغط هنا مرة واحدة (أول مرة فقط)</button>
-      </div>
-
-      <div id="otpNameRow" class="lg-field" style="margin-top:9px">
-        <label class="lg-lab">اسم المستخدم (الاسم الكامل أو الصفة)</label>
-        <input id="otpUserName" class="lg-in" placeholder="مثال: أستاذ علي / المعاون أحمد">
+      <div id="otpNameRow" class="lg-field" style="margin-top:7px">
+        <label class="lg-lab">اسم المستخدم أو المدرسة</label>
+        <input id="otpUserName" class="lg-in" placeholder="مثال: أستاذ علي / ثانوية المتميزين">
       </div>
 
       <div class="lg-grid">
         <div class="lg-field">
-          <label class="lg-lab">كود التحقق المستلم</label>
+          <label class="lg-lab">رمز التحقق المستلم</label>
           <input id="otpCodeIn" class="lg-in lg-code" placeholder="5 أرقام" maxlength="6">
         </div>
         <div class="lg-field">
-          <label class="lg-lab">رمز الدخول (الجديد)</label>
+          <label class="lg-lab">رمز الدخول الجديد</label>
           <input id="otpNewPw" type="password" class="lg-in pw" placeholder="٤ أحرف أو أرقام">
         </div>
       </div>
 
+      <button type="button" class="lg-mini-btn" onclick="requestOtp(true)">🔄 إعادة إرسال رمز جديد</button>
+
       <div class="lg-actions">
-        <button class="lg-btn lg-main" type="button" onclick="submitOtpVerification()">تأكيد وحفظ الرمز</button>
-        <button class="lg-btn lg-ghost" type="button" onclick="cancelOtpFlow()">إلغاء</button>
+        <button class="lg-btn lg-main" type="button" onclick="submitOtpVerification()">تأكيد وتفعيل الحساب</button>
+        <button class="lg-btn lg-ghost" type="button" onclick="cancelOtpFlow()">رجوع</button>
       </div>
     </div>
 
-    <p id="loginMsg" class="hint" style="margin-top:6px;margin-bottom:0;min-height:14px;color:#dc2626;font-weight:700;font-size:.78rem;padding:0;background:transparent;border:none"></p>
+    <p id="loginMsg" class="hint" style="margin-top:6px;margin-bottom:0;min-height:14px;color:#dc2626;font-weight:700;font-size:.76rem;padding:0;background:transparent;border:none"></p>
   </div>
 </div>
 
@@ -1953,7 +1953,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.09";
+const APP_VERSION="1.10";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6785,20 +6785,26 @@ function requestOtp(manual){
     body:JSON.stringify({acc:acc,name:name})
   }).then(function(r){return r.json();}).then(function(j){
     if(j&&j.ok&&j.delivered){
-      otpStatus("✅ <b>أرسلنا رمز التحقق على تيليكرام</b> — افتح تيليكرام وانسخ الرمز (صالح ١٥ دقيقة).","ok");
+      otpStatus("✅ <b>أرسلنا رمز التحقق على تيليكرام</b> — ادخل الرمز أدناه.","ok");
       if($("otpBotWrap"))$("otpBotWrap").style.display="none";
       _otpPre={acc:acc,at:Date.now(),delivered:true};
       if($("otpCodeIn"))$("otpCodeIn").focus();
     }else if(j&&j.ok&&j.reason==="throttle"){
       otpStatus("⏳ انتظر "+(j.wait||25)+" ثانية ثم أعد المحاولة.","warn");
     }else if(j&&j.ok){
-      otpStatus("ℹ️ <b>أول مرة لهذا الرقم:</b> اضغط الزر الأزرق أدناه <b>مرة واحدة</b> ليوصلك الرمز، ومن بعدها يجيك تلقائياً كل مرة.","warn");
+      // أول مرة لهذا الحساب: فتح البوت تلقائياً فوراً لتسليم الرمز بضغطة واحدة دون حيرة
+      otpStatus("🚀 جاري توجيهك لتيليكرام لتأكيد حسابك واستلام الرمز فوراً…","ok");
       if($("otpBotWrap"))$("otpBotWrap").style.display="block";
+      try {
+        if(!manual){
+          setTimeout(function(){ openBotOtp(); }, 350);
+        }
+      } catch(e){}
     }else{
       otpStatus("⚠️ تعذّر إرسال الرمز — تأكد من رقم الموبايل ثم أعد المحاولة."+(j&&j.message?"<br>"+j.message:""),"err");
     }
   }).catch(function(){
-    otpStatus("⚠️ لا يوجد اتصال بالإنترنت — الرمز يحتاج اتصالاً ليصلك على تيليكرام.","err");
+    otpStatus("⚠️ لا يوجد اتصال بالإنترنت — الرمز يحتاج اتصالاً للتحقق.","err");
   });
 }
 
@@ -6849,6 +6855,35 @@ function startOtpFlow(type){
   proceed();
 }
 
+function switchLoginTab(mode){
+  const tabLogin = $("tabLoginBtn");
+  const tabReg = $("tabRegBtn");
+  const pwWrap = $("loginPwWrap");
+  const footWrap = $("loginFootWrap");
+  const actionBtn = $("loginActionBtn");
+  loginMsg("");
+
+  if(mode === "register"){
+    if(tabReg) tabReg.classList.add("active");
+    if(tabLogin) tabLogin.classList.remove("active");
+    if(pwWrap) pwWrap.style.display = "none";
+    if(footWrap) footWrap.style.display = "none";
+    if(actionBtn){
+      actionBtn.textContent = "متابعة وإنشاء الحساب ✨";
+      actionBtn.onclick = function(){ startOtpFlow('register'); };
+    }
+  } else {
+    if(tabLogin) tabLogin.classList.add("active");
+    if(tabReg) tabReg.classList.remove("active");
+    if(pwWrap) pwWrap.style.display = "block";
+    if(footWrap) footWrap.style.display = "block";
+    if(actionBtn){
+      actionBtn.textContent = "تسجيل الدخول";
+      actionBtn.onclick = doLogin;
+    }
+  }
+}
+
 function cancelOtpFlow(){
   if($("otpStep"))$("otpStep").hidden=true;
   if($("loginMain"))$("loginMain").hidden=false;
@@ -6870,14 +6905,9 @@ function tgReady(){
   const t=tgApp();
   const c=$("tgCard");
   if(!t||!t.initData){
-    // خارج تيليكرام: نعرض بطاقة تسجيل حقيقي بضغطة واحدة عبر تيليكرام
+    // خارج تيليكرام: لا داعي لإزعاج المستخدم ببطاقة عريضة مكررة
     if(c && !_tgInside){
-      c.style.display="flex";
-      const b=$("tgBtn");
-      if(b){ b.textContent="🚀 تسجيل/دخول حقيقي بضغطة واحدة عبر تيليكرام"; b.onclick=function(){ window.open(TG_START,"_blank"); }; }
-      const t1=$("tgTitle"); if(t1) t1.textContent="🔐 تسجيل حقيقي 100% بضغطة واحدة";
-      const t2=$("tgDesc"); if(t2) t2.innerHTML="تفتح تيليكرام ← تضغط زر واحد ← يتم إنشاء حسابك/دخولك <b>بهوية تيليكرام الحقيقية</b> ويُربط الشات بمدرستك، بلا رقم وبلا كود تحقق.";
-      tgMsg("💡 هذه أسرع وأأمن طريقة — والحسابات القديمة تُحدَّث بنفس الضغطة.","ok");
+      c.style.display="none";
     }
     return false;
   }
@@ -6885,11 +6915,11 @@ function tgReady(){
   try{ t.ready(); if(t.expand)t.expand(); }catch(e){}
   if(c) c.style.display="flex";
   const b=$("tgBtn");
-  if(b){ b.textContent="🚀 إنشاء/دخول بحسابي في تيليكرام"; b.onclick=telegramLoginStart; }
-  const t1=$("tgTitle"); if(t1) t1.textContent="🚀 أنت داخل تيليكرام";
+  if(b){ b.textContent="🚀 دخول فوري"; b.onclick=telegramLoginStart; }
   const u=(t.initDataUnsafe&&t.initDataUnsafe.user)||{};
   const nm=[u.first_name,u.last_name].filter(Boolean).join(" ");
-  if(nm) tgMsg("👋 أهلاً <b>"+nm+"</b> — اضغط الزر لتدخل بحسابك مباشرة.","ok");
+  const d=$("tgDesc");
+  if(d) d.innerHTML="أهلاً <b>"+(nm||"بك")+"</b> (تيليكرام)";
   return true;
 }
 
@@ -6941,6 +6971,25 @@ try{
   document.addEventListener("DOMContentLoaded",function(){ setTimeout(tgReady,300); });
 }catch(e){}
 
+function openWaOtp(){
+  const acc = _otpFlow.acc || (($("loginAcc")&&$("loginAcc").value.trim())||"");
+  if(!acc){
+    loginMsg("يرجى إدخال رقم الموبايل أولاً");
+    return;
+  }
+  // فتح محادثة الدعم/التحقق على واتساب مباشرة بالرقم المعتمد
+  const devPhone = "07813332882";
+  const text = "مرحباً، أطلب رمز التحقق لتفعيل حسابي في نظام الجداول المدرسية 🌿\n\nرقم حسابي: " + acc;
+  const api = pyApi();
+  if(api && api.open_whatsapp){
+    try { api.open_whatsapp(devPhone, text); } catch(e){}
+  } else {
+    const url = "https://wa.me/" + iqWaNum(devPhone) + "?text=" + encodeURIComponent(text);
+    try { window.open(url, "_blank"); } catch(e){ location.href = url; }
+  }
+  otpStatus("💬 تم فتح واتساب — أرسل الرسالة وسيصلك الرمز فوراً للتحقق.","ok");
+}
+
 function openBotOtp(){
   // الرابط يحمل رقم الحساب: البوت يرسل الرمز المحفوظ ويربط هذا الشات بالحساب
   const url="https://t.me/ScholTableBot?start=otp_"+encodeURIComponent(_otpFlow.acc||"");
@@ -6949,7 +6998,7 @@ function openBotOtp(){
   else {
     try{window.open(url,"_blank");}catch(e){location.href=url;}
   }
-  otpStatus("✅ اضغط <b>Start</b> في البوت مرة واحدة — راح يوصلك الرمز، ومن بعدها كل مرة يجيك تلقائياً.","ok");
+  otpStatus("✅ تم فتح تيليكرام — اضغط <b>Start (بدء)</b> ليصلك الرمز فوراً.","ok");
 }
 
 function submitOtpVerification(){
