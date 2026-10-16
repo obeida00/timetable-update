@@ -675,15 +675,6 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 }
 @page{margin:0}
 </style>
-
-<style id="asOldTheme">/* تصميم ما قبل 0.95 (v0.61) — القواعد المختلفة */
-#dlgMsg{margin:8px 0 18px;color:#374151;font-size:1.02rem;line-height:1.7;white-space:pre-line}
-#sBox .modal-card,#tBox .modal-card{width:min(860px,96vw);padding:22px 22px 16px}
-#sBox form,#tBox form{display:flex;flex-direction:column;gap:18px;width:100%}
-#subBox .modal-card{width:min(820px,96vw)!important;max-height:none!important;overflow:hidden!important; display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center; padding:28px 24px 24px 24px;text-align:right;position:relative}
-.s-top input,.s-top select,.t-top input,.t-top select,#tAssign .asg input,#tAssign .asg select{width:100%;min-height:46px;box-sizing:border-box}
-.s-top,.t-top{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%;align-items:end}
-</style>
 </head>
 <body>
 <div class="app">
@@ -811,131 +802,69 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 
 <div id="loginBox" class="modal no-print">
-  <div class="modal-card" style="width:min(400px,94vw);max-height:96vh;overflow-y:auto;overscroll-behavior:contain;padding:16px 20px 14px;text-align:center;border-radius:20px;box-shadow:0 20px 50px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#fbf9ff 100%)" onclick="event.stopPropagation()">
+  <div class="modal-card" style="width:min(420px,94vw);padding:26px 24px 22px;text-align:center;border-radius:26px;box-shadow:0 24px 60px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#faf8ff 100%)" onclick="event.stopPropagation()">
     <style>
-      #loginBox .lg-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}
-      #loginBox .lg-logo{width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #ede9fe;box-shadow:0 4px 14px rgba(109,40,217,.14)}
-      #loginBox .lg-title{margin:0;font-size:1.1rem;font-weight:800;color:#1e1b4b;letter-spacing:-.2px;line-height:1.25}
-      #loginBox .lg-sub{margin-top:2px;font-size:.71rem;font-weight:700;color:#7c3aed}
-      #loginBox .lg-note{display:flex;gap:8px;align-items:flex-start;text-align:right;background:#f7f5ff;border:1px solid #ede9fe;border-radius:12px;padding:8px 10px;margin-bottom:11px}
-      #loginBox .lg-note i{font-style:normal;font-size:.95rem;line-height:1.2}
-      #loginBox .lg-note span{font-size:.73rem;font-weight:600;color:#4c1d95;line-height:1.55}
-      #loginBox .lg-tg{background:linear-gradient(150deg,#eef2ff,#f5f3ff);border:1.5px solid #dbe3fe;border-radius:16px;padding:12px 12px 11px;margin-bottom:4px;text-align:right}
-      #loginBox .lg-tg-top{display:flex;gap:10px;align-items:flex-start}
-      #loginBox .lg-tg-ico{flex:0 0 auto;width:36px;height:36px;border-radius:11px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:1.05rem}
-      #loginBox .lg-tg-tt{font-size:.86rem;font-weight:800;color:#312e81;line-height:1.35}
-      #loginBox .lg-tg-dd{font-size:.72rem;font-weight:600;color:#4f46e5;line-height:1.6;margin-top:2px}
-      #loginBox .lg-div{display:flex;align-items:center;gap:9px;margin:11px 0 10px;color:#9ca3af;font-size:.7rem;font-weight:800}
-      #loginBox .lg-div:before,#loginBox .lg-div:after{content:"";flex:1;height:1px;background:#e9e7f3}
-      #loginBox .lg-field{text-align:right;margin-bottom:9px}
-      #loginBox .lg-lab{display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px}
-      #loginBox .lg-in{width:100%;height:41px;min-height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;color:#111827;transition:border-color .15s,box-shadow .15s,background .15s}
-      #loginBox .lg-in:focus{outline:none;border-color:#a78bfa;background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,.14)}
-      #loginBox .lg-in.ph{direction:ltr;text-align:center;font-weight:800;letter-spacing:1.5px;font-variant-numeric:tabular-nums}
-      #loginBox .lg-in.pw{text-align:center;letter-spacing:3px}
-      #loginBox .lg-btn{width:100%;height:43px;min-height:43px;border:none;border-radius:12px;font-size:.89rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .12s,box-shadow .15s,filter .15s}
-      #loginBox .lg-btn:active{transform:translateY(1px)}
-      #loginBox .lg-btn:hover{filter:brightness(1.04)}
-      #loginBox .lg-main{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 7px 18px rgba(22,163,74,.26)}
-      #loginBox .lg-alt{background:#fff;color:#6d28d9;border:1.5px solid #ddd6fe;box-shadow:0 2px 8px rgba(109,40,217,.06);margin-top:8px}
-      #loginBox .lg-tgbtn{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;box-shadow:0 7px 18px rgba(99,102,241,.3);margin-top:10px}
-      #loginBox .lg-link{background:none;border:none;color:#6b21a8;font-size:.78rem;font-weight:700;cursor:pointer;padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
-      #loginBox .lg-foot{margin-top:7px;text-align:center}
-      #loginBox .lg-mini{font-size:.7rem;font-weight:600;color:#6b7280;line-height:1.55}
-      #loginBox .lg-status{font-size:.74rem;font-weight:700;border-radius:11px;padding:7px 10px;line-height:1.55;text-align:right;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0}
-      #loginBox .lg-mini-btn{width:100%;height:32px;min-height:32px;margin-top:7px;border:1px solid #e9e7f3;border-radius:10px;background:#f8f8fc;color:#4c1d95;font-size:.74rem;font-weight:800;cursor:pointer}
-      #loginBox .lg-mini-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
-      #loginBox .lg-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:2px}
-      #loginBox .lg-actions{display:grid;grid-template-columns:1.6fr 1fr;gap:8px;margin-top:11px}
-      #loginBox .lg-ghost{background:#fff;color:#b91c1c;border:1.5px solid #fecaca}
-      #loginBox .lg-code{text-align:center;font-size:1.05rem;font-weight:800;letter-spacing:4px;font-variant-numeric:tabular-nums}
+      #loginBox .lg-head{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px}
+      #loginBox .lg-logo{width:48px;height:48px;object-fit:contain;border-radius:14px;background:#fff;padding:4px;border:1px solid #ede9fe;box-shadow:0 6px 16px rgba(109,40,217,.15)}
+      #loginBox .lg-title{margin:0;font-size:1.18rem;font-weight:800;color:#1e1b4b;line-height:1.2}
+      #loginBox .lg-sub{margin-top:4px;font-size:.76rem;font-weight:700;color:#7c3aed;display:flex;align-items:center;gap:5px}
+
+      #loginBox .lg-google-btn{width:100%;height:48px;min-height:48px;background:#ffffff;color:#1f2937;border:1.8px solid #e5e7eb;border-radius:14px;font-size:.92rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:11px;box-shadow:0 3px 12px rgba(0,0,0,.06);transition:all .18s;margin:16px 0 12px}
+      #loginBox .lg-google-btn:hover{background:#f9fafb;border-color:#c7d2fe;box-shadow:0 6px 20px rgba(99,102,241,.15);transform:translateY(-1px)}
+      #loginBox .lg-google-btn:active{transform:translateY(1px)}
+      #loginBox .lg-google-btn svg{width:22px;height:22px;flex:0 0 22px}
+
+      #loginBox .lg-features{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px 14px;margin-top:10px;text-align:right}
+      #loginBox .lg-feat-item{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:#475569;margin-bottom:6px}
+      #loginBox .lg-feat-item:last-child{margin-bottom:0}
+      #loginBox .lg-feat-item span.icon{color:#10b981;font-size:.95rem}
     </style>
 
     <div class="lg-head">
       <img src="logo.png" alt="" class="lg-logo">
       <div style="text-align:right">
         <h2 class="lg-title">نظام الجداول المدرسية</h2>
-        <div class="lg-sub">🔐 تسجيل الدخول والمزامنة</div>
+        <div class="lg-sub"><span>🔐 تسجيل دخول موثّق وآمن 100%</span></div>
       </div>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-    <div id="tgCard" class="lg-tg" style="display:none;flex-direction:column">
-      <div class="lg-tg-top">
-        <div class="lg-tg-ico">✈️</div>
-        <div style="flex:1">
-          <div id="tgTitle" class="lg-tg-tt">🚀 تسجيل حقيقي بضغطة واحدة</div>
-          <div id="tgDesc" class="lg-tg-dd">بهوية تيليكرام — بلا رقم وبلا كود.</div>
-        </div>
-      </div>
-      <div id="tgMsg" style="display:none;font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 9px;line-height:1.5;margin-top:8px;text-align:right"></div>
-      <div id="tgNewForm" style="display:none;flex-direction:column;gap:7px;text-align:right;margin-top:8px">
-        <div>
-          <label class="lg-lab">اسم المدرسة</label>
-          <input id="tgSchool" class="lg-in" placeholder="مدرسة …">
-        </div>
-        <div>
-          <label class="lg-lab">رمز للكمبيوتر (اختياري)</label>
-          <input id="tgPw" class="lg-in pw" placeholder="4 أحرف أو أرقام">
-        </div>
-      </div>
-      <button type="button" id="tgBtn" class="lg-btn lg-tgbtn" onclick="telegramLoginStart()">🚀 متابعة بتيليكرام</button>
-    </div>
+    <p style="font-size:.84rem;color:#4b5563;line-height:1.6;margin:0 0 4px">
+      سجّل الدخول بحسابك في Google لحفظ جدولك ومزامنته تلقائياً بين أجهزتك ومع فريق المدرسة.
+    </p>
 
-    <div class="lg-div">أو</div>
+    <!-- زر تسجيل الدخول المباشر بحساب Google -->
+    <button type="button" class="lg-google-btn" onclick="startGoogleSignIn()">
+      <svg viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+      </svg>
+      <span>تسجيل الدخول باستخدام Google</span>
+    </button>
 
-    <div id="loginMain">
-      <div class="lg-field">
-        <label class="lg-lab">رقم الموبايل</label>
-        <input id="loginAcc" class="lg-in ph" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" autocomplete="username" inputmode="numeric">
-        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:10px;padding:6px 9px;line-height:1.5;text-align:right"></div>
+    <div class="lg-features">
+      <div class="lg-feat-item">
+        <span class="icon">✓</span>
+        <span>مزامنة فورية وسحابية آمنة 100%</span>
       </div>
-      <div class="lg-field">
-        <label class="lg-lab">رمز الدخول</label>
-        <input id="loginPw" type="password" class="lg-in pw" placeholder="••••••••" autocomplete="current-password">
+      <div class="lg-feat-item">
+        <span class="icon">✓</span>
+        <span>ربط مباشر مع فريق العمل ومعاوني المدرسة</span>
       </div>
-      <button class="lg-btn lg-main" type="button" onclick="doLogin()">دخول</button>
-      <button class="lg-btn lg-alt" type="button" onclick="startOtpFlow('register')">✨ حساب جديد</button>
-      <div class="lg-foot">
-        <button type="button" class="lg-link" onclick="startOtpFlow('reset')">نسيت رمز الدخول؟</button>
+      <div class="lg-feat-item">
+        <span class="icon">✓</span>
+        <span>حفظ تلقائي للبيانات والجدول دون فقدان</span>
       </div>
     </div>
 
-    <!-- OTP Step Screen -->
-    <div id="otpStep" hidden>
-      <div class="lg-note" style="margin-bottom:9px">
-        <i>🤖</i><span>رمز التحقق يوصلك <b>تلقائياً</b> على تيليكرام — انسخه واكتبه هنا.</span>
-      </div>
+    <!-- حقول خفية للحفاظ على التوافق البرمجي إن دعت الحاجة -->
+    <input id="loginAcc" type="hidden">
+    <input id="loginPw" type="hidden">
+    <div id="otpStep" hidden></div>
+    <div id="loginMain" hidden></div>
 
-      <div id="otpStatus" class="lg-status">⏳ جاري إرسال الرمز…</div>
-      <button type="button" class="lg-mini-btn" onclick="requestOtp(true)">🔄 إرسال رمز جديد</button>
-      <div id="otpBotWrap" style="display:none">
-        <button type="button" class="lg-mini-btn lg-mini-blue" onclick="openBotOtp()">✈️ ما وصلك الرمز؟ اضغط هنا مرة واحدة (أول مرة فقط)</button>
-      </div>
-
-      <div id="otpNameRow" class="lg-field" style="margin-top:9px">
-        <label class="lg-lab">اسم المستخدم (الاسم الكامل أو الصفة)</label>
-        <input id="otpUserName" class="lg-in" placeholder="مثال: أستاذ علي / المعاون أحمد">
-      </div>
-
-      <div class="lg-grid">
-        <div class="lg-field">
-          <label class="lg-lab">كود التحقق المستلم</label>
-          <input id="otpCodeIn" class="lg-in lg-code" placeholder="5 أرقام" maxlength="6">
-        </div>
-        <div class="lg-field">
-          <label class="lg-lab">رمز الدخول (الجديد)</label>
-          <input id="otpNewPw" type="password" class="lg-in pw" placeholder="٤ أحرف أو أرقام">
-        </div>
-      </div>
-
-      <div class="lg-actions">
-        <button class="lg-btn lg-main" type="button" onclick="submitOtpVerification()">تأكيد وحفظ الرمز</button>
-        <button class="lg-btn lg-ghost" type="button" onclick="cancelOtpFlow()">إلغاء</button>
-      </div>
-    </div>
-
-    <p id="loginMsg" class="hint" style="margin-top:6px;margin-bottom:0;min-height:14px;color:#dc2626;font-weight:700;font-size:.78rem;padding:0;background:transparent;border:none"></p>
+    <p id="loginMsg" class="hint" style="margin-top:10px;margin-bottom:0;min-height:16px;color:#dc2626;font-weight:700;font-size:.78rem;padding:0;background:transparent;border:none"></p>
   </div>
 </div>
 
@@ -1140,8 +1069,8 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
           <strong id="userNameShow" class="info-val" style="color:#6d28d9">—</strong>
         </div>
         <div class="info-banner-item">
-          <span class="info-lbl">رقم الهاتف (الحساب)</span>
-          <strong id="userAccShow" class="info-val" dir="ltr">—</strong>
+          <span class="info-lbl" id="userAccLbl">البريد الإلكتروني (الحساب)</span>
+          <strong id="userAccShow" class="info-val" dir="ltr" style="font-size:.82rem;word-break:break-all">—</strong>
         </div>
         <div class="info-banner-item">
           <span class="info-lbl">حالة الاشتراك</span>
@@ -1155,7 +1084,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
           <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي / المعاون)" style="flex:1;height:38px;min-height:38px;padding:6px 12px;border-radius:10px;font-weight:700">
           <button class="btn g s" type="button" style="height:38px;min-height:38px;padding:0 14px;border-radius:10px" onclick="saveUserNameOnly()">حفظ الاسم</button>
         </div>
-        <span style="font-size:.74rem;color:#6b7280">يبقى رقم الهاتف هو المعرّف الأساسي للحساب، ويظهر اسمك لتسهيل تمييزك بين أعضاء المدرسة.</span>
+        <span style="font-size:.74rem;color:#6b7280">يتم جلب اسمك وبريدك من Google تلقائياً، ويمكنك تعديل اسمك هنا لتمييزك بين أعضاء المدرسة.</span>
       </div>
 
       <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:12px;border-radius:14px;margin-bottom:12px">
@@ -1962,7 +1891,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.20";
+const APP_VERSION="1.21";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -6794,20 +6723,26 @@ function requestOtp(manual){
     body:JSON.stringify({acc:acc,name:name})
   }).then(function(r){return r.json();}).then(function(j){
     if(j&&j.ok&&j.delivered){
-      otpStatus("✅ <b>أرسلنا رمز التحقق على تيليكرام</b> — افتح تيليكرام وانسخ الرمز (صالح ١٥ دقيقة).","ok");
+      otpStatus("✅ <b>أرسلنا رمز التحقق على تيليكرام</b> — ادخل الرمز أدناه.","ok");
       if($("otpBotWrap"))$("otpBotWrap").style.display="none";
       _otpPre={acc:acc,at:Date.now(),delivered:true};
       if($("otpCodeIn"))$("otpCodeIn").focus();
     }else if(j&&j.ok&&j.reason==="throttle"){
       otpStatus("⏳ انتظر "+(j.wait||25)+" ثانية ثم أعد المحاولة.","warn");
     }else if(j&&j.ok){
-      otpStatus("ℹ️ <b>أول مرة لهذا الرقم:</b> اضغط الزر الأزرق أدناه <b>مرة واحدة</b> ليوصلك الرمز، ومن بعدها يجيك تلقائياً كل مرة.","warn");
+      // أول مرة لهذا الحساب: فتح البوت تلقائياً فوراً لتسليم الرمز بضغطة واحدة دون حيرة
+      otpStatus("🚀 جاري توجيهك لتيليكرام لتأكيد حسابك واستلام الرمز فوراً…","ok");
       if($("otpBotWrap"))$("otpBotWrap").style.display="block";
+      try {
+        if(!manual){
+          setTimeout(function(){ openBotOtp(); }, 350);
+        }
+      } catch(e){}
     }else{
       otpStatus("⚠️ تعذّر إرسال الرمز — تأكد من رقم الموبايل ثم أعد المحاولة."+(j&&j.message?"<br>"+j.message:""),"err");
     }
   }).catch(function(){
-    otpStatus("⚠️ لا يوجد اتصال بالإنترنت — الرمز يحتاج اتصالاً ليصلك على تيليكرام.","err");
+    otpStatus("⚠️ لا يوجد اتصال بالإنترنت — الرمز يحتاج اتصالاً للتحقق.","err");
   });
 }
 
@@ -6858,6 +6793,35 @@ function startOtpFlow(type){
   proceed();
 }
 
+function switchLoginTab(mode){
+  const tabLogin = $("tabLoginBtn");
+  const tabReg = $("tabRegBtn");
+  const pwWrap = $("loginPwWrap");
+  const footWrap = $("loginFootWrap");
+  const actionBtn = $("loginActionBtn");
+  loginMsg("");
+
+  if(mode === "register"){
+    if(tabReg) tabReg.classList.add("active");
+    if(tabLogin) tabLogin.classList.remove("active");
+    if(pwWrap) pwWrap.style.display = "none";
+    if(footWrap) footWrap.style.display = "none";
+    if(actionBtn){
+      actionBtn.textContent = "متابعة وإنشاء الحساب ✨";
+      actionBtn.onclick = function(){ startOtpFlow('register'); };
+    }
+  } else {
+    if(tabLogin) tabLogin.classList.add("active");
+    if(tabReg) tabReg.classList.remove("active");
+    if(pwWrap) pwWrap.style.display = "block";
+    if(footWrap) footWrap.style.display = "block";
+    if(actionBtn){
+      actionBtn.textContent = "تسجيل الدخول";
+      actionBtn.onclick = doLogin;
+    }
+  }
+}
+
 function cancelOtpFlow(){
   if($("otpStep"))$("otpStep").hidden=true;
   if($("loginMain"))$("loginMain").hidden=false;
@@ -6873,20 +6837,75 @@ function tgMsg(m,k){
   el.style.display="block";el.style.color=c[0];el.style.background=c[1];el.style.border="1px solid "+c[2];
   el.innerHTML=m;
 }
+// ===== تسجيل الدخول بحساب Google الحقيقي والمباشر عبر صفحة اختيار الحساب =====
+let _googlePollTimer = null;
+function startGoogleSignIn(){
+  loginMsg("جاري فتح نافذة تسجيل الدخول بحساب Google...");
+  const authUrl = CLOUD_BASE + "/auth/google/start";
+  
+  const w = 500, h = 650;
+  const left = (window.screen.width - w) / 2;
+  const top = (window.screen.height - h) / 2;
+
+  const api = pyApi();
+  if (api && api.open_url) {
+    try { api.open_url(authUrl); } catch(e){ window.open(authUrl, "_blank"); }
+  } else {
+    try {
+      window.open(authUrl, "google_login_win", `width=${w},height=${h},top=${top},left=${left},status=no,toolbar=no,menubar=no`);
+    } catch(e) {
+      location.href = authUrl;
+    }
+  }
+
+  // الاستماع لرسالة اكتمال المصادقة بنجاح
+  if (!_googlePollTimer) {
+    const handleGoogleDone = function(acc, name, tok, extra){
+      if (_googlePollTimer) { clearInterval(_googlePollTimer); _googlePollTimer = null; }
+      loginMsg("");
+      const payload = {
+        ok: true,
+        account: acc,
+        user_name: name || acc.split("@")[0],
+        school: (extra && extra.school) || ("مدرسة " + (name || acc.split("@")[0])),
+        bind_token: tok || ""
+      };
+      onCloudLoginSuccess(acc, "GGL_" + acc, payload);
+      okNote("✅ تم تسجيل الدخول بحساب Google بنجاح!");
+    };
+
+    window.addEventListener("message", function(e){
+      if (e.data && e.data.type === "GOOGLE_LOGIN_SUCCESS" && e.data.data) {
+        const d = e.data.data;
+        handleGoogleDone(d.account, d.user_name, d.bind_token, d);
+      }
+    });
+
+    // مراقبة تخزين المتصفح في حال فتح المتصفح الخارجي
+    _googlePollTimer = setInterval(function(){
+      try {
+        const doneStr = localStorage.getItem("tt_google_auth_done");
+        if (doneStr) {
+          localStorage.removeItem("tt_google_auth_done");
+          const parsed = JSON.parse(doneStr);
+          if (parsed && parsed.account && (Date.now() - parsed.at) < 60000) {
+            handleGoogleDone(parsed.account, parsed.user_name, parsed.bind_token);
+          }
+        }
+      } catch(e){}
+    }, 1200);
+  }
+}
+
 const TG_START="https://t.me/ScholTableBot?start=app";
 let _tgInside=false;
 function tgReady(){
   const t=tgApp();
   const c=$("tgCard");
   if(!t||!t.initData){
-    // خارج تيليكرام: نعرض بطاقة تسجيل حقيقي بضغطة واحدة عبر تيليكرام
+    // خارج تيليكرام: لا داعي لإزعاج المستخدم ببطاقة عريضة مكررة
     if(c && !_tgInside){
-      c.style.display="flex";
-      const b=$("tgBtn");
-      if(b){ b.textContent="🚀 تسجيل/دخول حقيقي بضغطة واحدة عبر تيليكرام"; b.onclick=function(){ window.open(TG_START,"_blank"); }; }
-      const t1=$("tgTitle"); if(t1) t1.textContent="🔐 تسجيل حقيقي 100% بضغطة واحدة";
-      const t2=$("tgDesc"); if(t2) t2.innerHTML="تفتح تيليكرام ← تضغط زر واحد ← يتم إنشاء حسابك/دخولك <b>بهوية تيليكرام الحقيقية</b> ويُربط الشات بمدرستك، بلا رقم وبلا كود تحقق.";
-      tgMsg("💡 هذه أسرع وأأمن طريقة — والحسابات القديمة تُحدَّث بنفس الضغطة.","ok");
+      c.style.display="none";
     }
     return false;
   }
@@ -6894,12 +6913,53 @@ function tgReady(){
   try{ t.ready(); if(t.expand)t.expand(); }catch(e){}
   if(c) c.style.display="flex";
   const b=$("tgBtn");
-  if(b){ b.textContent="🚀 إنشاء/دخول بحسابي في تيليكرام"; b.onclick=telegramLoginStart; }
-  const t1=$("tgTitle"); if(t1) t1.textContent="🚀 أنت داخل تيليكرام";
+  if(b){ b.textContent="🚀 دخول فوري"; b.onclick=telegramLoginStart; }
   const u=(t.initDataUnsafe&&t.initDataUnsafe.user)||{};
   const nm=[u.first_name,u.last_name].filter(Boolean).join(" ");
-  if(nm) tgMsg("👋 أهلاً <b>"+nm+"</b> — اضغط الزر لتدخل بحسابك مباشرة.","ok");
+  const d=$("tgDesc");
+  if(d) d.innerHTML="أهلاً <b>"+(nm||"بك")+"</b> (تيليكرام)";
   return true;
+}
+
+function telegramLoginStart(){
+  const t=tgApp();
+  if(!t||!t.initData){ tgMsg("افتح البرنامج من داخل تيليكرام لتستخدم هذه الطريقة.","warn"); return; }
+  const u=(t.initDataUnsafe&&t.initDataUnsafe.user)||{};
+  const showing=($("tgNewForm")&&$("tgNewForm").style.display!=="none");
+  const body={
+    initData:t.initData,
+    chat_id:u.id?String(u.id):"",
+    acc:(($("loginAcc")&&$("loginAcc").value.trim())||""),
+    pw:showing?(($("tgPw")&&$("tgPw").value.trim())||""):(($("loginPw")&&$("loginPw").value)||""),
+    school:showing?(($("tgSchool")&&$("tgSchool").value.trim())||""):""
+  };
+  if(!body.acc || body.acc.replace(/\D/g,"").length<8){
+    tgMsg("اكتب أولاً <b>رقم الموبايل</b> المسجّل في البرنامج ثم اضغط الزر.","warn");
+    const la=$("loginAcc"); if(la){ la.focus(); }
+    return;
+  }
+  tgMsg("⏳ جاري التحقق من هويتك في تيليكرام…","ok");
+  fetch(CLOUD_BASE+"/api/auth/telegram_login",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
+  }).then(function(r){return r.json();}).then(function(j){
+    if(!j||!j.ok){
+      const m={signature:"التوقيع غير صحيح — افتح البرنامج من داخل تيليكرام.",
+               stale:"انتهت صلاحية الجلسة — أعد فتح البرنامج من تيليكرام.",
+               pass:"هذا الرقم له حساب — اكتب <b>رمز الدخول</b> بخانة رمز الدخول ثم اضغط الزر.",
+               trial_expired:"انتهت التجربة المجانية",deleted:"هذا الحساب محذوف"};
+      tgMsg("⚠️ "+(m[(j&&j.reason)||""]||("تعذّر الدخول ("+((j&&j.reason)||"خطأ")+")")),"err");
+      return;
+    }
+    if(j.is_new && !showing){
+      if($("tgNewForm")) $("tgNewForm").style.display="flex";
+      if($("tgSchool")) $("tgSchool").focus();
+      tgMsg("👋 أهلاً <b>"+(j.name||"")+"</b> — اكتب <b>اسم مدرستك</b> ثم اضغط الزر مرة ثانية.","ok");
+      return;
+    }
+    tgMsg("✅ تم ربط حسابك بتيليكرام — أهلاً بك 🌿","ok");
+    try{ onCloudLoginSuccess(j.account, body.pw||("TG"+String(u.id||"")), j); }catch(e){}
+    try{ if($("tgCard")) $("tgCard").style.display="none"; }catch(e){}
+  }).catch(function(){ tgMsg("⚠️ لا يوجد اتصال بالإنترنت.","err"); });
 }
 
 try{
@@ -6909,6 +6969,25 @@ try{
   document.addEventListener("DOMContentLoaded",function(){ setTimeout(tgReady,300); });
 }catch(e){}
 
+function openWaOtp(){
+  const acc = _otpFlow.acc || (($("loginAcc")&&$("loginAcc").value.trim())||"");
+  if(!acc){
+    loginMsg("يرجى إدخال رقم الموبايل أولاً");
+    return;
+  }
+  // فتح محادثة الدعم/التحقق على واتساب مباشرة بالرقم المعتمد
+  const devPhone = "07813332882";
+  const text = "مرحباً، أطلب رمز التحقق لتفعيل حسابي في نظام الجداول المدرسية 🌿\n\nرقم حسابي: " + acc;
+  const api = pyApi();
+  if(api && api.open_whatsapp){
+    try { api.open_whatsapp(devPhone, text); } catch(e){}
+  } else {
+    const url = "https://wa.me/" + iqWaNum(devPhone) + "?text=" + encodeURIComponent(text);
+    try { window.open(url, "_blank"); } catch(e){ location.href = url; }
+  }
+  otpStatus("💬 تم فتح واتساب — أرسل الرسالة وسيصلك الرمز فوراً للتحقق.","ok");
+}
+
 function openBotOtp(){
   // الرابط يحمل رقم الحساب: البوت يرسل الرمز المحفوظ ويربط هذا الشات بالحساب
   const url="https://t.me/ScholTableBot?start=otp_"+encodeURIComponent(_otpFlow.acc||"");
@@ -6917,7 +6996,7 @@ function openBotOtp(){
   else {
     try{window.open(url,"_blank");}catch(e){location.href=url;}
   }
-  otpStatus("✅ اضغط <b>Start</b> في البوت مرة واحدة — راح يوصلك الرمز، ومن بعدها كل مرة يجيك تلقائياً.","ok");
+  otpStatus("✅ تم فتح تيليكرام — اضغط <b>Start (بدء)</b> ليصلك الرمز فوراً.","ok");
 }
 
 function submitOtpVerification(){
@@ -8413,471 +8492,5 @@ function offRun(kind){
   buildOfficialPdf(function(blob,nm){ _repDone(blob,nm); });
 }
 </script>
-
-    <style>
-      /* تعطيل نافذة تسجيل الدخول بالكامل — التطبيق يفتح مباشرة */
-      #loginBox,#subBox,#otpStep{display:none!important;visibility:hidden!important;pointer-events:none!important}
-    </style>
-    <script>
-    (function(){
-      function kill(){
-        try{
-          ["loginBox","subBox","otpStep"].forEach(function(id){
-            var el=document.getElementById(id);
-            if(!el) return;
-            if(el.style.display!=="none") el.style.display="none";
-            if(!el.hidden) el.hidden=true;
-          });
-          if(!window._acc) window._acc="";
-          document.documentElement.setAttribute("data-nologin","1");
-        }catch(e){}
-      }
-      kill();
-      document.addEventListener("DOMContentLoaded",kill);
-      setInterval(kill,400);
-    })();
-    </script>
-
-
-    <style id="noAccStyles">
-      /* إخفاء كل ما يتعلق بالحساب ورمز المرور والاشتراك */
-      #licRemain,#logoutTop,#subBox,#subOpen,#licChip{display:none!important}
-    </style>
-    <script id="noAccJs">
-    (function(){
-      var WORDS=["إدارة الحساب", "رمز المرور", "حالة الاشتراك", "تسجيل الخروج", "نسيت الرمز", "رقم الحساب", "سجّل دخول", "حسابك"];
-      function hideAll(){
-        try{
-          Array.prototype.forEach.call(document.querySelectorAll("button,a,div,section,li,span"),function(el){
-            if(el.dataset && el.dataset.accKilled) return;
-            var t=(el.textContent||"").trim();
-            if(!t || t.length>60) return;
-            for(var i=0;i<WORDS.length;i++){
-              if(t.indexOf(WORDS[i])>=0){
-                var target=el.closest(".modal,.card,.panel,section,form") || el.parentElement || el;
-                if(target===document.body) target=el;
-                target.style.display="none";
-                target.dataset.accKilled="1";
-                break;
-              }
-            }
-          });
-        }catch(e){}
-      }
-      hideAll();
-      document.addEventListener("DOMContentLoaded",hideAll);
-      setInterval(hideAll,700);
-    })();
-    </script>
-
-
-    <style id="noSetStyles">
-      /* حذف لوحة الإعدادات بالكامل */
-      button[data-tab="settings"],#setUser,#setSchool,#setData,
-      #tabSettings,#settings,#setPanel,#setBox,#settingsPanel{display:none!important}
-    </style>
-    <script id="noSetJs">
-    (function(){
-      function kill(){
-        try{
-          var b=document.querySelector('button[data-tab="settings"]');
-          if(b){
-            if(b.parentElement && b.parentElement.children.length===1) b.parentElement.style.display="none";
-            b.style.display="none";
-          }
-          Array.prototype.forEach.call(document.querySelectorAll("h1,h2,h3,.modal,.card,section"),function(el){
-            var t=(el.textContent||"").trim();
-            if(t.indexOf("لوحة الإعدادات")>=0){
-              var box=el.closest(".modal,section,.card")||el;
-              box.style.display="none"; box.setAttribute("data-set-killed","1");
-            }
-          });
-          var sec=document.getElementById("settings");
-          if(sec) sec.style.display="none";
-        }catch(e){}
-      }
-      kill();
-      document.addEventListener("DOMContentLoaded",kill);
-      setInterval(kill,700);
-    })();
-    </script>
-
-
-<style id="asStyles">
-#asBtn{position:fixed;inset-inline-start:14px;bottom:78px;z-index:9998;width:46px;height:46px;border-radius:50%;
- border:none;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:1.25rem;cursor:pointer;
- box-shadow:0 8px 20px rgba(79,70,229,.35)}
-#asModal{position:fixed;inset:0;z-index:9999;background:rgba(17,24,39,.55);display:flex;align-items:center;justify-content:center;padding:12px}
-#asModal[hidden]{display:none}
-.as-card{background:#fff;width:min(680px,96vw);max-height:92vh;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-.as-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff}
-.as-head b{font-size:1.05rem}
-.as-x{border:none;background:rgba(255,255,255,.2);color:#fff;width:30px;height:30px;border-radius:9px;font-size:1rem;cursor:pointer}
-.as-tabs{display:flex;gap:6px;padding:8px 12px;background:#f8f8fc;border-bottom:1px solid #ecebf5;overflow:auto}
-.as-tab{border:1px solid #e9e7f3;background:#fff;color:#4c1d95;font-weight:800;font-size:.78rem;padding:7px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
-.as-tab.on{background:#4f46e5;color:#fff;border-color:#4f46e5}
-.as-body{padding:14px 16px;overflow:auto}
-.as-sec{display:none;flex-direction:column;gap:10px}
-.as-sec.on{display:flex}
-.as-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.as-lab{display:block;font-size:.74rem;font-weight:800;color:#374151;margin-bottom:4px}
-.as-in,.as-sel{width:100%;height:36px;min-height:36px;border:1.5px solid #e4e2ef;border-radius:10px;background:#fbfbfe;padding:0 10px;font-family:inherit;font-size:.85rem;font-weight:700;color:#1f2937}
-.as-in:focus,.as-sel:focus{outline:none;border-color:#7c3aed;background:#fff;box-shadow:0 0 0 3px rgba(124,58,237,.12)}
-.as-days{display:flex;flex-wrap:wrap;gap:6px}
-.as-day{border:1.5px solid #e4e2ef;background:#fff;border-radius:9px;padding:6px 10px;font-size:.76rem;font-weight:800;cursor:pointer;color:#4b5563}
-.as-day.on{background:#ecfdf5;border-color:#34d399;color:#065f46}
-.as-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #eee9f8;border-radius:10px;padding:8px 10px;background:#fdfdff}
-.as-row span{font-size:.78rem;font-weight:700;color:#374151}
-.as-sw{position:relative;width:46px;height:26px;flex:0 0 auto}
-.as-sw input{opacity:0;width:0;height:0}
-.as-sw i{position:absolute;inset:0;background:#d1d5db;border-radius:20px;transition:.2s;cursor:pointer}
-.as-sw i:before{content:"";position:absolute;width:20px;height:20px;inset-inline-start:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
-.as-sw input:checked + i{background:#10b981}
-.as-sw input:checked + i:before{transform:translateX(-20px)}
-[dir] .as-sw input:checked + i:before{transform:translateX(-20px)}
-.as-foot{display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid #ecebf5;background:#fafaff;flex-wrap:wrap}
-.as-save{background:#059669;color:#fff;border:none;border-radius:11px;height:38px;padding:0 18px;font-weight:800;font-size:.85rem;cursor:pointer}
-.as-alt{background:#fff;color:#4c1d95;border:1.5px solid #ddd8f0;border-radius:11px;height:38px;padding:0 14px;font-weight:800;font-size:.8rem;cursor:pointer}
-.as-msg{font-size:.76rem;font-weight:800;color:#065f46}
-.as-hint{font-size:.72rem;color:#6b7280;font-weight:600;line-height:1.6}
-html.as-dark{filter:invert(.92) hue-rotate(180deg)}
-html.as-dark img{filter:invert(1) hue-rotate(180deg)}
-</style>
-<button id="asBtn" type="button" title="إعدادات البرنامج">⚙️</button>
-<div id="asModal" hidden>
-  <div class="as-card">
-    <div class="as-head"><b>⚙️ إعدادات البرنامج</b><button class="as-x" type="button" id="asClose">✕</button></div>
-    <div class="as-tabs">
-      <button class="as-tab on" type="button" data-s="school">🏫 المدرسة</button>
-      <button class="as-tab" type="button" data-s="time">⏰ الدوام والحصص</button>
-      <button class="as-tab" type="button" data-s="print">🖨️ الطباعة</button>
-      <button class="as-tab" type="button" data-s="data">💾 البيانات</button>
-      <button class="as-tab" type="button" data-s="look">🎨 المظهر</button>
-    </div>
-    <div class="as-body">
-      <div class="as-sec on" data-s="school">
-        <div class="as-grid">
-          <div><label class="as-lab">اسم المدرسة</label><input id="asSchool" class="as-in" placeholder="مدرسة …"></div>
-          <div><label class="as-lab">اسم المدير</label><input id="asPrincipal" class="as-in" placeholder="الأستاذ …"></div>
-          <div><label class="as-lab">المعاون / المعاونون</label><input id="asVice" class="as-in" placeholder="الأستاذ …"></div>
-          <div><label class="as-lab">العام الدراسي</label><input id="asYear" class="as-in" placeholder="2026 - 2027"></div>
-          <div><label class="as-lab">الفصل الدراسي</label>
-            <select id="asTerm" class="as-sel"><option>الفصل الأول</option><option>الفصل الثاني</option><option>السنة كاملة</option></select></div>
-          <div><label class="as-lab">هاتف المدرسة</label><input id="asPhone" class="as-in" placeholder="07XXXXXXXXX"></div>
-        </div>
-        <div><label class="as-lab">العنوان</label><input id="asAddress" class="as-in" placeholder="بغداد - …"></div>
-        <div><label class="as-lab">نص أسفل الجدول (توقيع/ملاحظة)</label><input id="asFooter" class="as-in" placeholder="مثال: إعداد المعاون …"></div>
-      </div>
-
-      <div class="as-sec" data-s="time">
-        <div><label class="as-lab">أيام الدوام</label><div class="as-days" id="asDays"></div></div>
-        <div class="as-grid">
-          <div><label class="as-lab">عدد الحصص باليوم</label><input id="asLessons" type="number" min="1" max="12" class="as-in"></div>
-          <div><label class="as-lab">مدة الحصة (دقيقة)</label><input id="asMinutes" type="number" min="20" max="90" class="as-in"></div>
-          <div><label class="as-lab">بداية الدوام</label><input id="asStart" type="time" class="as-in"></div>
-          <div><label class="as-lab">الاستراحة بعد الحصة رقم</label><input id="asBreakAfter" type="number" min="0" max="12" class="as-in"></div>
-          <div><label class="as-lab">مدة الاستراحة (دقيقة)</label><input id="asBreakLen" type="number" min="0" max="60" class="as-in"></div>
-          <div><label class="as-lab">حد الحصص المتتالية للمعلم</label><input id="asMaxRow" type="number" min="1" max="8" class="as-in"></div>
-        </div>
-        <div class="as-hint">تُستخدم أوقات الحصص تلقائياً في الطباعة وفي جدول المعلمين.</div>
-      </div>
-
-      <div class="as-sec" data-s="print">
-        <div class="as-grid">
-          <div><label class="as-lab">مقاس الورق</label><select id="asPaper" class="as-sel"><option>A4</option><option>A3</option></select></div>
-          <div><label class="as-lab">الاتجاه</label><select id="asOrient" class="as-sel"><option value="portrait">طولي</option><option value="landscape">عرضي</option></select></div>
-          <div><label class="as-lab">حجم الخط</label><select id="asFont" class="as-sel"><option value="s">صغير</option><option value="m">متوسط</option><option value="l">كبير</option></select></div>
-          <div><label class="as-lab">الهوامش (ملم)</label><input id="asMargin" type="number" min="0" max="30" class="as-in"></div>
-        </div>
-        <div class="as-row"><span>إظهار الشعار في الطباعة</span><label class="as-sw"><input type="checkbox" id="asShowLogo"><i></i></label></div>
-        <div class="as-row"><span>إظهار أسماء المعلمين في جدول المدرسة</span><label class="as-sw"><input type="checkbox" id="asShowTeachers"><i></i></label></div>
-        <div class="as-row"><span>إظهار النصاب الأسبوعي</span><label class="as-sw"><input type="checkbox" id="asShowLoad"><i></i></label></div>
-        <div class="as-row"><span>تلوين المواد تلقائياً</span><label class="as-sw"><input type="checkbox" id="asColors"><i></i></label></div>
-        <div class="as-row"><span>كل معلم بصفحة مستقلة</span><label class="as-sw"><input type="checkbox" id="asTeacherPage"><i></i></label></div>
-      </div>
-
-      <div class="as-sec" data-s="data">
-        <div class="as-hint">البيانات محفوظة على جهازك فقط ✗ — خذ نسخة احتياطية دورياً ✔.</div>
-        <div class="as-row"><span>نسخة احتياطية تلقائية عند الإغلاق</span><label class="as-sw"><input type="checkbox" id="asAutoBak"><i></i></label></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button type="button" class="as-alt" id="asExport">⬇️ تنزيل نسخة احتياطية</button>
-          <button type="button" class="as-alt" id="asExportText">📋 حفظ يدوي (نص)</button>
-          <button type="button" class="as-alt" id="asImportBtn">⬆️ استيراد نسخة</button>
-          <input type="file" id="asImport" accept=".json,application/json" style="display:none">
-          <button type="button" class="as-alt" id="asPrintAll">🖨️ طباعة سريعة</button>
-        </div>
-        <div class="as-hint" id="asBakInfo"></div>
-      </div>
-
-      <div class="as-sec" data-s="look">
-        <div class="as-row"><span>الوضع الليلي</span><label class="as-sw"><input type="checkbox" id="asDark"><i></i></label></div>
-        <div class="as-grid">
-          <div><label class="as-lab">اللون الرئيسي</label><select id="asAccent" class="as-sel">
-            <option value="#4f46e5">بنفسجي</option><option value="#0ea5e9">أزرق</option>
-            <option value="#059669">أخضر</option><option value="#b45309">برتقالي</option></select></div>
-          <div><label class="as-lab">حجم واجهة البرنامج</label><select id="asUi" class="as-sel">
-            <option value="0.95">صغير</option><option value="1">وسط</option><option value="1.08">كبير</option></select></div>
-        </div>
-        <div class="as-row"><span>إخفاء التلميحات الجانبية</span><label class="as-sw"><input type="checkbox" id="asHideHints"><i></i></label></div>
-      </div>
-    </div>
-    <div class="as-foot">
-      <button class="as-save" type="button" id="asSave">💾 حفظ الإعدادات</button>
-      <button class="as-alt" type="button" id="asReset">↺ استعادة الافتراضي</button>
-      <span class="as-msg" id="asMsg"></span>
-    </div>
-  </div>
-</div>
-<script id="asJs">
-(function(){
-  var KEY="__app_settings_v1";
-  var DEF={school:"",principal:"",vice:"",year:"2026 - 2027",term:"الفصل الأول",phone:"",address:"",footer:"",
-    days:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس"],lessons:7,minutes:45,start:"08:00",
-    breakAfter:3,breakLen:20,maxRow:4,paper:"A4",orient:"portrait",font:"m",margin:10,
-    showLogo:true,showTeachers:true,showLoad:true,colors:true,teacherPage:false,autoBak:true,
-    dark:false,accent:"#4f46e5",ui:1,hideHints:false};
-  var ALLDAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-  var S={};
-  function load(){ try{ S=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){ S=Object.assign({},DEF); } }
-  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); window.APP_SETTINGS=S; }catch(e){} }
-  function $(id){ return document.getElementById(id); }
-  function msg(t,ok){ var m=$("asMsg"); if(!m) return; m.textContent=t; m.style.color=ok?"#065f46":"#b91c1c"; setTimeout(function(){ if(m.textContent===t) m.textContent=""; },2600); }
-
-  function buildDays(){
-    var w=$("asDays"); if(!w) return; w.innerHTML="";
-    ALLDAYS.forEach(function(d){
-      var b=document.createElement("button"); b.type="button"; b.className="as-day"+(S.days.indexOf(d)>=0?" on":"");
-      b.textContent=d;
-      b.onclick=function(){ var i=S.days.indexOf(d); if(i>=0) S.days.splice(i,1); else S.days.push(d); b.className="as-day"+(i>=0?"":" on"); };
-      w.appendChild(b);
-    });
-  }
-  function fill(){
-    [["asSchool","school"],["asPrincipal","principal"],["asVice","vice"],["asYear","year"],["asPhone","phone"],
-     ["asAddress","address"],["asFooter","footer"],["asLessons","lessons"],["asMinutes","minutes"],["asStart","start"],
-     ["asBreakAfter","breakAfter"],["asBreakLen","breakLen"],["asMaxRow","maxRow"],["asMargin","margin"]].forEach(function(p){
-      var el=$(p[0]); if(el) el.value=S[p[1]]===undefined?"":S[p[1]];
-    });
-    [["asTerm","term"],["asPaper","paper"],["asOrient","orient"],["asFont","font"],["asAccent","accent"],["asUi","ui"]].forEach(function(p){
-      var el=$(p[0]); if(el) el.value=S[p[1]];
-    });
-    ["showLogo","showTeachers","showLoad","colors","teacherPage","autoBak","dark","hideHints"].forEach(function(k){
-      var el=$(k); if(el) el.checked=!!S[k];
-    });
-    buildDays();
-    try{ var b=localStorage.getItem(KEY+"__bak"); if($("asBakInfo")) $("asBakInfo").textContent=b?("آخر نسخة احتياطية: "+b):"لم تُؤخذ نسخة بعد."; }catch(e){}
-  }
-  function collect(){
-    [["asSchool","school"],["asPrincipal","principal"],["asVice","vice"],["asYear","year"],["asPhone","phone"],
-     ["asAddress","address"],["asFooter","footer"],["asLessons","lessons"],["asMinutes","minutes"],["asStart","start"],
-     ["asBreakAfter","breakAfter"],["asBreakLen","breakLen"],["asMaxRow","maxRow"],["asMargin","margin"]].forEach(function(p){
-      var el=$(p[0]); if(el) S[p[1]]=(el.type==="number")?(+el.value||0):el.value.trim();
-    });
-    [["asTerm","term"],["asPaper","paper"],["asOrient","orient"],["asFont","font"],["asAccent","accent"],["asUi","ui"]].forEach(function(p){
-      var el=$(p[0]); if(el) S[p[1]]=el.value;
-    });
-    S.ui=+S.ui||1;
-    ["showLogo","showTeachers","showLoad","colors","teacherPage","autoBak","dark","hideHints"].forEach(function(k){
-      var el=$(k); if(el) S[k]=!!el.checked;
-    });
-  }
-  function apply(){
-    try{
-      // حجم الواجهة
-      document.documentElement.style.fontSize=(16*S.ui)+"px";
-      // الوضع الليلي
-      document.documentElement.classList.toggle("as-dark",!!S.dark);
-      // اللون الرئيسي
-      document.documentElement.style.setProperty("--as-accent",S.accent);
-      // مقاس الطباعة
-      var st=$("asPrintRule")||document.createElement("style");
-      st.id="asPrintRule";
-      st.textContent="@page{size:"+S.paper+" "+S.orient+";margin:"+(+S.margin||10)+"mm}";
-      document.head.appendChild(st);
-      // اسم المدرسة على الترويسة إن وُجد
-      if(S.school){
-        var cands=document.querySelectorAll(".brand,.logo-text,.app-title,.school-name,header h1,header h2");
-        Array.prototype.forEach.call(cands,function(el){
-          if(!el.dataset.asOrig) el.dataset.asOrig=el.textContent;
-          if(el.dataset.asOrig.indexOf("نظام الجداول")>=0) el.textContent=S.school;
-        });
-        if(S.school) document.title=S.school+" — نظام الجداول";
-      }
-      // إخفاء التلميحات
-      Array.prototype.forEach.call(document.querySelectorAll(".hint,.note,.muted"),function(el){
-        if(el.dataset.asFixed) return;
-        if(S.hideHints) el.style.display="none";
-      });
-      window.APP_SETTINGS=S;
-    }catch(e){}
-  }
-  function pickName(){
-    return "نسخة_احتياطية_"+new Date().toISOString().slice(0,10)+".json";
-  }
-  function viaBridge(txt,name){
-    // يحاول الحفظ عبر جسر برنامج الكمبيوتر (pywebview)
-    try{
-      var api=(window.pywebview&&window.pywebview.api)||null;
-      if(!api) return false;
-      var keys=Object.keys(api).filter(function(k){ return /save|write|backup|export|download|file/i.test(k); });
-      for(var i=0;i<keys.length;i++){
-        try{
-          var r=api[keys[i]](name,txt);
-          if(r&&r.then) r.then(function(){},function(){});
-          return true;
-        }catch(e){}
-      }
-    }catch(e){}
-    return false;
-  }
-  function viaLink(txt,name){
-    try{
-      var a=document.createElement("a");
-      a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));
-      a.download=name;
-      a.style.display="none";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function(){ try{ URL.revokeObjectURL(a.href); a.remove(); }catch(e){} },4000);
-      return true;
-    }catch(e){ return false; }
-  }
-  function showText(txt,name){
-    try{
-      var old=document.getElementById("asTextModal");
-      if(old) old.remove();
-      var w=document.createElement("div");
-      w.id="asTextModal";
-      w.style.cssText="position:fixed;inset:0;z-index:10000;background:rgba(76,29,149,.5);display:flex;align-items:center;justify-content:center;padding:10px";
-      w.innerHTML='<div style="background:#fff;width:min(640px,96vw);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">'+
-        '<div style="padding:11px 14px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;font-weight:800">💾 نسخة احتياطية — احفظها كملف</div>'+
-        '<div style="padding:10px 14px;font-size:.75rem;color:#6b7280;font-weight:700">انسخ النص كامل ← والصقه في ملف نصي واحفظه بامتداد .json ← وللاسترداد استخدم «استيراد نسخة».</div>'+
-        '<textarea id="asTextArea" dir="ltr" style="margin:0 14px;height:44vh;border:1.5px solid #e4e0f3;border-radius:11px;padding:9px;font-family:monospace;font-size:.72rem"></textarea>'+
-        '<div style="display:flex;gap:8px;padding:11px 14px;flex-wrap:wrap">'+
-        '<button type="button" id="asCopyBtn" style="background:#059669;color:#fff;border:none;border-radius:12px;height:40px;padding:0 18px;font-weight:800;cursor:pointer">📋 انسخ الكل</button>'+
-        '<button type="button" id="asDlBtn" style="background:#fff;color:#4c1d95;border:1.5px solid #ddd8f0;border-radius:12px;height:40px;padding:0 15px;font-weight:800;cursor:pointer">⬇️ جرّب التنزيل مرة ثانية</button>'+
-        '<button type="button" id="asCloseText" style="background:#fff;color:#b91c1c;border:1.5px solid #fecaca;border-radius:12px;height:40px;padding:0 15px;font-weight:800;cursor:pointer">إغلاق</button>'+
-        '<span id="asTextMsg" style="font-size:.75rem;font-weight:800;color:#065f46;align-self:center"></span></div>'+
-        '</div>';
-      document.body.appendChild(w);
-      var ta=document.getElementById("asTextArea");
-      ta.value=txt;
-      document.getElementById("asCopyBtn").onclick=function(){
-        try{
-          ta.focus(); ta.select();
-          var done=document.execCommand("copy");
-          if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){},function(){}); done=true; }
-          document.getElementById("asTextMsg").textContent=done?"✅ انُسخ — الصقه بملف واحفظه":"⚠️ انسخ يدوياً (Ctrl+A ثم Ctrl+C)";
-        }catch(e){}
-      };
-      document.getElementById("asDlBtn").onclick=function(){
-        var ok2=viaBridge(txt,name)||viaLink(txt,name);
-        document.getElementById("asTextMsg").textContent=ok2?"✅ جُرّب التنزيل — شوف مجلد التنزيلات":"⚠️ ما نزل — انسخ النص يدوياً";
-      };
-      document.getElementById("asCloseText").onclick=function(){ w.remove(); };
-      var fr=new FileReader();
-    }catch(e){}
-  }
-  function backup(silent, forceText){
-    try{
-      var out={_meta:{app:"timetable",at:new Date().toISOString(),settings:S},data:{}};
-      for(var i=0;i<localStorage.length;i++){
-        var k=localStorage.key(i);
-        if(k===KEY||k===KEY+"__bak") continue;
-        out.data[k]=localStorage.getItem(k);
-      }
-      var txt=JSON.stringify(out);
-      try{ localStorage.setItem(KEY+"__bak",new Date().toLocaleString()); }catch(e){}
-      if(silent) return txt;
-      var name=pickName();
-      var ok1=viaBridge(txt,name);
-      if(!ok1) ok1=viaLink(txt,name);
-      if(ok1){
-        msg("✅ طلبنا تنزيل النسخة — إذا ما نزلت اضغط «حفظ يدوي»",1);
-        if(!forceText) setTimeout(function(){ if(confirm("هل نزلت النسخة الاحتياطية بنجاح؟\n\nإذا لا ✗ اضغط Cancel وعرض لك النص لحفظه يدوياً.")) {} else { showText(txt,name); } },900);
-      }else{
-        showText(txt,name);
-      }
-    }catch(e){ msg("⚠️ تعذّر أخذ النسخة",0); }
-  }
-
-  function restore(file){
-    var fr=new FileReader();
-    fr.onload=function(){
-      try{
-        var o=JSON.parse(fr.result);
-        var d=o&&o.data?o.data:o;
-        Object.keys(d).forEach(function(k){ try{ localStorage.setItem(k,d[k]); }catch(e){} });
-        if(o&&o._meta&&o._meta.settings){ S=Object.assign({},DEF,o._meta.settings); save(); }
-        msg("✅ تم الاستيراد — جاري إعادة التحميل…",1);
-        setTimeout(function(){ location.reload(); },900);
-      }catch(e){ msg("⚠️ ملف غير صالح",0); }
-    };
-    fr.readAsText(file);
-  }
-  function open(){ var m=$("asModal"); if(!m) return; load(); fill(); m.hidden=false; }
-  function close(){ var m=$("asModal"); if(m) m.hidden=true; }
-
-  document.addEventListener("click",function(e){
-    var t=e.target;
-    if(t&&t.id==="asBtn") return open();
-    if(t&&t.id==="asClose") return close();
-    if(t&&t.classList&&t.classList.contains("as-tab")){
-      var s=t.getAttribute("data-s");
-      Array.prototype.forEach.call(document.querySelectorAll(".as-tab"),function(b){ b.classList.toggle("on",b===t); });
-      Array.prototype.forEach.call(document.querySelectorAll(".as-sec"),function(x){ x.classList.toggle("on",x.getAttribute("data-s")===s); });
-      return;
-    }
-    if(t&&t.id==="asModal") return close();
-    if(t&&t.id==="asSave"){ collect(); save(); apply(); msg("✅ حُفظت الإعدادات",1); return; }
-    if(t&&t.id==="asReset"){ S=Object.assign({},DEF); save(); fill(); apply(); msg("↺ رُجّع الافتراضي",1); return; }
-    if(t&&t.id==="asExport") return backup(false);
-    if(t&&t.id==="asExportText") return backup(false,true);
-    if(t&&t.id==="asImportBtn"){ var f=$("asImport"); if(f) f.click(); return; }
-    if(t&&t.id==="asPrintAll"){ try{ window.print(); }catch(e){} return; }
-  });
-  document.addEventListener("change",function(e){
-    if(e.target&&e.target.id==="asImport"&&e.target.files&&e.target.files[0]) restore(e.target.files[0]);
-  });
-  window.addEventListener("beforeunload",function(){ try{ collect(); save(); if(S.autoBak) backup(true); }catch(e){} });
-  load(); save();
-  document.addEventListener("DOMContentLoaded",function(){ load(); apply(); });
-  setTimeout(function(){ load(); apply(); },900);
-})();
-</script>
-
-
-<style id="asTabStyle">#asBtn{display:none!important}</style>
-<script id="asTabJs">
-(function(){
-  var GEAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"/></svg>';
-  function openPanel(){
-    try{
-      var m=document.getElementById("asModal");
-      if(m){ m.hidden=false; }
-      var b=document.getElementById("asBtn");
-      if(b) b.click();
-    }catch(e){}
-  }
-  function build(){
-    if(document.getElementById("asTabSet")) return;
-    var tabs=document.querySelectorAll("button[data-tab]");
-    if(!tabs.length) return;
-    var last=tabs[tabs.length-1];
-    var b=document.createElement("button");
-    b.id="asTabSet";
-    b.type="button";
-    b.innerHTML=GEAR+" الإعدادات";
-    b.addEventListener("click",function(ev){ ev.preventDefault(); ev.stopPropagation(); openPanel(); },true);
-    last.parentNode.appendChild(b);
-  }
-  build();
-  document.addEventListener("DOMContentLoaded",build);
-  setTimeout(build,900);
-  setTimeout(build,2500);
-  window.asOpenPanel=openPanel;
-})();
-</script>
-
 </body>
 </html>
