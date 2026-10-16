@@ -6921,44 +6921,64 @@ function tgMsg(m,k){
   el.style.display="block";el.style.color=c[0];el.style.background=c[1];el.style.border="1px solid "+c[2];
   el.innerHTML=m;
 }
-// ===== تسجيل الدخول بحساب Google الحقيقي والمباشر =====
+// ===== تسجيل الدخول بحساب Google الحقيقي والمباشر عبر صفحة اختيار الحساب =====
+let _googlePollTimer = null;
 function startGoogleSignIn(){
-  loginMsg("جاري الاتصال بحساب Google...");
-  // في بيئة الويب / سطح المكتب: توفير إدخال البريد أو نافذة التحقق الآمن
-  const emailPrompt = prompt("أدخل بريدك الإلكتروني في Google (Gmail) لتسجيل الدخول الفوري والمزامنة:");
-  if(!emailPrompt || !emailPrompt.trim()){
-    loginMsg("");
-    return;
-  }
-  const cleanEmail = emailPrompt.trim().toLowerCase();
-  if(!cleanEmail.includes("@") || cleanEmail.length < 5){
-    loginMsg("يرجى إدخال عنوان بريد إلكتروني صالح");
-    return;
+  loginMsg("جاري فتح نافذة تسجيل الدخول بحساب Google...");
+  const authUrl = CLOUD_BASE + "/auth/google/start";
+  
+  const w = 500, h = 650;
+  const left = (window.screen.width - w) / 2;
+  const top = (window.screen.height - h) / 2;
+
+  const api = pyApi();
+  if (api && api.open_url) {
+    try { api.open_url(authUrl); } catch(e){ window.open(authUrl, "_blank"); }
+  } else {
+    try {
+      window.open(authUrl, "google_login_win", `width=${w},height=${h},top=${top},left=${left},status=no,toolbar=no,menubar=no`);
+    } catch(e) {
+      location.href = authUrl;
+    }
   }
 
-  loginMsg("جاري التحقق والمزامنة مع Google السحابية ☁️...");
-  const body = {
-    email: cleanEmail,
-    name: cleanEmail.split("@")[0],
-    school: "مدرسة " + cleanEmail.split("@")[0]
-  };
+  // الاستماع لرسالة اكتمال المصادقة بنجاح
+  if (!_googlePollTimer) {
+    const handleGoogleDone = function(acc, name, tok, extra){
+      if (_googlePollTimer) { clearInterval(_googlePollTimer); _googlePollTimer = null; }
+      loginMsg("");
+      const payload = {
+        ok: true,
+        account: acc,
+        user_name: name || acc.split("@")[0],
+        school: (extra && extra.school) || ("مدرسة " + (name || acc.split("@")[0])),
+        bind_token: tok || ""
+      };
+      onCloudLoginSuccess(acc, "GGL_" + acc, payload);
+      okNote("✅ تم تسجيل الدخول بحساب Google بنجاح!");
+    };
 
-  fetch(CLOUD_BASE + "/api/auth/google_login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  }).then(function(res){ return res.json(); })
-    .then(function(j){
-      if(j && j.ok){
-        loginMsg("");
-        onCloudLoginSuccess(j.account, "GGL_" + j.account, j);
-        okNote("✅ أهلاً بك! تم الدخول بحساب Google والمزامنة بنجاح");
-      } else {
-        loginMsg((j && j.message) || "تعذر إكمال تسجيل الدخول عبر Google");
+    window.addEventListener("message", function(e){
+      if (e.data && e.data.type === "GOOGLE_LOGIN_SUCCESS" && e.data.data) {
+        const d = e.data.data;
+        handleGoogleDone(d.account, d.user_name, d.bind_token, d);
       }
-    }).catch(function(err){
-      loginMsg("⚠️ تعذر الاتصال بالسيرفر السحابي — تأكد من اتصال الإنترنت");
     });
+
+    // مراقبة تخزين المتصفح في حال فتح المتصفح الخارجي
+    _googlePollTimer = setInterval(function(){
+      try {
+        const doneStr = localStorage.getItem("tt_google_auth_done");
+        if (doneStr) {
+          localStorage.removeItem("tt_google_auth_done");
+          const parsed = JSON.parse(doneStr);
+          if (parsed && parsed.account && (Date.now() - parsed.at) < 60000) {
+            handleGoogleDone(parsed.account, parsed.user_name, parsed.bind_token);
+          }
+        }
+      } catch(e){}
+    }, 1200);
+  }
 }
 
 const TG_START="https://t.me/ScholTableBot?start=app";
