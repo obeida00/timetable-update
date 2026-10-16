@@ -1119,93 +1119,90 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 </section>
 
 <div id="setUser" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="modal-card modal-stylish" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <div class="modal-head-title">
-        <div class="modal-icon u-ico">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  <div class="modal-card modal-stylish" onclick="event.stopPropagation()" style="width:min(600px,95vw)!important;max-height:92vh;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(76,29,149,.22);border:1px solid #ede9fe;padding:0">
+    <!-- Header -->
+    <div class="modal-head" style="padding:14px 20px;border-bottom:1px solid #f1edfd;background:linear-gradient(180deg,#faf8ff,#ffffff);display:flex;align-items:center;justify-content:space-between">
+      <div class="modal-head-title" style="display:flex;align-items:center;gap:10px">
+        <div class="modal-icon u-ico" style="width:40px;height:40px;border-radius:12px;background:#f3effe;color:#7c3aed;display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         <div>
-          <h2>معلومات المستخدم</h2>
-          <span class="modal-sub">إدارة الحساب ورمز المرور وحالة الاشتراك</span>
+          <h2 style="margin:0;font-size:1.15rem;font-weight:900;color:#1e1b4b;border:0;padding:0">معلومات الحساب والمشاركة</h2>
+          <span class="modal-sub" style="font-size:.76rem;color:#64748b;display:block">إدارة الاشتراك وفريق عمل المدرسة السحابي</span>
         </div>
       </div>
-      <button type="button" class="modal-close-btn" onclick="$('setUser').hidden=true" title="إغلاق">✕</button>
+      <button type="button" class="modal-close-btn" onclick="$('setUser').hidden=true" title="إغلاق" style="width:32px;height:32px;border-radius:50%;border:0;background:#f3effe;color:#6d28d9;font-size:1rem;font-weight:800;cursor:pointer;display:grid;place-items:center">✕</button>
     </div>
 
-    <div class="modal-body-content">
-      <div class="info-banner" style="grid-template-columns:1fr 1fr 1fr">
-        <div class="info-banner-item">
-          <span class="info-lbl">اسم المستخدم</span>
-          <strong id="userNameShow" class="info-val" style="color:#6d28d9">—</strong>
+    <!-- Body Content without scrollbar -->
+    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;background:#fff;overflow:visible">
+      <!-- 1. شريط بيانات الحساب والاشتراك (3 أعمدة) -->
+      <div style="background:linear-gradient(135deg,#faf5ff 0%,#f5f3ff 100%);border:1px solid #ddd6fe;border-radius:14px;padding:10px 14px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;text-align:center;align-items:center">
+        <div style="text-align:right;border-left:1px solid #e9d5ff;padding-left:8px">
+          <span style="font-size:.7rem;color:#6b21a8;font-weight:700;display:block;margin-bottom:2px">البريد الموثق</span>
+          <strong id="userAccShow" style="font-size:.82rem;color:#0f172a;font-weight:800;direction:ltr;display:block;word-break:break-all">—</strong>
         </div>
-        <div class="info-banner-item">
-          <span class="info-lbl" id="userAccLbl">البريد الإلكتروني (الحساب)</span>
-          <strong id="userAccShow" class="info-val" dir="ltr" style="font-size:.82rem;word-break:break-all">—</strong>
+        <div style="border-left:1px solid #e9d5ff;padding-left:8px">
+          <span style="font-size:.7rem;color:#6b21a8;font-weight:700;display:block;margin-bottom:2px">اسم المستخدم</span>
+          <strong id="userNameShow" style="font-size:.84rem;color:#7c3aed;font-weight:800;display:block">—</strong>
         </div>
-        <div class="info-banner-item">
-          <span class="info-lbl">حالة الاشتراك</span>
-          <strong id="userSubShow" class="info-val status-tag">—</strong>
-        </div>
-      </div>
-
-      <div class="form-section-card" style="margin-bottom:12px">
-        <span class="sec-label">👤 بيانات الحساب والتواصل</span>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-          <div>
-            <label style="font-size:.72rem;color:#64748b;font-weight:700;display:block;margin-bottom:3px">اسم المستخدم</label>
-            <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي)" style="width:100%;height:38px;min-height:38px;padding:6px 10px;border-radius:10px;font-weight:700;border:1px solid #cbd5e1">
-          </div>
-          <div>
-            <label style="font-size:.72rem;color:#64748b;font-weight:700;display:block;margin-bottom:3px">رقم هاتف المدرسة للدعوة والتواصل</label>
-            <input id="userPhoneInput" placeholder="078XXXXXXXX" style="width:100%;height:38px;min-height:38px;padding:6px 10px;border-radius:10px;font-weight:700;border:1px solid #cbd5e1;direction:ltr;text-align:center">
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:.72rem;color:#6b7280">يمكنك كتابة رقم هاتفك لتسهيل دعوة المعاونين للانضمام لمدرستك عبر الرقم.</span>
-          <button class="btn g s" type="button" style="height:34px;min-height:34px;padding:0 14px;border-radius:8px" onclick="saveUserProfile()">حفظ البيانات</button>
+        <div>
+          <span style="font-size:.7rem;color:#6b21a8;font-weight:700;display:block;margin-bottom:2px">حالة الاشتراك</span>
+          <strong id="userSubShow" style="font-size:.76rem;color:#16a34a;font-weight:900;display:inline-block;padding:2px 8px;background:#dcfce7;border-radius:8px;border:1px solid #bbf7d0">—</strong>
         </div>
       </div>
 
-      <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:14px;border-radius:16px;margin-bottom:12px">
-        <span class="sec-label" style="color:#6b21a8;font-weight:800;font-size:.88rem;display:flex;align-items:center;gap:6px">
-          🏫 دعوة وربط فريق العمل (المعاونين) بنفس الجدول
-        </span>
-        <p style="margin:4px 0 10px;font-size:.76rem;color:#581c87;line-height:1.5">
-          يمكن للمدير دعوة المعاونين للمشاركة والتعديل على نفس الجدول عبر <b>البريد الإلكتروني</b> أو <b>رقم الهاتف</b>:
-        </p>
-
-        <!-- بطاقة رمز ومفتاح دعوة المدرسة -->
-        <div style="background:#fff;border:1px solid #e9d5ff;padding:8px 12px;border-radius:12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+      <!-- 2. تعديل الاسم ورقم الهاتف -->
+      <div style="background:#fbfaff;border:1px solid #ede9fe;border-radius:14px;padding:12px 14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:flex-end">
           <div>
-            <span style="font-size:.75rem;color:#6b7280;display:block">معرّف مدرستك للدعوة:</span>
-            <strong id="mySchoolCode" style="font-size:1.05rem;color:#7c3aed;letter-spacing:1px;direction:ltr">SCH-2882</strong>
+            <label style="font-size:.72rem;font-weight:700;color:#64748b;display:block;margin-bottom:3px">الاسم الظاهر</label>
+            <input id="userNameInput" placeholder="أدخل اسمك" style="width:100%;height:35px;min-height:35px;padding:0 10px;border-radius:9px;border:1px solid #cbd5e1;font-weight:700;font-size:.82rem">
           </div>
-          <button class="btn w s" type="button" style="padding:4px 12px;font-size:.76rem;min-height:30px;border-radius:8px" onclick="copySchoolInvite()">📋 نسخ رابط/كود الدعوة</button>
+          <div>
+            <label style="font-size:.72rem;font-weight:700;color:#64748b;display:block;margin-bottom:3px">رقم الهاتف للدعوة</label>
+            <input id="userPhoneInput" placeholder="078XXXXXXXX" style="width:100%;height:35px;min-height:35px;padding:0 10px;border-radius:9px;border:1px solid #cbd5e1;font-weight:700;font-size:.82rem;direction:ltr;text-align:center">
+          </div>
+          <button class="btn g s" type="button" style="height:35px;min-height:35px;padding:0 14px;border-radius:9px;font-size:.76rem;font-weight:800;white-space:nowrap" onclick="saveUserProfile()">حفظ ✓</button>
+        </div>
+      </div>
+
+      <!-- 3. فريق عمل المدرسة والمشاركة -->
+      <div style="background:#ffffff;border:1px solid #e0e7ff;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+        <!-- شريط كود الدعوة وزر النسخ -->
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:.76rem;color:#475569;font-weight:700">كود مشاركة المدرسة:</span>
+            <strong id="mySchoolCode" style="font-size:1.05rem;font-weight:900;color:#4f46e5;letter-spacing:1px;direction:ltr">SCH-2882</strong>
+          </div>
+          <button class="btn w s" type="button" style="padding:4px 12px;font-size:.72rem;height:28px;min-height:28px;border-radius:7px;border:1px solid #c7d2fe;background:#f5f3ff;color:#6366f1;font-weight:800" onclick="copySchoolInvite()">📋 نسخ رسالة الدعوة</button>
         </div>
 
-        <!-- قائمة أعضاء الفريق -->
-        <div id="teamMembersBox" style="display:block;background:#f3e8ff;border:1.5px solid #c084fc;border-radius:12px;padding:10px 12px;margin-bottom:10px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <span style="font-size:.82rem;font-weight:800;color:#5b21b6">&#x1F465; أعضاء الفريق المنضمين للمدرسة:</span>
-            <button class="btn w s" type="button" style="padding:2px 8px;font-size:.7rem;min-height:24px;border-radius:6px" onclick="refreshTeamMembers()">&#x1F504; تحديث</button>
+        <!-- قائمة الأعضاء المنضمين -->
+        <div id="teamMembersBox" style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:8px 12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:.74rem;font-weight:800;color:#6b21a8">👥 فريق العمل الحالي:</span>
+            <button class="btn w s" type="button" style="padding:1px 8px;font-size:.66rem;height:20px;min-height:20px;border-radius:5px" onclick="refreshTeamMembers()">🔄 تحديث</button>
           </div>
-          <div id="teamMembersList" style="font-size:.78rem;color:#4c1d95;line-height:1.8">
-            <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
+          <div id="teamMembersList" style="font-size:.75rem;color:#581c87;line-height:1.5">
+            <span style="color:#94a3b8">جاري التحقق...</span>
           </div>
         </div>
 
         <!-- حقل الانضمام لمدرسة -->
-        <div style="display:flex;gap:6px;align-items:center">
-          <input id="joinSchoolIn" placeholder="أدخل إيميل المدير أو رقم الهاتف أو كود المدرسة" style="flex:1;height:36px;min-height:36px;padding:4px 10px;font-size:.82rem;text-align:center;direction:ltr;border-radius:8px;border:1.5px solid #ddd6fe">
-          <button class="btn g s" type="button" style="height:36px;min-height:36px;font-size:.78rem;padding:0 14px;border-radius:8px" onclick="doLinkSchool()">انضمام للمدرسة</button>
+        <div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input id="joinSchoolIn" placeholder="للانضمام: كود المدرسة أو هاتف/إيميل المدير" style="flex:1;height:34px;min-height:34px;padding:0 10px;font-size:.8rem;direction:ltr;text-align:center;border-radius:8px;border:1px solid #cbd5e1">
+            <button class="btn g s" type="button" style="height:34px;min-height:34px;padding:0 12px;border-radius:8px;font-size:.76rem;font-weight:800;white-space:nowrap" onclick="doLinkSchool()">انضمام</button>
+          </div>
+          <div id="schoolTeamMsg" style="font-size:.72rem;font-weight:700;color:#15803d;min-height:14px;margin-top:3px;text-align:center"></div>
         </div>
-        <div id="schoolTeamMsg" style="margin-top:4px;font-size:.75rem;font-weight:700;color:#15803d;min-height:14px"></div>
       </div>
     </div>
 
-    <div class="modal-foot">
-      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true" style="margin:0 auto">إغلاق</button>
+    <!-- Footer -->
+    <div style="display:flex;align-items:center;justify-content:center;padding:10px 20px 14px;background:#fcfbfe;border-top:1px solid #f1edfd">
+      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true" style="padding:6px 28px;font-size:.82rem;min-height:32px;height:32px;border-radius:10px">إغلاق</button>
     </div>
   </div>
 </div>
