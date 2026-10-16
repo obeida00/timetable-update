@@ -1953,7 +1953,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.12";
+const APP_VERSION="1.13";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -8458,6 +8458,38 @@ function offRun(kind){
       hideAll();
       document.addEventListener("DOMContentLoaded",hideAll);
       setInterval(hideAll,700);
+    })();
+    </script>
+
+
+    <style id="noSetStyles">
+      /* حذف لوحة الإعدادات بالكامل */
+      button[data-tab="settings"],#setUser,#setSchool,#setData,
+      #tabSettings,#settings,#setPanel,#setBox,#settingsPanel{display:none!important}
+    </style>
+    <script id="noSetJs">
+    (function(){
+      function kill(){
+        try{
+          var b=document.querySelector('button[data-tab="settings"]');
+          if(b){
+            if(b.parentElement && b.parentElement.children.length===1) b.parentElement.style.display="none";
+            b.style.display="none";
+          }
+          Array.prototype.forEach.call(document.querySelectorAll("h1,h2,h3,.modal,.card,section"),function(el){
+            var t=(el.textContent||"").trim();
+            if(t.indexOf("لوحة الإعدادات")>=0){
+              var box=el.closest(".modal,section,.card")||el;
+              box.style.display="none"; box.setAttribute("data-set-killed","1");
+            }
+          });
+          var sec=document.getElementById("settings");
+          if(sec) sec.style.display="none";
+        }catch(e){}
+      }
+      kill();
+      document.addEventListener("DOMContentLoaded",kill);
+      setInterval(kill,700);
     })();
     </script>
 
