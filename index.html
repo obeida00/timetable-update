@@ -2022,17 +2022,19 @@ function parseDb(raw){
 function adoptAccount(acc, raw, force){
   const next=normAcc(acc);
   const prev=window._acc||"";
-  if(prev && prev!==next){
+  const isSwitchingUser = prev && prev !== next;
+  if(isSwitchingUser){
     try{flushSave();}catch(e){}
   }
-  const prevKey=storageKey();
   window._acc=next;
   const cands=[];
   function add(x){if(x&&dbScore(x)>0)cands.push(x);}
-  if(typeof db!=="undefined"&&db) add(db);
-  add(parseDb(raw));
+  if(raw) add(parseDb(raw));
   try{add(parseDb(localStorage.getItem(storageKey())));}catch(e){}
-  try{if(prevKey) add(parseDb(localStorage.getItem(prevKey)));}catch(e){}
+  // لا ننقل بيانات الحساب السابق إلى الحساب الجديد مطلقاً لحماية الخصوصية
+  if(!isSwitchingUser && typeof db!=="undefined" && db) {
+    add(db);
+  }
   let best=null,bestN=-1;
   cands.forEach(function(x){const n=dbScore(x);if(n>bestN){best=x;bestN=n;}});
   // عند التعادل (مثل تغيير اسم معلم بدون تغيير العدد) ترجّح النسخة القادمة من السحابة
@@ -3668,7 +3670,7 @@ function renderSettings(){
   const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || localStorage.getItem("tt_user_name_" + normAcc(window._acc||"")) || "";
   if($("userNameShow")) $("userNameShow").textContent = curUName || "غير محدد";
   if($("userNameInput")) $("userNameInput").value = curUName;
-  const curPhone = (db.settings && db.settings.userPhone) || localStorage.getItem("tt_user_phone_" + (window._acc||"")) || "07813332882";
+  const curPhone = (db.settings && db.settings.userPhone) || localStorage.getItem("tt_user_phone_" + (window._acc||"")) || "";
   if($("userPhoneInput")) $("userPhoneInput").value = curPhone;
   const effV = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
   if($("installedVerShow")) $("installedVerShow").textContent = effV;
@@ -7282,9 +7284,15 @@ function doLogout(){
     try{flushSave();}catch(e){}
     localLogout();
     window._acc="";
+    window._schoolMembers=[];
+    window._isOwner=false;
+    window._pendingJoin=null;
     db=blankDb();
     hist=[];
     _diskReady=false;
+    try{ if($("userNameInput")) $("userNameInput").value = ""; }catch(e){}
+    try{ if($("userPhoneInput")) $("userPhoneInput").value = ""; }catch(e){}
+    try{ if($("teamMembersList")) $("teamMembersList").innerHTML = ""; }catch(e){}
     try{refreshAll();}catch(e){}
     if($("loginBox"))$("loginBox").hidden=false;
     if($("subBox"))$("subBox").hidden=true;
