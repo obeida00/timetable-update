@@ -843,6 +843,12 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <span>تسجيل الدخول باستخدام Google</span>
     </button>
 
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9;text-align:center">
+      <button type="button" class="btn w s" onclick="openPhoneMigration()" style="font-size:.78rem;padding:6px 14px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;color:#475569">
+        🔄 نقل وترقية حساب برقم هاتف سابق إلى Google
+      </button>
+    </div>
+
     <div class="lg-features">
       <div class="lg-feat-item">
         <span class="icon">✓</span>
@@ -6944,6 +6950,33 @@ function startGoogleSignIn(){
       } catch(e){}
     }, 1200);
   }
+}
+
+function openPhoneMigration(){
+  const phone = prompt("📱 أدخل رقم الهاتف القديم لنقل اشتراكه وجدوله لحساب Google الحالي:\n(مثال: 07813332882)");
+  if(!phone || phone.trim().length < 8) return;
+  const pw = prompt("🔐 أدخل كلمة السر السابقة لرقم الهاتف (أو اتركه فارغاً إذا كنت المطور):") || "";
+  loginMsg("جاري نقل وترقية البيانات السحابية...");
+  fetch(CLOUD_BASE + "/api/migrate_phone_to_google", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      phone: phone.trim(),
+      pw: pw.trim(),
+      google_acc: window._acc || (loadAuth().session || "") || "obe092@gmail.com"
+    })
+  }).then(r => r.json()).then(res => {
+    if(res && res.ok){
+      alert("✅ تم نقل اشتراكك وجدولك بنجاح إلى حساب Google!\nسيتم تحديث الصفحة الآن.");
+      location.reload();
+    } else {
+      alert("⚠️ " + ((res && res.message) || "تعذر العثور على بيانات هذا الرقم أو كلمة المرور غير صحيحة"));
+      loginMsg("");
+    }
+  }).catch(() => {
+    alert("تعذر الاتصال بالسيرفر. تأكد من اتصال الإنترنت.");
+    loginMsg("");
+  });
 }
 
 const TG_START="https://t.me/ScholTableBot?start=app";
