@@ -803,67 +803,96 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 <div id="loginBox" class="modal no-print">
   <div class="modal-card" style="width:min(400px,94vw);max-height:96vh;overflow:hidden;padding:16px 20px 14px;text-align:center;border-radius:20px;box-shadow:0 20px 50px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#fbf9ff 100%)" onclick="event.stopPropagation()">
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px">
-      <img src="logo.png" alt="" style="width:40px;height:40px;object-fit:contain;border-radius:10px;background:#fff;padding:2px;box-shadow:0 3px 10px rgba(109,40,217,.15);border:1px solid #ede9fe">
+    <style>
+      #loginBox .lg-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+      #loginBox .lg-logo{width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #ede9fe;box-shadow:0 4px 14px rgba(109,40,217,.14)}
+      #loginBox .lg-title{margin:0;font-size:1.1rem;font-weight:800;color:#1e1b4b;letter-spacing:-.2px;line-height:1.25}
+      #loginBox .lg-sub{margin-top:2px;font-size:.71rem;font-weight:700;color:#7c3aed}
+      #loginBox .lg-note{display:flex;gap:8px;align-items:flex-start;text-align:right;background:#f7f5ff;border:1px solid #ede9fe;border-radius:12px;padding:8px 10px;margin-bottom:11px}
+      #loginBox .lg-note i{font-style:normal;font-size:.95rem;line-height:1.2}
+      #loginBox .lg-note span{font-size:.73rem;font-weight:600;color:#4c1d95;line-height:1.55}
+      #loginBox .lg-tg{background:linear-gradient(150deg,#eef2ff,#f5f3ff);border:1.5px solid #dbe3fe;border-radius:16px;padding:12px 12px 11px;margin-bottom:4px;text-align:right}
+      #loginBox .lg-tg-top{display:flex;gap:10px;align-items:flex-start}
+      #loginBox .lg-tg-ico{flex:0 0 auto;width:36px;height:36px;border-radius:11px;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:1.05rem}
+      #loginBox .lg-tg-tt{font-size:.86rem;font-weight:800;color:#312e81;line-height:1.35}
+      #loginBox .lg-tg-dd{font-size:.72rem;font-weight:600;color:#4f46e5;line-height:1.6;margin-top:2px}
+      #loginBox .lg-div{display:flex;align-items:center;gap:9px;margin:11px 0 10px;color:#9ca3af;font-size:.7rem;font-weight:800}
+      #loginBox .lg-div:before,#loginBox .lg-div:after{content:"";flex:1;height:1px;background:#e9e7f3}
+      #loginBox .lg-field{text-align:right;margin-bottom:9px}
+      #loginBox .lg-lab{display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px}
+      #loginBox .lg-in{width:100%;height:41px;min-height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;color:#111827;transition:border-color .15s,box-shadow .15s,background .15s}
+      #loginBox .lg-in:focus{outline:none;border-color:#a78bfa;background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,.14)}
+      #loginBox .lg-in.ph{direction:ltr;text-align:center;font-weight:800;letter-spacing:1.5px;font-variant-numeric:tabular-nums}
+      #loginBox .lg-in.pw{text-align:center;letter-spacing:3px}
+      #loginBox .lg-btn{width:100%;height:43px;min-height:43px;border:none;border-radius:12px;font-size:.89rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .12s,box-shadow .15s,filter .15s}
+      #loginBox .lg-btn:active{transform:translateY(1px)}
+      #loginBox .lg-btn:hover{filter:brightness(1.04)}
+      #loginBox .lg-main{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 7px 18px rgba(22,163,74,.26)}
+      #loginBox .lg-alt{background:#fff;color:#6d28d9;border:1.5px solid #ddd6fe;box-shadow:0 2px 8px rgba(109,40,217,.06);margin-top:8px}
+      #loginBox .lg-tgbtn{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;box-shadow:0 7px 18px rgba(99,102,241,.3);margin-top:10px}
+      #loginBox .lg-link{background:none;border:none;color:#6b21a8;font-size:.78rem;font-weight:700;cursor:pointer;padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
+      #loginBox .lg-foot{margin-top:7px;text-align:center}
+      #loginBox .lg-mini{font-size:.7rem;font-weight:600;color:#6b7280;line-height:1.55}
+    </style>
+
+    <div class="lg-head">
+      <img src="logo.png" alt="" class="lg-logo">
       <div style="text-align:right">
-        <h2 style="font-size:1.12rem;font-weight:800;color:#1e1b4b;margin:0;letter-spacing:-.2px;line-height:1.2">نظام الجداول المدرسية</h2>
-        <div style="color:#6b21a8;font-size:.72rem;font-weight:700">🔐 تسجيل الدخول والمزامنة</div>
+        <h2 class="lg-title">نظام الجداول المدرسية</h2>
+        <div class="lg-sub">🔐 تسجيل الدخول والمزامنة السحابية</div>
       </div>
     </div>
-    
-    <div style="background:#f8f7ff;border:1px solid #e9d5ff;border-radius:9px;padding:6px 10px;margin-bottom:10px;text-align:right">
-      <p style="margin:0;font-size:.74rem;color:#4c1d95;line-height:1.4;font-weight:600">
-        💡 سجّل برقم هاتفك لحفظ جدولك سحابياً ومحلياً مع تجربة مجانية.
-      </p>
+
+    <div class="lg-note">
+      <i>💡</i><span>سجّل برقم هاتفك لحفظ جدولك سحابياً ومحلياً — مع <b>تجربة مجانية 7 أيام</b>.</span>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-    <div id="tgCard" style="display:none;align-items:stretch;flex-direction:column;gap:8px;background:linear-gradient(135deg,#eef2ff,#f5f3ff);border:1.5px solid #c7d2fe;border-radius:14px;padding:12px;margin-bottom:12px;text-align:center">
-      <div id="tgTitle" style="font-size:.86rem;font-weight:800;color:#3730a3">🚀 أنت داخل تيليكرام</div>
-      <div id="tgDesc" style="font-size:.75rem;font-weight:600;color:#4338ca;line-height:1.6">
-        سجّل دخولك <b>بضغطة واحدة</b> بهوية تيليكرام الحقيقية — بلا رقم وبلا كود تحقق،
-        ويُربط هذا الشات بمدرستك تلقائياً.
+    <div id="tgCard" class="lg-tg" style="display:none;flex-direction:column">
+      <div class="lg-tg-top">
+        <div class="lg-tg-ico">✈️</div>
+        <div style="flex:1">
+          <div id="tgTitle" class="lg-tg-tt">🚀 أنت داخل تيليكرام</div>
+          <div id="tgDesc" class="lg-tg-dd">تسجيل حقيقي <b>100%</b> بضغطة واحدة — بلا رقم وبلا كود تحقق، ويُربط هذا الشات بمدرستك تلقائياً.</div>
+        </div>
       </div>
-      <div id="tgMsg" style="display:none;font-size:.74rem;font-weight:700;border-radius:9px;padding:6px 8px;line-height:1.5"></div>
-      <div id="tgNewForm" style="display:none;flex-direction:column;gap:6px;text-align:right">
-        <label style="font-size:.76rem;font-weight:700;color:#374151">اسم المدرسة</label>
-        <input id="tgSchool" placeholder="مثال: مدرسة بدور بغداد الابتدائية" style="width:100%;height:34px;min-height:34px;padding:4px 10px;border:1.5px solid #d1d5db;border-radius:9px;font-size:.88rem;background:#fff">
-        <label style="font-size:.76rem;font-weight:700;color:#374151">رمز دخول للكمبيوتر (اختياري)</label>
-        <input id="tgPw" placeholder="4 أحرف أو أرقام" style="width:100%;height:34px;min-height:34px;padding:4px 10px;border:1.5px solid #d1d5db;border-radius:9px;font-size:.88rem;text-align:center;background:#fff">
+      <div id="tgMsg" style="display:none;font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 9px;line-height:1.55;margin-top:9px;text-align:right"></div>
+      <div id="tgNewForm" style="display:none;flex-direction:column;gap:7px;text-align:right;margin-top:9px">
+        <div>
+          <label class="lg-lab">اسم المدرسة</label>
+          <input id="tgSchool" class="lg-in" placeholder="مثال: مدرسة بدور بغداد الابتدائية">
+        </div>
+        <div>
+          <label class="lg-lab">رمز دخول للكمبيوتر (اختياري)</label>
+          <input id="tgPw" class="lg-in pw" placeholder="4 أحرف أو أرقام">
+        </div>
       </div>
-      <button type="button" id="tgBtn" class="btn" style="height:38px;min-height:38px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;font-size:.88rem;font-weight:800;border-radius:10px;border:none" onclick="telegramLoginStart()">
+      <button type="button" id="tgBtn" class="lg-btn lg-tgbtn" onclick="telegramLoginStart()">
         🚀 إنشاء/دخول بحسابي في تيليكرام
       </button>
-      <div style="font-size:.7rem;font-weight:600;color:#6b7280">أو استخدم رقم هاتفك من الأسفل كما هو</div>
+      <div class="lg-mini" style="margin-top:8px;text-align:center">أو أكمل برقم هاتفك ورمز الدخول من الأسفل</div>
     </div>
 
+    <div class="lg-div">أو</div>
+
     <div id="loginMain">
-      <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
-        <div>
-          <label style="display:block;font-size:.78rem;font-weight:700;color:#374151;margin-bottom:2px">رقم الموبايل</label>
-          <input id="loginAcc" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" style="width:100%;height:36px;min-height:36px;padding:4px 10px;border:1.5px solid #d1d5db;border-radius:9px;font-size:.92rem;direction:ltr;text-align:center;font-weight:700;letter-spacing:1px;background:#fff" autocomplete="username">
-          <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:4px;border-radius:8px;padding:5px 8px;line-height:1.5"></div>
-        </div>
-        <div>
-          <label style="display:block;font-size:.78rem;font-weight:700;color:#374151;margin-bottom:2px">رمز الدخول</label>
-          <input id="loginPw" type="password" placeholder="••••••••" style="width:100%;height:36px;min-height:36px;padding:4px 10px;border:1.5px solid #d1d5db;border-radius:9px;font-size:.95rem;text-align:center;letter-spacing:2px;background:#fff" autocomplete="current-password">
-        </div>
+      <div class="lg-field">
+        <label class="lg-lab">رقم الموبايل</label>
+        <input id="loginAcc" class="lg-in ph" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" autocomplete="username" inputmode="numeric">
+        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:10px;padding:6px 9px;line-height:1.55;text-align:right"></div>
+      </div>
+      <div class="lg-field">
+        <label class="lg-lab">رمز الدخول</label>
+        <input id="loginPw" type="password" class="lg-in pw" placeholder="••••••••" autocomplete="current-password">
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-        <button class="btn g" type="button" style="height:36px;min-height:36px;font-size:.86rem;font-weight:800;border-radius:9px;padding:0" onclick="doLogin()">
-          دخول
-        </button>
-        <button class="btn" type="button" style="height:36px;min-height:36px;font-size:.84rem;font-weight:800;border-radius:9px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;padding:0" onclick="startOtpFlow('register')">
-          إنشاء حساب جديد
-        </button>
-      </div>
+      <button class="lg-btn lg-main" type="button" onclick="doLogin()">دخول</button>
+      <button class="lg-btn lg-alt" type="button" onclick="startOtpFlow('register')">✨ إنشاء حساب جديد</button>
 
-      <div style="margin-top:8px;padding-top:6px;border-top:1px dashed #e5e7eb">
-        <button type="button" style="background:transparent;border:none;color:#6b21a8;font-size:.78rem;font-weight:700;cursor:pointer;padding:2px 4px" onclick="startOtpFlow('reset')">
-          نسيت رمز الدخول؟
-        </button>
+      <div class="lg-foot">
+        <button type="button" class="lg-link" onclick="startOtpFlow('reset')">نسيت رمز الدخول؟</button>
       </div>
+    </div>
     </div>
 
     <!-- OTP Step Screen -->
@@ -1937,7 +1966,7 @@ window._acc=(function(){
   return "";
 })();
 function storageKey(){return KEY+"_"+(window._acc||"guest");}
-const APP_VERSION="1.05";
+const APP_VERSION="1.06";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
