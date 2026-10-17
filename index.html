@@ -674,35 +674,19 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
   @page{size:A4 landscape;margin:0}
 }
 @page{margin:0}
+</style>
 
-/* نافذة معلومات المستخدم الموسعة بدون سكرول */
-#setUser .modal-card {
-  width: min(900px, 98vw) !important;
-  max-height: 96vh !important;
-  background: #ffffff !important;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-#setUser .modal-card::-webkit-scrollbar { display: none; }
-#setUser .modal-body-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 24px;
-  overflow: visible !important;
-  max-height: none !important;
-}
-#setUser .full-width {
-  grid-column: 1 / -1;
-}
-
-@media (max-width: 768px) {
-  #setUser .modal-body-content { grid-template-columns: 1fr; }
-}
+<style id="asOldTheme">/* تصميم ما قبل 0.95 (v0.61) — القواعد المختلفة */
+#dlgMsg{margin:8px 0 18px;color:#374151;font-size:1.02rem;line-height:1.7;white-space:pre-line}
+#sBox .modal-card,#tBox .modal-card{width:min(860px,96vw);padding:22px 22px 16px}
+#sBox form,#tBox form{display:flex;flex-direction:column;gap:18px;width:100%}
+#subBox .modal-card{width:min(820px,96vw)!important;max-height:none!important;overflow:hidden!important; display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center; padding:28px 24px 24px 24px;text-align:right;position:relative}
+.s-top input,.s-top select,.t-top input,.t-top select,#tAssign .asg input,#tAssign .asg select{width:100%;min-height:46px;box-sizing:border-box}
+.s-top,.t-top{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%;align-items:end}
 </style>
 </head>
 <body>
-<div class="app" id="mainApp">
+<div class="app">
 <header class="top">
   <div class="brand-row">
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
@@ -826,7 +810,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 
 
-<div id="loginBox" class="modal show no-print">
+<div id="loginBox" class="modal no-print">
   <div class="modal-card" style="width:min(400px,94vw);max-height:96vh;overflow-y:auto;overscroll-behavior:contain;padding:16px 20px 14px;text-align:center;border-radius:20px;box-shadow:0 20px 50px rgba(76,29,149,.22);border:1px solid rgba(139,92,246,.25);background:linear-gradient(180deg,#ffffff 0%,#fbf9ff 100%)" onclick="event.stopPropagation()">
     <style>
       #loginBox .lg-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}
@@ -867,40 +851,55 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       #loginBox .lg-code{text-align:center;font-size:1.05rem;font-weight:800;letter-spacing:4px;font-variant-numeric:tabular-nums}
     </style>
 
-    <div class="lg-header" style="text-align:center;margin-bottom:20px">
-      <img src="logo.png" alt="Logo" style="width:54px;height:54px;margin-bottom:8px;object-fit:contain">
-      <h1 style="margin:0;font-size:1.35rem;color:var(--pri,#6d28d9);font-weight:800">نظام الجداول المدرسية</h1>
-      <p style="margin:4px 0 0;color:#64748b;font-size:.85rem;font-weight:600">اختر طريقة الدخول المناسبة لك</p>
-    </div>
-
-    <!-- 1. الدخول برقم الهاتف -->
-    <div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;text-align:right">
-      <div style="font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:#1e293b;font-size:.92rem">
-        <span>📱</span> الدخول برقم الهاتف
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <input id="loginAcc" placeholder="07XXXXXXXXX" style="width:100%;height:42px;padding:4px 12px;border:1.5px solid #cbd5e1;border-radius:12px;background:#fff;font-size:.95rem;font-weight:800;direction:ltr;text-align:center;letter-spacing:1.5px;box-sizing:border-box" inputmode="numeric">
-        <input id="loginPw" type="password" placeholder="رمز الدخول" style="width:100%;height:42px;padding:4px 12px;border:1.5px solid #cbd5e1;border-radius:12px;background:#fff;font-size:.95rem;font-weight:600;text-align:center;box-sizing:border-box">
-        <button class="btn" style="width:100%;height:44px;background:#16a34a;color:#fff;border:none;border-radius:12px;font-weight:800;font-size:.95rem;cursor:pointer;box-shadow:0 6px 16px rgba(22,163,74,.25);margin-top:4px" onclick="doLogin()">دخول بالهاتف</button>
+    <div class="lg-head">
+      <img src="logo.png" alt="" class="lg-logo">
+      <div style="text-align:right">
+        <h2 class="lg-title">نظام الجداول المدرسية</h2>
+        <div class="lg-sub">🔐 تسجيل الدخول والمزامنة</div>
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:10px;margin:14px 0;color:#94a3b8;font-weight:800;font-size:.85rem">
-      <div style="flex:1;height:1px;background:#e2e8f0"></div> أو <div style="flex:1;height:1px;background:#e2e8f0"></div>
-    </div>
-
-    <!-- 2. الدخول بحساب Google -->
-    <div style="background:#fff;border:2px solid #ea4335;border-radius:16px;padding:16px;margin-bottom:10px;text-align:right">
-      <div style="font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:#ea4335;font-size:.92rem">
-        <span>🌐</span> الدخول بحساب Google
+    <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+    <div id="tgCard" class="lg-tg" style="display:none;flex-direction:column">
+      <div class="lg-tg-top">
+        <div class="lg-tg-ico">✈️</div>
+        <div style="flex:1">
+          <div id="tgTitle" class="lg-tg-tt">🚀 تسجيل حقيقي بضغطة واحدة</div>
+          <div id="tgDesc" class="lg-tg-dd">بهوية تيليكرام — بلا رقم وبلا كود.</div>
+        </div>
       </div>
-      <button type="button" style="width:100%;height:44px;background:#fff;color:#ea4335;border:2px solid #ea4335;border-radius:12px;font-weight:800;font-size:.92rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.2s" onclick="loginWithGoogleMain()">
-        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        الدخول الآمن بحساب Google
-      </button>
+      <div id="tgMsg" style="display:none;font-size:.73rem;font-weight:700;border-radius:10px;padding:7px 9px;line-height:1.5;margin-top:8px;text-align:right"></div>
+      <div id="tgNewForm" style="display:none;flex-direction:column;gap:7px;text-align:right;margin-top:8px">
+        <div>
+          <label class="lg-lab">اسم المدرسة</label>
+          <input id="tgSchool" class="lg-in" placeholder="مدرسة …">
+        </div>
+        <div>
+          <label class="lg-lab">رمز للكمبيوتر (اختياري)</label>
+          <input id="tgPw" class="lg-in pw" placeholder="4 أحرف أو أرقام">
+        </div>
+      </div>
+      <button type="button" id="tgBtn" class="lg-btn lg-tgbtn" onclick="telegramLoginStart()">🚀 متابعة بتيليكرام</button>
     </div>
-    <p id="loginMsg" style="text-align:center;color:#e11d48;font-weight:700;font-size:.85rem;margin:8px 0 0;min-height:18px"></p>
 
+    <div class="lg-div">أو</div>
+
+    <div id="loginMain">
+      <div class="lg-field">
+        <label class="lg-lab">رقم الموبايل</label>
+        <input id="loginAcc" class="lg-in ph" placeholder="07XXXXXXXXX" oninput="onPhoneTyped()" onblur="onPhoneTyped()" autocomplete="username" inputmode="numeric">
+        <div id="phoneHint" style="display:none;font-size:.72rem;font-weight:700;margin-top:5px;border-radius:10px;padding:6px 9px;line-height:1.5;text-align:right"></div>
+      </div>
+      <div class="lg-field">
+        <label class="lg-lab">رمز الدخول</label>
+        <input id="loginPw" type="password" class="lg-in pw" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="lg-btn lg-main" type="button" onclick="doLogin()">دخول</button>
+      <button class="lg-btn lg-alt" type="button" onclick="startOtpFlow('register')">✨ حساب جديد</button>
+      <div class="lg-foot">
+        <button type="button" class="lg-link" onclick="startOtpFlow('reset')">نسيت رمز الدخول؟</button>
+      </div>
+    </div>
 
     <!-- OTP Step Screen -->
     <div id="otpStep" hidden>
@@ -1051,7 +1050,19 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
   </div>
   <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
   <div class="set-tiles no-print">
-
+    <button type="button" class="set-tile" onclick="openBotBind()">
+      <div class="ico-lg" style="background:#e0f2fe;color:#0369a1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 4.5 2.5 11.5l6 2.5 2.5 6z"/></svg>
+      </div>
+      <div class="set-tile-body">
+        <b>ربط البوت بمدرستي</b>
+        <span>افتح جدول مدرستك على تيليكرام</span>
+      </div>
+      <div class="set-tile-action">
+        <span>ربط</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      </div>
+    </button>
     <button type="button" class="set-tile" onclick="openSet('setUser')">
       <div class="ico-lg u-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1123,53 +1134,38 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
     </div>
 
     <div class="modal-body-content">
-      <!-- MERGE_ACCOUNT: تحديث الشريط العلوي ليعرض الهاتف والإيميل معاً -->
-      <div class="info-banner full-width" style="grid-template-columns:1fr 1fr 1fr; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px">
-        <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
-          <span class="info-lbl" style="color:#64748b; font-size:.75rem">اسم المستخدم</span>
-          <strong id="userNameShow" class="info-val" style="color:#1e293b; font-size:.95rem">—</strong>
+      <div class="info-banner" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="info-banner-item">
+          <span class="info-lbl">اسم المستخدم</span>
+          <strong id="userNameShow" class="info-val" style="color:#6d28d9">—</strong>
         </div>
-        <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
-          <span class="info-lbl" style="color:#64748b; font-size:.75rem">حساب الهاتف</span>
-          <strong id="userPhoneShow" class="info-val" style="color:#6d28d9; font-size:.95rem; direction:ltr">—</strong>
+        <div class="info-banner-item">
+          <span class="info-lbl">رقم الهاتف (الحساب)</span>
+          <strong id="userAccShow" class="info-val" dir="ltr">—</strong>
         </div>
-        <div class="info-banner-item" style="text-align:center">
-          <span class="info-lbl" style="color:#64748b; font-size:.75rem">حساب Google المرتبط</span>
-          <strong id="userEmailShow" class="info-val" style="color:#1e293b; font-size:.85rem; direction:ltr; word-break:break-all">—</strong>
+        <div class="info-banner-item">
+          <span class="info-lbl">حالة الاشتراك</span>
+          <strong id="userSubShow" class="info-val status-tag">—</strong>
         </div>
       </div>
 
-      <!-- SYSTEM_MERGE: بطاقة ربط البوت بمدرستي -->
-      <div class="form-section-card full-width" style="background:linear-gradient(135deg, #f0f9ff, #e0f2fe);border:1.5px solid #bae6fd;padding:16px;border-radius:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:44px;height:44px;border-radius:12px;background:#0284c7;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px"><path d="M21.5 4.5 2.5 11.5l6 2.5 2.5 6z"/></svg>
-          </div>
-          <div>
-            <strong style="color:#0369a1;font-size:.95rem;display:block">ربط البوت بمدرستي (تيليكرام)</strong>
-            <span style="color:#0284c7;font-size:.78rem">افتح جدول مدرستك واستلم التقارير عبر البوت مباشرة</span>
-          </div>
-        </div>
-        <button type="button" class="btn" style="background:#0284c7;box-shadow:0 4px 12px rgba(2,132,199,.3);flex:0 0 auto" onclick="openBotBind()">🔗 ربط البوت الآن</button>
-      </div>
-
-      <div class="form-section-card full-width" style="margin-bottom:0;padding:12px">
+      <div class="form-section-card" style="margin-bottom:12px">
         <span class="sec-label">👤 اسم المستخدم الحالي</span>
         <div style="display:flex;gap:8px;align-items:center">
           <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي / المعاون)" style="flex:1;height:38px;min-height:38px;padding:6px 12px;border-radius:10px;font-weight:700">
           <button class="btn g s" type="button" style="height:38px;min-height:38px;padding:0 14px;border-radius:10px" onclick="saveUserNameOnly()">حفظ الاسم</button>
         </div>
-        <span style="font-size:.74rem;color:#6b7280">يمكنك تعديل اسمك هنا لتمييزك بين أعضاء المدرسة ومزامنة تعديلاتك.</span>
+        <span style="font-size:.74rem;color:#6b7280">يبقى رقم الهاتف هو المعرّف الأساسي للحساب، ويظهر اسمك لتسهيل تمييزك بين أعضاء المدرسة.</span>
       </div>
 
-      <div class="form-section-card full-width" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:12px;border-radius:14px;margin-bottom:0">
+      <div class="form-section-card" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:12px;border-radius:14px;margin-bottom:12px">
         <span class="sec-label" style="color:#6b21a8;font-weight:800;font-size:.86rem;display:flex;align-items:center;gap:6px">
           🏫 ربط فريق العمل / المعاونين بنفس الجدول
         </span>
-        <p style="margin:2px 0 6px;font-size:.76rem;color:#581c87;line-height:1.4">
+        <p style="margin:4px 0 8px;font-size:.76rem;color:#581c87;line-height:1.4">
           يمكن لأكثر من مستخدم (مدير / معاون) التعديل على نفس جدول المدرسة بحساباتهم الخاصة:
         </p>
-        <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e9d5ff;padding:5px 10px;border-radius:10px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e9d5ff;padding:6px 12px;border-radius:10px;margin-bottom:8px">
           <span style="font-size:.78rem;font-weight:700;color:#4c1d95">رمز مدرستك للمشاركة:</span>
           <div style="display:flex;align-items:center;gap:6px">
             <strong id="mySchoolCode" style="font-size:.95rem;color:#7c3aed;letter-spacing:1px;direction:ltr">SCH-XXXX</strong>
@@ -1177,12 +1173,12 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
           </div>
         </div>
         <!-- قائمة أعضاء الفريق -->
-        <div id="teamMembersBox" style="display:block;background:#f3e8ff;border:1.5px solid #c084fc;border-radius:10px;padding:8px 10px;margin-bottom:6px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div id="teamMembersBox" style="display:block;background:#f3e8ff;border:1.5px solid #c084fc;border-radius:10px;padding:10px 12px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <span style="font-size:.82rem;font-weight:800;color:#5b21b6">&#x1F465; أعضاء الفريق المنضمين للمدرسة:</span>
             <button class="btn w s" type="button" style="padding:2px 8px;font-size:.7rem;min-height:24px" onclick="refreshTeamMembers()">&#x1F504; تحديث</button>
           </div>
-          <div id="teamMembersList" style="font-size:.78rem;color:#4c1d95;line-height:1.7">
+          <div id="teamMembersList" style="font-size:.78rem;color:#4c1d95;line-height:1.8">
             <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
           </div>
         </div>
@@ -1193,62 +1189,19 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
         <div id="schoolTeamMsg" style="margin-top:4px;font-size:.75rem;font-weight:700;color:#15803d;min-height:14px"></div>
       </div>
 
-      <div class="form-section-card" style="background:linear-gradient(135deg, #ffffff, #f8fafc);border:1.5px solid #e2e8f0;padding:14px;border-radius:14px;margin-bottom:0;position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;justify-content:space-between">
-        <div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <span style="color:#1e293b;font-weight:800;font-size:.88rem;display:flex;align-items:center;gap:6px">
-              <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-              حساب Google والهاتف
-            </span>
-            <span id="linkedGoogleAcc" style="font-size:.75rem;background:#f1f5f9;color:#64748b;padding:3px 8px;border-radius:20px;font-weight:700">غير مرتبط</span>
-          </div>
-          
-          <p style="margin:2px 0 8px;font-size:.76rem;color:#475569;line-height:1.4">
-            اربط حساب مدرستك (رقم الهاتف) بحساب Google للدخول بالطريقتين.
-          </p>
-          
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:8px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-              <span style="font-size:.76rem;color:#64748b;font-weight:700">رقم الهاتف:</span>
-              <strong id="phoneAccShow" style="font-size:.82rem;color:#1e293b;direction:ltr">—</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between">
-              <span style="font-size:.76rem;color:#64748b;font-weight:700">بريد Google:</span>
-              <strong id="googleEmailShow" style="font-size:.82rem;color:#1e293b;direction:ltr">—</strong>
-            </div>
-          </div>
-        </div>
-        
-        <div>
-          <button id="googleLinkBtn" type="button" style="width:100%;background:#fff;border:1.5px solid #cbd5e1;color:#333;height:38px;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;cursor:pointer;transition:all .2s" onclick="startGoogleLink()" onmouseover="this.style.background='#f8fafc';this.style.borderColor='#94a3b8'" onmouseout="this.style.background='#fff';this.style.borderColor='#cbd5e1'">
-            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-            <span id="googleBtnTxt">ربط الحساب بحساب Google</span>
-          </button>
-          <div id="googleLinkMsg" style="margin-top:4px;font-size:.72rem;font-weight:700;color:#15803d;text-align:center"></div>
+      <div class="form-section-card">
+        <span class="sec-label">تغيير رمز الدخول</span>
+        <div class="set-pin">
+          <label>الرمز الحالي
+            <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center">
+          </label>
+          <label>الرمز الجديد
+            <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center">
+          </label>
         </div>
       </div>
 
-      <div class="form-section-card" style="margin-bottom:0;padding:14px;display:flex;flex-direction:column;justify-content:space-between">
-        <div>
-          <span class="sec-label">تغيير رمز الدخول</span>
-          <p style="margin:2px 0 8px;font-size:.76rem;color:#64748b;line-height:1.4">
-            عيّن رمز دخول جديد لحساب مدرستك لحمايته.
-          </p>
-          <div class="set-pin" style="gap:8px">
-            <label style="font-size:.8rem">الرمز الحالي
-              <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center;height:36px">
-            </label>
-            <label style="font-size:.8rem">الرمز الجديد
-              <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center;height:36px">
-            </label>
-          </div>
-        </div>
-        <div style="font-size:.72rem;color:#6b7280;margin-top:8px">
-          💡 يمكنك حفظ الرمز الجديد من الزر بالأسفل.
-        </div>
-      </div>
-
-      <div class="modal-note full-width" style="margin-top:0">
+      <div class="modal-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         <span>نسيت الرمز؟ يمكنك تسجيل الخروج واستخدام خيار «نسيت الرمز» أو التواصل مع المطور.</span>
       </div>
@@ -2000,20 +1953,16 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 <script>
 const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-const KEY="school_tt_v5_fresh_start";
+const KEY="school_tt_v4";
 window._acc=(function(){
   try{
-    const a=JSON.parse(localStorage.getItem("school_tt_auth_v1_fresh")||"{}");
+    const a=JSON.parse(localStorage.getItem("school_tt_auth_v1")||"{}");
     if(a&&a.session) return String(a.session).toUpperCase().replace(/[^A-Z0-9]/g,"");
   }catch(e){}
   return "";
 })();
-function storageKey(){
-  const acc = window._acc || "";
-  if(!acc) return KEY + "_guest_" + Date.now();
-  return KEY + "_" + acc;
-}
-const APP_VERSION="1.24";
+function storageKey(){return KEY+"_"+(window._acc||"guest");}
+const APP_VERSION="1.25";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -2069,27 +2018,11 @@ function parseDb(raw){
     return (x&&typeof x==="object")?x:null;
   }catch(e){return null;}
 }
-function purgeAccountKeys(acc){
-  if(!acc) return;
-  const A = normAcc(acc);
-  if(!A) return;
-  const del = [];
-  for(let i = 0; i < localStorage.length; i++){
-    const k = localStorage.key(i) || "";
-    if(k === AUTH_KEY) continue;
-    if(k.indexOf(A) >= 0) del.push(k);
-    if(k === KEY + "_guest") del.push(k);
-  }
-  del.forEach(k => { try{ localStorage.removeItem(k); }catch(e){} });
-  try{ localStorage.removeItem(KEY + "_guest"); }catch(e){}
-}
-
 function adoptAccount(acc, raw, force){
   const next=normAcc(acc);
   const prev=window._acc||"";
   if(prev && prev!==next){
     try{flushSave();}catch(e){}
-    purgeAccountKeys(prev);
   }
   const prevKey=storageKey();
   window._acc=next;
@@ -2900,7 +2833,7 @@ function _doReset(){
   db.settings.periods=periods;
   db.settings.schoolName=school;
   hist=[];
-  try{localStorage.removeItem(storageKey());if(!window._acc) localStorage.removeItem(KEY + "_guest");}catch(e){}
+  try{localStorage.removeItem(storageKey());localStorage.removeItem(KEY);localStorage.removeItem(KEY+"_guest");}catch(e){}
   save(true);
   try{renderTeachers();renderClasses();renderSubjects();renderSettings();fillTeacherSelect();fillClassSelect();fillSecMulti();if(typeof renderViews==="function")renderViews();}catch(e){}
   okNote("تم تصفير كل البيانات");
@@ -3730,18 +3663,6 @@ function renderSettings(){
   if($("yardMax"))$("yardMax").value=db.settings.maxYard||"";
   if($("gridColor"))$("gridColor").value=db.settings.gridColor||"#5b21b6";
   if($("userAccShow"))$("userAccShow").textContent=window._acc||"—";
-  
-  let displayAcc = window._acc || "";
-  if (displayAcc.toUpperCase().includes("OBE092") || displayAcc.includes("@")) displayAcc = "07813332882";
-  
-  if(document.getElementById("userPhoneShow")) document.getElementById("userPhoneShow").textContent = displayAcc || "—";
-  if(document.getElementById("phoneAccShow")) document.getElementById("phoneAccShow").textContent = displayAcc || "—";
-  if(document.getElementById("mySchoolCode") && displayAcc === "07813332882") document.getElementById("mySchoolCode").textContent = "SCH-2882";
-  
-  const savedEmail = localStorage.getItem("tt_google_linked_email");
-  if(document.getElementById("userEmailShow")) document.getElementById("userEmailShow").textContent = savedEmail ? savedEmail.split("|")[0] : (displayAcc === "07813332882" ? "obe092@gmail.com" : "غير مرتبط");
-  if(document.getElementById("googleEmailShow")) document.getElementById("googleEmailShow").textContent = savedEmail ? savedEmail.split("|")[0] : "غير مرتبط";
-
   const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || "";
   if($("userNameShow")) $("userNameShow").textContent = curUName || "غير محدد";
   if($("userNameInput")) $("userNameInput").value = curUName;
@@ -6300,7 +6221,7 @@ function openPrintDims(){
 window.addEventListener("error",function(ev){try{console.error(ev.error||ev.message);}catch(e){}});
 
 
-const AUTH_KEY="school_tt_auth_v1_fresh";
+const AUTH_KEY="school_tt_auth_v1";
 function loginMsg(s){if($("loginMsg"))$("loginMsg").textContent=s||"";}
 function normAcc(s){return String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");}
 function loadAuth(){
@@ -6426,25 +6347,9 @@ function localReset(acc,code,pw){
   return {ok:true,account:acc};
 }
 function applyGate(s){
-  const logged = !!(s && s.account);
-  if(!logged) {
-      if(document.getElementById("loginBox")) {
-          document.getElementById("loginBox").hidden = false;
-          document.getElementById("loginBox").style.display = "grid";
-      }
-      if(document.getElementById("mainApp")) {
-          document.getElementById("mainApp").style.display = "none";
-      }
-      if($("subBox")) $("subBox").hidden = true;
-      return;
-  }
-  if(document.getElementById("loginBox")) {
-      document.getElementById("loginBox").hidden = true;
-      document.getElementById("loginBox").style.display = "none";
-  }
-  if(document.getElementById("mainApp")) {
-      document.getElementById("mainApp").style.display = "flex";
-  }
+  const logged=!!(s&&s.account);
+  if(!logged){if($("loginBox"))$("loginBox").hidden=false;if($("subBox"))$("subBox").hidden=true;return;}
+  if($("loginBox"))$("loginBox").hidden=true;
   const acc=s.account;
   const isFirstLoad=(window._acc!==acc);
   window._acc=acc;
@@ -6593,32 +6498,8 @@ function afterAccount(r,fresh){
     });
 }
 function doLogin(){
-  const inputAcc = normAcc(($("loginAcc")&&$("loginAcc").value)||"");
-  
-  if (inputAcc === "07813332882" || inputAcc.endsWith("7813332882")) {
-      // 1. إخفاء نافذة تسجيل الدخول
-      if ($("loginBox")) $("loginBox").hidden = true;
-      if ($("loginBox")) $("loginBox").style.display = "none";
-      
-      // 2. إظهار الواجهة الرئيسية
-      if ($("mainApp")) $("mainApp").style.display = "flex";
-      
-      // 3. استدعاء دالة نجاح الدخول (التي تحفظ الجلسة وتفتح النظام)
-      onCloudLoginSuccess("07813332882", "07813332882", { 
-          ok: true, 
-          account: "07813332882", 
-          paid: true, 
-          until: "2027-10-14", 
-          user_name: "الأستاذ عبيده", 
-          email: "obe092@gmail.com",
-          school: "مدرسة بدور بغداد الابتدائية",
-          school_code: "SCH-2882"
-      });
-      return;
-  }
-
   const api=pyApi();
-  const acc=inputAcc;
+  const acc=normAcc(($("loginAcc")&&$("loginAcc").value)||"");
   const pw=String(($("loginPw")&&$("loginPw").value)||"").trim();
   if(!acc || acc.length < 8){
     loginMsg("أدخل رقم موبايل صحيح");
@@ -6626,6 +6507,12 @@ function doLogin(){
   }
   if(!pw){
     loginMsg("يرجى إدخال رمز الدخول");
+    return;
+  }
+
+  // إذا كان حساب المطور، تخطي فوري ودخول مباشر
+  if(acc === '07813332882' || acc.endsWith('7813332882')){
+    onCloudLoginSuccess(acc, pw, { ok: true, account: acc, paid: true, until: '2027-10-14' });
     return;
   }
 
@@ -6656,7 +6543,7 @@ function checkCloudLogin(acc, pw, fallbackLocal){
   const DEV_ACC = '07813332882';
   if(acc === DEV_ACC || acc.endsWith('7813332882')){
     // حساب المطور - دخول فوري مباشر مع تفعيل كامل
-    onCloudLoginSuccess(DEV_ACC, pw, { ok: true, account: DEV_ACC, email: "obe092@gmail.com", user_name: "الأستاذ عبيده", paid: true, until: '2027-10-14', school_code: 'SCH-2882' });
+    onCloudLoginSuccess(acc, pw, { ok: true, account: acc, paid: true, until: '2027-10-14' });
     return;
   }
   loginMsg('جاري التحقق من الحساب سحابياً ☁️...');
@@ -6745,13 +6632,6 @@ function verifyViaCloudSync(acc, pw, fallbackLocal){
 }
 
 function onCloudLoginSuccess(acc, pw, cloudRes){
-  if (document.getElementById("loginBox")) {
-      document.getElementById("loginBox").hidden = true;
-      document.getElementById("loginBox").style.display = "none";
-  }
-  if($("loginBox")) $("loginBox").hidden = true;
-  if($("mainApp")) $("mainApp").style.display = "flex";
-
   const a = loadAuth();
   if(!a.users) a.users = {};
   if(!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
@@ -6766,21 +6646,12 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
     try{ localStorage.setItem("tt_sess_tok_"+normAcc(acc), cloudRes.bind_token); }catch(e){}
   }
   a.session = acc;
-  // حفظ الاسم والإيميل بشكل صحيح
-  if (cloudRes.user_name) {
-      if (!db.settings) db.settings = {};
-      db.settings.userName = cloudRes.user_name;
-      try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); } catch(e){}
+  saveAuth(a);
+  if(cloudRes.user_name){
+    if(!db.settings) db.settings = {};
+    db.settings.userName = cloudRes.user_name;
+    try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); }catch(e){}
   }
-  if (cloudRes.email) {
-      try { localStorage.setItem("tt_google_linked_email", cloudRes.email + "|" + acc); } catch(e){}
-  }
-  setTimeout(function(){
-      try {
-          if(typeof renderSettings === "function") renderSettings();
-          if(typeof updateGoogleLinkUI === "function") updateGoogleLinkUI();
-      } catch(e){}
-  }, 300);
   // إذا كان الحساب منضماً لمدرسة ولديه بيانات مشتركة
   const activeData = cloudRes.data || cloudRes.shared_data || "";
   okBeep();
@@ -6923,26 +6794,20 @@ function requestOtp(manual){
     body:JSON.stringify({acc:acc,name:name})
   }).then(function(r){return r.json();}).then(function(j){
     if(j&&j.ok&&j.delivered){
-      otpStatus("✅ <b>أرسلنا رمز التحقق على تيليكرام</b> — ادخل الرمز أدناه.","ok");
+      otpStatus("✅ <b>أرسلنا رمز التحقق على تيليكرام</b> — افتح تيليكرام وانسخ الرمز (صالح ١٥ دقيقة).","ok");
       if($("otpBotWrap"))$("otpBotWrap").style.display="none";
       _otpPre={acc:acc,at:Date.now(),delivered:true};
       if($("otpCodeIn"))$("otpCodeIn").focus();
     }else if(j&&j.ok&&j.reason==="throttle"){
       otpStatus("⏳ انتظر "+(j.wait||25)+" ثانية ثم أعد المحاولة.","warn");
     }else if(j&&j.ok){
-      // أول مرة لهذا الحساب: فتح البوت تلقائياً فوراً لتسليم الرمز بضغطة واحدة دون حيرة
-      otpStatus("🚀 جاري توجيهك لتيليكرام لتأكيد حسابك واستلام الرمز فوراً…","ok");
+      otpStatus("ℹ️ <b>أول مرة لهذا الرقم:</b> اضغط الزر الأزرق أدناه <b>مرة واحدة</b> ليوصلك الرمز، ومن بعدها يجيك تلقائياً كل مرة.","warn");
       if($("otpBotWrap"))$("otpBotWrap").style.display="block";
-      try {
-        if(!manual){
-          setTimeout(function(){ openBotOtp(); }, 350);
-        }
-      } catch(e){}
     }else{
       otpStatus("⚠️ تعذّر إرسال الرمز — تأكد من رقم الموبايل ثم أعد المحاولة."+(j&&j.message?"<br>"+j.message:""),"err");
     }
   }).catch(function(){
-    otpStatus("⚠️ لا يوجد اتصال بالإنترنت — الرمز يحتاج اتصالاً للتحقق.","err");
+    otpStatus("⚠️ لا يوجد اتصال بالإنترنت — الرمز يحتاج اتصالاً ليصلك على تيليكرام.","err");
   });
 }
 
@@ -6993,35 +6858,6 @@ function startOtpFlow(type){
   proceed();
 }
 
-function switchLoginTab(mode){
-  const tabLogin = $("tabLoginBtn");
-  const tabReg = $("tabRegBtn");
-  const pwWrap = $("loginPwWrap");
-  const footWrap = $("loginFootWrap");
-  const actionBtn = $("loginActionBtn");
-  loginMsg("");
-
-  if(mode === "register"){
-    if(tabReg) tabReg.classList.add("active");
-    if(tabLogin) tabLogin.classList.remove("active");
-    if(pwWrap) pwWrap.style.display = "none";
-    if(footWrap) footWrap.style.display = "none";
-    if(actionBtn){
-      actionBtn.textContent = "متابعة وإنشاء الحساب ✨";
-      actionBtn.onclick = function(){ startOtpFlow('register'); };
-    }
-  } else {
-    if(tabLogin) tabLogin.classList.add("active");
-    if(tabReg) tabReg.classList.remove("active");
-    if(pwWrap) pwWrap.style.display = "block";
-    if(footWrap) footWrap.style.display = "block";
-    if(actionBtn){
-      actionBtn.textContent = "تسجيل الدخول";
-      actionBtn.onclick = doLogin;
-    }
-  }
-}
-
 function cancelOtpFlow(){
   if($("otpStep"))$("otpStep").hidden=true;
   if($("loginMain"))$("loginMain").hidden=false;
@@ -7037,17 +6873,20 @@ function tgMsg(m,k){
   el.style.display="block";el.style.color=c[0];el.style.background=c[1];el.style.border="1px solid "+c[2];
   el.innerHTML=m;
 }
-
-
 const TG_START="https://t.me/ScholTableBot?start=app";
 let _tgInside=false;
 function tgReady(){
   const t=tgApp();
   const c=$("tgCard");
   if(!t||!t.initData){
-    // خارج تيليكرام: لا داعي لإزعاج المستخدم ببطاقة عريضة مكررة
+    // خارج تيليكرام: نعرض بطاقة تسجيل حقيقي بضغطة واحدة عبر تيليكرام
     if(c && !_tgInside){
-      c.style.display="none";
+      c.style.display="flex";
+      const b=$("tgBtn");
+      if(b){ b.textContent="🚀 تسجيل/دخول حقيقي بضغطة واحدة عبر تيليكرام"; b.onclick=function(){ window.open(TG_START,"_blank"); }; }
+      const t1=$("tgTitle"); if(t1) t1.textContent="🔐 تسجيل حقيقي 100% بضغطة واحدة";
+      const t2=$("tgDesc"); if(t2) t2.innerHTML="تفتح تيليكرام ← تضغط زر واحد ← يتم إنشاء حسابك/دخولك <b>بهوية تيليكرام الحقيقية</b> ويُربط الشات بمدرستك، بلا رقم وبلا كود تحقق.";
+      tgMsg("💡 هذه أسرع وأأمن طريقة — والحسابات القديمة تُحدَّث بنفس الضغطة.","ok");
     }
     return false;
   }
@@ -7055,53 +6894,12 @@ function tgReady(){
   try{ t.ready(); if(t.expand)t.expand(); }catch(e){}
   if(c) c.style.display="flex";
   const b=$("tgBtn");
-  if(b){ b.textContent="🚀 دخول فوري"; b.onclick=telegramLoginStart; }
+  if(b){ b.textContent="🚀 إنشاء/دخول بحسابي في تيليكرام"; b.onclick=telegramLoginStart; }
+  const t1=$("tgTitle"); if(t1) t1.textContent="🚀 أنت داخل تيليكرام";
   const u=(t.initDataUnsafe&&t.initDataUnsafe.user)||{};
   const nm=[u.first_name,u.last_name].filter(Boolean).join(" ");
-  const d=$("tgDesc");
-  if(d) d.innerHTML="أهلاً <b>"+(nm||"بك")+"</b> (تيليكرام)";
+  if(nm) tgMsg("👋 أهلاً <b>"+nm+"</b> — اضغط الزر لتدخل بحسابك مباشرة.","ok");
   return true;
-}
-
-function telegramLoginStart(){
-  const t=tgApp();
-  if(!t||!t.initData){ tgMsg("افتح البرنامج من داخل تيليكرام لتستخدم هذه الطريقة.","warn"); return; }
-  const u=(t.initDataUnsafe&&t.initDataUnsafe.user)||{};
-  const showing=($("tgNewForm")&&$("tgNewForm").style.display!=="none");
-  const body={
-    initData:t.initData,
-    chat_id:u.id?String(u.id):"",
-    acc:(($("loginAcc")&&$("loginAcc").value.trim())||""),
-    pw:showing?(($("tgPw")&&$("tgPw").value.trim())||""):(($("loginPw")&&$("loginPw").value)||""),
-    school:showing?(($("tgSchool")&&$("tgSchool").value.trim())||""):""
-  };
-  if(!body.acc || body.acc.replace(/\D/g,"").length<8){
-    tgMsg("اكتب أولاً <b>رقم الموبايل</b> المسجّل في البرنامج ثم اضغط الزر.","warn");
-    const la=$("loginAcc"); if(la){ la.focus(); }
-    return;
-  }
-  tgMsg("⏳ جاري التحقق من هويتك في تيليكرام…","ok");
-  fetch(CLOUD_BASE+"/api/auth/telegram_login",{
-    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
-  }).then(function(r){return r.json();}).then(function(j){
-    if(!j||!j.ok){
-      const m={signature:"التوقيع غير صحيح — افتح البرنامج من داخل تيليكرام.",
-               stale:"انتهت صلاحية الجلسة — أعد فتح البرنامج من تيليكرام.",
-               pass:"هذا الرقم له حساب — اكتب <b>رمز الدخول</b> بخانة رمز الدخول ثم اضغط الزر.",
-               trial_expired:"انتهت التجربة المجانية",deleted:"هذا الحساب محذوف"};
-      tgMsg("⚠️ "+(m[(j&&j.reason)||""]||("تعذّر الدخول ("+((j&&j.reason)||"خطأ")+")")),"err");
-      return;
-    }
-    if(j.is_new && !showing){
-      if($("tgNewForm")) $("tgNewForm").style.display="flex";
-      if($("tgSchool")) $("tgSchool").focus();
-      tgMsg("👋 أهلاً <b>"+(j.name||"")+"</b> — اكتب <b>اسم مدرستك</b> ثم اضغط الزر مرة ثانية.","ok");
-      return;
-    }
-    tgMsg("✅ تم ربط حسابك بتيليكرام — أهلاً بك 🌿","ok");
-    try{ onCloudLoginSuccess(j.account, body.pw||("TG"+String(u.id||"")), j); }catch(e){}
-    try{ if($("tgCard")) $("tgCard").style.display="none"; }catch(e){}
-  }).catch(function(){ tgMsg("⚠️ لا يوجد اتصال بالإنترنت.","err"); });
 }
 
 try{
@@ -7111,25 +6909,6 @@ try{
   document.addEventListener("DOMContentLoaded",function(){ setTimeout(tgReady,300); });
 }catch(e){}
 
-function openWaOtp(){
-  const acc = _otpFlow.acc || (($("loginAcc")&&$("loginAcc").value.trim())||"");
-  if(!acc){
-    loginMsg("يرجى إدخال رقم الموبايل أولاً");
-    return;
-  }
-  // فتح محادثة الدعم/التحقق على واتساب مباشرة بالرقم المعتمد
-  const devPhone = "07813332882";
-  const text = "مرحباً، أطلب رمز التحقق لتفعيل حسابي في نظام الجداول المدرسية 🌿\n\nرقم حسابي: " + acc;
-  const api = pyApi();
-  if(api && api.open_whatsapp){
-    try { api.open_whatsapp(devPhone, text); } catch(e){}
-  } else {
-    const url = "https://wa.me/" + iqWaNum(devPhone) + "?text=" + encodeURIComponent(text);
-    try { window.open(url, "_blank"); } catch(e){ location.href = url; }
-  }
-  otpStatus("💬 تم فتح واتساب — أرسل الرسالة وسيصلك الرمز فوراً للتحقق.","ok");
-}
-
 function openBotOtp(){
   // الرابط يحمل رقم الحساب: البوت يرسل الرمز المحفوظ ويربط هذا الشات بالحساب
   const url="https://t.me/ScholTableBot?start=otp_"+encodeURIComponent(_otpFlow.acc||"");
@@ -7138,7 +6917,7 @@ function openBotOtp(){
   else {
     try{window.open(url,"_blank");}catch(e){location.href=url;}
   }
-  otpStatus("✅ تم فتح تيليكرام — اضغط <b>Start (بدء)</b> ليصلك الرمز فوراً.","ok");
+  otpStatus("✅ اضغط <b>Start</b> في البوت مرة واحدة — راح يوصلك الرمز، ومن بعدها كل مرة يجيك تلقائياً.","ok");
 }
 
 function submitOtpVerification(){
@@ -7276,45 +7055,21 @@ function finishOtpSubmit(){
   }
 }
 function doLogout(){
-  try {
-    // مسح الجلسة من الذاكرة المحلية
-    localStorage.removeItem(AUTH_KEY);
-    
-    // مسح المتغيرات المؤقتة
-    window._acc = "";
-    window._linkedOwner = { acc: "", paid: false, until: "" };
-    window._schoolMembers = [];
-    window._isOwner = false;
-    
-    // مسح بيانات الجدول المؤقتة
-    if (typeof db !== "undefined") {
-      db = blankDb();
-    }
-    
-    // 1. إخفاء الواجهة الرئيسية (إذا كانت ظاهرة)
-    const mainApp = document.getElementById("mainApp");
-    if (mainApp) mainApp.style.display = "none";
-
-    // 2. إظهار نافذة تسجيل الدخول
-    const loginBox = document.getElementById("loginBox");
-    if (loginBox) {
-      loginBox.hidden = false;
-      loginBox.style.display = "grid";
-    }
-    
-    // 3. تفريغ الحقول
-    if(document.getElementById("loginAcc")) document.getElementById("loginAcc").value = "";
-    if(document.getElementById("loginPw")) document.getElementById("loginPw").value = "";
-    if(document.getElementById("loginMsg")) document.getElementById("loginMsg").textContent = "";
-    
-    // إعادة تحميل الصفحة كإجراء احتياطي لضمان نظافة الشاشة
-    setTimeout(function() {
-      location.reload();
-    }, 100);
-
-  } catch(e) {
-    location.reload();
+  const api=pyApi();
+  function done(){
+    try{flushSave();}catch(e){}
+    localLogout();
+    window._acc="";
+    db=blankDb();
+    hist=[];
+    _diskReady=false;
+    try{refreshAll();}catch(e){}
+    if($("loginBox"))$("loginBox").hidden=false;
+    if($("subBox"))$("subBox").hidden=true;
+    okNote("تم تسجيل الخروج");
   }
+  if(!api||!api.logout_account){done();return;}
+  api.logout_account().then(done).catch(done);
 }
 function copyDevCode(){
   const t=(($("accIn")&&$("accIn").value)||"").trim();
@@ -7416,8 +7171,6 @@ function removeMember(memberAcc){
 }
 // عند إزالة العضو من الفريق: تُحذف بياناته المحلية ويرجع لتجربة 7 أيام مع المطالبة بالاشتراك
 function handleRemovedFromSchool(){
-  const myAcc = window._acc || "";
-  if(myAcc && (myAcc === "07813332882" || myAcc.endsWith("7813332882"))) return; // حساب المطور محمي تماماً
   if(window._removedHandled) return;
   window._removedHandled = true;
   window._isRemovedAccount = true;
@@ -8661,337 +8414,468 @@ function offRun(kind){
 }
 </script>
 
-<!-- ===== شاشة الخطوة 1: بيانات المستخدم ===== -->
-<div id="regStep1" hidden style="position:fixed;inset:0;background:rgba(30,10,60,.55);z-index:99999;display:none;place-items:center;padding:16px" onclick="if(event.target===this)regCancel()">
-  <div onclick="event.stopPropagation()" style="background:#fff;border-radius:20px;padding:20px;width:min(400px,94vw);max-height:96vh;overflow-y:auto;text-align:center;box-shadow:0 20px 50px rgba(76,29,149,.22)">
-    <img src="logo.png" alt="" style="width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #ede9fe;margin-bottom:8px">
-    <h2 style="margin:0 0 4px;font-size:1.1rem;color:#1e1b4b;font-weight:800">حساب جديد</h2>
-    <div style="font-size:.75rem;color:#7c3aed;font-weight:700;margin-bottom:14px">الخطوة ١ من ٢ — بياناتك</div>
-    <div style="text-align:right;margin-bottom:10px">
-      <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">الاسم الكامل / الصفة</label>
-      <input id="regName" placeholder="مثال: أستاذ علي / المعاون أحمد" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;box-sizing:border-box">
+    <style>
+      /* تعطيل نافذة تسجيل الدخول بالكامل — التطبيق يفتح مباشرة */
+      #loginBox,#subBox,#otpStep{display:none!important;visibility:hidden!important;pointer-events:none!important}
+    </style>
+    <script>
+    (function(){
+      function kill(){
+        try{
+          ["loginBox","subBox","otpStep"].forEach(function(id){
+            var el=document.getElementById(id);
+            if(!el) return;
+            if(el.style.display!=="none") el.style.display="none";
+            if(!el.hidden) el.hidden=true;
+          });
+          if(!window._acc) window._acc="";
+          document.documentElement.setAttribute("data-nologin","1");
+        }catch(e){}
+      }
+      kill();
+      document.addEventListener("DOMContentLoaded",kill);
+      setInterval(kill,400);
+    })();
+    </script>
+
+
+    <style id="noAccStyles">
+      /* إخفاء كل ما يتعلق بالحساب ورمز المرور والاشتراك */
+      #licRemain,#logoutTop,#subBox,#subOpen,#licChip{display:none!important}
+    </style>
+    <script id="noAccJs">
+    (function(){
+      var WORDS=["إدارة الحساب", "رمز المرور", "حالة الاشتراك", "تسجيل الخروج", "نسيت الرمز", "رقم الحساب", "سجّل دخول", "حسابك"];
+      function hideAll(){
+        try{
+          Array.prototype.forEach.call(document.querySelectorAll("button,a,div,section,li,span"),function(el){
+            if(el.dataset && el.dataset.accKilled) return;
+            var t=(el.textContent||"").trim();
+            if(!t || t.length>60) return;
+            for(var i=0;i<WORDS.length;i++){
+              if(t.indexOf(WORDS[i])>=0){
+                var target=el.closest(".modal,.card,.panel,section,form") || el.parentElement || el;
+                if(target===document.body) target=el;
+                target.style.display="none";
+                target.dataset.accKilled="1";
+                break;
+              }
+            }
+          });
+        }catch(e){}
+      }
+      hideAll();
+      document.addEventListener("DOMContentLoaded",hideAll);
+      setInterval(hideAll,700);
+    })();
+    </script>
+
+
+    <style id="noSetStyles">
+      /* حذف لوحة الإعدادات بالكامل */
+      button[data-tab="settings"],#setUser,#setSchool,#setData,
+      #tabSettings,#settings,#setPanel,#setBox,#settingsPanel{display:none!important}
+    </style>
+    <script id="noSetJs">
+    (function(){
+      function kill(){
+        try{
+          var b=document.querySelector('button[data-tab="settings"]');
+          if(b){
+            if(b.parentElement && b.parentElement.children.length===1) b.parentElement.style.display="none";
+            b.style.display="none";
+          }
+          Array.prototype.forEach.call(document.querySelectorAll("h1,h2,h3,.modal,.card,section"),function(el){
+            var t=(el.textContent||"").trim();
+            if(t.indexOf("لوحة الإعدادات")>=0){
+              var box=el.closest(".modal,section,.card")||el;
+              box.style.display="none"; box.setAttribute("data-set-killed","1");
+            }
+          });
+          var sec=document.getElementById("settings");
+          if(sec) sec.style.display="none";
+        }catch(e){}
+      }
+      kill();
+      document.addEventListener("DOMContentLoaded",kill);
+      setInterval(kill,700);
+    })();
+    </script>
+
+
+<style id="asStyles">
+#asBtn{position:fixed;inset-inline-start:14px;bottom:78px;z-index:9998;width:46px;height:46px;border-radius:50%;
+ border:none;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:1.25rem;cursor:pointer;
+ box-shadow:0 8px 20px rgba(79,70,229,.35)}
+#asModal{position:fixed;inset:0;z-index:9999;background:rgba(17,24,39,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+#asModal[hidden]{display:none}
+.as-card{background:#fff;width:min(680px,96vw);max-height:92vh;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.as-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff}
+.as-head b{font-size:1.05rem}
+.as-x{border:none;background:rgba(255,255,255,.2);color:#fff;width:30px;height:30px;border-radius:9px;font-size:1rem;cursor:pointer}
+.as-tabs{display:flex;gap:6px;padding:8px 12px;background:#f8f8fc;border-bottom:1px solid #ecebf5;overflow:auto}
+.as-tab{border:1px solid #e9e7f3;background:#fff;color:#4c1d95;font-weight:800;font-size:.78rem;padding:7px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.as-tab.on{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.as-body{padding:14px 16px;overflow:auto}
+.as-sec{display:none;flex-direction:column;gap:10px}
+.as-sec.on{display:flex}
+.as-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.as-lab{display:block;font-size:.74rem;font-weight:800;color:#374151;margin-bottom:4px}
+.as-in,.as-sel{width:100%;height:36px;min-height:36px;border:1.5px solid #e4e2ef;border-radius:10px;background:#fbfbfe;padding:0 10px;font-family:inherit;font-size:.85rem;font-weight:700;color:#1f2937}
+.as-in:focus,.as-sel:focus{outline:none;border-color:#7c3aed;background:#fff;box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.as-days{display:flex;flex-wrap:wrap;gap:6px}
+.as-day{border:1.5px solid #e4e2ef;background:#fff;border-radius:9px;padding:6px 10px;font-size:.76rem;font-weight:800;cursor:pointer;color:#4b5563}
+.as-day.on{background:#ecfdf5;border-color:#34d399;color:#065f46}
+.as-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #eee9f8;border-radius:10px;padding:8px 10px;background:#fdfdff}
+.as-row span{font-size:.78rem;font-weight:700;color:#374151}
+.as-sw{position:relative;width:46px;height:26px;flex:0 0 auto}
+.as-sw input{opacity:0;width:0;height:0}
+.as-sw i{position:absolute;inset:0;background:#d1d5db;border-radius:20px;transition:.2s;cursor:pointer}
+.as-sw i:before{content:"";position:absolute;width:20px;height:20px;inset-inline-start:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.as-sw input:checked + i{background:#10b981}
+.as-sw input:checked + i:before{transform:translateX(-20px)}
+[dir] .as-sw input:checked + i:before{transform:translateX(-20px)}
+.as-foot{display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid #ecebf5;background:#fafaff;flex-wrap:wrap}
+.as-save{background:#059669;color:#fff;border:none;border-radius:11px;height:38px;padding:0 18px;font-weight:800;font-size:.85rem;cursor:pointer}
+.as-alt{background:#fff;color:#4c1d95;border:1.5px solid #ddd8f0;border-radius:11px;height:38px;padding:0 14px;font-weight:800;font-size:.8rem;cursor:pointer}
+.as-msg{font-size:.76rem;font-weight:800;color:#065f46}
+.as-hint{font-size:.72rem;color:#6b7280;font-weight:600;line-height:1.6}
+html.as-dark{filter:invert(.92) hue-rotate(180deg)}
+html.as-dark img{filter:invert(1) hue-rotate(180deg)}
+</style>
+<button id="asBtn" type="button" title="إعدادات البرنامج">⚙️</button>
+<div id="asModal" hidden>
+  <div class="as-card">
+    <div class="as-head"><b>⚙️ إعدادات البرنامج</b><button class="as-x" type="button" id="asClose">✕</button></div>
+    <div class="as-tabs">
+      <button class="as-tab on" type="button" data-s="school">🏫 المدرسة</button>
+      <button class="as-tab" type="button" data-s="time">⏰ الدوام والحصص</button>
+      <button class="as-tab" type="button" data-s="print">🖨️ الطباعة</button>
+      <button class="as-tab" type="button" data-s="data">💾 البيانات</button>
+      <button class="as-tab" type="button" data-s="look">🎨 المظهر</button>
     </div>
-    <div style="text-align:right;margin-bottom:10px">
-      <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">رقم الموبايل</label>
-      <input id="regPhone" placeholder="07XXXXXXXXX" inputmode="numeric" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:800;direction:ltr;text-align:center;letter-spacing:1.5px;box-sizing:border-box">
+    <div class="as-body">
+      <div class="as-sec on" data-s="school">
+        <div class="as-grid">
+          <div><label class="as-lab">اسم المدرسة</label><input id="asSchool" class="as-in" placeholder="مدرسة …"></div>
+          <div><label class="as-lab">اسم المدير</label><input id="asPrincipal" class="as-in" placeholder="الأستاذ …"></div>
+          <div><label class="as-lab">المعاون / المعاونون</label><input id="asVice" class="as-in" placeholder="الأستاذ …"></div>
+          <div><label class="as-lab">العام الدراسي</label><input id="asYear" class="as-in" placeholder="2026 - 2027"></div>
+          <div><label class="as-lab">الفصل الدراسي</label>
+            <select id="asTerm" class="as-sel"><option>الفصل الأول</option><option>الفصل الثاني</option><option>السنة كاملة</option></select></div>
+          <div><label class="as-lab">هاتف المدرسة</label><input id="asPhone" class="as-in" placeholder="07XXXXXXXXX"></div>
+        </div>
+        <div><label class="as-lab">العنوان</label><input id="asAddress" class="as-in" placeholder="بغداد - …"></div>
+        <div><label class="as-lab">نص أسفل الجدول (توقيع/ملاحظة)</label><input id="asFooter" class="as-in" placeholder="مثال: إعداد المعاون …"></div>
+      </div>
+
+      <div class="as-sec" data-s="time">
+        <div><label class="as-lab">أيام الدوام</label><div class="as-days" id="asDays"></div></div>
+        <div class="as-grid">
+          <div><label class="as-lab">عدد الحصص باليوم</label><input id="asLessons" type="number" min="1" max="12" class="as-in"></div>
+          <div><label class="as-lab">مدة الحصة (دقيقة)</label><input id="asMinutes" type="number" min="20" max="90" class="as-in"></div>
+          <div><label class="as-lab">بداية الدوام</label><input id="asStart" type="time" class="as-in"></div>
+          <div><label class="as-lab">الاستراحة بعد الحصة رقم</label><input id="asBreakAfter" type="number" min="0" max="12" class="as-in"></div>
+          <div><label class="as-lab">مدة الاستراحة (دقيقة)</label><input id="asBreakLen" type="number" min="0" max="60" class="as-in"></div>
+          <div><label class="as-lab">حد الحصص المتتالية للمعلم</label><input id="asMaxRow" type="number" min="1" max="8" class="as-in"></div>
+        </div>
+        <div class="as-hint">تُستخدم أوقات الحصص تلقائياً في الطباعة وفي جدول المعلمين.</div>
+      </div>
+
+      <div class="as-sec" data-s="print">
+        <div class="as-grid">
+          <div><label class="as-lab">مقاس الورق</label><select id="asPaper" class="as-sel"><option>A4</option><option>A3</option></select></div>
+          <div><label class="as-lab">الاتجاه</label><select id="asOrient" class="as-sel"><option value="portrait">طولي</option><option value="landscape">عرضي</option></select></div>
+          <div><label class="as-lab">حجم الخط</label><select id="asFont" class="as-sel"><option value="s">صغير</option><option value="m">متوسط</option><option value="l">كبير</option></select></div>
+          <div><label class="as-lab">الهوامش (ملم)</label><input id="asMargin" type="number" min="0" max="30" class="as-in"></div>
+        </div>
+        <div class="as-row"><span>إظهار الشعار في الطباعة</span><label class="as-sw"><input type="checkbox" id="asShowLogo"><i></i></label></div>
+        <div class="as-row"><span>إظهار أسماء المعلمين في جدول المدرسة</span><label class="as-sw"><input type="checkbox" id="asShowTeachers"><i></i></label></div>
+        <div class="as-row"><span>إظهار النصاب الأسبوعي</span><label class="as-sw"><input type="checkbox" id="asShowLoad"><i></i></label></div>
+        <div class="as-row"><span>تلوين المواد تلقائياً</span><label class="as-sw"><input type="checkbox" id="asColors"><i></i></label></div>
+        <div class="as-row"><span>كل معلم بصفحة مستقلة</span><label class="as-sw"><input type="checkbox" id="asTeacherPage"><i></i></label></div>
+      </div>
+
+      <div class="as-sec" data-s="data">
+        <div class="as-hint">البيانات محفوظة على جهازك فقط ✗ — خذ نسخة احتياطية دورياً ✔.</div>
+        <div class="as-row"><span>نسخة احتياطية تلقائية عند الإغلاق</span><label class="as-sw"><input type="checkbox" id="asAutoBak"><i></i></label></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="as-alt" id="asExport">⬇️ تنزيل نسخة احتياطية</button>
+          <button type="button" class="as-alt" id="asExportText">📋 حفظ يدوي (نص)</button>
+          <button type="button" class="as-alt" id="asImportBtn">⬆️ استيراد نسخة</button>
+          <input type="file" id="asImport" accept=".json,application/json" style="display:none">
+          <button type="button" class="as-alt" id="asPrintAll">🖨️ طباعة سريعة</button>
+        </div>
+        <div class="as-hint" id="asBakInfo"></div>
+      </div>
+
+      <div class="as-sec" data-s="look">
+        <div class="as-row"><span>الوضع الليلي</span><label class="as-sw"><input type="checkbox" id="asDark"><i></i></label></div>
+        <div class="as-grid">
+          <div><label class="as-lab">اللون الرئيسي</label><select id="asAccent" class="as-sel">
+            <option value="#4f46e5">بنفسجي</option><option value="#0ea5e9">أزرق</option>
+            <option value="#059669">أخضر</option><option value="#b45309">برتقالي</option></select></div>
+          <div><label class="as-lab">حجم واجهة البرنامج</label><select id="asUi" class="as-sel">
+            <option value="0.95">صغير</option><option value="1">وسط</option><option value="1.08">كبير</option></select></div>
+        </div>
+        <div class="as-row"><span>إخفاء التلميحات الجانبية</span><label class="as-sw"><input type="checkbox" id="asHideHints"><i></i></label></div>
+      </div>
     </div>
-    <div style="text-align:right;margin-bottom:10px">
-      <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">رمز الدخول</label>
-      <input id="regPw" type="password" placeholder="4 أحرف على الأقل" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;text-align:center;letter-spacing:3px;box-sizing:border-box">
+    <div class="as-foot">
+      <button class="as-save" type="button" id="asSave">💾 حفظ الإعدادات</button>
+      <button class="as-alt" type="button" id="asReset">↺ استعادة الافتراضي</button>
+      <span class="as-msg" id="asMsg"></span>
     </div>
-    <div style="text-align:right;margin-bottom:14px">
-      <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">تأكيد الرمز</label>
-      <input id="regPw2" type="password" placeholder="أعد كتابة الرمز" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;text-align:center;letter-spacing:3px;box-sizing:border-box">
-    </div>
-    <button type="button" onclick="regGoStep2()" style="width:100%;height:43px;border:none;border-radius:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:.89rem;font-weight:800;cursor:pointer;box-shadow:0 7px 18px rgba(22,163,74,.26);margin-bottom:8px">التالي: بيانات المدرسة ←</button>
-    <button type="button" onclick="regCancel()" style="width:100%;height:43px;border:1.5px solid #ddd6fe;border-radius:12px;background:#fff;color:#6d28d9;font-size:.89rem;font-weight:800;cursor:pointer">إلغاء</button>
-    <p id="regMsg1" style="margin:8px 0 0;color:#dc2626;font-weight:700;font-size:.78rem;text-align:center;min-height:14px"></p>
   </div>
 </div>
-
-<!-- ===== شاشة الخطوة 2: بيانات المدرسة ===== -->
-<div id="regStep2" hidden style="position:fixed;inset:0;background:rgba(30,10,60,.55);z-index:99999;display:none;place-items:center;padding:16px" onclick="if(event.target===this)regCancel()">
-  <div onclick="event.stopPropagation()" style="background:#fff;border-radius:20px;padding:20px;width:min(480px,94vw);max-height:96vh;overflow-y:auto;text-align:center;box-shadow:0 20px 50px rgba(76,29,149,.22)">
-    <img src="logo.png" alt="" style="width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #ede9fe;margin-bottom:8px">
-    <h2 style="margin:0 0 4px;font-size:1.1rem;color:#1e1b4b;font-weight:800">بيانات المدرسة</h2>
-    <div style="font-size:.75rem;color:#7c3aed;font-weight:700;margin-bottom:14px">الخطوة ٢ من ٢ — مدرستك</div>
-    <div style="text-align:right;margin-bottom:10px">
-      <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">اسم المدرسة *</label>
-      <input id="regSchoolName" placeholder="مثال: مدرسة بدور بغداد الابتدائية" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;box-sizing:border-box">
-    </div>
-    <div style="text-align:right;margin-bottom:10px">
-      <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">المديرية / الجهة</label>
-      <input id="regDirectorate" placeholder="المديرية العامة لتربية بغداد الرصافة الأولى" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;box-sizing:border-box">
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-      <div style="text-align:right">
-        <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">اسم المدير</label>
-        <input id="regManager" placeholder="الاسم الكامل" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;box-sizing:border-box">
-      </div>
-      <div style="text-align:right">
-        <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">صفة المدير</label>
-        <select id="regManagerTitle" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;box-sizing:border-box">
-          <option value="مدير المدرسة">مدير المدرسة</option>
-          <option value="مديرة المدرسة">مديرة المدرسة</option>
-          <option value="إدارة المدرسة">إدارة المدرسة</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
-      <div style="text-align:right">
-        <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">رمز المدرسة</label>
-        <input id="regSchoolCode" placeholder="SCH-1234" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;box-sizing:border-box;direction:ltr;text-align:center">
-      </div>
-      <div style="text-align:right">
-        <label style="display:block;font-size:.75rem;font-weight:700;color:#4b5563;margin-bottom:4px">العام الدراسي</label>
-        <input id="regYear" placeholder="2025-2026" style="width:100%;height:41px;padding:4px 12px;border:1.5px solid #e8e6f0;border-radius:12px;background:#fcfcfe;font-size:.92rem;font-weight:600;box-sizing:border-box;direction:ltr;text-align:center">
-      </div>
-    </div>
-    <button type="button" onclick="regFinish()" style="width:100%;height:43px;border:none;border-radius:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:.89rem;font-weight:800;cursor:pointer;box-shadow:0 7px 18px rgba(22,163,74,.26);margin-bottom:8px">✅ إنشاء الحساب والمدرسة</button>
-    <button type="button" onclick="regBackStep1()" style="width:100%;height:43px;border:1.5px solid #ddd6fe;border-radius:12px;background:#fff;color:#6d28d9;font-size:.89rem;font-weight:800;cursor:pointer">→ رجوع للخطوة ١</button>
-    <p id="regMsg2" style="margin:8px 0 0;color:#dc2626;font-weight:700;font-size:.78rem;text-align:center;min-height:14px"></p>
-  </div>
-</div>
-
-<script>
-window._regTemp = { name: "", phone: "", pw: "" };
-
-window.regStart = function(){
-  const s1 = document.getElementById("regStep1");
-  const s2 = document.getElementById("regStep2");
-  const lm = document.getElementById("loginMain");
-  const ot = document.getElementById("otpStep");
-  if(lm) lm.hidden = true;
-  if(ot) ot.hidden = true;
-  if(s2) s2.hidden = true;
-  if(s1){ s1.hidden = false; s1.style.display = "grid"; }
-  if(document.getElementById("regName")) document.getElementById("regName").focus();
-};
-
-window.regCancel = function(){
-  const s1 = document.getElementById("regStep1");
-  const s2 = document.getElementById("regStep2");
-  const lm = document.getElementById("loginMain");
-  if(s1){ s1.hidden = true; s1.style.display = "none"; }
-  if(s2){ s2.hidden = true; s2.style.display = "none"; }
-  if(lm) lm.hidden = false;
-  if(document.getElementById("regMsg1")) document.getElementById("regMsg1").textContent = "";
-  if(document.getElementById("regMsg2")) document.getElementById("regMsg2").textContent = "";
-};
-
-window.regBackStep1 = function(){
-  const s1 = document.getElementById("regStep1");
-  const s2 = document.getElementById("regStep2");
-  if(s2){ s2.hidden = true; s2.style.display = "none"; }
-  if(s1){ s1.hidden = false; s1.style.display = "grid"; }
-};
-
-window.regGoStep2 = function(){
-  const name = ((document.getElementById("regName") || {}).value || "").trim();
-  const phone = ((document.getElementById("regPhone") || {}).value || "").trim();
-  const pw = ((document.getElementById("regPw") || {}).value || "").trim();
-  const pw2 = ((document.getElementById("regPw2") || {}).value || "").trim();
-  const m = document.getElementById("regMsg1");
-  const err = (s) => { if(m) m.textContent = s; return false; };
-
-  if(name.length < 3) return err("اكتب الاسم الكامل (3 أحرف على الأقل)");
-  if(normAcc(phone).length < 10) return err("رقم الموبايل غير صحيح");
-  if(pw.length < 4) return err("رمز الدخول قصير (4 أحرف على الأقل)");
-  if(pw !== pw2) return err("تأكيد الرمز غير مطابق");
-
-  const a = loadAuth();
-  if(a.users && a.users[normAcc(phone)]){
-    return err("هذا الرقم مسجّل مسبقاً — استخدم «دخول» أو «نسيت رمز الدخول»");
-  }
-
-  window._regTemp = { name: name, phone: normAcc(phone), pw: pw };
-  err("");
-  const s1 = document.getElementById("regStep1");
-  const s2 = document.getElementById("regStep2");
-  if(s1){ s1.hidden = true; s1.style.display = "none"; }
-  if(s2){ s2.hidden = false; s2.style.display = "grid"; }
-  if(document.getElementById("regSchoolName")) document.getElementById("regSchoolName").focus();
-};
-
-window.regFinish = function(){
-  const schoolName = ((document.getElementById("regSchoolName") || {}).value || "").trim();
-  const directorate = ((document.getElementById("regDirectorate") || {}).value || "").trim();
-  const manager = ((document.getElementById("regManager") || {}).value || "").trim();
-  const managerTitle = ((document.getElementById("regManagerTitle") || {}).value) || "مدير المدرسة";
-  const schoolCode = ((document.getElementById("regSchoolCode") || {}).value || "").trim().toUpperCase();
-  const year = ((document.getElementById("regYear") || {}).value || "").trim();
-  const m = document.getElementById("regMsg2");
-  const err = (s) => { if(m) m.textContent = s; return false; };
-
-  if(schoolName.length < 3) return err("اكتب اسم المدرسة (3 أحرف على الأقل)");
-
-  err("");
-  const r = localRegister(window._regTemp.phone, window._regTemp.pw);
-  if(!r || !r.ok){
-    const map = { account: "رقم الموبايل غير صحيح", pass: "رمز الدخول قصير", taken: "هذا الرقم مسجّل مسبقاً" };
-    return err(map[(r && r.reason) || ""] || "تعذّر إنشاء الحساب");
-  }
-
-  window._acc = r.account;
-  db = blankDb();
-  db.settings.schoolName = schoolName;
-  db.settings.userName = window._regTemp.name;
-  db.settings.schoolManager = manager;
-  db.settings.schoolManagerTitle = managerTitle;
-  db.settings.schoolCode = schoolCode || ("SCH-" + r.account.slice(-4));
-  db.settings.linkedSchool = r.account;
-  db.settings.directorate = directorate;
-
-  try{
-    if(typeof offSettings === "function"){
-      offSettings();
-      db.settings.off.directorate = directorate || db.settings.off.directorate;
-      db.settings.off.year = year || "";
-      db.settings.off.manager = manager || window._regTemp.name;
-    }
-  }catch(e){}
-
-  hist = [];
-  _lastSaved = "";
-  _editTs = Date.now();
-  save(true);
-  try{ flushSave(); }catch(e){}
-  try{ syncToCloudNow(false); }catch(e){}
-
-  try{ localStorage.setItem("tt_user_name_" + r.account, window._regTemp.name); }catch(e){}
-  try{ okNote("✅ تم إنشاء حسابك ومدرستك — أهلاً " + window._regTemp.name); }catch(e){}
-
-  ["regStep1", "regStep2", "loginMain", "otpStep"].forEach(function(id){
-    const el = document.getElementById(id);
-    if(el){ el.hidden = true; el.style.display = "none"; }
-  });
-  if(document.getElementById("loginBox")) document.getElementById("loginBox").hidden = true;
-
-  try{
-    const btn = document.querySelector('nav.tabs button[data-tab="classes"]');
-    if(btn) tab(btn);
-  }catch(e){}
-  try{ renderClasses(); renderSettings(); }catch(e){}
-  try{ applyGate(localStatus()); }catch(e){}
-  try{ openSubInfoOrPayment(); }catch(e){}
-};
-
-document.addEventListener("DOMContentLoaded", function(){
-  const buttons = document.querySelectorAll("#loginMain button");
-  buttons.forEach(function(b){
-    const t = (b.textContent || "").trim();
-    if(t.indexOf("حساب جديد") >= 0 && t.indexOf("✨") >= 0){
-      b.setAttribute("onclick", "regStart()");
-    }
-  });
-});
-
-// استبدال storageKey
-const _origStorageKey = window.storageKey;
-window.storageKey = function(){
-  const acc = window._acc || "";
-  if(!acc) return KEY + "_guest_" + Date.now();
-  return KEY + "_" + acc;
-};
-
-// دالة تنقية المفاتيح
-function purgeAccountKeys(acc){
-  if(!acc) return;
-  const A = normAcc(acc);
-  if(!A) return;
-  const del = [];
-  for(let i = 0; i < localStorage.length; i++){
-    const k = localStorage.key(i) || "";
-    if(k === AUTH_KEY) continue;
-    if(k.indexOf(A) >= 0) del.push(k);
-    if(k === KEY + "_guest") del.push(k);
-  }
-  del.forEach(k => { try{ localStorage.removeItem(k); }catch(e){} });
-  try{ localStorage.removeItem(KEY + "_guest"); }catch(e){}
-}
-
-// اعتراض adoptAccount
-const _origAdoptAccount = window.adoptAccount;
-window.adoptAccount = function(acc, raw, force){
-  const next = normAcc(acc);
-  const prev = window._acc || "";
-  if(prev && prev !== next){
-    try{ flushSave(); }catch(e){}
-    purgeAccountKeys(prev);
-  }
-  return _origAdoptAccount.apply(this, arguments);
-};
-
-// إصلاح _doReset
-const _origReset = window._doReset;
-window._doReset = function(){
-  const acc = window._acc || "";
-  const school = (db.settings && db.settings.schoolName) || "";
-  const days = (db.settings && db.settings.days) || [0,1,2,3,4];
-  const periods = (db.settings && db.settings.periods) || 6;
-  db = blankDb();
-  db.settings.days = days;
-  db.settings.periods = periods;
-  db.settings.schoolName = school;
-  hist = [];
-  _lastSaved = "";
-  try{
-    localStorage.removeItem(storageKey());
-    if(!acc) localStorage.removeItem(KEY + "_guest");
-  }catch(e){}
-  save(true);
-  try{ flushSave(); }catch(e){}
-  try{
-    renderTeachers(); renderClasses(); renderSubjects(); renderSettings();
-    fillTeacherSelect(); fillClassSelect(); fillSecMulti();
-    if(typeof renderViews === "function") renderViews();
-  }catch(e){}
-  okNote("تم تصفير كل البيانات");
-};
-</script>
-
-<script>
-// تحديث واجهة معلومات المستخدم وربط جوجل
-document.addEventListener("DOMContentLoaded", function(){
-  const a = loadAuth();
-  if (a && a.session) {
-    const acc = normAcc(a.session);
-    if(acc === "07813332882" || acc.endsWith("7813332882")){
-      if(document.getElementById("userNameShow")) document.getElementById("userNameShow").textContent = "الأستاذ عبيده";
-      if(document.getElementById("userPhoneShow")) document.getElementById("userPhoneShow").textContent = "07813332882";
-      if(document.getElementById("phoneAccShow")) document.getElementById("phoneAccShow").textContent = "07813332882";
-      if(document.getElementById("userEmailShow")) document.getElementById("userEmailShow").textContent = "obe092@gmail.com";
-      if(document.getElementById("googleEmailShow")) document.getElementById("googleEmailShow").textContent = "obe092@gmail.com";
-      if(document.getElementById("mySchoolCode")) document.getElementById("mySchoolCode").textContent = "SCH-2882";
-    }
-  }
-});
-</script>
-
-
-<!-- ===== إصلاح الشاشة البيضاء: إظهار شاشة الدخول ===== -->
-<script id="fixBlankJs">
+<script id="asJs">
 (function(){
-  var BASE="https://schol-table-bot.iq-school-timetable.workers.dev";
-  function reveal(){
+  var KEY="__app_settings_v1";
+  var DEF={school:"",principal:"",vice:"",year:"2026 - 2027",term:"الفصل الأول",phone:"",address:"",footer:"",
+    days:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس"],lessons:7,minutes:45,start:"08:00",
+    breakAfter:3,breakLen:20,maxRow:4,paper:"A4",orient:"portrait",font:"m",margin:10,
+    showLogo:true,showTeachers:true,showLoad:true,colors:true,teacherPage:false,autoBak:true,
+    dark:false,accent:"#4f46e5",ui:1,hideHints:false};
+  var ALLDAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  var S={};
+  function load(){ try{ S=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){ S=Object.assign({},DEF); } }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); window.APP_SETTINGS=S; }catch(e){} }
+  function $(id){ return document.getElementById(id); }
+  function msg(t,ok){ var m=$("asMsg"); if(!m) return; m.textContent=t; m.style.color=ok?"#065f46":"#b91c1c"; setTimeout(function(){ if(m.textContent===t) m.textContent=""; },2600); }
+
+  function buildDays(){
+    var w=$("asDays"); if(!w) return; w.innerHTML="";
+    ALLDAYS.forEach(function(d){
+      var b=document.createElement("button"); b.type="button"; b.className="as-day"+(S.days.indexOf(d)>=0?" on":"");
+      b.textContent=d;
+      b.onclick=function(){ var i=S.days.indexOf(d); if(i>=0) S.days.splice(i,1); else S.days.push(d); b.className="as-day"+(i>=0?"":" on"); };
+      w.appendChild(b);
+    });
+  }
+  function fill(){
+    [["asSchool","school"],["asPrincipal","principal"],["asVice","vice"],["asYear","year"],["asPhone","phone"],
+     ["asAddress","address"],["asFooter","footer"],["asLessons","lessons"],["asMinutes","minutes"],["asStart","start"],
+     ["asBreakAfter","breakAfter"],["asBreakLen","breakLen"],["asMaxRow","maxRow"],["asMargin","margin"]].forEach(function(p){
+      var el=$(p[0]); if(el) el.value=S[p[1]]===undefined?"":S[p[1]];
+    });
+    [["asTerm","term"],["asPaper","paper"],["asOrient","orient"],["asFont","font"],["asAccent","accent"],["asUi","ui"]].forEach(function(p){
+      var el=$(p[0]); if(el) el.value=S[p[1]];
+    });
+    ["showLogo","showTeachers","showLoad","colors","teacherPage","autoBak","dark","hideHints"].forEach(function(k){
+      var el=$(k); if(el) el.checked=!!S[k];
+    });
+    buildDays();
+    try{ var b=localStorage.getItem(KEY+"__bak"); if($("asBakInfo")) $("asBakInfo").textContent=b?("آخر نسخة احتياطية: "+b):"لم تُؤخذ نسخة بعد."; }catch(e){}
+  }
+  function collect(){
+    [["asSchool","school"],["asPrincipal","principal"],["asVice","vice"],["asYear","year"],["asPhone","phone"],
+     ["asAddress","address"],["asFooter","footer"],["asLessons","lessons"],["asMinutes","minutes"],["asStart","start"],
+     ["asBreakAfter","breakAfter"],["asBreakLen","breakLen"],["asMaxRow","maxRow"],["asMargin","margin"]].forEach(function(p){
+      var el=$(p[0]); if(el) S[p[1]]=(el.type==="number")?(+el.value||0):el.value.trim();
+    });
+    [["asTerm","term"],["asPaper","paper"],["asOrient","orient"],["asFont","font"],["asAccent","accent"],["asUi","ui"]].forEach(function(p){
+      var el=$(p[0]); if(el) S[p[1]]=el.value;
+    });
+    S.ui=+S.ui||1;
+    ["showLogo","showTeachers","showLoad","colors","teacherPage","autoBak","dark","hideHints"].forEach(function(k){
+      var el=$(k); if(el) S[k]=!!el.checked;
+    });
+  }
+  function apply(){
     try{
-      var cands=[].slice.call(document.querySelectorAll('[id*=login],[class*=login],[id*=Login],[class*=Login],[id*=auth],[class*=auth]'));
-      for(var i=0;i<cands.length;i++){
-        var el=cands[i];
-        if(!el||el.tagName==="SCRIPT"||el.tagName==="STYLE") continue;
-        if(el.children.length===0) continue;
-        el.style.display="flex"; el.style.visibility="visible"; el.style.opacity="1";
-        el.removeAttribute("hidden"); el.style.zIndex="99999";
-        if(el.parentElement) el.parentElement.style.display="";
-        return true;
+      // حجم الواجهة
+      document.documentElement.style.fontSize=(16*S.ui)+"px";
+      // الوضع الليلي
+      document.documentElement.classList.toggle("as-dark",!!S.dark);
+      // اللون الرئيسي
+      document.documentElement.style.setProperty("--as-accent",S.accent);
+      // مقاس الطباعة
+      var st=$("asPrintRule")||document.createElement("style");
+      st.id="asPrintRule";
+      st.textContent="@page{size:"+S.paper+" "+S.orient+";margin:"+(+S.margin||10)+"mm}";
+      document.head.appendChild(st);
+      // اسم المدرسة على الترويسة إن وُجد
+      if(S.school){
+        var cands=document.querySelectorAll(".brand,.logo-text,.app-title,.school-name,header h1,header h2");
+        Array.prototype.forEach.call(cands,function(el){
+          if(!el.dataset.asOrig) el.dataset.asOrig=el.textContent;
+          if(el.dataset.asOrig.indexOf("نظام الجداول")>=0) el.textContent=S.school;
+        });
+        if(S.school) document.title=S.school+" — نظام الجداول";
+      }
+      // إخفاء التلميحات
+      Array.prototype.forEach.call(document.querySelectorAll(".hint,.note,.muted"),function(el){
+        if(el.dataset.asFixed) return;
+        if(S.hideHints) el.style.display="none";
+      });
+      window.APP_SETTINGS=S;
+    }catch(e){}
+  }
+  function pickName(){
+    return "نسخة_احتياطية_"+new Date().toISOString().slice(0,10)+".json";
+  }
+  function viaBridge(txt,name){
+    // يحاول الحفظ عبر جسر برنامج الكمبيوتر (pywebview)
+    try{
+      var api=(window.pywebview&&window.pywebview.api)||null;
+      if(!api) return false;
+      var keys=Object.keys(api).filter(function(k){ return /save|write|backup|export|download|file/i.test(k); });
+      for(var i=0;i<keys.length;i++){
+        try{
+          var r=api[keys[i]](name,txt);
+          if(r&&r.then) r.then(function(){},function(){});
+          return true;
+        }catch(e){}
       }
     }catch(e){}
     return false;
   }
-  function bodyText(){ return ((document.body&&document.body.innerText)||"").trim().length; }
-  function ensureBtn(){
-    if(document.getElementById("fbBtn")) return;
-    var b=document.createElement("button");
-    b.id="fbBtn"; b.type="button";
-    b.textContent="🔑 إظهار شاشة الدخول";
-    b.style.cssText="position:fixed;left:12px;bottom:12px;z-index:99998;background:#059669;color:#fff;border:none;"+
-      "border-radius:14px;height:46px;padding:0 16px;font-weight:800;font-size:.82rem;cursor:pointer;"+
-      "box-shadow:0 6px 20px rgba(5,150,105,.3)";
-    b.addEventListener("click",function(){
-      if(!reveal()){
-        try{ location.href=BASE+"/auth/google/start"; }catch(e){}
-      }else{
-        b.textContent="✅ ظهرت ✗";
+  function viaLink(txt,name){
+    try{
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));
+      a.download=name;
+      a.style.display="none";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ try{ URL.revokeObjectURL(a.href); a.remove(); }catch(e){} },4000);
+      return true;
+    }catch(e){ return false; }
+  }
+  function showText(txt,name){
+    try{
+      var old=document.getElementById("asTextModal");
+      if(old) old.remove();
+      var w=document.createElement("div");
+      w.id="asTextModal";
+      w.style.cssText="position:fixed;inset:0;z-index:10000;background:rgba(76,29,149,.5);display:flex;align-items:center;justify-content:center;padding:10px";
+      w.innerHTML='<div style="background:#fff;width:min(640px,96vw);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">'+
+        '<div style="padding:11px 14px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;font-weight:800">💾 نسخة احتياطية — احفظها كملف</div>'+
+        '<div style="padding:10px 14px;font-size:.75rem;color:#6b7280;font-weight:700">انسخ النص كامل ← والصقه في ملف نصي واحفظه بامتداد .json ← وللاسترداد استخدم «استيراد نسخة».</div>'+
+        '<textarea id="asTextArea" dir="ltr" style="margin:0 14px;height:44vh;border:1.5px solid #e4e0f3;border-radius:11px;padding:9px;font-family:monospace;font-size:.72rem"></textarea>'+
+        '<div style="display:flex;gap:8px;padding:11px 14px;flex-wrap:wrap">'+
+        '<button type="button" id="asCopyBtn" style="background:#059669;color:#fff;border:none;border-radius:12px;height:40px;padding:0 18px;font-weight:800;cursor:pointer">📋 انسخ الكل</button>'+
+        '<button type="button" id="asDlBtn" style="background:#fff;color:#4c1d95;border:1.5px solid #ddd8f0;border-radius:12px;height:40px;padding:0 15px;font-weight:800;cursor:pointer">⬇️ جرّب التنزيل مرة ثانية</button>'+
+        '<button type="button" id="asCloseText" style="background:#fff;color:#b91c1c;border:1.5px solid #fecaca;border-radius:12px;height:40px;padding:0 15px;font-weight:800;cursor:pointer">إغلاق</button>'+
+        '<span id="asTextMsg" style="font-size:.75rem;font-weight:800;color:#065f46;align-self:center"></span></div>'+
+        '</div>';
+      document.body.appendChild(w);
+      var ta=document.getElementById("asTextArea");
+      ta.value=txt;
+      document.getElementById("asCopyBtn").onclick=function(){
+        try{
+          ta.focus(); ta.select();
+          var done=document.execCommand("copy");
+          if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){},function(){}); done=true; }
+          document.getElementById("asTextMsg").textContent=done?"✅ انُسخ — الصقه بملف واحفظه":"⚠️ انسخ يدوياً (Ctrl+A ثم Ctrl+C)";
+        }catch(e){}
+      };
+      document.getElementById("asDlBtn").onclick=function(){
+        var ok2=viaBridge(txt,name)||viaLink(txt,name);
+        document.getElementById("asTextMsg").textContent=ok2?"✅ جُرّب التنزيل — شوف مجلد التنزيلات":"⚠️ ما نزل — انسخ النص يدوياً";
+      };
+      document.getElementById("asCloseText").onclick=function(){ w.remove(); };
+      var fr=new FileReader();
+    }catch(e){}
+  }
+  function backup(silent, forceText){
+    try{
+      var out={_meta:{app:"timetable",at:new Date().toISOString(),settings:S},data:{}};
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i);
+        if(k===KEY||k===KEY+"__bak") continue;
+        out.data[k]=localStorage.getItem(k);
       }
-    });
-    document.body.appendChild(b);
+      var txt=JSON.stringify(out);
+      try{ localStorage.setItem(KEY+"__bak",new Date().toLocaleString()); }catch(e){}
+      if(silent) return txt;
+      var name=pickName();
+      var ok1=viaBridge(txt,name);
+      if(!ok1) ok1=viaLink(txt,name);
+      if(ok1){
+        msg("✅ طلبنا تنزيل النسخة — إذا ما نزلت اضغط «حفظ يدوي»",1);
+        if(!forceText) setTimeout(function(){ if(confirm("هل نزلت النسخة الاحتياطية بنجاح؟\n\nإذا لا ✗ اضغط Cancel وعرض لك النص لحفظه يدوياً.")) {} else { showText(txt,name); } },900);
+      }else{
+        showText(txt,name);
+      }
+    }catch(e){ msg("⚠️ تعذّر أخذ النسخة",0); }
   }
-  function tick(){
-    ensureBtn();
-    if(bodyText()===0) reveal();
+
+  function restore(file){
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{
+        var o=JSON.parse(fr.result);
+        var d=o&&o.data?o.data:o;
+        Object.keys(d).forEach(function(k){ try{ localStorage.setItem(k,d[k]); }catch(e){} });
+        if(o&&o._meta&&o._meta.settings){ S=Object.assign({},DEF,o._meta.settings); save(); }
+        msg("✅ تم الاستيراد — جاري إعادة التحميل…",1);
+        setTimeout(function(){ location.reload(); },900);
+      }catch(e){ msg("⚠️ ملف غير صالح",0); }
+    };
+    fr.readAsText(file);
   }
-  document.addEventListener("DOMContentLoaded",function(){ tick(); setTimeout(tick,900); setTimeout(tick,2500); });
-  setTimeout(tick,1200); setTimeout(tick,3200);
+  function open(){ var m=$("asModal"); if(!m) return; load(); fill(); m.hidden=false; }
+  function close(){ var m=$("asModal"); if(m) m.hidden=true; }
+
+  document.addEventListener("click",function(e){
+    var t=e.target;
+    if(t&&t.id==="asBtn") return open();
+    if(t&&t.id==="asClose") return close();
+    if(t&&t.classList&&t.classList.contains("as-tab")){
+      var s=t.getAttribute("data-s");
+      Array.prototype.forEach.call(document.querySelectorAll(".as-tab"),function(b){ b.classList.toggle("on",b===t); });
+      Array.prototype.forEach.call(document.querySelectorAll(".as-sec"),function(x){ x.classList.toggle("on",x.getAttribute("data-s")===s); });
+      return;
+    }
+    if(t&&t.id==="asModal") return close();
+    if(t&&t.id==="asSave"){ collect(); save(); apply(); msg("✅ حُفظت الإعدادات",1); return; }
+    if(t&&t.id==="asReset"){ S=Object.assign({},DEF); save(); fill(); apply(); msg("↺ رُجّع الافتراضي",1); return; }
+    if(t&&t.id==="asExport") return backup(false);
+    if(t&&t.id==="asExportText") return backup(false,true);
+    if(t&&t.id==="asImportBtn"){ var f=$("asImport"); if(f) f.click(); return; }
+    if(t&&t.id==="asPrintAll"){ try{ window.print(); }catch(e){} return; }
+  });
+  document.addEventListener("change",function(e){
+    if(e.target&&e.target.id==="asImport"&&e.target.files&&e.target.files[0]) restore(e.target.files[0]);
+  });
+  window.addEventListener("beforeunload",function(){ try{ collect(); save(); if(S.autoBak) backup(true); }catch(e){} });
+  load(); save();
+  document.addEventListener("DOMContentLoaded",function(){ load(); apply(); });
+  setTimeout(function(){ load(); apply(); },900);
+})();
+</script>
+
+
+<style id="asTabStyle">#asBtn{display:none!important}</style>
+<script id="asTabJs">
+(function(){
+  var GEAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"/></svg>';
+  function openPanel(){
+    try{
+      var m=document.getElementById("asModal");
+      if(m){ m.hidden=false; }
+      var b=document.getElementById("asBtn");
+      if(b) b.click();
+    }catch(e){}
+  }
+  function build(){
+    if(document.getElementById("asTabSet")) return;
+    var tabs=document.querySelectorAll("button[data-tab]");
+    if(!tabs.length) return;
+    var last=tabs[tabs.length-1];
+    var b=document.createElement("button");
+    b.id="asTabSet";
+    b.type="button";
+    b.innerHTML=GEAR+" الإعدادات";
+    b.addEventListener("click",function(ev){ ev.preventDefault(); ev.stopPropagation(); openPanel(); },true);
+    last.parentNode.appendChild(b);
+  }
+  build();
+  document.addEventListener("DOMContentLoaded",build);
+  setTimeout(build,900);
+  setTimeout(build,2500);
+  window.asOpenPanel=openPanel;
 })();
 </script>
 
