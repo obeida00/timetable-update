@@ -675,29 +675,83 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 }
 @page{margin:0}
 
-/* نافذة معلومات المستخدم الموسعة بدون سكرول */
+/* نافذة معلومات المستخدم المنظمة مع تبويبات */
 #setUser .modal-card {
-  width: min(900px, 98vw) !important;
-  max-height: 96vh !important;
+  width: min(780px, 96vw) !important;
+  max-height: 90vh !important;
   background: #ffffff !important;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
-#setUser .modal-card::-webkit-scrollbar { display: none; }
+#setUser .modal-head {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+#setUser .user-tabs-nav {
+  display: flex;
+  background: #f8fafc;
+  padding: 6px 14px;
+  gap: 8px;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+#setUser .user-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: .84rem;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all .2s;
+  white-space: nowrap;
+}
+#setUser .user-tab-btn:hover {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+#setUser .user-tab-btn.active {
+  background: #6d28d9;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(109,40,217,.25);
+}
 #setUser .modal-body-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 24px;
-  overflow: visible !important;
-  max-height: none !important;
+  padding: 18px 20px;
+  overflow-y: auto !important;
+  max-height: calc(90vh - 160px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px;
 }
-#setUser .full-width {
-  grid-column: 1 / -1;
+#setUser .user-tab-pane {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+  animation: userTabFade .2s ease;
 }
-
-@media (max-width: 768px) {
-  #setUser .modal-body-content { grid-template-columns: 1fr; }
+#setUser .user-tab-pane.active {
+  display: flex;
+}
+@keyframes userTabFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+#setUser .modal-foot {
+  padding: 12px 20px;
+  border-top: 1px solid #f1f5f9;
+  background: #f8fafc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
 }
 </style>
 </head>
@@ -1122,141 +1176,166 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <button type="button" class="modal-close-btn" onclick="$('setUser').hidden=true" title="إغلاق">✕</button>
     </div>
 
+    <!-- أزرار تقسيم التبويبات -->
+    <div class="user-tabs-nav">
+      <button type="button" class="user-tab-btn active" onclick="switchUserTab('tabProfile', this)">
+        <span>👤 الحساب والبيانات</span>
+      </button>
+      <button type="button" class="user-tab-btn" onclick="switchUserTab('tabTeam', this)">
+        <span>🏫 فريق العمل والمشاركة</span>
+      </button>
+      <button type="button" class="user-tab-btn" onclick="switchUserTab('tabIntegrations', this)">
+        <span>🌐 ربط Google والبوت</span>
+      </button>
+      <button type="button" class="user-tab-btn" onclick="switchUserTab('tabSecurity', this)">
+        <span>🔒 الأمان ورمز الدخول</span>
+      </button>
+    </div>
+
     <div class="modal-body-content">
-      <!-- MERGE_ACCOUNT: تحديث الشريط العلوي ليعرض الهاتف والإيميل معاً -->
-      <div class="info-banner full-width" style="grid-template-columns:1fr 1fr 1fr; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px">
-        <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
-          <span class="info-lbl" style="color:#64748b; font-size:.75rem">اسم المستخدم</span>
-          <strong id="userNameShow" class="info-val" style="color:#1e293b; font-size:.95rem">—</strong>
+      <!-- 1. تبويب الحساب والبيانات -->
+      <div id="tabProfile" class="user-tab-pane active">
+        <!-- شريط ملخص الحساب -->
+        <div class="info-banner" style="display:grid; grid-template-columns:1fr 1fr 1fr; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:14px; padding:16px; margin:0">
+          <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
+            <span class="info-lbl" style="color:#64748b; font-size:.75rem; font-weight:700">اسم المستخدم</span>
+            <strong id="userNameShow" class="info-val" style="color:#1e293b; font-size:.95rem; margin-top:2px; display:block">—</strong>
+          </div>
+          <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
+            <span class="info-lbl" style="color:#64748b; font-size:.75rem; font-weight:700">حساب الهاتف</span>
+            <strong id="userPhoneShow" class="info-val" style="color:#6d28d9; font-size:.95rem; direction:ltr; margin-top:2px; display:block">—</strong>
+          </div>
+          <div class="info-banner-item" style="text-align:center">
+            <span class="info-lbl" style="color:#64748b; font-size:.75rem; font-weight:700">حساب Google المرتبط</span>
+            <strong id="userEmailShow" class="info-val" style="color:#1e293b; font-size:.85rem; direction:ltr; word-break:break-all; margin-top:2px; display:block">—</strong>
+          </div>
         </div>
-        <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
-          <span class="info-lbl" style="color:#64748b; font-size:.75rem">حساب الهاتف</span>
-          <strong id="userPhoneShow" class="info-val" style="color:#6d28d9; font-size:.95rem; direction:ltr">—</strong>
-        </div>
-        <div class="info-banner-item" style="text-align:center">
-          <span class="info-lbl" style="color:#64748b; font-size:.75rem">حساب Google المرتبط</span>
-          <strong id="userEmailShow" class="info-val" style="color:#1e293b; font-size:.85rem; direction:ltr; word-break:break-all">—</strong>
+
+        <!-- تعديل اسم المستخدم -->
+        <div class="form-section-card" style="margin:0; padding:14px; background:#fff; border:1px solid #e2e8f0; border-radius:12px">
+          <span class="sec-label" style="font-weight:800; font-size:.88rem; color:#1e293b">👤 تعديل اسم المستخدم</span>
+          <p style="margin:2px 0 8px; font-size:.76rem; color:#64748b">يظهر هذا الاسم لزملائك في المدرسة وعند طباعة التقارير وتحديث الجدول.</p>
+          <div style="display:flex; gap:8px; align-items:center">
+            <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي / المعاون)" style="flex:1; height:40px; padding:6px 12px; border-radius:10px; font-weight:700; border:1.5px solid #cbd5e1">
+            <button class="btn g s" type="button" style="height:40px; padding:0 16px; border-radius:10px; font-weight:800" onclick="saveUserNameOnly()">حفظ الاسم</button>
+          </div>
         </div>
       </div>
 
-      <!-- SYSTEM_MERGE: بطاقة ربط البوت بمدرستي -->
-      <div class="form-section-card full-width" style="background:linear-gradient(135deg, #f0f9ff, #e0f2fe);border:1.5px solid #bae6fd;padding:16px;border-radius:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:44px;height:44px;border-radius:12px;background:#0284c7;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px"><path d="M21.5 4.5 2.5 11.5l6 2.5 2.5 6z"/></svg>
+      <!-- 2. تبويب فريق العمل والمشاركة -->
+      <div id="tabTeam" class="user-tab-pane">
+        <div class="form-section-card" style="background:#faf5ff; border:1.5px dashed #c084fc; padding:14px; border-radius:14px; margin:0">
+          <span class="sec-label" style="color:#6b21a8; font-weight:800; font-size:.92rem; display:flex; align-items:center; gap:6px">
+            🏫 ربط فريق العمل / المعاونين بنفس الجدول
+          </span>
+          <p style="margin:4px 0 10px; font-size:.78rem; color:#581c87; line-height:1.5">
+            يمكن لجميع معاوني وإداريي المدرسة مشاركة الجدول والتعديل عليه بالتزامن:
+          </p>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #e9d5ff; padding:8px 12px; border-radius:10px; margin-bottom:10px">
+            <span style="font-size:.82rem; font-weight:800; color:#4c1d95">رمز مدرستك للمشاركة:</span>
+            <div style="display:flex; align-items:center; gap:8px">
+              <strong id="mySchoolCode" style="font-size:1.05rem; color:#7c3aed; letter-spacing:1.5px; direction:ltr; font-weight:900">SCH-XXXX</strong>
+              <button class="btn w s" type="button" style="padding:4px 12px; font-size:.76rem; min-height:28px" onclick="copySchoolCode()">نسخ الرمز</button>
+            </div>
           </div>
-          <div>
-            <strong style="color:#0369a1;font-size:.95rem;display:block">ربط البوت بمدرستي (تيليكرام)</strong>
-            <span style="color:#0284c7;font-size:.78rem">افتح جدول مدرستك واستلم التقارير عبر البوت مباشرة</span>
+          <!-- قائمة أعضاء الفريق -->
+          <div id="teamMembersBox" style="display:block; background:#f3e8ff; border:1.5px solid #c084fc; border-radius:10px; padding:10px 12px; margin-bottom:10px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
+              <span style="font-size:.84rem; font-weight:800; color:#5b21b6">👥 أعضاء الفريق المنضمين للمدرسة:</span>
+              <button class="btn w s" type="button" style="padding:3px 10px; font-size:.74rem; min-height:26px" onclick="refreshTeamMembers()">🔄 تحديث</button>
+            </div>
+            <div id="teamMembersList" style="font-size:.8rem; color:#4c1d95; line-height:1.8">
+              <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
+            </div>
           </div>
+          <div style="display:flex; gap:8px; align-items:center">
+            <input id="joinSchoolIn" placeholder="أدخل رمز المدرسة (SCH-XXXX) أو رقم هاتف المدير" style="flex:1; height:38px; padding:4px 12px; font-size:.84rem; text-align:center; direction:ltr; border-radius:10px; border:1.5px solid #cbd5e1">
+            <button class="btn g s" type="button" style="height:38px; font-size:.82rem; padding:0 14px; border-radius:10px; font-weight:800" onclick="doLinkSchool()">انضمام للمدرسة</button>
+          </div>
+          <div id="schoolTeamMsg" style="margin-top:6px; font-size:.78rem; font-weight:700; color:#15803d; min-height:16px"></div>
         </div>
-        <button type="button" class="btn" style="background:#0284c7;box-shadow:0 4px 12px rgba(2,132,199,.3);flex:0 0 auto" onclick="openBotBind()">🔗 ربط البوت الآن</button>
       </div>
 
-      <div class="form-section-card full-width" style="margin-bottom:0;padding:12px">
-        <span class="sec-label">👤 اسم المستخدم الحالي</span>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي / المعاون)" style="flex:1;height:38px;min-height:38px;padding:6px 12px;border-radius:10px;font-weight:700">
-          <button class="btn g s" type="button" style="height:38px;min-height:38px;padding:0 14px;border-radius:10px" onclick="saveUserNameOnly()">حفظ الاسم</button>
+      <!-- 3. تبويب ربط Google والبوت -->
+      <div id="tabIntegrations" class="user-tab-pane">
+        <!-- بطاقة ربط البوت بمدرستي -->
+        <div class="form-section-card" style="background:linear-gradient(135deg, #f0f9ff, #e0f2fe); border:1.5px solid #bae6fd; padding:16px; border-radius:14px; margin:0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px">
+          <div style="display:flex; align-items:center; gap:12px">
+            <div style="width:44px; height:44px; border-radius:12px; background:#0284c7; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px; height:24px"><path d="M21.5 4.5 2.5 11.5l6 2.5 2.5 6z"/></svg>
+            </div>
+            <div>
+              <strong style="color:#0369a1; font-size:.95rem; display:block">ربط البوت بمدرستي (تيليكرام)</strong>
+              <span style="color:#0284c7; font-size:.78rem">افتح جدول مدرستك واستلم التقارير وجداول الحصص عبر البوت مباشرة</span>
+            </div>
+          </div>
+          <button type="button" class="btn" style="background:#0284c7; box-shadow:0 4px 12px rgba(2,132,199,.3); flex:0 0 auto; font-weight:800" onclick="openBotBind()">🔗 ربط البوت الآن</button>
         </div>
-        <span style="font-size:.74rem;color:#6b7280">يمكنك تعديل اسمك هنا لتمييزك بين أعضاء المدرسة ومزامنة تعديلاتك.</span>
-      </div>
 
-      <div class="form-section-card full-width" style="background:#faf5ff;border:1.5px dashed #c084fc;padding:12px;border-radius:14px;margin-bottom:0">
-        <span class="sec-label" style="color:#6b21a8;font-weight:800;font-size:.86rem;display:flex;align-items:center;gap:6px">
-          🏫 ربط فريق العمل / المعاونين بنفس الجدول
-        </span>
-        <p style="margin:2px 0 6px;font-size:.76rem;color:#581c87;line-height:1.4">
-          يمكن لأكثر من مستخدم (مدير / معاون) التعديل على نفس جدول المدرسة بحساباتهم الخاصة:
-        </p>
-        <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e9d5ff;padding:5px 10px;border-radius:10px;margin-bottom:6px">
-          <span style="font-size:.78rem;font-weight:700;color:#4c1d95">رمز مدرستك للمشاركة:</span>
-          <div style="display:flex;align-items:center;gap:6px">
-            <strong id="mySchoolCode" style="font-size:.95rem;color:#7c3aed;letter-spacing:1px;direction:ltr">SCH-XXXX</strong>
-            <button class="btn w s" type="button" style="padding:2px 8px;font-size:.72rem;min-height:26px" onclick="copySchoolCode()">نسخ</button>
-          </div>
-        </div>
-        <!-- قائمة أعضاء الفريق -->
-        <div id="teamMembersBox" style="display:block;background:#f3e8ff;border:1.5px solid #c084fc;border-radius:10px;padding:8px 10px;margin-bottom:6px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-            <span style="font-size:.82rem;font-weight:800;color:#5b21b6">&#x1F465; أعضاء الفريق المنضمين للمدرسة:</span>
-            <button class="btn w s" type="button" style="padding:2px 8px;font-size:.7rem;min-height:24px" onclick="refreshTeamMembers()">&#x1F504; تحديث</button>
-          </div>
-          <div id="teamMembersList" style="font-size:.78rem;color:#4c1d95;line-height:1.7">
-            <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <input id="joinSchoolIn" placeholder="أدخل رمز المدرسة (SCH-XXXX) أو رقم هاتف المدير" style="flex:1;height:34px;min-height:34px;padding:4px 8px;font-size:.82rem;text-align:center;direction:ltr;border-radius:8px">
-          <button class="btn g s" type="button" style="height:34px;min-height:34px;font-size:.78rem;padding:0 12px;border-radius:8px" onclick="doLinkSchool()">انضمام للمدرسة</button>
-        </div>
-        <div id="schoolTeamMsg" style="margin-top:4px;font-size:.75rem;font-weight:700;color:#15803d;min-height:14px"></div>
-      </div>
-
-      <div class="form-section-card" style="background:linear-gradient(135deg, #ffffff, #f8fafc);border:1.5px solid #e2e8f0;padding:14px;border-radius:14px;margin-bottom:0;position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;justify-content:space-between">
-        <div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <span style="color:#1e293b;font-weight:800;font-size:.88rem;display:flex;align-items:center;gap:6px">
+        <!-- بطاقة حساب Google والهاتف -->
+        <div class="form-section-card" style="background:linear-gradient(135deg, #ffffff, #f8fafc); border:1.5px solid #e2e8f0; padding:14px; border-radius:14px; margin:0; display:flex; flex-direction:column; gap:10px">
+          <div style="display:flex; align-items:center; justify-content:space-between">
+            <span style="color:#1e293b; font-weight:800; font-size:.88rem; display:flex; align-items:center; gap:6px">
               <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
               حساب Google والهاتف
             </span>
-            <span id="linkedGoogleAcc" style="font-size:.75rem;background:#f1f5f9;color:#64748b;padding:3px 8px;border-radius:20px;font-weight:700">غير مرتبط</span>
+            <span id="linkedGoogleAcc" style="font-size:.75rem; background:#f1f5f9; color:#64748b; padding:3px 10px; border-radius:20px; font-weight:700">غير مرتبط</span>
           </div>
           
-          <p style="margin:2px 0 8px;font-size:.76rem;color:#475569;line-height:1.4">
-            اربط حساب مدرستك (رقم الهاتف) بحساب Google للدخول بالطريقتين.
+          <p style="margin:0; font-size:.76rem; color:#475569; line-height:1.4">
+            اربط حساب مدرستك (رقم الهاتف) بحساب Google للدخول بالوسيلتين في أي وقت.
           </p>
           
-          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:8px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-              <span style="font-size:.76rem;color:#64748b;font-weight:700">رقم الهاتف:</span>
-              <strong id="phoneAccShow" style="font-size:.82rem;color:#1e293b;direction:ltr">—</strong>
+          <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px">
+              <span style="font-size:.76rem; color:#64748b; font-weight:700">رقم الهاتف:</span>
+              <strong id="phoneAccShow" style="font-size:.82rem; color:#1e293b; direction:ltr">—</strong>
             </div>
-            <div style="display:flex;justify-content:space-between">
-              <span style="font-size:.76rem;color:#64748b;font-weight:700">بريد Google:</span>
-              <strong id="googleEmailShow" style="font-size:.82rem;color:#1e293b;direction:ltr">—</strong>
+            <div style="display:flex; justify-content:space-between">
+              <span style="font-size:.76rem; color:#64748b; font-weight:700">بريد Google:</span>
+              <strong id="googleEmailShow" style="font-size:.82rem; color:#1e293b; direction:ltr">—</strong>
             </div>
           </div>
-        </div>
-        
-        <div>
-          <button id="googleLinkBtn" type="button" style="width:100%;background:#fff;border:1.5px solid #cbd5e1;color:#333;height:38px;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;cursor:pointer;transition:all .2s" onclick="startGoogleLink()" onmouseover="this.style.background='#f8fafc';this.style.borderColor='#94a3b8'" onmouseout="this.style.background='#fff';this.style.borderColor='#cbd5e1'">
+
+          <button id="googleLinkBtn" type="button" style="width:100%; background:#fff; border:1.5px solid #cbd5e1; color:#333; height:38px; font-size:.82rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:10px; cursor:pointer; transition:all .2s" onclick="startGoogleLink()">
             <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
             <span id="googleBtnTxt">ربط الحساب بحساب Google</span>
           </button>
-          <div id="googleLinkMsg" style="margin-top:4px;font-size:.72rem;font-weight:700;color:#15803d;text-align:center"></div>
+          <div id="googleLinkMsg" style="font-size:.74rem; font-weight:700; color:#15803d; text-align:center"></div>
         </div>
       </div>
 
-      <div class="form-section-card" style="margin-bottom:0;padding:14px;display:flex;flex-direction:column;justify-content:space-between">
-        <div>
-          <span class="sec-label">تغيير رمز الدخول</span>
-          <p style="margin:2px 0 8px;font-size:.76rem;color:#64748b;line-height:1.4">
-            عيّن رمز دخول جديد لحساب مدرستك لحمايته.
-          </p>
-          <div class="set-pin" style="gap:8px">
-            <label style="font-size:.8rem">الرمز الحالي
-              <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center;height:36px">
-            </label>
-            <label style="font-size:.8rem">الرمز الجديد
-              <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center;height:36px">
-            </label>
+      <!-- 4. تبويب الأمان وتغيير الرمز -->
+      <div id="tabSecurity" class="user-tab-pane">
+        <div class="form-section-card" style="margin:0; padding:16px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; display:flex; flex-direction:column; gap:12px">
+          <div>
+            <span class="sec-label" style="font-weight:800; font-size:.9rem; color:#1e293b">🔒 تغيير رمز الدخول الحالي</span>
+            <p style="margin:2px 0 8px; font-size:.76rem; color:#64748b; line-height:1.4">
+              عيّن رمز دخول جديد لحساب مدرستك لحمايته وتأمين بيانات الجدول.
+            </p>
+            <div class="set-pin" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+              <label style="font-size:.8rem; font-weight:700; color:#475569">الرمز الحالي
+                <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center; height:38px; border-radius:8px; border:1.5px solid #cbd5e1; width:100%; box-sizing:border-box">
+              </label>
+              <label style="font-size:.8rem; font-weight:700; color:#475569">الرمز الجديد
+                <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center; height:38px; border-radius:8px; border:1.5px solid #cbd5e1; width:100%; box-sizing:border-box">
+              </label>
+            </div>
+          </div>
+          <div>
+            <button class="btn g" type="button" style="height:38px; padding:0 20px; font-weight:800; border-radius:8px" onclick="changeUserPin()">حفظ الرمز الجديد</button>
           </div>
         </div>
-        <div style="font-size:.72rem;color:#6b7280;margin-top:8px">
-          💡 يمكنك حفظ الرمز الجديد من الزر بالأسفل.
-        </div>
-      </div>
 
-      <div class="modal-note full-width" style="margin-top:0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>نسيت الرمز؟ يمكنك تسجيل الخروج واستخدام خيار «نسيت الرمز» أو التواصل مع المطور.</span>
+        <div class="modal-note" style="margin:0; border-radius:10px; background:#fef3c7; border:1px solid #fde68a; padding:10px; display:flex; gap:8px; align-items:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" style="width:20px; height:20px; flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span style="color:#92400e; font-size:.76rem; font-weight:700">نسيت الرمز؟ يمكنك تسجيل الخروج واستخدام خيار «نسيت الرمز» أو التواصل مع المطور.</span>
+        </div>
       </div>
     </div>
 
     <div class="modal-foot">
-      <button class="btn g" type="button" onclick="changeUserPin()">حفظ الرمز الجديد</button>
-      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true">رجوع</button>
+      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true">إغلاق</button>
     </div>
   </div>
 </div>
@@ -8976,6 +9055,20 @@ window.startGoogleLink = function() {
     document.getElementById("googleLinkMsg").textContent = "✅ تم ربط الحساب بنجاح بـ " + email;
   }
   okNote("✅ تم ربط الحساب بنجاح بحساب Google (" + email + ")");
+};
+
+// التبديل بين تبويبات نافذة معلومات المستخدم
+window.switchUserTab = function(tabId, btn) {
+  const container = document.getElementById("setUser");
+  if (!container) return;
+  const tabs = container.querySelectorAll(".user-tab-pane");
+  tabs.forEach(t => t.classList.remove("active"));
+  const btns = container.querySelectorAll(".user-tab-btn");
+  btns.forEach(b => b.classList.remove("active"));
+
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add("active");
+  if (btn) btn.classList.add("active");
 };
 </script>
 
