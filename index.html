@@ -30,7 +30,7 @@ button, input, select, textarea { touch-action: manipulation; }
 .app{max-width:1360px;width:100%;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;min-width:0;overflow-x:hidden}
 header.top{
   display:flex;flex-wrap:nowrap;gap:12px;align-items:center;justify-content:space-between;
-  margin:0;padding:12px 20px;color:#fff;text-align:right;overflow:hidden;
+  margin:0;padding:12px 20px;color:#fff;text-align:right;overflow:visible;position:relative;z-index:20;
   background:linear-gradient(135deg, rgba(76, 29, 149, 0.95) 0%, rgba(109, 40, 217, 0.92) 50%, rgba(37, 99, 235, 0.9) 100%);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   box-shadow:0 12px 32px rgba(76,29,149,.2);border:1px solid rgba(255,255,255,0.18);border-radius:24px;min-height:64px;
@@ -351,7 +351,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 #teachers table.tcols tbody td:nth-child(9),
 #teachers table.tcols tbody td:nth-child(10),
 #teachers table.tcols tbody td:nth-child(11){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#teachers table.tcols tbody td:nth-child(2){font-weight:700;color:#1e1b4b}
+#teachers table.tcols tbody td:nth-child(2){font-weight:400;color:#1e1b4b}
 #teachers table.tcols tbody td:nth-child(9){font-size:0.80rem;letter-spacing:-0.25px;direction:ltr}
 #teachers table.tcols tbody tr.trow{cursor:pointer;transition:background .15s}
 #teachers table.tcols tbody tr.trow:hover{background:#f5f3ff}
@@ -385,7 +385,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 .dev-btn{font:inherit;font-size:.85rem;color:#fff;font-weight:800;background:rgba(0,0,0,.15);padding:8px 16px;border-radius:25px;border:1px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.1);white-space:nowrap;cursor:pointer}
 .dev-btn:hover{background:rgba(255,255,255,.18)}
 .user-menu-wrap{position:relative;display:inline-block}
-.user-dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:#ffffff;border-radius:16px;box-shadow:0 14px 35px rgba(30,27,75,0.22),0 0 0 1px rgba(139,92,246,0.18);padding:8px;z-index:99999;display:none;flex-direction:column;gap:5px;animation:menuFadeIn .18s cubic-bezier(.16,1,.3,1)}
+.user-dropdown-menu{position:absolute;top:calc(100% + 8px);right:0;left:auto;min-width:220px;background:#ffffff;border-radius:16px;box-shadow:0 14px 35px rgba(30,27,75,0.25),0 0 0 1px rgba(139,92,246,0.18);padding:8px;z-index:999999;display:none;flex-direction:column;gap:5px;animation:menuFadeIn .18s cubic-bezier(.16,1,.3,1)}
 .user-dropdown-menu.show{display:flex}
 @keyframes menuFadeIn{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 .user-dropdown-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;border:none;background:transparent;border-radius:10px;font-family:inherit;font-size:0.86rem;font-weight:700;color:#334155;cursor:pointer;text-align:right;transition:all .15s ease}
@@ -936,7 +936,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
   <div class="brand-row">
     <img class="app-logo" src="logo.png" alt="نظام الجداول المدرسية">
     <div>
-    <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية</h1>
+    <h1 style="font-size:1.22rem;margin:0;white-space:nowrap">نظام الجداول المدرسية الذكي</h1>
     <div class="sub" id="appTopVerShow">إصدار 1.01</div>
     </div>
   </div>
@@ -1016,7 +1016,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
     </label>
   </div>
   <div class="table-wrap">
-    <table class="slim tcols"><colgroup><col style="width:3.5%"><col style="width:19%"><col style="width:12%"><col style="width:11%"><col style="width:8%"><col style="width:6%"><col style="width:7.5%"><col style="width:7%"><col style="width:10%"><col style="width:8%"><col style="width:8%"></colgroup><thead><tr><th>#</th><th>الاسم الرباعي</th><th>الاختصاص</th><th>العنوان الوظيفي</th><th>الشهادة</th><th>الجنس</th><th>سنة التوليد</th><th>الصفة</th><th>الهاتف</th><th>المباشرة الأولى</th><th>المباشرة بالتعيين</th></tr></thead><tbody id="tBody"></tbody></table>
+    <table class="slim tcols"><colgroup><col style="width:3.5%"><col style="width:17.5%"><col style="width:11.5%"><col style="width:10.5%"><col style="width:7.5%"><col style="width:6%"><col style="width:7.5%"><col style="width:7%"><col style="width:10%"><col style="width:8.5%"><col style="width:10.5%"></colgroup><thead><tr><th>#</th><th>الاسم الرباعي</th><th>الاختصاص</th><th>العنوان الوظيفي</th><th>الشهادة</th><th>الجنس</th><th>سنة التوليد</th><th>الصفة</th><th>الهاتف</th><th>المباشرة الأولى</th><th>المباشرة بالتعيين</th></tr></thead><tbody id="tBody"></tbody></table>
   </div>
 </section>
 
@@ -1350,8 +1350,8 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 3.07V3a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 9H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"/><circle cx="12" cy="10" r="2"/></svg>
       </div>
       <div class="set-tile-body">
-        <b>المطور والدعم الفني</b>
-        <span>المطور: عبيده العيثاوي (تواصل مباشر واستفسارات)</span>
+        <b>الدعم الفني والمطور</b>
+        <span>عبيده العيثاوي (تواصل مباشر، استفسارات، ودعم فني)</span>
       </div>
       <div class="set-tile-action">
         <span>عرض التفاصيل</span>
@@ -1898,16 +1898,18 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
   </button>
 </nav>
 
-<footer class="app-footer no-print" style="margin-top:20px;padding:14px 16px;text-align:center;color:#64748b;font-size:0.84rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-top:1px solid #ede9fe;border-radius:14px;background:rgba(255,255,255,0.7)">
+<footer class="app-footer no-print" style="margin-top:20px;padding:14px 20px;text-align:center;color:#64748b;font-size:0.84rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid #ede9fe;border-radius:14px;background:rgba(255,255,255,0.7)">
   <div style="display:flex;align-items:center;gap:8px">
     <span>نظام الجداول المدرسية الذكي</span>
     <span style="color:#c4b5fd">•</span>
     <span id="footerSchoolShow">المدرسة</span>
   </div>
-  <div style="display:flex;align-items:center;gap:12px">
-    <button type="button" onclick="$('devBox').hidden=false" style="background:transparent;border:none;color:#7c3aed;font-weight:700;font-size:0.84rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 3.07V3a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 9H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"/></svg>
-      المطور: عبيده العيثاوي
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:0.82rem;color:#64748b">جميع الحقوق محفوظة ©</span>
+    <span style="color:#cbd5e1">•</span>
+    <button type="button" onclick="$('devBox').hidden=false" style="background:#f5f3ff;border:1px solid #ddd6fe;color:#6d28d9;font-weight:800;font-size:0.82rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;box-shadow:0 2px 6px rgba(109,40,217,.08);transition:all .16s" onmouseover="this.style.background='#ede9fe';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#f5f3ff';this.style.transform='none'">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+      <span>الدعم الفني</span>
     </button>
   </div>
 </footer>
@@ -2392,9 +2394,17 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 </div>
 
 <div id="devBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="modal-card" onclick="event.stopPropagation()" style="width:min(440px,100%)">
-    <h2>معلومات المطور</h2>
-    <p class="hint" style="margin-top:0">عبيده العيثاوي — تواصل مباشر</p>
+  <div class="modal-card" onclick="event.stopPropagation()" style="width:min(460px,100%)">
+    <h2>الدعم الفني والمطور</h2>
+    <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #ddd6fe;border-radius:14px;padding:14px 16px;margin:8px 0 14px;text-align:right">
+      <div style="font-weight:800;color:#5b21b6;font-size:0.96rem;margin-bottom:6px">عبيده العيثاوي — مطور برمجيات وأنظمة</div>
+      <p style="margin:0;font-size:0.83rem;color:#4c1d95;line-height:1.65">
+        مطور ومصمم حلول برمجية متكاملة وسحابية. قمت ببرمجة وتطوير العديد من المنظومات الإدارية والتجارية، منها: <b>أنظمة المحاسبة والمبيعات</b>، <b>برامج أرشفة وإدارة المستمسكات والوثائق الرسمية</b>، بالإضافة إلى <b>«نظام الجداول المدرسية الذكي»</b> وحلول أتمتة المؤسسات.
+      </p>
+      <div style="margin-top:8px;font-size:0.78rem;font-weight:700;color:#6d28d9">
+        🤝 يسعدني تقديم الدعم الفني، الاستشارات البرمجية، وتطوير الأنظمة الخاصة حسب الطلب.
+      </div>
+    </div>
     <div class="dev-list">
       <a class="dev-card" href="https://t.me/ob992" target="_blank" rel="noopener">
         <span class="dev-ico" style="background:#2aabee">
@@ -2464,7 +2474,7 @@ window._acc=(function(){
 function storageKey(){
   return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
 }
-const APP_VERSION="1.33";
+const APP_VERSION="1.34";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
