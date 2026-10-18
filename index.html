@@ -616,36 +616,29 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 }
 .exp-btn-primary svg{width:18px;height:18px}
 @media(max-width:800px){
-  .app{padding:10px}
-  header.top{margin:-10px -10px 12px;padding:14px 12px 16px;border-radius:0 0 22px 22px;flex-direction:column;align-items:stretch;text-align:center}
-  header.top h1{font-size:1.12rem!important}
-  header.top > div:first-child > div{display:none}
-  header.top .dev-btn{width:100%}
-  nav.tabs{gap:8px;padding:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:thin}
-  nav.tabs button{flex:0 0 auto;padding:10px 14px;font-size:.9rem;white-space:nowrap}
+  .app{padding:8px}
+  header.top{margin:-8px -8px 12px;padding:12px 14px 14px;border-radius:0 0 20px 20px;flex-direction:row;align-items:center;justify-content:space-between;text-align:right}
+  header.top h1{font-size:1.05rem!important}
+  header.top .brand-row{flex:1 1 auto;gap:8px}
+  header.top .app-logo{width:36px;height:36px}
+  header.top .dev-wrap{gap:4px;flex-wrap:wrap;justify-content:flex-end}
+  header.top .dev-btn{font-size:.75rem;padding:6px 10px}
+  header.top .lic-chip{font-size:.72rem;padding:6px 10px}
+  header.top .bell-btn{width:34px;height:34px}
+  nav.tabs{gap:6px;padding:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  nav.tabs button{flex:0 0 auto;padding:8px 12px;font-size:.82rem;white-space:nowrap;border-radius:12px}
   nav.tabs button svg{display:none}
-  .card{padding:14px;border-radius:18px}
-  .toolbar{flex-wrap:wrap}
-  .toolbar .btn,.toolbar label.search{flex:1 1 100%}
+  .card{padding:12px;border-radius:18px}
+  .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .toolbar .btn{min-height:42px;font-size:.88rem;margin:0}
+  .toolbar label.search,.toolbar label.sort{grid-column:1 / -1;width:100%!important;max-width:100%!important}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px;border-radius:14px;border:1px solid #ede9fe}
+  table.slim,table.cls-table,#teachers table.tcols{min-width:720px;table-layout:auto!important}
+  #teachers table.tcols th,#teachers table.tcols td{white-space:nowrap!important;padding:8px 10px;font-size:.84rem}
   #viewOut{overflow:auto;-webkit-overflow-scrolling:touch}
   .onepage,.week-grid{min-width:640px}
   .modal-card{padding:16px;width:100%;max-width:100%}
-  .btn{min-height:44px}
-  table.slim thead,table.cls-table thead{display:none}
-  table.slim,table.cls-table{border:0;border-radius:0}
-  table.slim tbody tr,table.cls-table tbody tr{
-    display:block;margin:0 0 12px;background:#fff;border:1px solid #ddd6fe;border-radius:16px;box-shadow:0 6px 16px rgba(76,29,149,.08)
-  }
-  table.slim td,table.cls-table td{
-    display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
-    border:0;border-bottom:1px solid #f3e8ff;text-align:right;padding:10px 12px;white-space:normal
-  }
-  table.slim td:last-child,table.cls-table td:last-child{border-bottom:0}
-  table.slim td::before,table.cls-table td::before{
-    content:attr(data-l);color:#6d28d9;font-weight:800;flex:0 0 38%;text-align:right
-  }
-  table.slim td.act,table.cls-table td.act,td.no-print.act{justify-content:flex-end;flex-wrap:wrap}
-  table.slim td.act::before,table.cls-table td.act::before{display:none}
   .sec-tag{margin:4px}
   
   /* شريط الملاحة السفلي المخصص للهواتف (iOS & Android Bottom Bar) */
