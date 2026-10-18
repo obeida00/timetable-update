@@ -30,9 +30,10 @@ button, input, select, textarea { touch-action: manipulation; }
 .app{max-width:1360px;width:100%;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;min-width:0;overflow-x:hidden}
 header.top{
   display:flex;flex-wrap:nowrap;gap:12px;align-items:center;justify-content:space-between;
-  margin:0;padding:10px 16px;color:#fff;text-align:right;overflow:hidden;
-  background:linear-gradient(135deg,#4c1d95 0%,#6d28d9 48%,#2563eb 100%);
-  box-shadow:0 16px 40px rgba(76,29,149,.28);border:0;border-radius:22px;min-height:64px;
+  margin:0;padding:12px 20px;color:#fff;text-align:right;overflow:hidden;
+  background:linear-gradient(135deg, rgba(76, 29, 149, 0.95) 0%, rgba(109, 40, 217, 0.92) 50%, rgba(37, 99, 235, 0.9) 100%);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 12px 32px rgba(76,29,149,.2);border:1px solid rgba(255,255,255,0.18);border-radius:24px;min-height:64px;
 }
 .brand{display:flex;gap:12px;align-items:center;justify-content:center}
 .app-logo{width:44px;height:44px;object-fit:contain;background:#fff;border-radius:12px;padding:3px;flex:0 0 auto;box-shadow:0 4px 12px rgba(0,0,0,.16)}
@@ -931,16 +932,15 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
   </div>
   
   <div class="dev-wrap no-print">
-    <button type="button" class="lic-chip" id="licRemain" title="الاشتراك" onclick="openSubInfoOrPayment()">الاشتراك</button>
     <button type="button" class="bell-btn" id="bellBtn" title="التنبيهات" onclick="openNotif()">
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
     </button>
-    <button type="button" class="dev-btn" id="userTopBtn" title="إدارة الحساب والمدرسة" onclick="openSet('setUser')" style="display:inline-flex;align-items:center;gap:6px">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <button type="button" class="dev-btn user-header-chip" id="userTopBtn" title="إدارة الحساب والمدرسة والاشتراك" onclick="openSet('setUser')" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);padding:8px 16px;border-radius:20px;cursor:pointer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span id="userTopShow">المستخدم</span>
     </button>
-    <button type="button" class="dev-btn" id="logoutTop" onclick="doLogout()">تسجيل الخروج</button>
+    <button type="button" class="dev-btn" id="logoutTop" onclick="doLogout()" style="background:rgba(239,68,68,0.22);border-color:rgba(248,113,113,0.4)">تسجيل الخروج</button>
   </div>
 </header>
 <nav class="tabs no-print">
@@ -1388,6 +1388,21 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
               <span style="font-size:0.75rem; color:#6b7280; font-weight:700; display:block">حساب Google:</span>
               <strong id="userEmailShow" style="font-size:0.85rem; color:#0369a1; direction:ltr; text-align:right; margin-top:2px; display:block; word-break:break-all">—</strong>
             </div>
+          </div>
+          <!-- بطاقة تفاصيل الاشتراك وتاريخ الانتهاء وتجديده -->
+          <div style="margin-top:12px;background:#fff;padding:12px 16px;border-radius:14px;border:1px solid #c4b5fd;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:36px;height:36px;border-radius:10px;background:#ecfdf5;color:#059669;display:grid;place-items:center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div>
+                <span style="font-size:0.75rem;color:#6b7280;font-weight:700;display:block">حالة الاشتراك السنوي للمدرسة:</span>
+                <strong id="userSubShow" style="font-size:0.92rem;color:#059669">اشتراك سنوي نشط</strong>
+              </div>
+            </div>
+            <button type="button" class="btn g s" onclick="openSubInfoOrPayment()" style="margin:0;padding:6px 14px;font-size:0.82rem">
+              ⚡ تفاصيل الاشتراك والتجديد
+            </button>
           </div>
         </div>
 
@@ -2417,7 +2432,7 @@ window._acc=(function(){
 function storageKey(){
   return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
 }
-const APP_VERSION="1.29";
+const APP_VERSION="1.30";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
