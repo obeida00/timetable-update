@@ -935,7 +935,11 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
     <button type="button" class="bell-btn" id="bellBtn" title="التنبيهات" onclick="openNotif()">
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
-    <button type="button" class="dev-btn" onclick="$('devBox').hidden=false">المطور: عبيده العيثاوي</button>
+    </button>
+    <button type="button" class="dev-btn" id="userTopBtn" title="إدارة الحساب والمدرسة" onclick="openSet('setUser')" style="display:inline-flex;align-items:center;gap:6px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span id="userTopShow">المستخدم</span>
+    </button>
     <button type="button" class="dev-btn" id="logoutTop" onclick="doLogout()">تسجيل الخروج</button>
   </div>
 </header>
@@ -1306,6 +1310,19 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       </div>
       <div class="set-tile-action">
         <span>فتح الإعدادات</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+      </div>
+    </button>
+    <button type="button" class="set-tile" onclick="$('devBox').hidden=false">
+      <div class="ico-lg" style="background:#fdf2f8;color:#db2777">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 3.07V3a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 9H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"/><circle cx="12" cy="10" r="2"/></svg>
+      </div>
+      <div class="set-tile-body">
+        <b>المطور والدعم الفني</b>
+        <span>المطور: عبيده العيثاوي (تواصل مباشر واستفسارات)</span>
+      </div>
+      <div class="set-tile-action">
+        <span>عرض التفاصيل</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
       </div>
     </button>
@@ -1833,6 +1850,20 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
     <span>إدارتي</span>
   </button>
 </nav>
+
+<footer class="app-footer no-print" style="margin-top:20px;padding:14px 16px;text-align:center;color:#64748b;font-size:0.84rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-top:1px solid #ede9fe;border-radius:14px;background:rgba(255,255,255,0.7)">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span>نظام الجداول المدرسية الذكي</span>
+    <span style="color:#c4b5fd">•</span>
+    <span id="footerSchoolShow">المدرسة</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button type="button" onclick="$('devBox').hidden=false" style="background:transparent;border:none;color:#7c3aed;font-weight:700;font-size:0.84rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 3.07V3a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 9H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"/></svg>
+      المطور: عبيده العيثاوي
+    </button>
+  </div>
+</footer>
 
 </div>
 
@@ -2386,7 +2417,7 @@ window._acc=(function(){
 function storageKey(){
   return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
 }
-const APP_VERSION="1.28";
+const APP_VERSION="1.29";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -4158,10 +4189,24 @@ function renderSettings(){
   if(document.getElementById("userPinInput") && curPin) document.getElementById("userPinInput").value = curPin;
   
   const roleBadge = document.getElementById("userRoleBadge");
+  let roleTitle = "مدير المدرسة";
   if(roleBadge) {
-    if(curRole === "owner") { roleBadge.textContent = "مدير المدرسة"; roleBadge.style.background = "#7c3aed"; }
-    else if(curRole === "assistant") { roleBadge.textContent = "معاون المدرسة"; roleBadge.style.background = "#0284c7"; }
-    else { roleBadge.textContent = "مساعد / مراقب"; roleBadge.style.background = "#64748b"; }
+    if(curRole === "owner") { roleBadge.textContent = "مدير المدرسة"; roleBadge.style.background = "#7c3aed"; roleTitle = "المدير"; }
+    else if(curRole === "assistant") { roleBadge.textContent = "معاون المدرسة"; roleBadge.style.background = "#0284c7"; roleTitle = "المعاون"; }
+    else { roleBadge.textContent = "مساعد / مراقب"; roleBadge.style.background = "#64748b"; roleTitle = "مساعد"; }
+  }
+
+  // تحديث اسم المستخدم الظاهر في الشريط العلوي بدلاً من اسم المطور
+  const topUserEl = document.getElementById("userTopShow");
+  if(topUserEl) {
+    const dispName = curUName || (curPhone ? (curPhone.startsWith("07") ? curPhone : ("مستخدم " + curPhone.slice(-4))) : "حسابي");
+    topUserEl.textContent = dispName + (roleTitle ? ` (${roleTitle})` : "");
+  }
+
+  // تحديث اسم المدرسة في التذييل
+  const footerScEl = document.getElementById("footerSchoolShow");
+  if(footerScEl) {
+    footerScEl.textContent = (db.settings && db.settings.schoolName) || "مدرستنا";
   }
 
   const effV = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
@@ -7774,6 +7819,7 @@ function saveUserNameOnly(){
   if(window._acc) localStorage.setItem("tt_user_name_" + window._acc, val);
   if($("userNameShow")) $("userNameShow").textContent = val || "غير محدد";
   save();
+  try { if (typeof renderSettings === "function") renderSettings(); } catch(e){}
   okNote("تم حفظ اسم المستخدم بنجاح ومزامنته سحابياً ☁️");
   try { syncToCloudNow(false); } catch(e){}
 }
