@@ -647,6 +647,57 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
   table.slim td.act,table.cls-table td.act,td.no-print.act{justify-content:flex-end;flex-wrap:wrap}
   table.slim td.act::before,table.cls-table td.act::before{display:none}
   .sec-tag{margin:4px}
+  
+  /* شريط الملاحة السفلي المخصص للهواتف (iOS & Android Bottom Bar) */
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 62px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(196, 181, 253, 0.4);
+    box-shadow: 0 -4px 20px rgba(76, 29, 149, 0.1);
+    z-index: 999;
+    padding: 0 6px env(safe-area-inset-bottom) 6px;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .mob-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-height: 50px;
+  }
+  .mob-nav-btn svg { width: 22px; height: 22px; stroke-width: 2; }
+  .mob-nav-btn.active, .mob-nav-btn:active {
+    color: #6d28d9;
+    background: #f5f3ff;
+  }
+  .mob-nav-btn.active svg {
+    transform: scale(1.1);
+  }
+  body {
+    padding-bottom: 74px !important;
+  }
+}
+@media(min-width: 801px) {
+  .mobile-bottom-nav { display: none !important; }
 }
 @media(max-width:800px){.set-tiles,.set-grid,.set-split,.set-nums,.set-actions,.set-pin{grid-template-columns:1fr}}
 @media(max-width:800px){.grid2{grid-template-columns:1fr}label{min-width:100%}}
@@ -675,82 +726,202 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 }
 @page{margin:0}
 
-/* نافذة معلومات المستخدم المنظمة مع تبويبات */
+/* ========================================================
+   تصميم نافذة إدارة المدرسة والحساب الفاخر والمبسط (Luxury Glass Design)
+   ======================================================== */
 #setUser .modal-card {
-  width: min(780px, 96vw) !important;
+  width: min(880px, 96vw) !important;
   max-height: 90vh !important;
   background: #ffffff !important;
   display: flex !important;
   flex-direction: column !important;
   padding: 0 !important;
+  border-radius: 26px !important;
+  box-shadow: 0 30px 80px -15px rgba(30, 27, 75, 0.28), 0 0 0 1px rgba(124, 58, 237, 0.08) !important;
+  border: none !important;
   overflow: hidden !important;
 }
+
 #setUser .modal-head {
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 20px 28px 16px;
+  background: linear-gradient(135deg, #fbfaff 0%, #f5f3ff 100%);
+  border-bottom: 1px solid #ede9fe;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+#setUser .modal-head-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+#setUser .modal-head-title h2 {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #1e1b4b;
+  margin: 0 0 3px 0;
+  letter-spacing: -0.3px;
+}
+#setUser .modal-sub {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6d28d9;
+}
+#setUser .modal-icon.u-ico {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.3);
+}
+
+/* شريط التبويبات الفاخر والأنيق */
 #setUser .user-tabs-nav {
   display: flex;
-  background: #f8fafc;
-  padding: 6px 14px;
+  background: #f1f5f9;
+  margin: 14px 28px 0;
+  padding: 5px;
   gap: 8px;
-  border-bottom: 1px solid #e2e8f0;
-  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
   flex-shrink: 0;
 }
 #setUser .user-tab-btn {
+  flex: 1;
+  justify-content: center;
   background: transparent;
   border: none;
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: .84rem;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.88rem;
   color: #64748b;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 7px;
-  transition: all .2s;
+  gap: 8px;
+  transition: all .22s cubic-bezier(.4,0,.2,1);
   white-space: nowrap;
 }
 #setUser .user-tab-btn:hover {
-  background: #ede9fe;
-  color: #6d28d9;
+  color: #4c1d95;
+  background: rgba(255,255,255,0.6);
 }
 #setUser .user-tab-btn.active {
-  background: #6d28d9;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(109,40,217,.25);
+  background: #ffffff;
+  color: #6d28d9;
+  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.15), 0 1px 3px rgba(0,0,0,0.06);
 }
+
 #setUser .modal-body-content {
-  padding: 18px 20px;
+  padding: 22px 28px 26px;
   overflow-y: auto !important;
-  max-height: calc(90vh - 160px) !important;
+  max-height: calc(90vh - 190px) !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 14px;
+  gap: 18px;
+  background: #fbfbfe;
 }
 #setUser .user-tab-pane {
   display: none;
   flex-direction: column;
-  gap: 14px;
-  animation: userTabFade .2s ease;
+  gap: 16px;
+  animation: userTabFade .24s cubic-bezier(.4,0,.2,1);
 }
 #setUser .user-tab-pane.active {
   display: flex;
 }
 @keyframes userTabFade {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
-#setUser .modal-foot {
-  padding: 12px 20px;
-  border-top: 1px solid #f1f5f9;
-  background: #f8fafc;
+
+/* بطاقات وتصميم الأقسام داخل النافذة */
+.settings-luxury-card {
+  background: #ffffff;
+  border: 1px solid #e8e5f5;
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(100, 116, 139, 0.04);
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  flex-direction: column;
+  gap: 12px;
+}
+.settings-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f3f0fd;
+  padding-bottom: 10px;
+  margin-bottom: 2px;
+}
+.settings-card-header .sec-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 900;
+  font-size: 0.94rem;
+  color: #1e1b4b;
+}
+.settings-card-header .sec-badge {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+/* حقول الإدخال المحسنة */
+.modern-field-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+.modern-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modern-field label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.modern-field input, .modern-field select {
+  height: 42px;
+  border-radius: 11px;
+  border: 1.5px solid #e2e8f0;
+  padding: 0 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  background: #ffffff;
+  transition: all .2s ease;
+  box-sizing: border-box;
+}
+.modern-field input:focus, .modern-field select:focus {
+  border-color: #7c3aed;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+/* زر الحفظ السفلي */
+#setUser .modal-foot {
+  padding: 14px 28px;
+  border-top: 1px solid #ede9fe;
+  background: #fbfaff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-shrink: 0;
 }
 </style>
@@ -1108,27 +1279,14 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
     <button type="button" class="set-tile" onclick="openSet('setUser')">
       <div class="ico-lg u-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </div>
-      <div class="set-tile-body">
-        <b>معلومات المستخدم</b>
-        <span>الحساب والرمز والاشتراك السنوي</span>
-      </div>
-      <div class="set-tile-action">
-        <span>فتح الإعدادات</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
-      </div>
-    </button>
-    <button type="button" class="set-tile" onclick="openSet('setSchool')">
-      <div class="ico-lg s-ico">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
       </div>
       <div class="set-tile-body">
-        <b>المدرسة والدوام</b>
-        <span>اسم المدرسة، الأيام، الحصص، وأبعاد الطباعة</span>
+        <b>إدارة المدرسة والحساب</b>
+        <span>بيانات المدرسة، الدوام، الحساب، وفريق المعاونين</span>
       </div>
       <div class="set-tile-action">
-        <span>فتح الإعدادات</span>
+        <span>فتح الإدارة</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
       </div>
     </button>
@@ -1163,258 +1321,378 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 
 <div id="setUser" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="modal-card modal-stylish" onclick="event.stopPropagation()">
+    <!-- رأس النافذة الفاخر -->
     <div class="modal-head">
       <div class="modal-head-title">
         <div class="modal-icon u-ico">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:24px;height:24px"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
         </div>
         <div>
-          <h2>معلومات المستخدم</h2>
-          <span class="modal-sub">إدارة الحساب ورمز المرور وحالة الاشتراك</span>
+          <h2>إدارة المدرسة وحساب العمل</h2>
+          <span class="modal-sub">بيانات مدرستك، حسابك الشخصي، وفريق العمل والصلاحيات</span>
         </div>
       </div>
       <button type="button" class="modal-close-btn" onclick="$('setUser').hidden=true" title="إغلاق">✕</button>
     </div>
 
-    <!-- أزرار تقسيم التبويبات -->
+    <!-- أزرار التبويبات الفاخرة المدمجة 3 تبويبات واضحة -->
     <div class="user-tabs-nav">
       <button type="button" class="user-tab-btn active" onclick="switchUserTab('tabProfile', this)">
-        <span>👤 الحساب والبيانات</span>
+        <span>👤 الحساب الشخصي والدور</span>
+      </button>
+      <button type="button" class="user-tab-btn" onclick="switchUserTab('tabSchoolInfo', this)">
+        <span>🏫 بيانات المدرسة والدوام</span>
       </button>
       <button type="button" class="user-tab-btn" onclick="switchUserTab('tabTeam', this)">
-        <span>🏫 فريق العمل والمشاركة</span>
-      </button>
-      <button type="button" class="user-tab-btn" onclick="switchUserTab('tabIntegrations', this)">
-        <span>🌐 ربط Google والبوت</span>
-      </button>
-      <button type="button" class="user-tab-btn" onclick="switchUserTab('tabSecurity', this)">
-        <span>🔒 الأمان ورمز الدخول</span>
+        <span>👥 فريق المعاونين والربط</span>
       </button>
     </div>
 
+    <!-- محتوى التبويبات -->
     <div class="modal-body-content">
-      <!-- 1. تبويب الحساب والبيانات -->
+      
+      <!-- ==============================================
+           1. التبويب الأول: الحساب الشخصي والدور والأمان
+           ============================================== -->
       <div id="tabProfile" class="user-tab-pane active">
-        <!-- شريط ملخص الحساب -->
-        <div class="info-banner" style="display:grid; grid-template-columns:1fr 1fr 1fr; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:14px; padding:16px; margin:0">
-          <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
-            <span class="info-lbl" style="color:#64748b; font-size:.75rem; font-weight:700">اسم المستخدم</span>
-            <strong id="userNameShow" class="info-val" style="color:#1e293b; font-size:.95rem; margin-top:2px; display:block">—</strong>
-          </div>
-          <div class="info-banner-item" style="text-align:center; border-left:1px solid #e2e8f0">
-            <span class="info-lbl" style="color:#64748b; font-size:.75rem; font-weight:700">حساب الهاتف</span>
-            <strong id="userPhoneShow" class="info-val" style="color:#6d28d9; font-size:.95rem; direction:ltr; margin-top:2px; display:block">—</strong>
-          </div>
-          <div class="info-banner-item" style="text-align:center">
-            <span class="info-lbl" style="color:#64748b; font-size:.75rem; font-weight:700">حساب Google المرتبط</span>
-            <strong id="userEmailShow" class="info-val" style="color:#1e293b; font-size:.85rem; direction:ltr; word-break:break-all; margin-top:2px; display:block">—</strong>
-          </div>
-        </div>
-
-        <!-- تعديل اسم المستخدم -->
-        <div class="form-section-card" style="margin:0; padding:14px; background:#fff; border:1px solid #e2e8f0; border-radius:12px">
-          <span class="sec-label" style="font-weight:800; font-size:.88rem; color:#1e293b">👤 تعديل اسم المستخدم</span>
-          <p style="margin:2px 0 8px; font-size:.76rem; color:#64748b">يظهر هذا الاسم لزملائك في المدرسة وعند طباعة التقارير وتحديث الجدول.</p>
-          <div style="display:flex; gap:8px; align-items:center">
-            <input id="userNameInput" placeholder="أدخل اسمك (مثال: أستاذ علي / المعاون)" style="flex:1; height:40px; padding:6px 12px; border-radius:10px; font-weight:700; border:1.5px solid #cbd5e1">
-            <button class="btn g s" type="button" style="height:40px; padding:0 16px; border-radius:10px; font-weight:800" onclick="saveUserNameOnly()">حفظ الاسم</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. تبويب فريق العمل والمشاركة -->
-      <div id="tabTeam" class="user-tab-pane">
-        <div class="form-section-card" style="background:#faf5ff; border:1.5px dashed #c084fc; padding:14px; border-radius:14px; margin:0">
-          <span class="sec-label" style="color:#6b21a8; font-weight:800; font-size:.92rem; display:flex; align-items:center; gap:6px">
-            🏫 ربط فريق العمل / المعاونين بنفس الجدول
-          </span>
-          <p style="margin:4px 0 10px; font-size:.78rem; color:#581c87; line-height:1.5">
-            يمكن لجميع معاوني وإداريي المدرسة مشاركة الجدول والتعديل عليه بالتزامن:
-          </p>
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #e9d5ff; padding:8px 12px; border-radius:10px; margin-bottom:10px">
-            <span style="font-size:.82rem; font-weight:800; color:#4c1d95">رمز مدرستك للمشاركة:</span>
-            <div style="display:flex; align-items:center; gap:8px">
-              <strong id="mySchoolCode" style="font-size:1.05rem; color:#7c3aed; letter-spacing:1.5px; direction:ltr; font-weight:900">SCH-XXXX</strong>
-              <button class="btn w s" type="button" style="padding:4px 12px; font-size:.76rem; min-height:28px" onclick="copySchoolCode()">نسخ الرمز</button>
-            </div>
-          </div>
-          <!-- قائمة أعضاء الفريق -->
-          <div id="teamMembersBox" style="display:block; background:#f3e8ff; border:1.5px solid #c084fc; border-radius:10px; padding:10px 12px; margin-bottom:10px">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
-              <span style="font-size:.84rem; font-weight:800; color:#5b21b6">👥 أعضاء الفريق المنضمين للمدرسة:</span>
-              <button class="btn w s" type="button" style="padding:3px 10px; font-size:.74rem; min-height:26px" onclick="refreshTeamMembers()">🔄 تحديث</button>
-            </div>
-            <div id="teamMembersList" style="font-size:.8rem; color:#4c1d95; line-height:1.8">
-              <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
-            </div>
-          </div>
-          <div style="display:flex; gap:8px; align-items:center">
-            <input id="joinSchoolIn" placeholder="أدخل رمز المدرسة (SCH-XXXX) أو رقم هاتف المدير" style="flex:1; height:38px; padding:4px 12px; font-size:.84rem; text-align:center; direction:ltr; border-radius:10px; border:1.5px solid #cbd5e1">
-            <button class="btn g s" type="button" style="height:38px; font-size:.82rem; padding:0 14px; border-radius:10px; font-weight:800" onclick="doLinkSchool()">انضمام للمدرسة</button>
-          </div>
-          <div id="schoolTeamMsg" style="margin-top:6px; font-size:.78rem; font-weight:700; color:#15803d; min-height:16px"></div>
-        </div>
-      </div>
-
-      <!-- 3. تبويب ربط Google والبوت -->
-      <div id="tabIntegrations" class="user-tab-pane">
-        <!-- بطاقة ربط البوت بمدرستي -->
-        <div class="form-section-card" style="background:linear-gradient(135deg, #f0f9ff, #e0f2fe); border:1.5px solid #bae6fd; padding:16px; border-radius:14px; margin:0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px">
-          <div style="display:flex; align-items:center; gap:12px">
-            <div style="width:44px; height:44px; border-radius:12px; background:#0284c7; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px; height:24px"><path d="M21.5 4.5 2.5 11.5l6 2.5 2.5 6z"/></svg>
-            </div>
-            <div>
-              <strong style="color:#0369a1; font-size:.95rem; display:block">ربط البوت بمدرستي (تيليكرام)</strong>
-              <span style="color:#0284c7; font-size:.78rem">افتح جدول مدرستك واستلم التقارير وجداول الحصص عبر البوت مباشرة</span>
-            </div>
-          </div>
-          <button type="button" class="btn" style="background:#0284c7; box-shadow:0 4px 12px rgba(2,132,199,.3); flex:0 0 auto; font-weight:800" onclick="openBotBind()">🔗 ربط البوت الآن</button>
-        </div>
-
-        <!-- بطاقة حساب Google والهاتف -->
-        <div class="form-section-card" style="background:linear-gradient(135deg, #ffffff, #f8fafc); border:1.5px solid #e2e8f0; padding:14px; border-radius:14px; margin:0; display:flex; flex-direction:column; gap:10px">
-          <div style="display:flex; align-items:center; justify-content:space-between">
-            <span style="color:#1e293b; font-weight:800; font-size:.88rem; display:flex; align-items:center; gap:6px">
-              <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-              حساب Google والهاتف
+        
+        <!-- ملخص الحساب الحالي بطاقة أنيقة -->
+        <div class="settings-luxury-card" style="background:linear-gradient(135deg, #f5f3ff, #faf5ff); border-color:#ddd6fe">
+          <div class="settings-card-header">
+            <span class="sec-title" style="color:#5b21b6">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              ملخص الحساب والارتباط
             </span>
-            <span id="linkedGoogleAcc" style="font-size:.75rem; background:#f1f5f9; color:#64748b; padding:3px 10px; border-radius:20px; font-weight:700">غير مرتبط</span>
+            <span class="sec-badge" id="userRoleBadge" style="background:#7c3aed; color:#fff">مدير المدرسة</span>
           </div>
-          
-          <p style="margin:0; font-size:.76rem; color:#475569; line-height:1.4">
-            اربط حساب مدرستك (رقم الهاتف) بحساب Google للدخول بالوسيلتين في أي وقت.
-          </p>
-          
-          <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px">
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px">
-              <span style="font-size:.76rem; color:#64748b; font-weight:700">رقم الهاتف:</span>
-              <strong id="phoneAccShow" style="font-size:.82rem; color:#1e293b; direction:ltr">—</strong>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-top:4px">
+            <div style="background:#fff; padding:12px 14px; border-radius:12px; border:1px solid #e9d5ff">
+              <span style="font-size:0.75rem; color:#6b7280; font-weight:700; display:block">اسم المستخدم:</span>
+              <strong id="userNameShow" style="font-size:0.95rem; color:#1e1b4b; margin-top:2px; display:block">—</strong>
             </div>
-            <div style="display:flex; justify-content:space-between">
-              <span style="font-size:.76rem; color:#64748b; font-weight:700">بريد Google:</span>
-              <strong id="googleEmailShow" style="font-size:.82rem; color:#1e293b; direction:ltr">—</strong>
+            <div style="background:#fff; padding:12px 14px; border-radius:12px; border:1px solid #e9d5ff">
+              <span style="font-size:0.75rem; color:#6b7280; font-weight:700; display:block">رقم الهاتف المسجل:</span>
+              <strong id="userPhoneShow" style="font-size:0.95rem; color:#7c3aed; direction:ltr; text-align:right; margin-top:2px; display:block">—</strong>
             </div>
-          </div>
-
-          <button id="googleLinkBtn" type="button" style="width:100%; background:#fff; border:1.5px solid #cbd5e1; color:#333; height:38px; font-size:.82rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:10px; cursor:pointer; transition:all .2s" onclick="startGoogleLink()">
-            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-            <span id="googleBtnTxt">ربط الحساب بحساب Google</span>
-          </button>
-          <div id="googleLinkMsg" style="font-size:.74rem; font-weight:700; color:#15803d; text-align:center"></div>
-        </div>
-      </div>
-
-      <!-- 4. تبويب الأمان وتغيير الرمز -->
-      <div id="tabSecurity" class="user-tab-pane">
-        <div class="form-section-card" style="margin:0; padding:16px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; display:flex; flex-direction:column; gap:12px">
-          <div>
-            <span class="sec-label" style="font-weight:800; font-size:.9rem; color:#1e293b">🔒 تغيير رمز الدخول الحالي</span>
-            <p style="margin:2px 0 8px; font-size:.76rem; color:#64748b; line-height:1.4">
-              عيّن رمز دخول جديد لحساب مدرستك لحمايته وتأمين بيانات الجدول.
-            </p>
-            <div class="set-pin" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
-              <label style="font-size:.8rem; font-weight:700; color:#475569">الرمز الحالي
-                <input id="pinOld" type="password" placeholder="الرمز الحالي" style="text-align:center; height:38px; border-radius:8px; border:1.5px solid #cbd5e1; width:100%; box-sizing:border-box">
-              </label>
-              <label style="font-size:.8rem; font-weight:700; color:#475569">الرمز الجديد
-                <input id="pinNew" type="password" placeholder="٤ أحرف على الأقل" style="text-align:center; height:38px; border-radius:8px; border:1.5px solid #cbd5e1; width:100%; box-sizing:border-box">
-              </label>
+            <div style="background:#fff; padding:12px 14px; border-radius:12px; border:1px solid #e9d5ff">
+              <span style="font-size:0.75rem; color:#6b7280; font-weight:700; display:block">حساب Google:</span>
+              <strong id="userEmailShow" style="font-size:0.85rem; color:#0369a1; direction:ltr; text-align:right; margin-top:2px; display:block; word-break:break-all">—</strong>
             </div>
           </div>
-          <div>
-            <button class="btn g" type="button" style="height:38px; padding:0 20px; font-weight:800; border-radius:8px" onclick="changeUserPin()">حفظ الرمز الجديد</button>
+        </div>
+
+        <!-- بطاقة تحديد الدور والاسم ورقم الهاتف (الإعداد الأساسي للمستخدم) -->
+        <div class="settings-luxury-card">
+          <div class="settings-card-header">
+            <span class="sec-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              تعديل وتأكيد بيانات الحساب والدور
+            </span>
+            <span class="sec-badge">البيانات الأساسية</span>
+          </div>
+
+          <div class="modern-field-group">
+            <div class="modern-field">
+              <label>الدور الوظيفي في المدرسة:</label>
+              <select id="userRoleSelect">
+                <option value="owner">مدير المدرسة (إدارة كاملة وصلاحيات قصوى)</option>
+                <option value="assistant">معاون المدرسة (صلاحية تعديل الجدول والغيابات)</option>
+                <option value="viewer">مساعد / مراقب (عرض الجدول والإحصائيات فقط)</option>
+              </select>
+            </div>
+            <div class="modern-field">
+              <label>الاسم الكامل أو اللقب:</label>
+              <input id="userNameInput" placeholder="مثال: أستاذ علي / معاون الشؤون">
+            </div>
+          </div>
+
+          <div class="modern-field-group" style="margin-top:4px">
+            <div class="modern-field">
+              <label>رقم الهاتف المعتمد (حساب الدخول):</label>
+              <input id="userPhoneInput" type="tel" placeholder="07XXXXXXXXX" style="direction:ltr; text-align:right">
+            </div>
+            <div class="modern-field">
+              <label>رمز الدخول السريع (PIN):</label>
+              <input id="userPinInput" type="password" placeholder="٤ أرقام على الأقل">
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; margin-top:8px">
+            <button class="btn g" type="button" style="height:40px; padding:0 22px; font-weight:800; border-radius:10px" onclick="saveNewUserSetup()">
+              تأكيد وحفظ بيانات الحساب
+            </button>
           </div>
         </div>
 
-        <div class="modal-note" style="margin:0; border-radius:10px; background:#fef3c7; border:1px solid #fde68a; padding:10px; display:flex; gap:8px; align-items:center">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" style="width:20px; height:20px; flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          <span style="color:#92400e; font-size:.76rem; font-weight:700">نسيت الرمز؟ يمكنك تسجيل الخروج واستخدام خيار «نسيت الرمز» أو التواصل مع المطور.</span>
+        <!-- بطاقة تغيير رمز الدخول الحالي -->
+        <div class="settings-luxury-card">
+          <div class="settings-card-header">
+            <span class="sec-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              تغيير رمز المرور الحالي (PIN)
+            </span>
+            <span class="sec-badge" style="background:#fef3c7; color:#b45309">حماية الحساب</span>
+          </div>
+          <div class="modern-field-group">
+            <div class="modern-field">
+              <label>رمز المرور الحالي:</label>
+              <input id="pinOld" type="password" placeholder="الرمز القديم">
+            </div>
+            <div class="modern-field">
+              <label>رمز المرور الجديد:</label>
+              <input id="pinNew" type="password" placeholder="٤ خانات على الأقل">
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; margin-top:6px">
+            <button class="btn w" type="button" style="height:38px; padding:0 18px; font-weight:800; border-radius:10px" onclick="changeUserPin()">
+              تحديث الرمز فقط
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="modal-foot">
-      <button class="btn w ghost" type="button" onclick="$('setUser').hidden=true">إغلاق</button>
-    </div>
-  </div>
-</div>
-
-<div id="setSchool" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="modal-card modal-stylish" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <div class="modal-head-title">
-        <div class="modal-icon s-ico">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-        </div>
-        <div>
-          <h2>المدرسة والدوام</h2>
-          <span class="modal-sub">تخصيص بيانات مدرستك وأيام الدوام والطباعة</span>
-        </div>
-      </div>
-      <button type="button" class="modal-close-btn" onclick="$('setSchool').hidden=true" title="إغلاق">✕</button>
-    </div>
-
-    <div class="modal-body-content">
-      <div class="form-section-card">
-        <span class="sec-label">اسم المدرسة</span>
-        <div class="input-with-btn">
-          <input id="schoolName" value="" placeholder="اكتب اسم مدرستك هنا">
-          <button class="btn w" type="button" onclick="changeSchoolName()">تحديث الاسم</button>
-        </div>
       </div>
 
-      <div class="form-section-card">
-        <span class="sec-label">شعار المدرسة واسم المدير</span>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div>
-            <label style="font-size:.82rem;font-weight:700;color:#4c1d95;display:block;margin-bottom:4px">صفة واسم مدير / مديرة المدرسة (يظهر أسفل الجدول)</label>
-            <div style="display:flex;gap:8px;align-items:center">
-              <select id="schoolManagerTitle" style="width:140px;padding:8px 10px;border-radius:10px;border:1.5px solid #ddd6fe;font-weight:700;color:#4c1d95;background:#fff" onchange="saveSettings(true)">
+      <!-- ==============================================
+           2. التبويب الثاني: بيانات المدرسة والدوام
+           ============================================== -->
+      <div id="tabSchoolInfo" class="user-tab-pane">
+        
+        <!-- اسم المدرسة والمدير -->
+        <div class="settings-luxury-card">
+          <div class="settings-card-header">
+            <span class="sec-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 21h18M3 7l9-4 9 4M4 7v14M20 7v14M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/></svg>
+              المعلومات الرسمية للمدرسة
+            </span>
+            <span class="sec-badge">الترويسة والطباعة</span>
+          </div>
+
+          <div class="modern-field">
+            <label>اسم المدرسة الرسمي (يظهر في أعلى كل الجداول المطبوعة):</label>
+            <div style="display:flex; gap:8px">
+              <input id="schoolName" placeholder="اكتب اسم المدرسة هنا (مثال: إعدادية بغداد للبنين)" style="flex:1">
+              <button class="btn w" type="button" onclick="changeSchoolName()">تحديث</button>
+            </div>
+          </div>
+
+          <div class="modern-field-group" style="margin-top:6px">
+            <div class="modern-field">
+              <label>صفة إدارة المدرسة:</label>
+              <select id="schoolManagerTitle" onchange="saveSettings(true)">
                 <option value="مدير المدرسة">مدير المدرسة</option>
                 <option value="مديرة المدرسة">مديرة المدرسة</option>
                 <option value="إدارة المدرسة">إدارة المدرسة</option>
               </select>
-              <input id="schoolManager" value="" placeholder="اسم المدير أو المديرة" onchange="saveSettings(true)" style="flex:1">
+            </div>
+            <div class="modern-field">
+              <label>اسم المدير أو المديرة:</label>
+              <input id="schoolManager" placeholder="الاسم الكامل لإدارة المدرسة" onchange="saveSettings(true)">
             </div>
           </div>
-          <div>
-            <label style="font-size:.82rem;font-weight:700;color:#4c1d95;display:block;margin-bottom:4px">شعار المدرسة (يظهر في الترويسة وبشكل شفاف على خلفية الجدول)</label>
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+
+          <!-- شعار المدرسة -->
+          <div class="modern-field" style="margin-top:6px">
+            <label>شعار المدرسة الرسمي (يظهر في زاوية الجداول):</label>
+            <div style="display:flex; gap:12px; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:12px; border:1px solid #e2e8f0; flex-wrap:wrap">
               <input type="file" id="logoFileInput" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
               <button class="btn w s" type="button" onclick="$('logoFileInput').click()">📁 اختيار صورة الشعار</button>
-              <button class="btn w s" type="button" id="removeLogoBtn" style="color:#ef4444;display:none" onclick="removeLogo()">✕ حذف الشعار</button>
-              <img id="logoPreview" src="" alt="شعار المدرسة" style="display:none;width:38px;height:38px;object-fit:contain;border-radius:6px;border:1px solid #c4b5fd;background:#fff;padding:2px">
+              <button class="btn w s" type="button" id="removeLogoBtn" style="color:#ef4444; display:none" onclick="removeLogo()">✕ حذف الشعار</button>
+              <img id="logoPreview" src="" alt="شعار المدرسة" style="display:none; width:44px; height:44px; object-fit:contain; border-radius:8px; border:1px solid #cbd5e1; background:#fff; padding:3px">
+              <span style="font-size:0.76rem; color:#64748b">يفضل استخدام صورة مربعة أو شفافة PNG لحصيلة طباعة ممتازة.</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-section-card">
-        <span class="sec-label">إعدادات الدوام والحصص</span>
-        <button class="btn o day-summary-btn" type="button" onclick="openDaysBox()">
-          <span class="day-lbl">أيام الدوام:</span>
-          <span id="daysSum" class="day-val">—</span>
-          <span class="edit-link">تعديل الأيام ✎</span>
-        </button>
+        <!-- إعدادات الدوام والحصص -->
+        <div class="settings-luxury-card">
+          <div class="settings-card-header">
+            <span class="sec-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              أيام الدوام والحصص اليومية
+            </span>
+            <span class="sec-badge">هيكل الجدول</span>
+          </div>
 
-        <div class="set-nums-styled">
-          <label>الدروس اليومية (الحصص)
-            <input id="periods" type="number" min="1" max="12" value="6" oninput="saveSettings(true)">
-          </label>
-          <label>لون أطراف الجدول
-            <div class="color-picker-wrap">
-              <input id="gridColor" type="color" value="#5b21b6" oninput="saveGridColor()">
-              <span class="color-txt">اختر اللون</span>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#faf5ff; border:1px solid #e9d5ff; padding:12px 16px; border-radius:14px">
+            <div>
+              <span style="font-size:0.8rem; font-weight:800; color:#5b21b6; display:block">أيام الدوام الأسبوعية:</span>
+              <strong id="daysSum" style="font-size:0.92rem; color:#1e1b4b; display:block; margin-top:2px">—</strong>
             </div>
-          </label>
+            <button class="btn o day-summary-btn" type="button" onclick="openDaysBox()" style="height:36px; padding:0 16px; font-size:0.82rem; font-weight:800; border-radius:9px">
+              تعديل أيام الدوام ✎
+            </button>
+          </div>
+
+          <div class="modern-field-group" style="margin-top:6px">
+            <div class="modern-field">
+              <label>عدد الحصص الدراسية يومياً:</label>
+              <input id="periods" type="number" min="1" max="12" value="6" oninput="saveSettings(true)">
+            </div>
+            <div class="modern-field">
+              <label>اللون الرئيسي لعناوين وأطراف الجدول:</label>
+              <div style="display:flex; gap:10px; align-items:center; height:42px">
+                <input id="gridColor" type="color" value="#5b21b6" oninput="saveGridColor()" style="width:54px; height:42px; padding:2px; border-radius:8px; cursor:pointer">
+                <span style="font-size:0.82rem; font-weight:700; color:#64748b">اختر اللون المفضل لمدرستك</span>
+              </div>
+            </div>
+          </div>
         </div>
+
       </div>
+
+      <!-- ==============================================
+           3. التبويب الثالث: فريق المعاونين والربط السحابي
+           ============================================== -->
+      <div id="tabTeam" class="user-tab-pane">
+        
+        <!-- بطاقة إدارة وإنشاء حسابات المعاونين بواسطة المدير -->
+        <div class="settings-luxury-card" style="background:linear-gradient(135deg, #ffffff, #faf5ff); border:1.5px solid #d8b4fe">
+          <div class="settings-card-header" style="border-bottom-color:#f3e8ff">
+            <span class="sec-title" style="color:#6b21a8">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              إضافة حساب معاون جديد للمدرسة مباشرة
+            </span>
+            <span class="sec-badge" style="background:#f3e8ff; color:#7c3aed">صلاحية المدير</span>
+          </div>
+
+          <p style="margin:2px 0 8px; font-size:0.82rem; color:#581c87; line-height:1.5">
+            بصفتك مدير المدرسة، يمكنك إنشاء حساب رسمي لمعاونك فوراً وتحديد صلاحياته ومشاركة بيانات الدخول معه عبر الواتساب:
+          </p>
+
+          <div class="modern-field-group">
+            <div class="modern-field">
+              <label>اسم المعاون:</label>
+              <input id="newAssistName" placeholder="مثال: أستاذ علي حسين">
+            </div>
+            <div class="modern-field">
+              <label>رقم هاتف المعاون (حساب الدخول):</label>
+              <input id="newAssistPhone" type="tel" placeholder="07XXXXXXXXX" style="direction:ltr; text-align:right">
+            </div>
+          </div>
+
+          <div class="modern-field-group" style="margin-top:4px">
+            <div class="modern-field">
+              <label>رمز الدخول المبدئي (PIN):</label>
+              <input id="newAssistPin" type="password" placeholder="٤ أرقام (مثال: 1234)">
+            </div>
+            <div class="modern-field">
+              <label>صلاحية المعاون في المدرسة:</label>
+              <select id="newAssistRole">
+                <option value="assistant">معاون مدرسة (تعديل الجدول والغيابات والاحتياط)</option>
+                <option value="viewer">مساعد / مراقب (مشاهدة الجدول وطباعته فقط)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center; justify-content:flex-end; margin-top:8px; flex-wrap:wrap">
+            <button class="btn g" type="button" style="height:40px; padding:0 20px; font-weight:800; border-radius:10px" onclick="createAssistantDirectly()">
+              ➕ حفظ وإنشاء حساب المعاون
+            </button>
+            <button class="btn w" type="button" id="shareWhatsAppBtn" style="height:40px; padding:0 18px; font-weight:800; border-radius:10px; color:#15803d; border-color:#86efac; background:#f0fdf4" onclick="shareAssistantViaWhatsApp()">
+              💬 إرسال الدعوة عبر WhatsApp
+            </button>
+          </div>
+          <div id="addAssistMsg" style="font-size:0.82rem; font-weight:700; color:#15803d; min-height:18px; text-align:center; margin-top:4px"></div>
+        </div>
+
+        <!-- بطاقة رمز المدرسة وقائمة الفريق المنضم -->
+        <div class="settings-luxury-card" style="background:#fcfaff; border:1px solid #e9d5ff">
+          <div class="settings-card-header" style="border-bottom-color:#f3e8ff">
+            <span class="sec-title" style="color:#6b21a8">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              فريق المدرسة المنضم ورمز المشاركة
+            </span>
+            <span class="sec-badge" style="background:#f3e8ff; color:#7c3aed">كود المدرسة</span>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1.5px solid #e9d5ff; padding:12px 16px; border-radius:12px; margin-bottom:8px">
+            <div>
+              <span style="font-size:0.8rem; font-weight:800; color:#4c1d95; display:block">رمز مدرستك الرسمي للمشاركة:</span>
+              <strong id="mySchoolCode" style="font-size:1.15rem; color:#7c3aed; letter-spacing:1.5px; direction:ltr; font-weight:900; display:block; margin-top:2px">SCH-XXXX</strong>
+            </div>
+            <button class="btn w s" type="button" style="padding:6px 14px; font-size:0.8rem; font-weight:800" onclick="copySchoolCode()">نسخ الرمز</button>
+          </div>
+
+          <!-- قائمة المعاونين المنضمين -->
+          <div id="teamMembersBox" style="background:#f3e8ff; border:1px solid #c084fc; border-radius:12px; padding:12px 14px; margin-bottom:8px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
+              <span style="font-size:0.84rem; font-weight:800; color:#5b21b6">👥 المعاونون المسجلون في مدرستك:</span>
+              <button class="btn w s" type="button" style="padding:3px 10px; font-size:0.75rem; min-height:26px" onclick="refreshTeamMembers()">🔄 تحديث القائمة</button>
+            </div>
+            <div id="teamMembersList" style="font-size:0.82rem; color:#4c1d95; line-height:1.8">
+              <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
+            </div>
+          </div>
+
+          <!-- الانضمام إلى مدرسة أخرى كمعاون -->
+          <div style="display:flex; gap:8px; align-items:center">
+            <input id="joinSchoolIn" placeholder="إذا كنت معاوناً، أدخل رمز المدرسة (SCH-XXXX) للانضمام" style="flex:1; height:40px; padding:0 14px; font-size:0.86rem; text-align:center; direction:ltr; border-radius:10px; border:1.5px solid #cbd5e1">
+            <button class="btn g s" type="button" style="height:40px; font-size:0.84rem; padding:0 16px; border-radius:10px; font-weight:800" onclick="doLinkSchool()">طلب الانضمام</button>
+          </div>
+          <div id="schoolTeamMsg" style="margin-top:6px; font-size:0.8rem; font-weight:700; color:#15803d; min-height:18px"></div>
+        </div>
+
+        <!-- بطاقة ربط البوت بمدرستي تيليكرام -->
+        <div class="settings-luxury-card" style="background:linear-gradient(135deg, #f0f9ff, #e0f2fe); border-color:#bae6fd">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px">
+            <div style="display:flex; align-items:center; gap:12px">
+              <div style="width:44px; height:44px; border-radius:12px; background:#0284c7; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 6px 14px rgba(2,132,199,0.25)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px; height:22px"><path d="M21.5 4.5 2.5 11.5l6 2.5 2.5 6z"/></svg>
+              </div>
+              <div>
+                <strong style="color:#0369a1; font-size:0.94rem; display:block">ربط البوت بمدرستي (تيليكرام)</strong>
+                <span style="color:#0284c7; font-size:0.78rem">استلام التقارير اليومية وجداول الحصص عبر البوت مباشرة</span>
+              </div>
+            </div>
+            <button type="button" class="btn" style="background:#0284c7; box-shadow:0 4px 12px rgba(2,132,199,.25); font-weight:800; font-size:0.84rem; padding:8px 18px" onclick="openBotBind()">🔗 ربط البوت الآن</button>
+          </div>
+        </div>
+
+        <!-- بطاقة حساب Google المرتبط -->
+        <div class="settings-luxury-card">
+          <div class="settings-card-header">
+            <span class="sec-title">
+              <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              حساب Google الرسمي المرتبط
+            </span>
+            <span id="linkedGoogleAcc" class="sec-badge" style="background:#f1f5f9; color:#64748b">غير مرتبط</span>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px">
+              <span style="font-size:0.8rem; color:#64748b; font-weight:700">رقم الهاتف:</span>
+              <strong id="phoneAccShow" style="font-size:0.88rem; color:#1e293b; direction:ltr">—</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between">
+              <span style="font-size:0.8rem; color:#64748b; font-weight:700">بريد Google:</span>
+              <strong id="googleEmailShow" style="font-size:0.88rem; color:#1e293b; direction:ltr">—</strong>
+            </div>
+          </div>
+
+          <button id="googleLinkBtn" type="button" style="width:100%; background:#fff; border:1.5px solid #cbd5e1; color:#333; height:40px; font-size:0.84rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:11px; cursor:pointer; transition:all .2s; margin-top:4px" onclick="startGoogleLink()">
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            <span id="googleBtnTxt">ربط الحساب بحساب Google</span>
+          </button>
+          <div id="googleLinkMsg" style="font-size:0.78rem; font-weight:700; color:#15803d; text-align:center; min-height:16px"></div>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- تذييل النافذة السفلي -->
     <div class="modal-foot">
-      <button class="btn" type="button" onclick="saveSettings();$('setSchool').hidden=true">حفظ الإعدادات</button>
-      <button class="btn w ghost" type="button" onclick="$('setSchool').hidden=true">رجوع</button>
+      <div style="font-size:0.78rem; color:#64748b; font-weight:700">
+        💡 يتم حفظ التغييرات وتأكيدها فورياً على هذا الجهاز والسحابة.
+      </div>
+      <div style="display:flex; gap:10px">
+        <button class="btn" type="button" style="height:40px; padding:0 24px; font-weight:800; border-radius:11px" onclick="saveSettings();$('setUser').hidden=true">
+          حفظ وإغلاق
+        </button>
+        <button class="btn w ghost" type="button" style="height:40px; padding:0 18px; border-radius:11px" onclick="$('setUser').hidden=true">
+          إلغاء
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1538,6 +1816,31 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
   </div>
   <div id="viewOut"></div>
 </section>
+
+<!-- شريط الملاحة السفلي الذكي للهواتف (Mobile Bottom Bar) -->
+<nav class="mobile-bottom-nav no-print">
+  <button type="button" class="mob-nav-btn active" onclick="switchMobileTab('views')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span>الجدول</span>
+  </button>
+  <button type="button" class="mob-nav-btn" onclick="switchMobileTab('teachers')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span>المعلمون</span>
+  </button>
+  <button type="button" class="mob-nav-btn" onclick="switchMobileTab('generate')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    <span>إنشاء وتعديل</span>
+  </button>
+  <button type="button" class="mob-nav-btn" onclick="switchMobileTab('classes')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>الصفوف</span>
+  </button>
+  <button type="button" class="mob-nav-btn" onclick="openSet('setUser')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>إدارتي</span>
+  </button>
+</nav>
+
 </div>
 
 <div id="exportBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
@@ -3813,15 +4116,61 @@ function renderSettings(){
   
   if(document.getElementById("userPhoneShow")) document.getElementById("userPhoneShow").textContent = displayAcc || "—";
   if(document.getElementById("phoneAccShow")) document.getElementById("phoneAccShow").textContent = displayAcc || "—";
-  if(document.getElementById("mySchoolCode") && displayAcc === "07813332882") document.getElementById("mySchoolCode").textContent = "SCH-2882";
+  
+  // توليد رمز المدرسة ديناميكياً من حساب المدرسة أو من السحابة دون تثبيت يدوي
+  const rawCode = (db.settings && db.settings.schoolCode) || localStorage.getItem("tt_school_code_" + displayAcc);
+  let effectiveSchoolCode = rawCode || "";
+  if (!effectiveSchoolCode && displayAcc) {
+    const digits = displayAcc.replace(/\D/g, "");
+    effectiveSchoolCode = "SCH-" + (digits.length >= 4 ? digits.slice(-4) : (digits + "9999").slice(0, 4));
+  }
+  if(document.getElementById("mySchoolCode")) {
+    document.getElementById("mySchoolCode").textContent = effectiveSchoolCode || "SCH-XXXX";
+  }
   
   const savedEmail = localStorage.getItem("tt_google_linked_email");
-  if(document.getElementById("userEmailShow")) document.getElementById("userEmailShow").textContent = savedEmail ? savedEmail.split("|")[0] : (displayAcc === "07813332882" ? "obe092@gmail.com" : "غير مرتبط");
-  if(document.getElementById("googleEmailShow")) document.getElementById("googleEmailShow").textContent = savedEmail ? savedEmail.split("|")[0] : "غير مرتبط";
+  const linkedEmail = savedEmail ? savedEmail.split("|")[0] : "";
+  if(document.getElementById("userEmailShow")) document.getElementById("userEmailShow").textContent = linkedEmail || "غير مرتبط";
+  if(document.getElementById("googleEmailShow")) document.getElementById("googleEmailShow").textContent = linkedEmail || "غير مرتبط";
+  
+  const googleBadge = document.getElementById("linkedGoogleAcc");
+  const googleBtn = document.getElementById("googleLinkBtn");
+  const googleBtnTxt = document.getElementById("googleBtnTxt");
+  if(googleBadge) {
+    if(linkedEmail) {
+      googleBadge.textContent = "مرتبط رسميّاً ✓";
+      googleBadge.style.background = "#dcfce7";
+      googleBadge.style.color = "#15803d";
+      if(googleBtnTxt) googleBtnTxt.textContent = "تبديل أو إعادة ربط حساب Google";
+    } else {
+      googleBadge.textContent = "غير مرتبط";
+      googleBadge.style.background = "#f1f5f9";
+      googleBadge.style.color = "#64748b";
+      if(googleBtnTxt) googleBtnTxt.textContent = "ربط الحساب بحساب Google الرسمي";
+    }
+  }
 
   const curUName = (db.settings && db.settings.userName) || localStorage.getItem("tt_user_name_" + (window._acc||"")) || "";
   if($("userNameShow")) $("userNameShow").textContent = curUName || "غير محدد";
   if($("userNameInput")) $("userNameInput").value = curUName;
+  
+  // ملء حقول الهاتف والدور والرمز لضمان بقائها وعدم اختفائها بعد الحفظ وتحديث الصفحة
+  const curPhone = (db.settings && db.settings.userPhone) || localStorage.getItem("tt_user_phone_" + (window._acc||"")) || displayAcc || "";
+  if(document.getElementById("userPhoneInput")) document.getElementById("userPhoneInput").value = curPhone;
+  
+  const curRole = (db.settings && db.settings.userRole) || localStorage.getItem("tt_user_role_" + (window._acc||"")) || "owner";
+  if(document.getElementById("userRoleSelect")) document.getElementById("userRoleSelect").value = curRole;
+  
+  const curPin = (db.settings && db.settings.userPin) || localStorage.getItem("tt_user_pin_" + (window._acc||"")) || "";
+  if(document.getElementById("userPinInput") && curPin) document.getElementById("userPinInput").value = curPin;
+  
+  const roleBadge = document.getElementById("userRoleBadge");
+  if(roleBadge) {
+    if(curRole === "owner") { roleBadge.textContent = "مدير المدرسة"; roleBadge.style.background = "#7c3aed"; }
+    else if(curRole === "assistant") { roleBadge.textContent = "معاون المدرسة"; roleBadge.style.background = "#0284c7"; }
+    else { roleBadge.textContent = "مساعد / مراقب"; roleBadge.style.background = "#64748b"; }
+  }
+
   const effV = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
   if($("installedVerShow")) $("installedVerShow").textContent = effV;
   if($("appTopVerShow")) $("appTopVerShow").textContent = "إصدار " + effV;
@@ -6667,23 +7016,6 @@ function afterAccount(r,fresh){
 }
 function doLogin(){
   const inputAcc = normAcc(($("loginAcc")&&$("loginAcc").value)||"");
-  
-  if (inputAcc === "07813332882" || inputAcc.endsWith("7813332882")) {
-      if ($("loginBox")) $("loginBox").hidden = true;
-      
-      onCloudLoginSuccess("07813332882", "07813332882", { 
-          ok: true, 
-          account: "07813332882", 
-          paid: true, 
-          until: "2027-10-14", 
-          user_name: "الأستاذ عبيده", 
-          email: "obe092@gmail.com",
-          school: "مدرسة بدور بغداد الابتدائية",
-          school_code: "SCH-2882"
-      });
-      return;
-  }
-
   const api=pyApi();
   const acc=inputAcc;
   const pw=String(($("loginPw")&&$("loginPw").value)||"").trim();
@@ -6720,12 +7052,6 @@ function doLogin(){
 }
 
 function checkCloudLogin(acc, pw, fallbackLocal){
-  const DEV_ACC = '07813332882';
-  if(acc === DEV_ACC || acc.endsWith('7813332882')){
-    // حساب المطور - دخول فوري مباشر مع تفعيل كامل
-    onCloudLoginSuccess(DEV_ACC, pw, { ok: true, account: DEV_ACC, email: "obe092@gmail.com", user_name: "الأستاذ عبيده", paid: true, until: '2027-10-14', school_code: 'SCH-2882' });
-    return;
-  }
   loginMsg('جاري التحقق من الحساب سحابياً ☁️...');
   fetch('https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/login', {
     method: 'POST',
@@ -6836,8 +7162,8 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
   saveAuth(a);
 
   // حفظ الاسم والإيميل بشكل صحيح
-  const finalEmail = cloudRes.email || (acc === "07813332882" ? "obe092@gmail.com" : "");
-  const finalName = cloudRes.user_name || (acc === "07813332882" ? "الأستاذ عبيده" : "");
+  const finalEmail = cloudRes.email || "";
+  const finalName = cloudRes.user_name || "";
   if (finalName) {
       if (!db.settings) db.settings = {};
       db.settings.userName = finalName;
@@ -6874,6 +7200,9 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
   }
   // تحديث فوري لفريق المدرسة ومعلومات الربط
   try { setTimeout(refreshTeamMembers, 500); } catch(e){}
+
+  // فحص وإلزام إكمال بيانات الحساب والدور للمستخدم الجديد
+  try { checkAndEnforceFirstTimeSetup(acc); } catch(e){}
 }
 function iqWaNum(phone){
   var n=String(phone||"").replace(/\D/g,"");
@@ -7356,13 +7685,15 @@ function doLogout(){
     if (typeof _cloudPushTimer !== 'undefined') clearTimeout(_cloudPushTimer);
     if (typeof _saveT !== 'undefined') clearTimeout(_saveT);
 
-    // مسح الجلسة من الذاكرة المحلية
+    // مسح الجلسة وكافة التخزينات المؤقتة
     try {
+      localStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem("tt_google_linked_email");
+      sessionStorage.clear();
       const a = loadAuth();
       a.session = "";
       saveAuth(a);
     } catch(e){}
-    try { localStorage.removeItem(AUTH_KEY); } catch(e){}
     
     // مسح المتغيرات المؤقتة
     window._acc = "";
@@ -7400,7 +7731,8 @@ function doLogout(){
     }
 
     try { applyGate({ ok: false, account: "" }); } catch(e){}
-    okNote("تم تسجيل الخروج بنجاح");
+    okNote("تم تسجيل الخروج بنجاح — يمكنك الآن إنشاء أو تسجيل حساب جديد");
+    setTimeout(function(){ window.location.reload(); }, 600);
   } catch(e) {
     console.error("Logout error:", e);
     const loginBox = document.getElementById("loginBox");
@@ -9020,41 +9352,194 @@ window._doReset = function(){
   okNote("تم تصفير كل البيانات");
 };
 
-// الدخول المباشر بحساب Google
+// الدخول الرسمي الحقيقي 100% بحساب Google OAuth 2.0
 window.loginWithGoogleMain = function() {
-  if (typeof loginMsg === "function") loginMsg("⏳ جاري تسجيل الدخول بحساب Google...");
-  setTimeout(function() {
-    onCloudLoginSuccess("07813332882", "07813332882", {
+  const sess = "sess_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const authUrl = "https://schol-table-bot.iq-school-timetable.workers.dev/auth/google/start?sess=" + encodeURIComponent(sess);
+
+  if (typeof loginMsg === "function") loginMsg("⏳ جاري فتح نافذة Google الرسمية لاختيار الحساب...");
+
+  // فتح نافذة Google الرسمية المنبثقة
+  const w = 500, h = 600;
+  const left = window.screen.width ? (window.screen.width - w) / 2 : 100;
+  const top = window.screen.height ? (window.screen.height - h) / 2 : 100;
+  const popup = window.open(authUrl, "google_login_window", `width=${w},height=${h},top=${top},left=${left},status=no,resizable=yes`);
+
+  let pollTimer = null;
+  let done = false;
+
+  function finishLogin(data) {
+    if (done) return;
+    done = true;
+    if (pollTimer) clearInterval(pollTimer);
+    try { if (popup && !popup.closed) popup.close(); } catch(e){}
+
+    const finalAcc = (data && data.account) || "";
+    const finalEmail = (data && data.email) || "";
+    const finalName = (data && data.user_name) || "مستخدم جديد";
+
+    if (!finalAcc) {
+      if (typeof loginMsg === "function") loginMsg("❌ لم يتم استلام بيانات الحساب من Google");
+      return;
+    }
+
+    try {
+      if (finalEmail) localStorage.setItem("tt_google_linked_email", finalEmail + "|" + finalAcc);
+      if (finalName) localStorage.setItem("tt_user_name_" + finalAcc, finalName);
+    } catch(e){}
+
+    const box = document.getElementById("loginBox") || (typeof $ === "function" ? $("loginBox") : null);
+    if (box) {
+      box.hidden = true;
+      box.style.display = "none";
+    }
+
+    onCloudLoginSuccess(finalAcc, finalAcc, {
       ok: true,
-      account: "07813332882",
-      paid: true,
-      until: "2027-10-14",
-      user_name: "الأستاذ عبيده",
-      email: "obe092@gmail.com",
-      school: "مدرسة بدور بغداد الابتدائية",
-      school_code: "SCH-2882"
+      account: finalAcc,
+      paid: !!(data && data.paid),
+      until: (data && data.until) || "",
+      user_name: finalName,
+      email: finalEmail,
+      school: (data && data.school) || "",
+      school_code: (data && data.school_code) || "",
+      data: (data && data.data) || ""
     });
-  }, 300);
+  }
+
+  // الاستماع لرسالة postMessage من نافذة Google
+  function onMsg(ev) {
+    if (ev && ev.data && ev.data.type === "GOOGLE_LOGIN_SUCCESS") {
+      window.removeEventListener("message", onMsg);
+      finishLogin(ev.data.data);
+    }
+  }
+  window.addEventListener("message", onMsg);
+
+  // فحص حالة الدخول كل ثانية سحابياً (Polling) لضمان العمل في جميع المتصفحات وسطح المكتب
+  pollTimer = setInterval(function() {
+    if (done) return;
+    fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/google_poll?sess=" + encodeURIComponent(sess))
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res && res.ok && res.found && res.data) {
+          window.removeEventListener("message", onMsg);
+          finishLogin(res.data);
+        }
+      })
+      .catch(function(){});
+  }, 1200);
+
+  // إيقاف الفحص بعد 4 دقائق إذا لم يكمل المستخدم
+  setTimeout(function() {
+    if (!done) {
+      if (pollTimer) clearInterval(pollTimer);
+      window.removeEventListener("message", onMsg);
+    }
+  }, 240000);
 };
 
-// ربط حساب Google من شاشة الإعدادات
+// ربط حساب Google الرسمي الحقيقي 100% عبر OAuth 2.0 من شاشة الإعدادات
 window.startGoogleLink = function() {
-  const acc = window._acc || "07813332882";
-  const email = "obe092@gmail.com";
-  try {
-    localStorage.setItem("tt_google_linked_email", email + "|" + acc);
-  } catch(e){}
-  if (document.getElementById("googleEmailShow")) document.getElementById("googleEmailShow").textContent = email;
-  if (document.getElementById("userEmailShow")) document.getElementById("userEmailShow").textContent = email;
-  if (document.getElementById("linkedGoogleAcc")) {
-    document.getElementById("linkedGoogleAcc").textContent = "مرتبط";
-    document.getElementById("linkedGoogleAcc").style.background = "#dcfce7";
-    document.getElementById("linkedGoogleAcc").style.color = "#15803d";
+  const currentAcc = window._acc || (document.getElementById("userPhoneInput") && document.getElementById("userPhoneInput").value.trim()) || "07813332882";
+  const sess = "sess_link_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const authUrl = "https://schol-table-bot.iq-school-timetable.workers.dev/auth/google/start?sess=" + encodeURIComponent(sess);
+
+  const msgEl = document.getElementById("googleLinkMsg");
+  const btnTxt = document.getElementById("googleBtnTxt");
+  if (msgEl) {
+    msgEl.textContent = "⏳ جاري فتح نافذة Google الرسمية لاختيار حسابك وربطه...";
+    msgEl.style.color = "#0284c7";
   }
-  if (document.getElementById("googleLinkMsg")) {
-    document.getElementById("googleLinkMsg").textContent = "✅ تم ربط الحساب بنجاح بـ " + email;
+  if (btnTxt) btnTxt.textContent = "جاري الاتصال بـ Google...";
+
+  const w = 500, h = 600;
+  const left = window.screen.width ? (window.screen.width - w) / 2 : 100;
+  const top = window.screen.height ? (window.screen.height - h) / 2 : 100;
+  const popup = window.open(authUrl, "google_link_window", `width=${w},height=${h},top=${top},left=${left},status=no,resizable=yes`);
+
+  let pollTimer = null;
+  let done = false;
+
+  function finishLink(data) {
+    if (done) return;
+    done = true;
+    if (pollTimer) clearInterval(pollTimer);
+    try { if (popup && !popup.closed) popup.close(); } catch(e){}
+
+    const realEmail = (data && data.email) || "";
+    if (!realEmail) {
+      if (msgEl) {
+        msgEl.textContent = "❌ تعذر الحصول على البريد الإلكتروني من Google";
+        msgEl.style.color = "#ef4444";
+      }
+      if (btnTxt) btnTxt.textContent = "إعادة المحاولة";
+      return;
+    }
+
+    try {
+      localStorage.setItem("tt_google_linked_email", realEmail + "|" + currentAcc);
+    } catch(e){}
+
+    // مزامنة الربط مع السحابة ولوحة المطور
+    fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/update_profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        acc: currentAcc,
+        email: realEmail,
+        google_email: realEmail,
+        phone: currentAcc
+      })
+    }).catch(function(){});
+
+    if (document.getElementById("googleEmailShow")) document.getElementById("googleEmailShow").textContent = realEmail;
+    if (document.getElementById("userEmailShow")) document.getElementById("userEmailShow").textContent = realEmail;
+    
+    const badge = document.getElementById("linkedGoogleAcc");
+    if (badge) {
+      badge.textContent = "مرتبط رسميّاً ✓";
+      badge.style.background = "#dcfce7";
+      badge.style.color = "#15803d";
+    }
+
+    if (msgEl) {
+      msgEl.textContent = "✅ تم ربط الحساب بنجاح بـ " + realEmail;
+      msgEl.style.color = "#15803d";
+    }
+    if (btnTxt) btnTxt.textContent = "تم الربط بحساب Google بنجاح";
+
+    okNote("✅ تم ربط الحساب رسمياً بحساب Google (" + realEmail + ")");
   }
-  okNote("✅ تم ربط الحساب بنجاح بحساب Google (" + email + ")");
+
+  function onMsg(ev) {
+    if (ev && ev.data && ev.data.type === "GOOGLE_LOGIN_SUCCESS") {
+      window.removeEventListener("message", onMsg);
+      finishLink(ev.data.data);
+    }
+  }
+  window.addEventListener("message", onMsg);
+
+  pollTimer = setInterval(function() {
+    if (done) return;
+    fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/google_poll?sess=" + encodeURIComponent(sess))
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res && res.ok && res.found && res.data) {
+          window.removeEventListener("message", onMsg);
+          finishLink(res.data);
+        }
+      })
+      .catch(function(){});
+  }, 1200);
+
+  setTimeout(function() {
+    if (!done) {
+      if (pollTimer) clearInterval(pollTimer);
+      window.removeEventListener("message", onMsg);
+      if (btnTxt) btnTxt.textContent = "ربط الحساب بحساب Google";
+    }
+  }, 240000);
 };
 
 // التبديل بين تبويبات نافذة معلومات المستخدم
@@ -9070,7 +9555,231 @@ window.switchUserTab = function(tabId, btn) {
   if (target) target.classList.add("active");
   if (btn) btn.classList.add("active");
 };
+
+// حفظ إعدادات المستخدم الجديد الإجبارية
+window.saveNewUserSetup = function() {
+  const role = (document.getElementById("userRoleSelect") && document.getElementById("userRoleSelect").value) || "owner";
+  const name = (document.getElementById("userNameInput") && document.getElementById("userNameInput").value.trim()) || "";
+  const phone = (document.getElementById("userPhoneInput") && document.getElementById("userPhoneInput").value.trim()) || "";
+  const pin = (document.getElementById("userPinInput") && document.getElementById("userPinInput").value.trim()) || "";
+
+  if (!phone || phone.length < 8) {
+    alert("يرجى إدخال رقم هاتف صحيح (07XXXXXXXXX)");
+    return;
+  }
+  if (!pin || pin.length < 4) {
+    alert("يرجى إدخال رمز دخول (PIN) مكون من 4 خانات على الأقل");
+    return;
+  }
+
+  if (!db.settings) db.settings = {};
+  db.settings.userRole = role;
+  if (name) db.settings.userName = name;
+  db.settings.userPhone = phone;
+  db.settings.userPin = pin;
+
+  const curAcc = window._acc || phone;
+  try {
+    localStorage.setItem("tt_user_name_" + curAcc, name || "مستخدم جديد");
+    localStorage.setItem("tt_user_role_" + curAcc, role);
+    localStorage.setItem("tt_user_phone_" + curAcc, phone);
+    localStorage.setItem("tt_user_pin_" + curAcc, pin);
+    localStorage.setItem("tt_first_setup_done_" + curAcc, "true");
+    
+    // حفظ برقم الهاتف أيضاً إذا كان curAcc مختلفاً
+    if (phone && phone !== curAcc) {
+      localStorage.setItem("tt_user_name_" + phone, name || "مستخدم جديد");
+      localStorage.setItem("tt_user_role_" + phone, role);
+      localStorage.setItem("tt_user_phone_" + phone, phone);
+      localStorage.setItem("tt_user_pin_" + phone, pin);
+      localStorage.setItem("tt_first_setup_done_" + phone, "true");
+    }
+
+    // تحديث كلمة المرور محلياً
+    const a = loadAuth();
+    if (!a.users) a.users = {};
+    if (!a.users[curAcc]) a.users[curAcc] = { first: ymd(new Date()) };
+    a.users[curAcc].pw = pwHash(curAcc, pin);
+    if (phone && !a.users[phone]) a.users[phone] = { first: ymd(new Date()) };
+    if (phone) a.users[phone].pw = pwHash(phone, pin);
+    saveAuth(a);
+  } catch(e){}
+
+  if (document.getElementById("userNameShow")) document.getElementById("userNameShow").textContent = name || phone;
+  if (document.getElementById("userPhoneShow")) document.getElementById("userPhoneShow").textContent = phone;
+  if (document.getElementById("phoneAccShow")) document.getElementById("phoneAccShow").textContent = phone;
+  if (document.getElementById("userPhoneInput")) document.getElementById("userPhoneInput").value = phone;
+  if (document.getElementById("userPinInput")) document.getElementById("userPinInput").value = pin;
+
+  // إرسال التحديث للسحابة لمزامنة وتوحيد الحساب مع لوحة المطور
+  const savedEmail = localStorage.getItem("tt_google_linked_email");
+  const linkedEmail = savedEmail ? savedEmail.split("|")[0] : "";
+  
+  fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/update_profile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      acc: curAcc,
+      phone: phone,
+      email: linkedEmail,
+      google_email: linkedEmail,
+      pw: pin,
+      user_name: name,
+      role: role
+    })
+  }).then(function(r){ return r.json(); }).then(function(res){
+    if (res && res.ok && res.account) {
+      window._acc = res.account;
+      const a = loadAuth();
+      a.session = res.account;
+      saveAuth(a);
+    }
+  }).catch(function(){});
+
+  save(true);
+  try { if (typeof renderSettings === "function") renderSettings(); } catch(e){}
+  okNote("✅ تم حفظ وتأكيد بيانات حسابك ورقم هاتفك بنجاح!");
+  const setModal = document.getElementById("setUser");
+  if (setModal) setModal.hidden = true;
+};
+
+// فحص وإلزام إعداد الحساب لأول مرة
+window.checkAndEnforceFirstTimeSetup = function(acc) {
+  const currentAcc = acc || window._acc || "";
+  if (!currentAcc) return;
+  const isSetupDone = localStorage.getItem("tt_first_setup_done_" + currentAcc);
+  if (!isSetupDone) {
+    setTimeout(function() {
+      const setModal = document.getElementById("setUser");
+      if (setModal) {
+        setModal.hidden = false;
+        setModal.style.display = "";
+        window.switchUserTab("tabProfile", document.querySelector("#setUser .user-tab-btn:nth-child(2)"));
+        okNote("👋 مرحباً بك! يرجى إكمال وضبط بيانات حسابك لأول مرة.");
+      }
+    }, 700);
+  }
+};
+
+// إنشاء حساب المعاون مباشرة من قبل مدير المدرسة
+window.createAssistantDirectly = function() {
+  const name = (document.getElementById("newAssistName") && document.getElementById("newAssistName").value.trim()) || "";
+  const phone = (document.getElementById("newAssistPhone") && document.getElementById("newAssistPhone").value.trim()) || "";
+  const pin = (document.getElementById("newAssistPin") && document.getElementById("newAssistPin").value.trim()) || "";
+  const role = (document.getElementById("newAssistRole") && document.getElementById("newAssistRole").value) || "assistant";
+  const ownerAcc = window._acc || "07813332882";
+  const msgEl = document.getElementById("addAssistMsg");
+
+  if (!phone || phone.replace(/\D/g, "").length < 8) {
+    alert("يرجى إدخال رقم هاتف صحيح للمعاون (مثال: 07XXXXXXXXX)");
+    return;
+  }
+  if (!name) {
+    alert("يرجى إدخال اسم المعاون");
+    return;
+  }
+  if (!pin || pin.length < 4) {
+    alert("يرجى تعيين رمز دخول مبدئي (PIN) من 4 أرقام على الأقل للمعاون");
+    return;
+  }
+
+  if (msgEl) {
+    msgEl.textContent = "⏳ جاري إنشاء الحساب وإضافته لمدرستك...";
+    msgEl.style.color = "#0284c7";
+  }
+
+  fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/add_member", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      owner_acc: ownerAcc,
+      phone: phone,
+      name: name,
+      pin: pin,
+      role: role
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if (res && res.ok) {
+      if (msgEl) {
+        msgEl.textContent = "✅ تم إنشاء حساب (" + name + ") وربطه بمدرستك بنجاح!";
+        msgEl.style.color = "#15803d";
+      }
+      okNote("✅ تم إنشاء حساب المعاون (" + name + ") بنجاح!");
+      if (typeof refreshTeamMembers === "function") refreshTeamMembers();
+
+      // تفعيل زر الواتساب لإرسال البيانات مباشرة
+      window._lastCreatedAssist = { name: name, phone: phone, pin: pin };
+      const waBtn = document.getElementById("shareWhatsAppBtn");
+      if (waBtn) {
+        waBtn.style.background = "#22c55e";
+        waBtn.style.color = "#ffffff";
+        waBtn.textContent = "💬 إرسال بيانات الدخول إلى " + name + " عبر WhatsApp";
+      }
+    } else {
+      const err = (res && res.message) || "تعذر إنشاء حساب المعاون";
+      if (msgEl) {
+        msgEl.textContent = "❌ " + err;
+        msgEl.style.color = "#ef4444";
+      }
+      note(err);
+    }
+  })
+  .catch(function(){
+    if (msgEl) {
+      msgEl.textContent = "❌ تعذر الاتصال بالسحابة لإتمام الإضافة";
+      msgEl.style.color = "#ef4444";
+    }
+  });
+};
+
+// مشاركة بيانات دخول المعاون عبر WhatsApp
+window.shareAssistantViaWhatsApp = function() {
+  const name = (document.getElementById("newAssistName") && document.getElementById("newAssistName").value.trim()) || (window._lastCreatedAssist && window._lastCreatedAssist.name) || "الأستاذ المعاون";
+  const phone = (document.getElementById("newAssistPhone") && document.getElementById("newAssistPhone").value.trim()) || (window._lastCreatedAssist && window._lastCreatedAssist.phone) || "";
+  const pin = (document.getElementById("newAssistPin") && document.getElementById("newAssistPin").value.trim()) || (window._lastCreatedAssist && window._lastCreatedAssist.pin) || "";
+  const schoolName = (db.settings && db.settings.schoolName) || "مدرستنا";
+  const schoolCode = (document.getElementById("mySchoolCode") && document.getElementById("mySchoolCode").textContent.trim()) || "SCH-XXXX";
+
+  const msg = `السلام عليكم ورحمة الله أستاذ ${name} 🌹\n` +
+    `تم تسجيلك رسمياً كـ (معاون) في نظام الجدول المدرسي لـ «${schoolName}».\n\n` +
+    `📱 رقم حسابك: ${phone}\n` +
+    `🔑 رمز الدخول المبدئي (PIN): ${pin}\n` +
+    `🏫 رمز المدرسة: ${schoolCode}\n\n` +
+    `رابط فتح وتنزيل النظام:\nhttps://obeida00.github.io/timetable-update/`;
+
+  const cleanPhone = phone.replace(/\D/g, "");
+  let targetPhone = cleanPhone;
+  if (targetPhone.startsWith("07")) targetPhone = "964" + targetPhone.slice(1);
+  else if (targetPhone.startsWith("7")) targetPhone = "964" + targetPhone;
+
+  const waUrl = targetPhone ? `https://wa.me/${targetPhone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, "_blank");
+};
+
+// وظيفة التنقل السريع من شريط الهاتف السفلي (Mobile Navigation Switcher)
+window.switchMobileTab = function(tabName) {
+  const btn = document.querySelector(`nav.tabs button[data-tab="${tabName}"]`);
+  if (btn && typeof tab === "function") {
+    tab(btn);
+  } else {
+    // تبديل الأقسام يدوياً إن لم يوجد زر مباشر
+    document.querySelectorAll(".card").forEach(c => c.hidden = true);
+    const target = document.getElementById(tabName);
+    if (target) {
+      target.hidden = false;
+      target.classList.add("show");
+    }
+  }
+  
+  // تحديث الزر النشط في الشريط السفلي
+  document.querySelectorAll(".mob-nav-btn").forEach(b => b.classList.remove("active"));
+  const clicked = event && event.currentTarget;
+  if (clicked) clicked.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 </script>
 
 </body>
-</html>
+</html>
