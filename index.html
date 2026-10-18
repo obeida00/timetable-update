@@ -383,6 +383,15 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
 .dev-wrap{display:flex;align-items:center;gap:6px;z-index:1;flex:0 0 auto}
 .dev-btn{font:inherit;font-size:.85rem;color:#fff;font-weight:800;background:rgba(0,0,0,.15);padding:8px 16px;border-radius:25px;border:1px solid rgba(255,255,255,.25);box-shadow:0 4px 10px rgba(0,0,0,.1);white-space:nowrap;cursor:pointer}
 .dev-btn:hover{background:rgba(255,255,255,.18)}
+.user-menu-wrap{position:relative;display:inline-block}
+.user-dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:210px;background:#ffffff;border-radius:16px;box-shadow:0 14px 35px rgba(30,27,75,0.22),0 0 0 1px rgba(139,92,246,0.18);padding:8px;z-index:99999;display:none;flex-direction:column;gap:5px;animation:menuFadeIn .18s cubic-bezier(.16,1,.3,1)}
+.user-dropdown-menu.show{display:flex}
+@keyframes menuFadeIn{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.user-dropdown-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;border:none;background:transparent;border-radius:10px;font-family:inherit;font-size:0.86rem;font-weight:700;color:#334155;cursor:pointer;text-align:right;transition:all .15s ease}
+.user-dropdown-item:hover{background:#f5f3ff;color:#6d28d9}
+.user-dropdown-item.danger{color:#dc2626}
+.user-dropdown-item.danger:hover{background:#fef2f2;color:#b91c1c}
+.user-dropdown-divider{height:1px;background:#f1f5f9;margin:3px 6px}
 .lic-chip{font:inherit;font-size:.82rem;color:#fff;font-weight:800;background:rgba(16,185,129,.28);padding:8px 14px;border-radius:25px;border:1px solid rgba(255,255,255,.35);cursor:pointer;white-space:nowrap}.lic-chip.trial{background:rgba(245,158,11,.35)}.lic-chip.lock{background:rgba(225,29,72,.4)}
 .bell-btn{position:relative;width:42px;height:42px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(0,0,0,.15);color:#fff;cursor:pointer;display:grid;place-items:center;padding:0}
 .bell-btn svg{width:20px;height:20px}
@@ -936,11 +945,33 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
       <span class="bell-dot"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
     </button>
-    <button type="button" class="dev-btn user-header-chip" id="userTopBtn" title="إدارة الحساب والمدرسة والاشتراك" onclick="openSet('setUser')" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);padding:8px 16px;border-radius:20px;cursor:pointer">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span id="userTopShow">المستخدم</span>
-    </button>
-    <button type="button" class="dev-btn" id="logoutTop" onclick="doLogout()" style="background:rgba(239,68,68,0.22);border-color:rgba(248,113,113,0.4)">تسجيل الخروج</button>
+    <div class="user-menu-wrap" id="userMenuWrap">
+      <button type="button" class="dev-btn user-header-chip" id="userTopBtn" title="خيارات الحساب والمدرسة" onclick="toggleUserDropdown(event)" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);padding:8px 16px;border-radius:20px;cursor:pointer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="userTopShow">المستخدم</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="opacity:0.8;margin-right:-2px"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <div class="user-dropdown-menu" id="userDropdownMenu" onclick="event.stopPropagation()">
+        <button type="button" class="user-dropdown-item" onclick="openSet('setUser');hideUserDropdown()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>إدارة المدرسة والحساب</span>
+        </button>
+        <button type="button" class="user-dropdown-item" onclick="openSubInfoOrPayment();hideUserDropdown()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span>تفاصيل الاشتراك السنوي</span>
+        </button>
+        <div class="user-dropdown-divider"></div>
+        <button type="button" class="user-dropdown-item" id="menuLoginItem" onclick="openLoginModalFromMenu();hideUserDropdown()" style="display:none;color:#16a34a">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span>تسجيل الدخول</span>
+        </button>
+        <button type="button" class="user-dropdown-item danger" id="menuLogoutItem" onclick="hideUserDropdown();doLogout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>تسجيل الخروج</span>
+        </button>
+      </div>
+    </div>
   </div>
 </header>
 <nav class="tabs no-print">
@@ -2432,7 +2463,7 @@ window._acc=(function(){
 function storageKey(){
   return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
 }
-const APP_VERSION="1.31";
+const APP_VERSION="1.32";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -4223,6 +4254,12 @@ function renderSettings(){
     footerScEl.textContent = (db.settings && db.settings.schoolName) || "مدرستنا";
   }
 
+  const isLogged = !!(window._acc || (typeof localStatus === "function" && localStatus() && localStatus().account));
+  const menuLogin = document.getElementById("menuLoginItem");
+  const menuLogout = document.getElementById("menuLogoutItem");
+  if(menuLogin) menuLogin.style.display = isLogged ? "none" : "flex";
+  if(menuLogout) menuLogout.style.display = isLogged ? "flex" : "none";
+
   const effV = typeof effectiveVer==="function" ? effectiveVer() : APP_VERSION;
   if($("installedVerShow")) $("installedVerShow").textContent = effV;
   if($("appTopVerShow")) $("appTopVerShow").textContent = "إصدار " + effV;
@@ -4230,6 +4267,43 @@ function renderSettings(){
   updateLogoUI();
   applyGridColor();
 }
+
+function toggleUserDropdown(e){
+  if(e) e.stopPropagation();
+  const m = document.getElementById("userDropdownMenu");
+  if(!m) return;
+  const isShow = m.classList.contains("show");
+  if(isShow) hideUserDropdown();
+  else {
+    m.classList.add("show");
+    const isLogged = !!(window._acc || (typeof localStatus === "function" && localStatus() && localStatus().account));
+    const menuLogin = document.getElementById("menuLoginItem");
+    const menuLogout = document.getElementById("menuLogoutItem");
+    if(menuLogin) menuLogin.style.display = isLogged ? "none" : "flex";
+    if(menuLogout) menuLogout.style.display = isLogged ? "flex" : "none";
+  }
+}
+
+function hideUserDropdown(){
+  const m = document.getElementById("userDropdownMenu");
+  if(m) m.classList.remove("show");
+}
+
+function openLoginModalFromMenu(){
+  hideUserDropdown();
+  const lb = document.getElementById("loginBox");
+  if(lb){
+    lb.hidden = false;
+    lb.style.display = "";
+  }
+}
+
+document.addEventListener("click", function(e){
+  const wrap = document.getElementById("userMenuWrap");
+  if(wrap && !wrap.contains(e.target)){
+    hideUserDropdown();
+  }
+});
 function updateLogoUI(){
   const logo=db.settings&&db.settings.schoolLogo;
   const prev=$("logoPreview"), rm=$("removeLogoBtn");
