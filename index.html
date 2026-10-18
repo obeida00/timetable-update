@@ -255,7 +255,7 @@ td.clk:hover .mv button{opacity:.45}
 .empty-cell:hover{background:#fca5a5!important;}
 
 
-#subBox{overflow:hidden;padding:12px}
+#subBox{overflow:hidden;padding:12px;z-index:9999!important}
 #subBox .modal-card{
   width:min(820px,96vw)!important;max-height:none!important;overflow:hidden!important;
   display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center;
@@ -984,7 +984,7 @@ table.slim td.tname{font-size:.9rem;line-height:1.32;font-weight:400;color:#1f29
     </label>
   </div>
   <div class="table-wrap">
-    <table class="slim tcols"><colgroup><col style="width:3%"><col style="width:15.5%"><col style="width:11.5%"><col style="width:10%"><col style="width:7%"><col style="width:5%"><col style="width:6%"><col style="width:6%"><col style="width:9%"><col style="width:7%"><col style="width:7%"><col style="width:12.5%"></colgroup><thead><tr><th>#</th><th>الاسم الرباعي</th><th>الاختصاص</th><th>العنوان الوظيفي</th><th>الشهادة</th><th>الجنس</th><th>سنة التوليد</th><th>الصفة</th><th>الهاتف</th><th>المباشرة الأولى</th><th>المباشرة بالتعيين</th><th>الأوف</th></tr></thead><tbody id="tBody"></tbody></table>
+    <table class="slim tcols"><colgroup><col style="width:3.5%"><col style="width:17%"><col style="width:13%"><col style="width:11%"><col style="width:8%"><col style="width:6%"><col style="width:7%"><col style="width:7.5%"><col style="width:11%"><col style="width:8%"><col style="width:8%"></colgroup><thead><tr><th>#</th><th>الاسم الرباعي</th><th>الاختصاص</th><th>العنوان الوظيفي</th><th>الشهادة</th><th>الجنس</th><th>سنة التوليد</th><th>الصفة</th><th>الهاتف</th><th>المباشرة الأولى</th><th>المباشرة بالتعيين</th></tr></thead><tbody id="tBody"></tbody></table>
   </div>
 </section>
 
@@ -2432,7 +2432,7 @@ window._acc=(function(){
 function storageKey(){
   return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
 }
-const APP_VERSION="1.30";
+const APP_VERSION="1.31";
 
 const GUIDE_STEPS=[];
 function openGuide(){}
@@ -3358,8 +3358,7 @@ function renderTeachers(){
     <td data-l="العنوان الوظيفي">${esc(t.job||"—")}</td><td data-l="الشهادة">${esc(t.cert||"—")}</td><td data-l="الجنس">${esc(t.gender||"—")}</td>
     <td data-l="سنة التوليد">${esc(t.birth||"—")}</td><td data-l="الصفة">${esc(t.status||"—")}</td><td data-l="الهاتف">${esc(t.phone||"—")}</td>
     <td data-l="المباشرة الأولى">${offDateTxt(t.hire1)}</td><td data-l="المباشرة بالتعيين">${offDateTxt(t.hire2)}</td>
-    <td data-l="الأوف">${teacherOffDays(t).map(dayName).join("، ")||"—"}</td>
-    </tr>`).join("")||`<tr><td colspan="12" class="muted">لا يوجد معلمون بعد</td></tr>`;
+    </tr>`).join("")||`<tr><td colspan="11" class="muted">لا يوجد معلمون بعد</td></tr>`;
   syncTeacherSel();
 }
 function syncTeacherSel(){
