@@ -1732,8 +1732,24 @@ nav.tabs button.on {
       </div>
 
       <div id="loginMainForm">
+        <!-- 🌟 الدخول الرسمي الأساسي بواسطة Google (إلزامي لإنشاء الحساب وتوثيقه) -->
+        <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:12px;margin-bottom:14px;text-align:center">
+          <div style="font-size:0.82rem;font-weight:800;color:#166534;margin-bottom:8px">
+            ✨ إنشاء حساب جديد أو تسجيل الدخول
+          </div>
+          <button type="button" class="emis-google-btn" onclick="loginWithGoogleMain()" style="border:1.5px solid #4285F4;background:#fff;box-shadow:0 3px 10px rgba(66,133,244,0.15)">
+            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            <span style="font-weight:900;color:#1e293b;font-size:0.92rem">المتابعة باستخدام Google</span>
+          </button>
+          <div style="font-size:0.72rem;color:#475569;margin-top:6px;line-height:1.4">
+            🔒 للمستخدمين الجدد: سجل بحساب Google أولاً ثم عيّن رقم هاتفك ورمز الدخول من إعدادات الحساب.
+          </div>
+        </div>
+
+        <div class="emis-divider" style="margin:14px 0 12px 0">أو الدخول برقم الهاتف (للحسابات المربوطة)</div>
+
         <div class="emis-q-field">
-          <label>رقم الهاتف أو المعرف الوظيفي</label>
+          <label>رقم الهاتف المعتمد</label>
           <div class="emis-q-input-wrap">
             <div class="emis-input-ico">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1743,7 +1759,7 @@ nav.tabs button.on {
         </div>
 
         <div class="emis-q-field">
-          <label>رمز الدخول السري</label>
+          <label>رمز الدخول السري (PIN)</label>
           <div class="emis-q-input-wrap">
             <div class="emis-input-ico">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1753,15 +1769,8 @@ nav.tabs button.on {
         </div>
 
         <button type="button" class="emis-btn-submit" onclick="doLogin()">
-          <span>تسجيل الدخول للنظام</span>
+          <span>تسجيل الدخول بالهاتف</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-
-        <div class="emis-divider">أو تسجيل الدخول السحابي</div>
-
-        <button type="button" class="emis-google-btn" onclick="loginWithGoogleMain()">
-          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          <span>المتابعة باستخدام Google</span>
         </button>
       </div>
 
@@ -8143,16 +8152,23 @@ function doLogin(){
     return;
   }
 
-  // 1. محاولة تسجيل الدخول محلياً أولاً
-  const rLocal = localLogin(acc, pw);
-  if(rLocal && rLocal.ok){
-    okNote("تم الدخول بنجاح");
-    afterAccount(rLocal);
-    return;
+  // 🛡️ فحص صارم للأمان: التحقق مما إذا كان الحساب مرتبطاً بحساب Google محلياً
+  const isDevAcc = (acc === "07813332882");
+  const savedGoogleLink = localStorage.getItem("tt_google_linked_email") || "";
+  const isGoogleLinkedLocal = isDevAcc || (savedGoogleLink && (savedGoogleLink.includes(acc) || savedGoogleLink.includes("@")));
+
+  // 1. محاولة تسجيل الدخول محلياً فقط إذا كان الحساب موثقاً بـ Google مسبقاً
+  if (isGoogleLinkedLocal) {
+    const rLocal = localLogin(acc, pw);
+    if(rLocal && rLocal.ok){
+      okNote("تم الدخول بنجاح");
+      afterAccount(rLocal);
+      return;
+    }
   }
 
   // 2. إذا كان يعمل بتطبيق سطح المكتب ولديه واجهة محلية
-  if(api && api.login_account){
+  if(api && api.login_account && isGoogleLinkedLocal){
     api.login_account(acc, pw).then(function(r){
       if(r && r.ok){
         okNote("تم الدخول");
@@ -8163,11 +8179,11 @@ function doLogin(){
     }).catch(function(){ checkCloudLogin(acc, pw, null); });
     return;
   }
-  checkCloudLogin(acc, pw, rLocal);
+  checkCloudLogin(acc, pw, null);
 }
 
 function checkCloudLogin(acc, pw, fallbackLocal){
-  loginMsg('جاري التحقق من الحساب سحابياً ☁️...');
+  loginMsg('جاري التحقق من ربط الحساب سحابياً ☁️...');
   fetch('https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -8176,6 +8192,9 @@ function checkCloudLogin(acc, pw, fallbackLocal){
     .then(function(cloudRes){
       if(cloudRes && cloudRes.ok){
         onCloudLoginSuccess(acc, pw, cloudRes);
+      } else if(cloudRes && (cloudRes.reason === 'not_google_linked' || cloudRes.reason === 'nouser')) {
+        // 🔒 منع قاطع لأي شخص يحاول الدخول برقم هاتف غير مرتبط بـ Google
+        loginMsg(cloudRes.message || '⚠️ هذا الرقم غير مرتبط بحساب Google. يجب تسجيل الدخول عبر Google أولاً!');
       } else if(cloudRes && cloudRes.reason === 'pass') {
         loginMsg('رمز الدخول غير صحيح');
       } else if(cloudRes && (cloudRes.reason === 'trial_expired' || cloudRes.reason === 'deleted' || cloudRes.reason === 'expired')) {
@@ -8238,17 +8257,14 @@ function verifyViaCloudSync(acc, pw, fallbackLocal){
               }
               onCloudLoginSuccess(acc, pw, loginData);
             } else {
-              const m = { pass: "رمز الدخول غير صحيح", nouser: "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد» لإنشائه", account: "أدخل رقم موبايل صحيح" };
-              loginMsg((fallbackLocal && m[fallbackLocal.reason]) || "لا حساب بهذا الرقم — اضغط على «إنشاء حساب جديد»");
+              loginMsg("⚠️ هذا الرقم غير مرتبط بحساب Google. يرجى تسجيل الدخول عبر Google أولاً.");
             }
           }).catch(function(){
-            const m = { pass: "كلمة السر غير صحيحة", nouser: "لا حساب بهذا الرقم — أنشئ حساباً جديداً", account: "أدخل رقم موبايل صحيح" };
-            loginMsg((fallbackLocal && m[fallbackLocal.reason]) || "تعذر التحقق من الحساب");
+            loginMsg("⚠️ هذا الرقم غير مرتبط بحساب Google. يرجى تسجيل الدخول عبر Google أولاً.");
           });
       }
     }).catch(function(){
-      const m = { pass: "كلمة السر غير صحيحة", nouser: "لا حساب بهذا الرقم — أنشئ حساباً جديداً", account: "أدخل رقم موبايل صحيح" };
-      loginMsg((fallbackLocal && m[fallbackLocal.reason]) || "تعذر التحقق من الحساب بدون إنترنت");
+      loginMsg("⚠️ تعذر الاتصال بالسحابة للتحقق من ربط الحساب بحساب Google");
     });
 }
 
