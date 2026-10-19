@@ -8332,8 +8332,8 @@ function onCloudLoginSuccess(acc, pw, cloudRes){
   // تحديث فوري لفريق المدرسة ومعلومات الربط
   try { setTimeout(refreshTeamMembers, 500); } catch(e){}
 
-  // فحص وإلزام إكمال بيانات الحساب والدور للمستخدم الجديد
-  try { checkAndEnforceFirstTimeSetup(acc); } catch(e){}
+  // فحص وإلزام إكمال بيانات الحساب والدور للمستخدم الجديد فقط
+  try { checkAndEnforceFirstTimeSetup(acc, !!(cloudRes && cloudRes.is_new)); } catch(e){}
 }
 function iqWaNum(phone){
   var n=String(phone||"").replace(/\D/g,"");
@@ -10535,7 +10535,8 @@ window.loginWithGoogleMain = function() {
       email: finalEmail,
       school: (data && data.school) || "",
       school_code: (data && data.school_code) || "",
-      data: (data && data.data) || ""
+      data: (data && data.data) || "",
+      is_new: !!(data && data.is_new)
     });
   }
 
@@ -10775,22 +10776,40 @@ window.saveNewUserSetup = function() {
   if (setModal) setModal.hidden = true;
 };
 
-// فحص وإلزام إعداد الحساب لأول مرة
-window.checkAndEnforceFirstTimeSetup = function(acc) {
+// فحص وإلزام إعداد الحساب لأول مرة (للحسابات الجديدة فقط التي ليس لديها رقم ورمز سري)
+window.checkAndEnforceFirstTimeSetup = function(acc, isNewUser) {
   const currentAcc = acc || window._acc || "";
   if (!currentAcc) return;
-  const isSetupDone = localStorage.getItem("tt_first_setup_done_" + currentAcc);
-  if (!isSetupDone) {
-    setTimeout(function() {
-      const setModal = document.getElementById("setUser");
-      if (setModal) {
-        setModal.hidden = false;
-        setModal.style.display = "";
-        window.switchUserTab("tabProfile", document.querySelector("#setUser .user-tab-btn:nth-child(2)"));
-        okNote("👋 مرحباً بك! يرجى إكمال وضبط بيانات حسابك لأول مرة.");
-      }
-    }, 700);
+
+  // حساب المطور معفى دائماً ولا يُطلب منه ملء البيانات إجبارياً
+  if (currentAcc === "07813332882" || currentAcc.includes("obe092")) {
+    return;
   }
+
+  // فحص هل الحساب أكمل إعداداته مسبقاً ولديه رقم هاتف ورمز مرور
+  const isSetupDone = localStorage.getItem("tt_first_setup_done_" + currentAcc) === "true";
+  const savedPhone = localStorage.getItem("tt_user_phone_" + currentAcc) || (db.settings && db.settings.userPhone);
+  const savedPin = localStorage.getItem("tt_user_pin_" + currentAcc) || (db.settings && db.settings.userPin);
+
+  // إذا كان الحساب قديم ولديه رقم هاتف ورمز دخول، يدخل مباشرة للتطبيق دون مقاطعة
+  if ((isSetupDone || (savedPhone && savedPin)) && !isNewUser) {
+    return;
+  }
+
+  // فقط إذا كان الحساب جديداً تماماً ويحتاج تعيين رقم هاتفه ورمز دخوله السري
+  setTimeout(function() {
+    const setModal = document.getElementById("setUser");
+    if (setModal) {
+      setModal.hidden = false;
+      setModal.style.display = "";
+      // اختيار تبويب "الحساب الشخصي والدور" (التبويب الأول)
+      const firstTabBtn = document.querySelector("#setUser .user-tab-btn:first-child");
+      if (typeof window.switchUserTab === "function") {
+        window.switchUserTab("tabProfile", firstTabBtn);
+      }
+      okNote("👋 مرحباً بك! يرجى إكمال رقم هاتفك ورمز الدخول الخاص بك للمتابعة.");
+    }
+  }, 500);
 };
 
 // إنشاء حساب المعاون مباشرة من قبل مدير المدرسة
