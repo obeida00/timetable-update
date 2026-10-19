@@ -1612,8 +1612,7 @@ nav.tabs button.on {
     <button class="btn" type="button" onclick="openTeacher()"><span style="font-weight:900;font-size:1.1rem">+</span> إضافة معلم</button>
     <button class="btn d" type="button" onclick="clearTeachers()">🗑️ حذف كل المعلمين</button>
     <button class="btn g" type="button" onclick="openIo('teachers','export')">📥 تصدير</button>
-    <button class="btn o" type="button" onclick="openIo('teachers','import')">📤 استرداد</button>
-    <button class="btn w" type="button" onclick="openEmisExcelModal()">📊 استيراد كادر EMIS (Excel)</button>
+    <button class="btn o" type="button" onclick="openIo('teachers','import')">📤 استرداد واستيراد المعلمين</button>
     <button class="btn w" type="button" id="tEditBtn" hidden onclick="editSelectedTeacher()">✏️ تعديل</button>
     <button class="btn d" type="button" id="tDelBtn" hidden onclick="delSelectedTeacher()">🗑️ حذف</button>
     <button class="btn w" type="button" id="tCardBtn" hidden onclick="openSelectedTeacherCard()">🪪 بطاقة المعلم والجدول</button>
@@ -2683,14 +2682,26 @@ nav.tabs button.on {
       </div>
     </div>
     <div id="ioImport" hidden>
-      <p class="hint">ارفع ملف Excel أو Word الذي صدّرته من هنا.</p>
-      <label id="ioDrop" style="display:block;border:2px dashed #cbd5e1;border-radius:16px;padding:28px 16px;text-align:center;cursor:pointer;background:#f8fbfe">
+      <div id="ioTeachersExtra" style="margin-bottom:14px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px;text-align:right">
+          <div style="width:38px;height:38px;border-radius:10px;background:#0284c7;color:#fff;display:grid;place-items:center;font-size:1.1rem;flex-shrink:0">📊</div>
+          <div>
+            <strong style="color:#0369a1;font-size:0.9rem;display:block">استيراد كادر المدرسة من ملف EMIS الرسمي</strong>
+            <span style="color:#0284c7;font-size:0.76rem">سحب أسماء المعلمين والاختصاصات والبيانات الوظيفية من Excel تلقائياً</span>
+          </div>
+        </div>
+        <button class="btn" type="button" style="background:#0284c7;color:#fff;border-color:#0284c7;box-shadow:0 3px 10px rgba(2,132,199,0.25);font-size:0.82rem;padding:6px 14px" onclick="$('ioBox').hidden=true;openEmisExcelModal()">فتح استيراد EMIS</button>
+      </div>
+
+      <div style="font-weight:800;color:#163858;font-size:0.88rem;margin-bottom:6px;text-align:right">أو استرداد ملف الجدول السابق:</div>
+      <p class="hint" style="margin:0 0 10px">ارفع ملف Excel أو Word الذي صدّرته من هذا النظام سابقاً لإرجاع البيانات.</p>
+      <label id="ioDrop" style="display:block;border:2px dashed #cbd5e1;border-radius:16px;padding:24px 16px;text-align:center;cursor:pointer;background:#f8fbfe;transition:all .18s ease" onmouseover="this.style.background='#f0f7fd'" onmouseout="this.style.background='#f8fbfe'">
         <input type="file" id="ioFile" accept=".xls,.xlsx,.doc,.docx,.html,.htm" hidden onchange="onIoFile(event)">
-        <div style="font-weight:800;color:#145d9b">اضغط لاختيار الملف أو اسحبه هنا</div>
-        <div id="ioFileName" class="muted" style="margin-top:8px">لم يُختر ملف</div>
+        <div style="font-weight:800;color:#145d9b;font-size:0.95rem">اضغط لاختيار ملف الجدول السابق أو اسحبه هنا</div>
+        <div id="ioFileName" class="muted" style="margin-top:6px;font-size:0.8rem">لم يُختر ملف</div>
       </label>
     </div>
-    <div class="form-actions" style="margin-top:14px">
+    <div class="form-actions" style="margin-top:14px;justify-content:flex-end">
       <button class="btn d" type="button" onclick="$('ioBox').hidden=true">إغلاق</button>
     </div>
   </div>
@@ -6630,6 +6641,7 @@ function openIo(kind,mode){
   $("ioTitle").textContent=(mode==="export"?"تصدير ":"استرداد ")+title;
   $("ioExport").hidden=mode!=="export";
   $("ioImport").hidden=mode!=="import";
+  if($("ioTeachersExtra")) $("ioTeachersExtra").style.display = (kind==="teachers"&&mode==="import") ? "flex" : "none";
   if($("ioFile"))$("ioFile").value="";
   if($("ioFileName"))$("ioFileName").textContent="لم يُختر ملف";
   $("ioBox").hidden=false;
