@@ -2686,11 +2686,11 @@ nav.tabs button.on {
         <div style="display:flex;align-items:center;gap:10px;text-align:right">
           <div style="width:38px;height:38px;border-radius:10px;background:#0284c7;color:#fff;display:grid;place-items:center;font-size:1.1rem;flex-shrink:0">📊</div>
           <div>
-            <strong style="color:#0369a1;font-size:0.9rem;display:block">استيراد كادر المدرسة من ملف EMIS الرسمي</strong>
+            <strong style="color:#0369a1;font-size:0.9rem;display:block">استيراد كادر المدرسة من ملف الملاكات الرسمي</strong>
             <span style="color:#0284c7;font-size:0.76rem">سحب أسماء المعلمين والاختصاصات والبيانات الوظيفية من Excel تلقائياً</span>
           </div>
         </div>
-        <button class="btn" type="button" style="background:#0284c7;color:#fff;border-color:#0284c7;box-shadow:0 3px 10px rgba(2,132,199,0.25);font-size:0.82rem;padding:6px 14px" onclick="$('ioBox').hidden=true;openEmisExcelModal()">فتح استيراد EMIS</button>
+        <button class="btn" type="button" style="background:#0284c7;color:#fff;border-color:#0284c7;box-shadow:0 3px 10px rgba(2,132,199,0.25);font-size:0.82rem;padding:6px 14px" onclick="$('ioBox').hidden=true;openEmisExcelModal()">فتح استيراد الكادر</button>
       </div>
 
       <div style="font-weight:800;color:#163858;font-size:0.88rem;margin-bottom:6px;text-align:right">أو استرداد ملف الجدول السابق:</div>
@@ -2868,7 +2868,7 @@ nav.tabs button.on {
       <div style="display:flex;align-items:center;gap:10px;text-align:right">
         <div style="width:40px;height:40px;border-radius:10px;background:#e0f2fe;color:#0284c7;display:grid;place-items:center;font-size:1.2rem">📊</div>
         <div>
-          <h2 style="margin:0;font-size:1.2rem;color:#163858">استيراد كادر المدرسة من ملف EMIS الرسمي</h2>
+          <h2 style="margin:0;font-size:1.2rem;color:#163858">استيراد كادر المدرسة من ملف الملاكات الرسمي</h2>
           <span style="font-size:0.78rem;color:#6b8ba6;font-weight:600">سحب أسماء المعلمين والاختصاصات والبيانات الوظيفية من Excel تلقائياً</span>
         </div>
       </div>
@@ -2876,7 +2876,7 @@ nav.tabs button.on {
     </div>
 
     <div class="hint" style="font-size:0.86rem;line-height:1.7;text-align:right">
-      📌 <strong>طريقة الاستخدام:</strong> يمكنك تصدير قائمة الكادر أو الملاكات من موقع EMIS أو بوابة وزارة التربية بصيغة (Excel .xlsx أو .xls)، ثم رفعها هنا مباشرة ليقوم النظام بقراءة الأعمدة وتعبئة أسماء المعلمين والاختصاصات فوراً دون أي إدخال يدوي.
+      📌 <strong>طريقة الاستخدام:</strong> يمكنك تصدير قائمة الكادر أو الملاكات من بوابة الوزارة بصيغة (Excel .xlsx أو .xls)، ثم رفعها هنا مباشرة ليقوم النظام بقراءة الأعمدة وتعبئة أسماء المعلمين والاختصاصات فوراً دون أي إدخال يدوي.
     </div>
 
     <label style="display:block;border:2px dashed #95bee0;border-radius:16px;padding:34px 20px;text-align:center;cursor:pointer;background:#f8fbfe;transition:all .2s ease" onmouseover="this.style.background='#f0f7fd'" onmouseout="this.style.background='#f8fbfe'">
@@ -11007,7 +11007,7 @@ function handleEmisExcelFile(ev){
       }
 
       if(!parsed.length){
-        alert("تعذر قراءة أسماء المعلمين. تأكد من أن الملف هو تصدير كادر EMIS أو Excel يحتوي على عمود الاسم.");
+        alert("تعذر قراءة أسماء المعلمين. تأكد من أن ملف Excel يحتوي على عمود الاسم.");
         return;
       }
 
@@ -11074,7 +11074,7 @@ function commitEmisTeachers(){
   fillTeacherSelect();
   const modal = document.getElementById("emisExcelModal");
   if(modal) modal.hidden = true;
-  okNote(`✅ تم استيراد (${added}) معلماً بنجاح من ملف EMIS!`);
+  okNote(`✅ تم استيراد (${added}) معلماً بنجاح من ملف الملاكات!`);
 }
 
 // ========================================================
