@@ -2234,13 +2234,20 @@ nav.tabs button.on {
 
 
 <section id="teachers" class="card" hidden>
-  <h2><span>المعلمون</span></h2>
+  <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem">
+        <span>الرجوع للرئيسية</span> <span style="font-size:0.95rem">➜</span>
+      </button>
+      <h2 style="margin:0"><span>👨‍🏫 سجل المعلمين والكوادر</span></h2>
+    </div>
+    <span class="ver-chip" style="background:#e0f2fe;color:#0284c7;font-weight:800">بيانات الكوادر التدريسية</span>
+  </div>
   <p class="hint" style="display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box">
     <span style="flex:1;text-align:right"><strong>سجل المعلمين والبيانات الوظيفية</strong> — حدد المعلم من الجدول ثم اضغط <strong>«✏️ تعديل»</strong> أو <strong>«🗑️ حذف المحدد»</strong> — للخطوات اضغط <strong>؟</strong></span>
     <button class="help-btn" type="button" title="تعليمات تبويبة المعلمون — اضغط لعرضها كاملة" onclick="teacherHelp()">؟</button>
   </p>
   <div class="toolbar no-print" id="tBar">
-    <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem"><span>الرجوع</span> <span style="font-size:0.95rem">➜</span></button>
     <button class="btn" type="button" onclick="openTeacher()"><span style="font-weight:900;font-size:1.1rem">+</span> إضافة معلم</button>
         <div class="drop">
       <button class="btn g drop-btn" type="button" onclick="toggleDropdown('tExportMenu', event)">
@@ -2305,10 +2312,17 @@ nav.tabs button.on {
 </section>
 
 <section id="classes" class="card" hidden>
-  <h2><span>الصفوف والشعب</span></h2>
+  <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem">
+        <span>الرجوع للرئيسية</span> <span style="font-size:0.95rem">➜</span>
+      </button>
+      <h2 style="margin:0"><span>🏫 الصفوف والشعب الدراسية</span></h2>
+    </div>
+    <span class="ver-chip" style="background:#e0f2fe;color:#0284c7;font-weight:800">الهيكل التنظيمي للمدرسة</span>
+  </div>
   <p class="hint">اضغط <strong>اسم الصف</strong> أو شارة الشعبة (<strong>أ، ب، ج</strong>) لفتح قائمة المعلمين والمادة والدروس في هذه الشعبة. زر حذف يتيح حذف شعبة واحدة أو الصف كله.</p>
   <div class="toolbar no-print" id="cBar">
-    <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem"><span>الرجوع</span> <span style="font-size:0.95rem">➜</span></button>
     <button class="btn" type="button" onclick="openClass()"><span style="font-weight:900;font-size:1.1rem">+</span> إضافة صف</button>
     <button class="btn w" type="button" onclick="openSecOver()">📊 ملخص كل شعبة</button>
     <label class="search">بحث<input id="cFilter" placeholder="بحث باسم الصف أو الشعبة..." oninput="renderClasses()"></label>
@@ -2317,10 +2331,17 @@ nav.tabs button.on {
 </section>
 
 <section id="loads" class="card" hidden>
-  <h2><span>الأنصبة والأوف والمجاز</span></h2>
+  <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem">
+        <span>الرجوع للرئيسية</span> <span style="font-size:0.95rem">➜</span>
+      </button>
+      <h2 style="margin:0"><span>📊 الأنصبة والأوف والمجاز</span></h2>
+    </div>
+    <span class="ver-chip" style="background:#e0f2fe;color:#0284c7;font-weight:800">متابعة نصاب الكادر التدريسي</span>
+  </div>
   <p class="hint">جدول تشغيلي لكل معلم: مجموع الدروس الأسبوعية، المواد ودروسها، الشعب، يوم الأوف، وحالة المجاز والبديل. (الأنصبة تُسحب تلقائياً من تبويبة «المواد»)</p>
   <div class="toolbar no-print">
-    <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem"><span>الرجوع</span> <span style="font-size:0.95rem">➜</span></button>
     <label class="search">بحث<input id="lFilter" placeholder="اسم، اختصاص، شعبة" oninput="renderLoads()"></label>
     <label class="sort">ترتيب
       <select id="lSort" onchange="renderLoads()">
@@ -2338,13 +2359,20 @@ nav.tabs button.on {
 </section>
 
 <section id="subjects" class="card" hidden>
-  <h2><span>المواد والنصاب</span></h2>
+  <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem">
+        <span>الرجوع للرئيسية</span> <span style="font-size:0.95rem">➜</span>
+      </button>
+      <h2 style="margin:0"><span>📚 المواد والنصاب الدراسي</span></h2>
+    </div>
+    <span class="ver-chip" style="background:#e0f2fe;color:#0284c7;font-weight:800">توزيع الحصص والخطط الدراسية</span>
+  </div>
   <p class="hint" style="display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box">
     <span style="flex:1;text-align:right"><strong>المواد والنصاب</strong> — كل معلم/ة في سطر واحد، ولتعديل مواده اضغط على سطره فيتظلّل ثم <strong>«✏️ تعديل»</strong> بالأعلى — للخطوات والتعليمات اضغط <strong>؟</strong></span>
     <button class="help-btn" type="button" title="تعليمات تبويبة المواد والنصاب — اضغط لعرضها كاملة" onclick="subjectHelp()">؟</button>
   </p>
   <div class="toolbar no-print" id="sBar">
-    <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem"><span>الرجوع</span> <span style="font-size:0.95rem">➜</span></button>
     <button class="btn" type="button" onclick="openSubject()"><span style="font-weight:900;font-size:1.1rem">+</span> إضافة مادة</button>
     <button class="btn d" type="button" onclick="clearSubjects()">🗑️ حذف كل المواد</button>
     <div class="drop">
@@ -2387,12 +2415,19 @@ nav.tabs button.on {
 </section>
 
 <section id="students" class="card" hidden>
-  <h2><span>إدارة الطلاب</span></h2>
+  <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem">
+        <span>الرجوع للرئيسية</span> <span style="font-size:0.95rem">➜</span>
+      </button>
+      <h2 style="margin:0"><span>👨‍🎓 سجل وإدارة شؤون الطلاب</span></h2>
+    </div>
+    <span class="ver-chip" style="background:#e0f2fe;color:#0284c7;font-weight:800">بيانات وقيود الطلبة</span>
+  </div>
   <p class="hint" style="display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box">
     <span style="flex:1;text-align:right"><strong>سجل الطلاب وبيانات القيود</strong> — اضغط على سطر الطالب لتحديده ثم <strong>«✏️ تعديل»</strong> أو <strong>«🗑️ حذف»</strong> بالأعلى</span>
   </p>
   <div class="toolbar no-print" id="studBar">
-    <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem"><span>الرجوع</span> <span style="font-size:0.95rem">➜</span></button>
     <button class="btn" type="button" onclick="openStudent()"><span style="font-weight:900;font-size:1.1rem">+</span> إضافة طالب</button>
         <div class="drop">
       <button class="btn g drop-btn" type="button" onclick="toggleDropdown('studExportMenu', event)">
@@ -3369,13 +3404,20 @@ nav.tabs button.on {
 </div>
 
 <section id="generate" class="card" hidden>
-  <h2><span>إنشاء الجدول تلقائيًا</span></h2>
+  <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem">
+        <span>الرجوع للرئيسية</span> <span style="font-size:0.95rem">➜</span>
+      </button>
+      <h2 style="margin:0"><span>⚡ إنشاء وتوليد الجدول المدرسي</span></h2>
+    </div>
+    <span class="ver-chip" style="background:#e0f2fe;color:#0284c7;font-weight:800">محرك التوزيع الذكي للدروس</span>
+  </div>
   <p class="hint" style="display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box">
     <span style="flex:1;text-align:right"><strong>زر واحد:</strong> يخلط ويوزّع الدروس بعدة محاولات لتقليل التعارض. إن بقي نقص يظهر السبب (شعبة ممتلئة، معلم مشغول، أوف، الساحة) — للخطوات والتفاصيل اضغط <strong>؟</strong></span>
     <button class="help-btn" type="button" title="تعليمات إنشاء الجدول تلقائيًا — اضغط لعرضها كاملة" onclick="generateHelp()">؟</button>
   </p>
   <div class="toolbar no-print" id="gBar">
-    <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem"><span>الرجوع</span> <span style="font-size:0.95rem">➜</span></button>
     <button class="btn g" type="button" onclick="generate()">⚡ إنشاء الجدول</button>
     <button class="btn w" type="button" onclick="runPreGenerateDiagnostics()">🔍 فحص الجاهزية والأنصبة</button>
     <button class="btn o" type="button" onclick="openRemainModal()">➕ إكمال المتبقي (اختياري)</button>
@@ -3392,10 +3434,17 @@ nav.tabs button.on {
 </section>
 
 <section id="views" class="card" hidden>
-  <h2><span>عرض الجداول والتصدير</span></h2>
+  <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem">
+        <span>الرجوع للرئيسية</span> <span style="font-size:0.95rem">➜</span>
+      </button>
+      <h2 style="margin:0"><span>🖨️ عرض الجداول والتصدير والطباعة</span></h2>
+    </div>
+    <span class="ver-chip" style="background:#e0f2fe;color:#0284c7;font-weight:800">جداول الحصص والشعب والتفريغ</span>
+  </div>
   <p class="hint">جدول اليوم وجدول الأسبوع لكل الصفوف. انقر خانة للتعديل.</p>
   <div class="toolbar no-print">
-    <button class="btn w" type="button" onclick="showTab('home')" style="border-radius:8px;padding:6px 14px;font-size:0.83rem"><span>الرجوع</span> <span style="font-size:0.95rem">➜</span></button>
     <label class="sort">نوع العرض
       <select id="viewType" onchange="renderViews()">
         <option value="day">جدول اليوم</option>
@@ -13830,6 +13879,148 @@ function initNoticesSection(){
   }
 }
 
+function getNoticeTargetStudents(){
+  const scope = $("noticeScope") ? $("noticeScope").value : "all";
+  const list = (db.students || []).slice();
+  if(!scope || scope === "all"){
+    return list;
+  }
+  if(scope.startsWith("class_")){
+    const cid = scope.replace("class_", "");
+    return list.filter(s => {
+      const sec = (db.sections || []).find(x => x.id === s.sectionId);
+      return sec && sec.classId === cid;
+    });
+  }
+  if(scope.startsWith("sec_")){
+    const sid = scope.replace("sec_", "");
+    return list.filter(s => s.sectionId === sid);
+  }
+  if(scope.startsWith("stud_")){
+    const stid = scope.replace("stud_", "");
+    return list.filter(s => s.id === stid);
+  }
+  return list;
+}
+
+function updateNoticeScopeInfo(){
+  const list = getNoticeTargetStudents();
+  const withPhone = list.filter(s => s.phone && s.phone.replace(/[^0-9]/g, "").length >= 10);
+  const infoEl = $("noticeScopeInfo");
+  if(infoEl){
+    infoEl.innerHTML = `<span>👥 المشمولون: <strong>${list.length}</strong> طالب | 📱 بهواتف صالحة: <strong>${withPhone.length}</strong></span>`;
+  }
+  const scope = $("noticeScope") ? $("noticeScope").value : "all";
+  const grpInp = $("noticeGroupName");
+  if(grpInp){
+    if(scope === "all"){
+      grpInp.value = ((db.settings && db.settings.schoolName) || "إدارة المدرسة") + " - القناة العامة";
+    } else if(scope.startsWith("class_")){
+      const cid = scope.replace("class_", "");
+      const c = (db.classes || []).find(x => x.id === cid);
+      grpInp.value = (c ? c.name : "") + " - أولياء الأمور";
+    } else if(scope.startsWith("sec_")){
+      const sid = scope.replace("sec_", "");
+      grpInp.value = "شعبة: " + secName(sid);
+    } else if(scope.startsWith("stud_")){
+      const stid = scope.replace("stud_", "");
+      const st = (db.students || []).find(x => x.id === stid);
+      grpInp.value = st ? st.name : "";
+    }
+  }
+}
+
+function getNoticeTemplateText(type){
+  const schName = (db.settings && db.settings.schoolName) || "إدارة المدرسة";
+  switch(type){
+    case "attendance":
+      return `السلام عليكم ورحمة الله وبركاته،\nحضرة ولي أمر الطالب/ة: {اسم_الطالب}\nالصف والشعبة: {الصف_الشعبة}\n\nنود إعلامكم بضرورة متابعة دوام وانضباط الطالب، حيث يُعد الالتزام بالحضور اليومي ركيزة أساسية في مستواه الدراسي والتربوي.\nيرجى التواصل مع الإدارة في حال وجود أي عذر رسمي أو طارئ.\n\nمع وافر التقدير والتحية،\nإدارة ${schName} 🌹`;
+    case "exam":
+      return `السلام عليكم ورحمة الله وبركاته،\nحضرة ولي أمر الطالب/ة: {اسم_الطالب}\nالصف والشعبة: {الصف_الشعبة}\n\nنود تذكيركم بمواعيد الاختبارات والامتحانات القادمة. يرجى تهيئة الأجواء المناسبة للطالب وحثه على المراجعة الجيدة وفق الجدول المعلن.\n\nتمنياتنا لجميع طلبتنا الأعزاء بالتوفيق والنجاح الباهر 🌟\nإدارة ${schName}`;
+    case "meeting":
+      return `السلام عليكم ورحمة الله وبركاته،\nحضرة ولي أمر الطالب/ة: {اسم_الطالب}\nالصف والشعبة: {الصف_الشعبة}\n\nيسر إدارة المدرسة دعوتكم لحضور اجتماع مجلس أولياء الأمور لمناقشة المستوى الدراسي والتربوي لأبنائنا الطلبة، وذلك يوم (...) في تمام الساعة (...).\nحضوركم ومشاركتكم تشريف لنا ودعم لمسيرة أبنائنا.\n\nأهلاً وسهلاً بكم،\nإدارة ${schName}`;
+    case "holiday":
+      return `السلام عليكم ورحمة الله وبركاته،\nحضرة أولياء الأمور الكرام،\n\nنود إحاطتكم علماً بأن يوم (...) سيكون عطلة رسمية، على أن يُستأنف الدوام الرسمي يوم (...).\n\nنتمنى لأبنائنا عطلة سعيدة وآمنة،\nإدارة ${schName}`;
+    case "general":
+    default:
+      return `السلام عليكم ورحمة الله وبركاته،\nحضرة ولي أمر الطالب/ة: {اسم_الطالب}\nالصف والشعبة: {الصف_الشعبة}\n\nنحيطكم علماً بـ [اكتب تفاصيل التبليغ أو التوجيه المدرسي هنا].\nشاكرين ومقدرين حسن تعاونكم الدائم معنا.\n\nمع وافر الاحترام والتقدير،\nإدارة ${schName}`;
+  }
+}
+
+function applyNoticeTemplate(){
+  const type = $("noticeTypePick") ? $("noticeTypePick").value : "general";
+  const txt = getNoticeTemplateText(type);
+  if($("noticeMessageText")) $("noticeMessageText").value = txt;
+}
+
+function insertNoticeTag(tag){
+  const txt = $("noticeMessageText");
+  if(!txt) return;
+  const start = txt.selectionStart || 0;
+  const end = txt.selectionEnd || 0;
+  const val = txt.value;
+  txt.value = val.substring(0, start) + tag + val.substring(end);
+  txt.focus();
+  txt.selectionStart = txt.selectionEnd = start + tag.length;
+}
+
+function formatNoticeForStudent(template, student){
+  let msg = template || "";
+  const sName = student ? (student.name || "") : "";
+  const secN = student ? secName(student.sectionId) : "";
+  msg = msg.replace(/\{اسم_الطالب\}/g, sName);
+  msg = msg.replace(/\{الصف_الشعبة\}/g, secN);
+  return msg;
+}
+
+function saveCurrentTgTarget(){
+  // حفظ القناة أو المعرف محلياً
+  const val = $("noticeTgTarget") ? $("noticeTgTarget").value.trim() : "";
+  if(val) localStorage.setItem("timetable_tg_target", val);
+}
+
+function sendNoticeViaTelegramBot(){
+  const msg = $("noticeMessageText") ? $("noticeMessageText").value.trim() : "";
+  if(!msg){ alert("يرجى كتابة نص التبليغ أولاً!"); return; }
+  const tgInp = $("noticeTgTarget") ? $("noticeTgTarget").value.trim() : "";
+  let cleanTg = tgInp.replace(/^https?:\/\/t\.me\//i, "").replace(/^@/, "");
+  if(cleanTg){
+    window.open("https://t.me/" + cleanTg, "_blank");
+  } else {
+    // فتح تيليجرام مع النص
+    window.open("https://t.me/share/url?url=&text=" + encodeURIComponent(msg), "_blank");
+  }
+}
+
+function sendNoticeViaWhatsAppGroup(){
+  const msg = $("noticeMessageText") ? $("noticeMessageText").value.trim() : "";
+  if(!msg){ alert("يرجى كتابة نص التبليغ أولاً!"); return; }
+  const waUrl = "https://wa.me/?text=" + encodeURIComponent(msg);
+  window.open(waUrl, "_blank");
+}
+
+function copyNoticeTextOnly(){
+  const msg = $("noticeMessageText") ? $("noticeMessageText").value.trim() : "";
+  if(!msg){ alert("لا يوجد نص لنسخه!"); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(msg).then(() => note("تم نسخ نص الرسالة إلى الحافظة بنجاح"));
+  } else {
+    note("تم نسخ النص");
+  }
+}
+
+function copyNoticeWithPhones(){
+  const list = getNoticeTargetStudents();
+  const validList = list.filter(s => s.phone && s.phone.replace(/[^0-9]/g, "").length >= 10);
+  if(!validList.length){ alert("لا توجد أرقام هواتف مسجلة في هذا النطاق!"); return; }
+  const lines = validList.map(s => `${s.name} - ${s.phone}`).join("\n");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(lines).then(() => note(`تم نسخ أرقام (${validList.length}) طالب إلى الحافظة بنجاح`));
+  } else {
+    note(`تم نسخ (${validList.length}) أرقام`);
+  }
+}
+
 function showNoticeSubView(view){
   const mainV = $("noticeMainView");
   const indivV = $("noticeIndividualView");
@@ -13837,10 +14028,10 @@ function showNoticeSubView(view){
 
   if(view === 'individual'){
     const list = getNoticeTargetStudents();
-    const validList = list.filter(s => s.phone && s.phone.replace(/[^0-9]/g, "").length >= 10);
+    const validList = list.filter(s => s.phone && s.phone.replace(/[^0-9]/g, "").length >= 7);
     const rawMsg = $("noticeMessageText") ? $("noticeMessageText").value.trim() : "";
     if(!validList.length){
-      alert("لا يوجد طلاب بأرقام هواتف مسجلة في هذا النطاق!");
+      alert("لا يوجد طلاب بأرقام هواتف مسجلة في هذا النطاق! يرجى التأكد من تسجيل أرقام هواتف الطلاب في سجل الطلاب.");
       return;
     }
     if(!rawMsg){
@@ -13856,7 +14047,7 @@ function showNoticeSubView(view){
 
     let rows = "";
     validList.forEach((st, idx) => {
-      const cleanPhone = st.phone.replace(/[^0-9]/g, "");
+      const cleanPhone = iqWaNum(st.phone);
       const personalMsg = formatNoticeForStudent(rawMsg, st);
       const waUrl = "https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(personalMsg);
       rows += `<tr>
