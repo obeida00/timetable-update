@@ -4292,6 +4292,7 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 6px 16px rgba(36, 135, 208, 0.25);
+    }
 
       /* ========================================================
    EMIS Full-Screen Edit Modal System (نظام نوافذ التعديل الاحترافي)
@@ -5384,6 +5385,58 @@
         background: #f8fafc;
         border-color: #cbd5e1;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      header.top.emis-header {
+        background: linear-gradient(135deg, #145d9b 0%, #2487d0 55%, #4d9bd6 100%) !important;
+        color: #fff !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      }
+      header.top.emis-header .emis-app-title {
+        color: #ffffff !important;
+      }
+      header.top.emis-header .emis-user-name-title {
+        color: #0f172a !important;
+      }
+      header.top.emis-header .emis-user-role-sub {
+        color: #64748b !important;
+      }
+      .emis-stats-strip {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 0 !important;
+        align-items: stretch !important;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 8px 10px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+        margin-bottom: 6px;
+      }
+      .emis-stats-strip .emis-stat-card {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: auto !important;
+        background: transparent !important;
+        border: none !important;
+        border-left: 1px solid #f1f5f9 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 8px 16px !important;
+      }
+      .emis-stats-strip .emis-stat-card:last-child {
+        border-left: none !important;
+      }
+      @media (max-width: 768px) {
+        .emis-stats-strip {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 8px !important;
+        }
+        .emis-stats-strip .emis-stat-card {
+          border-left: none !important;
+        }
       }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -9492,7 +9545,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.43";
+    const APP_VERSION = "1.44";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
