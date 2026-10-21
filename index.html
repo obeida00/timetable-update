@@ -1725,7 +1725,8 @@
     .modal[hidden] {
       display: none !important
     }
-    #tCardModal:not([hidden]) {
+    #tCardModal:not([hidden]),
+    #studCardModal:not([hidden]) {
       display: grid !important;
       position: fixed !important;
       inset: 0 !important;
@@ -2404,12 +2405,12 @@
     }
 
     #teachers table.tcols th {
-      padding: 5px 6px;
-      font-size: .9rem;
+      padding: 8px 10px;
+      font-size: .88rem;
       font-weight: 800;
       white-space: nowrap;
       letter-spacing: 0;
-      line-height: 1.25
+      line-height: 1.3
     }
 
     #teachers table.tcols td {
@@ -3945,14 +3946,14 @@
 
       #teachers table.tcols th {
         white-space: nowrap !important;
-        padding: 5px 6px !important;
-        font-size: .9rem !important;
+        padding: 8px 10px !important;
+        font-size: .88rem !important;
         height: auto !important;
       }
       #teachers table.tcols td {
         white-space: nowrap !important;
-        padding: 6px 8px !important;
-        font-size: .9rem !important;
+        padding: 8px 10px !important;
+        font-size: .88rem !important;
       }
 
       #viewOut {
@@ -5499,39 +5500,47 @@
           border-left: none !important;
         }
       }
-      #teachers .table-wrap,
-      #students .table-wrap,
-      #subjects .table-wrap {
+      .app > section.card .table-wrap,
+      #classList .table-wrap {
         border-radius: 12px;
         overflow: hidden;
-        border: 1px solid #dbe7f3;
+        border: 1px solid #d3e1ee;
         background: #fff;
       }
-      #teachers table.slim,
-      #students table.slim,
-      #subjects table.slim {
-        border-collapse: collapse !important;
+      .app > section.card table.slim,
+      #classList table.slim {
+        border-collapse: separate !important;
         border-spacing: 0 !important;
         overflow: hidden;
-        border-radius: 0 !important;
+        border-radius: 12px !important;
+        width: 100%;
       }
-      #teachers table.slim thead th,
-      #students table.slim thead th,
+      .app > section.card table.slim thead th,
+      #classList table.slim thead th,
       #teachers table.tcols thead th,
       #teachers table.tcols th {
         background: #2487d0 !important;
         color: #fff !important;
         font-weight: 800 !important;
-        font-size: .9rem !important;
-        padding: 5px 6px !important;
-        line-height: 1.25 !important;
+        font-size: .88rem !important;
+        padding: 8px 10px !important;
+        line-height: 1.3 !important;
         letter-spacing: 0 !important;
         white-space: nowrap !important;
-        border: 1px solid #e2e8f0 !important;
+        border: 1px solid #1e78bc !important;
         border-radius: 0 !important;
         box-shadow: none !important;
         height: auto !important;
         box-sizing: border-box !important;
+        vertical-align: middle;
+      }
+      .app > section.card table.slim tbody td,
+      #classList table.slim tbody td {
+        padding: 8px 10px !important;
+        font-size: .88rem !important;
+        line-height: 1.35 !important;
+        border: 1px solid #e2e8f0 !important;
+        background: #fff;
         vertical-align: middle;
       }
       .modal.emis-edit-modal {
@@ -5822,7 +5831,7 @@
           </div>
 
           <!-- 3. عدد الموظفون -->
-          <div class="emis-stat-card" onclick="openSet('setUser')" title="عرض فريق العمل والموظفين">
+          <div class="emis-stat-card" onclick="showTab('teachers')" title="حرفي، كاتب/ة، موظف/ة خدمة">
             <div class="emis-stat-info">
               <span class="emis-stat-label">عدد الموظفون</span>
               <strong class="emis-stat-num sky" id="statStaffCount">0</strong>
@@ -6599,7 +6608,7 @@
       </div>
       <p class="hint" style="display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box">
         <span style="flex:1;text-align:right"><strong>سجل الطلاب وبيانات القيود</strong> — حدد الطالب من الجدول ثم اضغط
-          <strong>«تعديل ✏️»</strong> أو <strong>«تعطيل»</strong> أو <strong>«حذف»</strong></span>
+          <strong>«تعديل ✏️»</strong> أو <strong>«بطاقة»</strong> أو <strong>«حذف»</strong></span>
       </p>
       <div class="toolbar no-print" id="studBar">
         <button class="btn" type="button" onclick="openStudent()">
@@ -6614,14 +6623,13 @@
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
           </svg>
         </button>
-        <button class="btn d" type="button" id="studToggleBtn" hidden onclick="toggleSelectedStudentStatus()">
-          <span id="studToggleBtnText">تعطيل</span>
+        <button class="btn w" type="button" id="studCardBtn" hidden onclick="event.preventDefault();event.stopPropagation();openSelectedStudentCard();return false;" title="عرض بطاقة الطالب بالكامل">
+          <span>بطاقة</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
             stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <line x1="17" y1="8" x2="23" y2="14" />
-            <line x1="23" y1="8" x2="17" y2="14" />
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <circle cx="8" cy="12" r="2.2" />
+            <path d="M13 10h5M13 14h5" />
           </svg>
         </button>
         <button class="btn w" type="button" onclick="refreshStudentListNow()" title="تحديث وعرض أحدث البيانات">
@@ -9280,6 +9288,38 @@
     </div>
   </div>
 
+  <div id="studCardModal" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+    <div class="modal-card" style="width:min(760px,96vw);max-height:92vh;overflow:auto" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:8px">
+        <h2 style="margin:0;font-size:1.18rem;color:#163858">🪪 بطاقة الطالب</h2>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn g s" type="button" onclick="printStudentCard()">🖨️ طباعة البطاقة</button>
+          <button class="modal-close-btn" type="button" onclick="$('studCardModal').hidden=true">✕</button>
+        </div>
+      </div>
+      <div id="studCardPrintArea" style="background:#fff;border:1.5px solid #d3e1ee;border-radius:14px;padding:18px;text-align:right">
+        <div style="display:flex;align-items:center;gap:12px;border-bottom:2px solid #2487d0;padding-bottom:12px;margin-bottom:14px">
+          <img src="logo.png" style="width:48px;height:48px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;padding:2px">
+          <div>
+            <h3 id="studCardSchool" style="margin:0;font-size:1.1rem;color:#163858">المدرسة</h3>
+            <span style="font-size:0.78rem;color:#6b8ba6">بطاقة الطالب وبيانات القيد</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;background:#f8fbfe;border:1px solid #d3e1ee;border-radius:10px;padding:12px">
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الاسم الرباعي</span><strong id="studCardName" style="font-size:0.95rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الجنس</span><strong id="studCardGender" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">تاريخ التولد</span><strong id="studCardBirth" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الصف الدراسي</span><strong id="studCardClass" style="font-size:0.88rem;color:#0284c7">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الشعبة</span><strong id="studCardSec" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">حالة القيد</span><strong id="studCardStatus" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">هاتف ولي الأمر</span><strong id="studCardPhone" dir="ltr" style="font-size:0.88rem;color:#163858;font-family:monospace">—</strong></div>
+          <div style="grid-column:1/-1"><span style="font-size:0.72rem;color:#6b8ba6;display:block">الملاحظات</span><strong id="studCardNotes" style="font-size:0.88rem;color:#163858">—</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ==============================================
      3. نظام وجدول الاحتياط اليومي الذكي وتغطية الشواغر
      ============================================== -->
@@ -9704,7 +9744,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.45";
+    const APP_VERSION = "1.46";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -9843,32 +9883,37 @@
     window.updateEMISHomeStats = function updateEMISHomeStats() {
       try {
         if (typeof db === "undefined" || !db) return;
-        function countArr(arr, selector) {
-          var n = Array.isArray(arr) ? arr.length : 0;
-          var d = 0;
-          try { d = document.querySelectorAll(selector).length; } catch (e) { }
-          return Math.max(n, d);
+        function isStaffJob(t) {
+          var j = String((t && (t.job || t.title || "")) || "").replace(/ة/g, "").replace(/\s+/g, " ").trim();
+          if (!j) return false;
+          if (/حرف[يى]/.test(j)) return true;
+          if (/كاتب/.test(j)) return true;
+          if (/موظف/.test(j) && /خدم/.test(j)) return true;
+          return false;
         }
-        var tCount = countArr(db.teachers, "#tBody tr.trow, #tBody tr[data-tid]");
-        var sCount = countArr(db.students, "#studBody tr.stud-row, #studBody tr[data-sid]");
+        var teachers = db.teachers || [];
+        var staffList = teachers.filter(isStaffJob);
+        var teachList = teachers.filter(function (t) { return !isStaffJob(t); });
         var tEl = document.getElementById("statTeachCount");
-        if (tEl) tEl.textContent = String(tCount);
+        if (tEl) tEl.textContent = String(teachList.length);
         var sEl = document.getElementById("statStudCount");
-        if (sEl) sEl.textContent = String(sCount);
-        var staffCount = 0;
-        if (window._schoolMembers && Array.isArray(window._schoolMembers)) staffCount = window._schoolMembers.length;
-        else if (db.settings && Array.isArray(db.settings.teamMembers)) staffCount = db.settings.teamMembers.length;
+        if (sEl) sEl.textContent = String((db.students || []).length);
         var stEl = document.getElementById("statStaffCount");
-        if (stEl) stEl.textContent = String(staffCount);
+        if (stEl) stEl.textContent = String(staffList.length);
         var rem = 0;
         if (typeof missingJobs === "function") {
-          var miss = missingJobs();
-          rem = miss ? miss.length : 0;
+          try {
+            var miss = missingJobs();
+            rem = miss ? miss.length : 0;
+          } catch (e1) { rem = 0; }
         }
         var remEl = document.getElementById("statRemainCount");
         if (remEl) remEl.textContent = String(rem);
+        var yrEl = document.getElementById("emisYearShow");
+        if (yrEl && typeof getAcademicYear === "function") yrEl.textContent = getAcademicYear();
       } catch (e) { }
     };
+
     function scheduleEMISHomeStats() {
       [0, 300, 1000, 2500, 5000].forEach(function (ms) {
         setTimeout(function () { try { window.updateEMISHomeStats(); } catch (e) { } }, ms);
@@ -18520,19 +18565,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         masterChk.indeterminate = (count > 0 && count < allChks.length);
       }
 
-      const eb = $("studEditBtn"), dl = $("studDelBtn"), tb = $("studToggleBtn"), tbText = $("studToggleBtnText");
+      const eb = $("studEditBtn"), dl = $("studDelBtn"), cardBtn = $("studCardBtn");
       if (eb) eb.hidden = (count !== 1);
-      if (tb) {
-        tb.hidden = (count === 0);
-        if (count === 1) {
-          const sId = Array.from(selectedStudentIds)[0];
-          const stObj = (db.students || []).find(s => s.id === sId);
-          const isDis = stObj && (stObj.status === "معطل" || stObj.status === "مفصول");
-          if (tbText) tbText.textContent = isDis ? "تفعيل" : "تعطيل";
-        } else {
-          if (tbText) tbText.textContent = "تعطيل/تفعيل";
-        }
-      }
+      if (cardBtn) cardBtn.hidden = (count !== 1);
       if (dl) {
         dl.hidden = (count === 0);
         dl.innerHTML = `<span>${count > 1 ? `حذف (${count})` : 'حذف'}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
@@ -18762,6 +18797,72 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         console.error(err);
       }
     }
+
+    function openSelectedStudentCard() {
+      try {
+        var sid = (typeof selectedStudentIds !== "undefined" && selectedStudentIds.size === 1) ? Array.from(selectedStudentIds)[0] : "";
+        if (!sid) {
+          var row = document.querySelector("#studBody tr.sel, #studBody tr.stud-row.sel");
+          if (row) sid = row.getAttribute("data-sid");
+        }
+        var st = ((typeof db !== "undefined" && db.students) || []).find(function (s) { return s.id === sid; });
+        var modal = document.getElementById("studCardModal");
+        if (modal) {
+          modal.hidden = false;
+          modal.removeAttribute("hidden");
+          modal.style.display = "grid";
+          modal.style.zIndex = "2147483646";
+        }
+        if (!st) return;
+        window._currentCardStudent = st;
+        renderStudentCardData(st);
+      } catch (err) {
+        console.error(err);
+        var m = document.getElementById("studCardModal");
+        if (m) { m.hidden = false; m.removeAttribute("hidden"); m.style.display = "grid"; }
+      }
+    }
+    window.openSelectedStudentCard = openSelectedStudentCard;
+
+    function renderStudentCardData(st) {
+      function dash(v) { v = (v == null ? "" : String(v)).trim(); return v || "—"; }
+      function fmtD(v) {
+        v = (v == null ? "" : String(v)).trim();
+        if (!v) return "—";
+        var m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (m) return String(+m[3]) + "/" + String(+m[2]) + "/" + m[1];
+        return v;
+      }
+      function setTxt(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+      }
+      var secObj = ((db.sections || []).find(function (s) { return s.id === st.sectionId; })) || null;
+      var cls = "";
+      try { cls = secObj ? (typeof className === "function" ? className(secObj.classId) : "") : ""; } catch (e1) { cls = ""; }
+      var secTitle = secObj ? (secObj.name || "") : "";
+      setTxt("studCardSchool", (db.settings && db.settings.schoolName) || "إدارة المدرسة");
+      setTxt("studCardName", dash(st.name));
+      setTxt("studCardGender", dash(st.gender));
+      setTxt("studCardBirth", fmtD(st.birth));
+      setTxt("studCardClass", dash(cls));
+      setTxt("studCardSec", dash(secTitle));
+      setTxt("studCardStatus", dash(st.status));
+      setTxt("studCardPhone", dash(st.phone));
+      setTxt("studCardNotes", dash(st.notes));
+    }
+
+    function printStudentCard() {
+      var area = document.getElementById("studCardPrintArea");
+      if (!area) return;
+      var w = window.open("", "_blank");
+      if (!w) return;
+      w.document.write("<!DOCTYPE html><html dir='rtl' lang='ar'><head><meta charset='utf-8'><title>بطاقة طالب</title><style>body{font-family:Cairo,Tahoma,sans-serif;padding:18px}</style></head><body>" + area.innerHTML + "</body></html>");
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
     window.openStudent = openStudent;
 
     function saveStudent(e) {
@@ -19841,31 +19942,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
     }
 
-    function updateEMISHomeStats() { return window.updateEMISHomeStats(); }
-    function _unused_old_stats_placeholder() {
-      try {
-        if (typeof db === "undefined" || !db) return;
-        const sEl = document.getElementById("statStudCount");
-        if (sEl) sEl.textContent = String((db.students || []).length);
-        const tEl = document.getElementById("statTeachCount");
-        if (tEl) tEl.textContent = String((db.teachers || []).length);
-        let staffCount = 0;
-        if (window._schoolMembers && Array.isArray(window._schoolMembers)) staffCount = window._schoolMembers.length;
-        else if (db.settings && Array.isArray(db.settings.teamMembers)) staffCount = db.settings.teamMembers.length;
-        const stEl = document.getElementById("statStaffCount");
-        if (stEl) stEl.textContent = String(staffCount);
-        let rem = 0;
-        if (typeof missingJobs === "function") {
-          const miss = missingJobs();
-          rem = miss ? miss.length : 0;
-        }
-        const remEl = document.getElementById("statRemainCount");
-        if (remEl) remEl.textContent = String(rem);
-        const yrEl = document.getElementById("emisYearShow");
-        if (yrEl && typeof getAcademicYear === "function") yrEl.textContent = getAcademicYear();
-      } catch (e) { }
-    }
-
     function openPromotionModal() {
       if (!db.students || !db.students.length) {
         alert("لا يوجد طلاب مسجلون حالياً للقيام بترحيلهم!");
@@ -20044,7 +20120,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
     // ربط تحديث الإحصائيات مع أحداث التحميل والتغيير
     document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(updateEMISHomeStats, 300);
+      setTimeout(function(){ try{ window.updateEMISHomeStats(); }catch(e){} }, 300);
     });
   </script>
 </body>
