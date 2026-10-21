@@ -1725,6 +1725,15 @@
     .modal[hidden] {
       display: none !important
     }
+    #tCardModal:not([hidden]) {
+      display: grid !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2147483646 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
 
     .modal-nest {
       z-index: 60
@@ -2395,12 +2404,12 @@
     }
 
     #teachers table.tcols th {
-      padding: 6px 4px;
-      font-size: 0.80rem;
+      padding: 5px 6px;
+      font-size: .9rem;
       font-weight: 800;
       white-space: nowrap;
-      letter-spacing: -0.2px;
-      line-height: 1.2
+      letter-spacing: 0;
+      line-height: 1.25
     }
 
     #teachers table.tcols td {
@@ -3934,11 +3943,16 @@
         table-layout: auto !important;
       }
 
-      #teachers table.tcols th,
+      #teachers table.tcols th {
+        white-space: nowrap !important;
+        padding: 5px 6px !important;
+        font-size: .9rem !important;
+        height: auto !important;
+      }
       #teachers table.tcols td {
         white-space: nowrap !important;
-        padding: 9px 12px !important;
-        font-size: 0.84rem !important;
+        padding: 6px 8px !important;
+        font-size: .9rem !important;
       }
 
       #viewOut {
@@ -4367,6 +4381,10 @@
         display: flex;
         align-items: center;
         gap: 14px;
+        justify-content: flex-start;
+      }
+      .emis-edit-title-group > .btn {
+        order: -1;
       }
 
       .emis-edit-title-group h2 {
@@ -5388,18 +5406,61 @@
       }
 
       header.top.emis-header {
-        background: linear-gradient(135deg, #145d9b 0%, #2487d0 55%, #4d9bd6 100%) !important;
-        color: #fff !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background: #ffffff !important;
+        color: #163858 !important;
+        border: 1px solid #dbe7f3 !important;
+        box-shadow: 0 8px 24px rgba(22, 56, 88, 0.06) !important;
+        min-height: 72px !important;
+        padding: 10px 18px !important;
       }
       header.top.emis-header .emis-app-title {
-        color: #ffffff !important;
+        color: #163858 !important;
+        text-shadow: none !important;
+        font-size: 1.35rem !important;
+        font-weight: 800 !important;
+      }
+      header.top.emis-header .emis-logo-badge {
+        display: flex !important;
+        background: #ffffff !important;
+        border: 1px solid #dbeafe !important;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.12) !important;
+      }
+      header.top.emis-header .emis-year-pill {
+        display: none !important;
+      }
+      header.top.emis-header .emis-user-chip {
+        background: #ffffff !important;
+        border: 1.5px solid #d7e6f3 !important;
+        border-radius: 999px !important;
+        padding: 6px 12px 6px 8px !important;
+        box-shadow: none !important;
       }
       header.top.emis-header .emis-user-name-title {
-        color: #0f172a !important;
+        color: #163858 !important;
+        font-size: 0.92rem !important;
       }
       header.top.emis-header .emis-user-role-sub {
+        color: #2487d0 !important;
+        font-size: 0.72rem !important;
+      }
+      header.top.emis-header .emis-avatar-round {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        background: #2487d0 !important;
+        color: #ffffff !important;
+      }
+      header.top.emis-header .emis-bell-btn {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 50% !important;
+        background: #ffffff !important;
+        border: 1.5px solid #d7e6f3 !important;
         color: #64748b !important;
+        box-shadow: none !important;
+      }
+      header.top.emis-header .dev-wrap > div[style*="width:1px"] {
+        display: none !important;
       }
       .emis-stats-strip {
         display: grid !important;
@@ -5437,6 +5498,108 @@
         .emis-stats-strip .emis-stat-card {
           border-left: none !important;
         }
+      }
+      #teachers .table-wrap,
+      #students .table-wrap,
+      #subjects .table-wrap {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #dbe7f3;
+        background: #fff;
+      }
+      #teachers table.slim,
+      #students table.slim,
+      #subjects table.slim {
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+        overflow: hidden;
+        border-radius: 0 !important;
+      }
+      #teachers table.slim thead th,
+      #students table.slim thead th,
+      #teachers table.tcols thead th,
+      #teachers table.tcols th {
+        background: #2487d0 !important;
+        color: #fff !important;
+        font-weight: 800 !important;
+        font-size: .9rem !important;
+        padding: 5px 6px !important;
+        line-height: 1.25 !important;
+        letter-spacing: 0 !important;
+        white-space: nowrap !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        vertical-align: middle;
+      }
+      .modal.emis-edit-modal {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100vh !important;
+        display: block !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        z-index: 100000 !important;
+        background: #f8fafc !important;
+        place-items: stretch !important;
+      }
+      .modal.emis-edit-modal[hidden] {
+        display: none !important;
+      }
+      .modal.emis-edit-modal .emis-edit-shell {
+        min-height: auto !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        width: min(1320px, 100%);
+        margin: 0 auto;
+        padding: 20px 24px 36px !important;
+        box-sizing: border-box;
+      }
+      .modal.emis-edit-modal .modal-body-content {
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 8px 2px 18px !important;
+        flex: none !important;
+      }
+      .modal.emis-edit-modal .modal-foot {
+        position: sticky;
+        bottom: 0;
+        z-index: 6;
+        background: #ffffff !important;
+      }
+      .modal.emis-edit-modal .emis-edit-topbar {
+        flex-direction: column;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+      }
+      .modal.emis-edit-modal .emis-breadcrumb,
+      .modal.emis-edit-modal .emis-edit-title-group {
+        width: 100%;
+        justify-content: flex-start !important;
+        text-align: right;
+      }
+      .modal.emis-edit-modal .emis-nav-tabs-line {
+        justify-content: flex-start !important;
+        width: 100%;
+      }
+      #setUser .user-tab-pane {
+        display: none !important;
+      }
+      #setUser .user-tab-pane.active {
+        display: block !important;
+      }
+      #setUser .emis-nav-tabs-line {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        direction: rtl;
       }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -5489,7 +5652,7 @@
             <span class="caret">▾</span>
             <div class="emis-user-text-col">
               <span id="userTopShow" class="emis-user-name-title">عبيده عماد (المدير)</span>
-              <span class="emis-user-role-sub">نظام الإدارة المدرسية</span>
+              <span id="userTopRole" class="emis-user-role-sub">مدير المدرسة</span>
             </div>
             <span class="emis-avatar-round">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -5501,9 +5664,6 @@
           </button>
 
           <div class="user-dropdown-menu emis-dropdown" id="userDropdownMenu" onclick="event.stopPropagation()">
-            <div class="emis-dropdown-header">
-              <div class="emis-portal-tag">بوابة المدارس والملاكات</div>
-            </div>
             <button type="button" class="user-dropdown-item" onclick="openSet('setUser');hideUserDropdown()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -5633,7 +5793,7 @@
           <div class="emis-stat-card" onclick="showTab('students')" title="عرض سجل الطلاب">
             <div class="emis-stat-info">
               <span class="emis-stat-label">عدد الطلاب</span>
-              <strong class="emis-stat-num blue" id="statStudCount">30</strong>
+              <strong class="emis-stat-num blue" id="statStudCount">0</strong>
             </div>
             <div class="emis-stat-icon blue-bg">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -5650,7 +5810,7 @@
           <div class="emis-stat-card" onclick="showTab('teachers')" title="عرض سجل المعلمين">
             <div class="emis-stat-info">
               <span class="emis-stat-label">عدد المعلمون</span>
-              <strong class="emis-stat-num navy" id="statTeachCount">24</strong>
+              <strong class="emis-stat-num navy" id="statTeachCount">0</strong>
             </div>
             <div class="emis-stat-icon navy-bg">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -5665,7 +5825,7 @@
           <div class="emis-stat-card" onclick="openSet('setUser')" title="عرض فريق العمل والموظفين">
             <div class="emis-stat-info">
               <span class="emis-stat-label">عدد الموظفون</span>
-              <strong class="emis-stat-num sky" id="statStaffCount">5</strong>
+              <strong class="emis-stat-num sky" id="statStaffCount">0</strong>
             </div>
             <div class="emis-stat-icon sky-bg">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -6095,14 +6255,13 @@
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
           </svg>
         </button>
-        <button class="btn d" type="button" id="tToggleBtn" hidden onclick="toggleSelectedTeacherStatus()">
-          <span id="tToggleBtnText">تعطيل</span>
+        <button class="btn w" type="button" id="tCardBtn" hidden onclick="event.preventDefault();event.stopPropagation();openSelectedTeacherCard();return false;" title="عرض بطاقة المعلم بالكامل">
+          <span>بطاقة</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
             stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <line x1="17" y1="8" x2="23" y2="14" />
-            <line x1="23" y1="8" x2="17" y2="14" />
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <circle cx="8" cy="12" r="2.2" />
+            <path d="M13 10h5M13 14h5" />
           </svg>
         </button>
         <button class="btn w" type="button" onclick="renderTeachers();note('تم تحديث قائمة المعلمين');"
@@ -6201,7 +6360,6 @@
               <th style="width:85px">الصفة</th>
               <th style="width:115px">الهاتف</th>
               <th style="width:110px">يوم الأوف</th>
-              <th style="width:95px">الحالة</th>
             </tr>
           </thead>
           <tbody id="tBody"></tbody>
@@ -6570,7 +6728,6 @@
               <th style="width:80px">الجنس</th>
               <th style="width:110px">تاريخ التولد</th>
               <th style="width:130px">رقم الهاتف</th>
-              <th style="width:100px">الحالة</th>
             </tr>
           </thead>
           <tbody id="studBody"></tbody>
@@ -7165,25 +7322,25 @@
             <span class="current">إدارة المدرسة وحساب العمل</span>
           </div>
           <div class="emis-edit-title-group">
-            <h2>إدارة المدرسة وحساب العمل</h2>
             <button class="btn w" type="button" onclick="$('setUser').hidden=true">
-              <span>الرجوع</span>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
+              <span>الرجوع</span>
             </button>
+            <h2>إدارة المدرسة وحساب العمل</h2>
           </div>
         </div>
 
         <!-- التبويبات العلوية بنمط الـ EMIS -->
         <div class="emis-nav-tabs-line">
-          <button type="button" class="emis-line-tab user-tab-btn" onclick="switchUserTab('tabTeam', this)">فريق
-            المعاونين والربط</button>
-          <button type="button" class="emis-line-tab user-tab-btn" onclick="switchUserTab('tabSchoolInfo', this)">بيانات
-            المدرسة والدوام</button>
-          <button type="button" class="emis-line-tab user-tab-btn active"
-            onclick="switchUserTab('tabProfile', this)">الحساب الشخصي والدور</button>
+          <button type="button" class="emis-line-tab user-tab-btn active" data-tab="tabProfile"
+            onclick="return switchUserTab('tabProfile', this)">الحساب الشخصي والدور</button>
+          <button type="button" class="emis-line-tab user-tab-btn" data-tab="tabSchoolInfo"
+            onclick="return switchUserTab('tabSchoolInfo', this)">بيانات المدرسة والدوام</button>
+          <button type="button" class="emis-line-tab user-tab-btn" data-tab="tabTeam"
+            onclick="return switchUserTab('tabTeam', this)">فريق المعاونين والربط</button>
         </div>
 
 
@@ -7193,7 +7350,7 @@
           <!-- ==============================================
            1. التبويب الأول: الحساب الشخصي والدور والأمان
            ============================================== -->
-          <div id="tabProfile" class="user-tab-pane active">
+          <div id="tabProfile" class="user-tab-pane active" style="display:block">
 
             <!-- كارت موحد: الحساب والاشتراك والارتباط -->
             <div class="settings-luxury-card" style="background:#ffffff;border:1px solid #d3e1ee">
@@ -7305,7 +7462,7 @@
           <!-- ==============================================
            2. التبويب الثاني: بيانات المدرسة والدوام
            ============================================== -->
-          <div id="tabSchoolInfo" class="user-tab-pane">
+          <div id="tabSchoolInfo" class="user-tab-pane" style="display:none" hidden>
 
             <!-- اسم المدرسة والمدير -->
             <div class="settings-luxury-card">
@@ -7425,7 +7582,7 @@
           <!-- ==============================================
            3. التبويب الثالث: فريق المعاونين والربط السحابي
            ============================================== -->
-          <div id="tabTeam" class="user-tab-pane">
+          <div id="tabTeam" class="user-tab-pane" style="display:none" hidden>
 
             <!-- بطاقة إدارة وإنشاء حسابات المعاونين بواسطة المدير -->
             <div class="settings-luxury-card"
@@ -7565,8 +7722,14 @@
                   </div>
                 </div>
                 <button type="button" class="btn"
-                  style="background:#0284c7; box-shadow:0 4px 12px rgba(2,132,199,.25); font-weight:800; font-size:0.84rem; padding:8px 18px"
-                  onclick="openBotBind()">🔗 ربط البوت الآن</button>
+                  style="flex-shrink:0;white-space:nowrap;background:#0369a1;border-color:#0369a1;color:#ffffff;box-shadow:0 4px 12px rgba(3,105,161,.28);font-weight:800;font-size:0.84rem;padding:8px 18px"
+                  onclick="openBotBind()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                  ربط البوت الآن
+                </button>
               </div>
             </div>
 
@@ -8187,12 +8350,9 @@
 
       <!-- التبويبات العلوية بنمط الـ EMIS -->
       <div class="emis-nav-tabs-line">
-        <button type="button" class="emis-line-tab" id="tabBtn_stud3" onclick="switchStudentTab(3)">معلومات الاتصال
-          والملاحظات</button>
-        <button type="button" class="emis-line-tab" id="tabBtn_stud2" onclick="switchStudentTab(2)">بيانات القيد والصف
-          والشعبة</button>
-        <button type="button" class="emis-line-tab active" id="tabBtn_stud1" onclick="switchStudentTab(1)">المعلومات
-          الرئيسية والشخصية</button>
+        <button type="button" class="emis-line-tab active" id="tabBtn_stud1" onclick="switchStudentTab(1)">المعلومات الرئيسية والشخصية</button>
+        <button type="button" class="emis-line-tab" id="tabBtn_stud2" onclick="switchStudentTab(2)">بيانات القيد والصف والشعبة</button>
+        <button type="button" class="emis-line-tab" id="tabBtn_stud3" onclick="switchStudentTab(3)">معلومات الاتصال والملاحظات</button>
       </div>
 
       <!-- شريط تقدم الصفحات -->
@@ -8692,12 +8852,9 @@
 
       <!-- التبويبات العلوية بنمط الـ EMIS -->
       <div class="emis-nav-tabs-line">
-        <button type="button" class="emis-line-tab" id="tabBtn_t3" onclick="switchTeacherTab(3)">معلومات
-          المستخدم</button>
-        <button type="button" class="emis-line-tab" id="tabBtn_t2" onclick="switchTeacherTab(2)">بيانات المعلم
-          والعنوان</button>
-        <button type="button" class="emis-line-tab active" id="tabBtn_t1" onclick="switchTeacherTab(1)">المعلومات
-          الرئيسية والشخصية</button>
+        <button type="button" class="emis-line-tab active" id="tabBtn_t1" onclick="switchTeacherTab(1)">المعلومات الرئيسية والشخصية</button>
+        <button type="button" class="emis-line-tab" id="tabBtn_t2" onclick="switchTeacherTab(2)">بيانات المعلم والعنوان</button>
+        <button type="button" class="emis-line-tab" id="tabBtn_t3" onclick="switchTeacherTab(3)">معلومات المستخدم</button>
       </div>
 
       <!-- شريط تقدم الصفحات -->
@@ -9046,7 +9203,7 @@
      2. نافذة بطاقة المعلم الشاملة والجدول الفردي (Teacher Portfolio & Card)
      ============================================== -->
   <div id="tCardModal" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal-card" style="width:min(720px,96vw)" onclick="event.stopPropagation()">
+    <div class="modal-card" style="width:min(880px,96vw);max-height:92vh;overflow:auto" onclick="event.stopPropagation()">
       <div
         style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:1px solid #e2e8f0;padding-bottom:8px">
         <h2 style="margin:0;font-size:1.18rem;color:#163858;display:flex;align-items:center;gap:8px">
@@ -9073,22 +9230,24 @@
               <span style="font-size:0.78rem;color:#6b8ba6">بطاقة التدريسي والجدول الأسبوعي المعتمد</span>
             </div>
           </div>
-          <div id="tCardQr"
-            style="width:58px;height:58px;background:#f8fafc;padding:3px;border:1px solid #cbd5e1;border-radius:8px">
-          </div>
+          <div id="tCardQr" hidden style="display:none"></div>
         </div>
 
         <!-- Teacher Info Badges -->
-        <div
-          style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px;background:#f8fbfe;border:1px solid #d3e1ee;border-radius:10px;padding:10px">
-          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">المعلم:</span><strong id="tCardName"
-              style="font-size:0.95rem;color:#163858">—</strong></div>
-          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الاختصاص:</span><strong id="tCardSpec"
-              style="font-size:0.88rem;color:#0284c7">—</strong></div>
-          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">النصاب الكلي:</span><strong id="tCardLoad"
-              style="font-size:0.9rem;color:#16a34a">—</strong></div>
-          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">يوم الأوف / التفرغ:</span><strong
-              id="tCardOff" style="font-size:0.88rem;color:#d97706">—</strong></div>
+        <div id="tCardInfoGrid"
+          style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:14px;background:#f8fbfe;border:1px solid #d3e1ee;border-radius:10px;padding:12px">
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الاسم الرباعي</span><strong id="tCardName" style="font-size:0.95rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الاختصاص</span><strong id="tCardSpec" style="font-size:0.88rem;color:#0284c7">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">العنوان الوظيفي</span><strong id="tCardJob" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الشهادة</span><strong id="tCardCert" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الجنس</span><strong id="tCardGender" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">سنة التوليد</span><strong id="tCardBirth" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الصفة</span><strong id="tCardStatus" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">الهاتف</span><strong id="tCardPhone" dir="ltr" style="font-size:0.88rem;color:#163858;font-family:monospace">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">يوم الأوف</span><strong id="tCardOff" style="font-size:0.88rem;color:#d97706">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">تاريخ المباشرة</span><strong id="tCardHire1" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">تاريخ التعيين</span><strong id="tCardHire2" style="font-size:0.88rem;color:#163858">—</strong></div>
+          <div><span style="font-size:0.72rem;color:#6b8ba6;display:block">النصاب الكلي</span><strong id="tCardLoad" style="font-size:0.9rem;color:#16a34a">—</strong></div>
         </div>
 
         <!-- Single Teacher Schedule Table -->
@@ -9545,11 +9704,36 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.44";
+    const APP_VERSION = "1.45";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
     function closeGuide() { }
+    function switchUserTab(tabId, btn) {
+      var container = document.getElementById("setUser");
+      if (!container) return false;
+      var panes = container.querySelectorAll(".user-tab-pane");
+      for (var i = 0; i < panes.length; i++) {
+        panes[i].classList.remove("active");
+        panes[i].hidden = true;
+        panes[i].style.setProperty("display", "none", "important");
+      }
+      var btns = container.querySelectorAll(".user-tab-btn");
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove("active");
+      var target = document.getElementById(tabId);
+      if (target) {
+        target.classList.add("active");
+        target.hidden = false;
+        target.style.setProperty("display", "block", "important");
+      }
+      if (btn) btn.classList.add("active");
+      else {
+        var mb = container.querySelector('.user-tab-btn[data-tab="' + tabId + '"]');
+        if (mb) mb.classList.add("active");
+      }
+      return false;
+    }
+    window.switchUserTab = switchUserTab;
 
 
 
@@ -9656,6 +9840,40 @@
 
     const uid = () => Math.random().toString(36).slice(2, 10);
     const $ = id => document.getElementById(id);
+    window.updateEMISHomeStats = function updateEMISHomeStats() {
+      try {
+        if (typeof db === "undefined" || !db) return;
+        function countArr(arr, selector) {
+          var n = Array.isArray(arr) ? arr.length : 0;
+          var d = 0;
+          try { d = document.querySelectorAll(selector).length; } catch (e) { }
+          return Math.max(n, d);
+        }
+        var tCount = countArr(db.teachers, "#tBody tr.trow, #tBody tr[data-tid]");
+        var sCount = countArr(db.students, "#studBody tr.stud-row, #studBody tr[data-sid]");
+        var tEl = document.getElementById("statTeachCount");
+        if (tEl) tEl.textContent = String(tCount);
+        var sEl = document.getElementById("statStudCount");
+        if (sEl) sEl.textContent = String(sCount);
+        var staffCount = 0;
+        if (window._schoolMembers && Array.isArray(window._schoolMembers)) staffCount = window._schoolMembers.length;
+        else if (db.settings && Array.isArray(db.settings.teamMembers)) staffCount = db.settings.teamMembers.length;
+        var stEl = document.getElementById("statStaffCount");
+        if (stEl) stEl.textContent = String(staffCount);
+        var rem = 0;
+        if (typeof missingJobs === "function") {
+          var miss = missingJobs();
+          rem = miss ? miss.length : 0;
+        }
+        var remEl = document.getElementById("statRemainCount");
+        if (remEl) remEl.textContent = String(rem);
+      } catch (e) { }
+    };
+    function scheduleEMISHomeStats() {
+      [0, 300, 1000, 2500, 5000].forEach(function (ms) {
+        setTimeout(function () { try { window.updateEMISHomeStats(); } catch (e) { } }, ms);
+      });
+    }
 
     function tone(c, type, f0, f1, t0, dur, vol) {
       const o = c.createOscillator(), g = c.createGain();
@@ -9898,6 +10116,7 @@
           if ($("dayPick") && keepD) $("dayPick").value = keepD;
           renderViews();
         }
+        try { updateEMISHomeStats(); } catch (e) { }
       } catch (e) { }
       _refreshing = false;
     }
@@ -10244,6 +10463,39 @@
       if (t.offDay == null || t.offDay === "") return [];
       return [+t.offDay];
     }
+    function openSelectedTeacherCard() {
+      try {
+        var tid = window._tSel;
+        if (!tid && typeof selectedTeacherIds !== "undefined" && selectedTeacherIds.size === 1) {
+          tid = Array.from(selectedTeacherIds)[0];
+        }
+        if (!tid) {
+          var row = document.querySelector("#tBody tr.sel, #tBody tr.trow.sel");
+          if (row) tid = row.getAttribute("data-tid");
+        }
+        var teachers = (typeof db !== "undefined" && db && db.teachers) ? db.teachers : [];
+        var t = tid ? teachers.find(function (x) { return x.id === tid; }) : null;
+        var modal = document.getElementById("tCardModal");
+        if (modal) {
+          modal.hidden = false;
+          modal.removeAttribute("hidden");
+          modal.style.display = "grid";
+          modal.style.zIndex = "2147483646";
+        }
+        window._currentCardTeacher = t || window._currentCardTeacher;
+        if (t && typeof renderTeacherCardData === "function") {
+          try { renderTeacherCardData(t); } catch (e) { console.error(e); }
+        }
+        if (!t && !modal) {
+          alert("يرجى تحديد معلم واحد أولاً لعرض بطاقته");
+        }
+      } catch (err) {
+        console.error(err);
+        var m = document.getElementById("tCardModal");
+        if (m) { m.hidden = false; m.removeAttribute("hidden"); m.style.display = "grid"; }
+      }
+    }
+    window.openSelectedTeacherCard = openSelectedTeacherCard;
     function isOff(t, d) { return teacherOffDays(t).includes(+d); }
     function coverTid(tid) {
       const t = db.teachers.find(x => x.id === tid);
@@ -10626,7 +10878,7 @@
       if (!tb) return;
 
       if (!list.length) {
-        tb.innerHTML = '<tr><td colspan="12" class="muted" style="text-align:center;padding:24px">لا يوجد معلمون مطابقون للبحث</td></tr>';
+        tb.innerHTML = '<tr><td colspan="11" class="muted" style="text-align:center;padding:24px">لا يوجد معلمون مطابقون للبحث</td></tr>';
         syncTeacherSel();
         return;
       }
@@ -10635,11 +10887,6 @@
         const isSel = selectedTeacherIds.has(t.id);
         const offs = teacherOffDays(t);
         const offText = offs.length ? offs.map(dayName).join("، ") : "—";
-        const isInactive = (t.leave || t.status === "معطل" || t.status === "مفصول");
-        const statusLabel = isInactive ? (t.leave ? "مجاز" : (t.status || "معطل")) : "فعال";
-        const statusColor = isInactive ? "#dc2626" : "#16a34a";
-        const statusBg = isInactive ? "#fef2f2" : "#f0fdf4";
-
         return `<tr class="trow ${isSel ? 'sel' : ''}" data-tid="${t.id}" title="اضغط لتحديد المعلم/ة أو حدد المربع لاختيار مجموعة" onclick="selectTeacher('${t.id}', event)">
       <td onclick="event.stopPropagation()" style="text-align:center">
         <input type="checkbox" class="row-chk tch-chk" data-tid="${t.id}" ${isSel ? 'checked' : ''} onchange="toggleTeacherCheck('${t.id}', this.checked, event)">
@@ -10654,11 +10901,11 @@
       <td data-l="الصفة">${esc(t.status || "—")}</td>
       <td data-l="الهاتف" dir="ltr" style="font-family:monospace">${esc(t.phone || "—")}</td>
       <td data-l="الأوف" style="color:#d97706;font-weight:700">${offText}</td>
-      <td data-l="الحالة"><span style="background:${statusBg};color:${statusColor};padding:2px 8px;border-radius:10px;font-weight:700;font-size:0.78rem">${statusLabel}</span></td>
     </tr>`;
       }).join('');
 
       syncTeacherSel();
+      try { if (window.updateEMISHomeStats) window.updateEMISHomeStats(); } catch (e) { }
     }
 
     function syncTeacherSel() {
@@ -10678,18 +10925,9 @@
         masterChk.indeterminate = (count > 0 && count < allChks.length);
       }
 
-      const eb = $("tEditBtn"), dl = $("tDelBtn"), tog = $("tToggleBtn");
+      const eb = $("tEditBtn"), dl = $("tDelBtn"), cardBtn = $("tCardBtn");
       if (eb) eb.hidden = (count !== 1);
-      if (tog) {
-        tog.hidden = (count !== 1);
-        if (count === 1) {
-          const tid = window._tSel || Array.from(selectedTeacherIds)[0];
-          const t = (db.teachers || []).find(x => x.id === tid);
-          const isInactive = t && (t.status === "معطل" || t.inactive);
-          const textSpan = $("tToggleBtnText");
-          if (textSpan) textSpan.textContent = isInactive ? "تفعيل" : "تعطيل";
-        }
-      }
+      if (cardBtn) cardBtn.hidden = (count !== 1);
       if (dl) {
         dl.hidden = (count === 0);
         dl.innerHTML = count > 1 ? `<span>حذف المحدد (${count})</span>` : '<span>حذف</span>';
@@ -11758,10 +11996,14 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
 
       // تحديث اسم المستخدم الظاهر في الشريط العلوي بدلاً من اسم المطور
       const topUserEl = document.getElementById("userTopShow");
-      if (topUserEl) {
-        const dispName = curUName || (curPhone ? (curPhone.startsWith("07") ? curPhone : ("مستخدم " + curPhone.slice(-4))) : "حسابي");
-        topUserEl.textContent = dispName + (roleTitle ? ` (${roleTitle})` : "");
-      }
+      const dispName = curUName || (curPhone ? (curPhone.startsWith("07") ? curPhone : ("مستخدم " + curPhone.slice(-4))) : "حسابي");
+      if (topUserEl) topUserEl.textContent = dispName;
+      const topRoleEl = document.getElementById("userTopRole");
+      let roleSub = "مدير المدرسة";
+      if (curRole === "assistant") roleSub = "معاون المدرسة";
+      else if (curRole && curRole !== "owner") roleSub = "مساعد / مراقب";
+      if (roleBadge && roleBadge.textContent) roleSub = roleBadge.textContent;
+      if (topRoleEl) topRoleEl.textContent = roleSub;
 
       // تحديث اسم المدرسة في التذييل
       const footerScEl = document.getElementById("footerSchoolShow");
@@ -14592,6 +14834,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         return;
       }
       hideLoginBox();
+      try { scheduleEMISHomeStats(); } catch (e) { }
       const acc = s.account;
       const isFirstLoad = (window._acc !== acc);
       window._acc = acc;
@@ -15656,6 +15899,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       window._schoolMembers = members || [];
       window._isOwner = !!isOwner;
       try { if (!db.settings) db.settings = {}; db.settings.teamMembers = members; } catch (e) { }
+      try { updateEMISHomeStats(); } catch (e) { }
       if (schoolCode && $("mySchoolCode")) $("mySchoolCode").textContent = schoolCode;
       checkTeamMembersUpdate(members);
       var box = document.getElementById('teamMembersBox');
@@ -16060,6 +16304,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         }
         fillDaySelects(); fillSecMulti(); fillTeacherSelect(); fillClassSelect();
         renderTeachers(); renderClasses(); renderSubjects(); renderSettings();
+        try { if (typeof renderStudents === "function") renderStudents(); } catch (e) { }
+        try { scheduleEMISHomeStats(); } catch (e) { try { window.updateEMISHomeStats(); } catch (x) { } }
         if ($("fsSub")) $("fsSub").value = 14;
         if ($("fsTea")) $("fsTea").value = 12;
         if ($("cellH")) $("cellH").value = 60;
@@ -17310,18 +17556,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     };
 
     // التبديل بين تبويبات نافذة معلومات المستخدم
-    window.switchUserTab = function (tabId, btn) {
-      const container = document.getElementById("setUser");
-      if (!container) return;
-      const tabs = container.querySelectorAll(".user-tab-pane");
-      tabs.forEach(t => t.classList.remove("active"));
-      const btns = container.querySelectorAll(".user-tab-btn");
-      btns.forEach(b => b.classList.remove("active"));
-
-      const target = document.getElementById(tabId);
-      if (target) target.classList.add("active");
-      if (btn) btn.classList.add("active");
-    };
+    window.switchUserTab = switchUserTab;
 
     // حفظ إعدادات المستخدم الجديد الإجبارية
     window.saveNewUserSetup = function () {
@@ -17764,20 +17999,35 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     // 3. بطاقة المعلم الشاملة والجدول الفردي (Teacher Portfolio & Card)
     // ========================================================
     function openSelectedTeacherCard() {
-      let tid = window._tSel;
-      if (!tid && typeof selectedTeacherIds !== "undefined" && selectedTeacherIds.size === 1) {
-        tid = Array.from(selectedTeacherIds)[0];
+      try {
+        let tid = window._tSel;
+        if (!tid && typeof selectedTeacherIds !== "undefined" && selectedTeacherIds.size === 1) {
+          tid = Array.from(selectedTeacherIds)[0];
+        }
+        if (!tid) {
+          const row = document.querySelector("#tBody tr.sel, #tBody tr.trow.sel");
+          if (row) tid = row.getAttribute("data-tid");
+        }
+        const t = ((db && db.teachers) || []).find(x => x.id === tid);
+        const modal = document.getElementById("tCardModal");
+        if (modal) {
+          modal.hidden = false;
+          modal.removeAttribute("hidden");
+          modal.style.display = "grid";
+          modal.style.zIndex = "2147483646";
+        }
+        if (!t) return;
+        window._currentCardTeacher = t;
+        if (typeof renderTeacherCardData === "function") {
+          try { renderTeacherCardData(t); } catch (e) { console.error(e); }
+        }
+      } catch (err) {
+        console.error(err);
+        const modal = document.getElementById("tCardModal");
+        if (modal) { modal.hidden = false; modal.removeAttribute("hidden"); modal.style.display = "grid"; }
       }
-      const t = db.teachers.find(x => x.id === tid);
-      if (!t) {
-        alert("يرجى تحديد معلم واحد أولاً لعرض بطاقته وجدوله");
-        return;
-      }
-      window._currentCardTeacher = t;
-      renderTeacherCardData(t);
-      const modal = document.getElementById("tCardModal");
-      if (modal) modal.hidden = false;
     }
+    window.openSelectedTeacherCard = openSelectedTeacherCard;
 
     function sendTeacherScheduleViaWhatsApp() {
       const t = window._currentCardTeacher;
@@ -17829,27 +18079,49 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
 
     function renderTeacherCardData(t) {
-      if (document.getElementById("tCardSchool")) document.getElementById("tCardSchool").textContent = (db.settings && db.settings.schoolName) || "إدارة المدرسة";
-      if (document.getElementById("tCardName")) document.getElementById("tCardName").textContent = t.name;
-      if (document.getElementById("tCardSpec")) document.getElementById("tCardSpec").textContent = t.spec2 || t.specialty || "عام";
-      const offs = teacherOffDays(t);
-      const offNames = offs.length ? offs.map(dayName).join("، ") : "لا يوجد";
-      if (document.getElementById("tCardOff")) document.getElementById("tCardOff").textContent = offNames;
+      function dash(v) { v = (v == null ? "" : String(v)).trim(); return v || "—"; }
+      function fmtCardDate(v) {
+        v = (v == null ? "" : String(v)).trim();
+        if (!v) return "—";
+        var m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+        if (m) return String(+m[3]) + "/" + String(+m[2]) + "/" + m[1];
+        return v;
+      }
+      function setTxt(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+      }
+      setTxt("tCardSchool", (db.settings && db.settings.schoolName) || "إدارة المدرسة");
+      setTxt("tCardName", dash(t.name));
+      setTxt("tCardSpec", dash(t.spec2 || t.specialty));
+      setTxt("tCardJob", dash(t.job));
+      setTxt("tCardCert", dash(t.cert));
+      setTxt("tCardGender", dash(t.gender));
+      setTxt("tCardBirth", dash(t.birth));
+      setTxt("tCardStatus", dash(t.status));
+      setTxt("tCardPhone", dash(t.phone));
+      setTxt("tCardHire1", fmtCardDate(t.hire1));
+      setTxt("tCardHire2", fmtCardDate(t.hire2));
+      const offs = (typeof teacherOffDays === "function") ? teacherOffDays(t) : (t.offDays || []);
+      const offNames = offs && offs.length ? offs.map(function (d) { return (typeof dayName === "function") ? dayName(d) : d; }).join("، ") : "لا يوجد";
+      setTxt("tCardOff", offNames);
 
       // حساب النصاب الفعلي المسند
-      const assignedLessons = db.subjects.filter(s => s.teacherId === t.id).reduce((sum, s) => sum + (s.weekly || 0), 0);
+      const assignedLessons = ((db && db.subjects) || []).filter(s => s.teacherId === t.id).reduce((sum, s) => sum + (s.weekly || 0), 0);
       if (document.getElementById("tCardLoad")) document.getElementById("tCardLoad").textContent = `${assignedLessons} حصة أسبوعياً`;
 
 
       // توليد رمز QR للمعلم
       const qrBox = document.getElementById("tCardQr");
       if (qrBox && window.QRCode) {
-        qrBox.innerHTML = "";
-        new QRCode(qrBox, {
-          text: `Teacher:${t.name}|School:${(db.settings && db.settings.schoolName) || ""}|Lessons:${assignedLessons}`,
-          width: 52,
-          height: 52
-        });
+        try {
+          qrBox.innerHTML = "";
+          new QRCode(qrBox, {
+            text: `Teacher:${t.name}|School:${(db.settings && db.settings.schoolName) || ""}|Lessons:${assignedLessons}`,
+            width: 52,
+            height: 52
+          });
+        } catch (e) { console.error(e); }
       }
 
       // ملء الجدول الأسبوعي الفردي للمعلم
@@ -18201,7 +18473,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       });
 
       if (!list.length) {
-        tb.innerHTML = '<tr><td colspan="9" class="muted" style="text-align:center;padding:24px">لا توجد بيانات مطابقة للبحث أو لم تتم إضافة طلاب بعد.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:24px">لا توجد بيانات مطابقة للبحث أو لم تتم إضافة طلاب بعد.</td></tr>';
         syncStudentSel();
         return;
       }
@@ -18211,10 +18483,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         const clsName = secObj ? className(secObj.classId) : "";
         const gradeTitle = clsName || (secObj ? secObj.grade : "") || "—";
         const secTitle = secObj ? (secObj.name || "—") : "—";
-        const isInactive = (st.status === "مفصول" || st.status === "معطل" || st.status === "منقول");
-        const statusLabel = isInactive ? (st.status || "معطل") : "فعال";
-        const statusColor = isInactive ? "#dc2626" : "#16a34a";
-        const statusBg = isInactive ? "#fef2f2" : "#f0fdf4";
         const isSel = selectedStudentIds.has(st.id);
 
         return `<tr class="stud-row ${isSel ? 'sel' : ''}" data-sid="${st.id}" title="اضغط لتحديد الطالب أو حدد المربع لاختيار مجموعة" onclick="selectStudentRow('${st.id}', event)">
@@ -18228,11 +18496,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       <td data-l="الجنس">${esc(st.gender || "—")}</td>
       <td data-l="تاريخ التولد">${esc(st.birth || "—")}</td>
       <td data-l="الهاتف" dir="ltr" style="font-family:monospace">${esc(st.phone || "—")}</td>
-      <td data-l="الحالة"><span style="background:${statusBg};color:${statusColor};padding:2px 8px;border-radius:10px;font-weight:700;font-size:0.78rem">${statusLabel}</span></td>
     </tr>`;
       }).join('');
 
       syncStudentSel();
+      try { if (window.updateEMISHomeStats) window.updateEMISHomeStats(); } catch (e) { }
     }
 
     function syncStudentSel() {
@@ -18449,41 +18717,52 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
 
     function openStudent() {
-      if (!db.sections || !db.sections.length) {
-        alert("يرجى إضافة صفوف وشعب أولاً من تبويبة «الصفوف والشعب» قبل إضافة الطلاب.");
-        return;
+      try {
+        const box = $("studBox");
+        if (box) {
+          box.hidden = false;
+          box.removeAttribute("hidden");
+        }
+        if (typeof fillStudentSections === "function") fillStudentSections();
+        if (typeof initBirthSelects === "function") initBirthSelects();
+
+        let defaultClassId = "";
+        let defaultSecId = "";
+        if ($("studSecFilter") && $("studSecFilter").value) {
+          defaultSecId = $("studSecFilter").value;
+          const sObj = (db.sections || []).find(s => s.id === defaultSecId);
+          if (sObj) defaultClassId = sObj.classId;
+        }
+
+        if (typeof fillStudClassSelect === "function") fillStudClassSelect(defaultClassId);
+        if (typeof onStudClassChange === "function") onStudClassChange(defaultClassId, defaultSecId);
+
+        if ($("studId")) $("studId").value = "";
+        if ($("studName")) $("studName").value = "";
+        if ($("studNamePart1")) $("studNamePart1").value = "";
+        if ($("studNamePart2")) $("studNamePart2").value = "";
+        if ($("studNamePart3")) $("studNamePart3").value = "";
+        if ($("studNamePart4")) $("studNamePart4").value = "";
+        if (typeof setStudBirthValue === "function") setStudBirthValue("");
+        if ($("studPhone")) $("studPhone").value = "";
+        if ($("studNotes")) $("studNotes").value = "";
+        if ($("studStatus")) $("studStatus").value = "مستمر";
+        if ($("studGender")) $("studGender").value = "ذكر";
+        if ($("studBoxTitle")) $("studBoxTitle").textContent = "إضافة طالب جديد";
+        if ($("studBreadcrumbCurrent")) $("studBreadcrumbCurrent").textContent = "إضافة طالب";
+        if (typeof switchStudentTab === "function") switchStudentTab(1);
+        if (box) {
+          box.hidden = false;
+          box.removeAttribute("hidden");
+        }
+        setTimeout(function () { if ($("studNamePart1")) $("studNamePart1").focus(); }, 50);
+      } catch (err) {
+        const box = $("studBox");
+        if (box) { box.hidden = false; box.removeAttribute("hidden"); }
+        console.error(err);
       }
-      fillStudentSections();
-      initBirthSelects();
-
-      let defaultClassId = "";
-      let defaultSecId = "";
-      if ($("studSecFilter") && $("studSecFilter").value) {
-        defaultSecId = $("studSecFilter").value;
-        const sObj = (db.sections || []).find(s => s.id === defaultSecId);
-        if (sObj) defaultClassId = sObj.classId;
-      }
-
-      fillStudClassSelect(defaultClassId);
-      onStudClassChange(defaultClassId, defaultSecId);
-
-      $("studId").value = "";
-      $("studName").value = "";
-      if ($("studNamePart1")) $("studNamePart1").value = "";
-      if ($("studNamePart2")) $("studNamePart2").value = "";
-      if ($("studNamePart3")) $("studNamePart3").value = "";
-      if ($("studNamePart4")) $("studNamePart4").value = "";
-      setStudBirthValue("");
-      $("studPhone").value = "";
-      $("studNotes").value = "";
-      $("studStatus").value = "مستمر";
-      $("studGender").value = "ذكر";
-      $("studBoxTitle").textContent = "إضافة طالب جديد";
-      if ($("studBreadcrumbCurrent")) $("studBreadcrumbCurrent").textContent = "إضافة طالب";
-      switchStudentTab(1);
-      $("studBox").hidden = false;
-      setTimeout(() => { if ($("studNamePart1")) $("studNamePart1").focus(); }, 50);
     }
+    window.openStudent = openStudent;
 
     function saveStudent(e) {
       e.preventDefault();
@@ -19562,39 +19841,29 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
     }
 
-    function updateEMISHomeStats() {
+    function updateEMISHomeStats() { return window.updateEMISHomeStats(); }
+    function _unused_old_stats_placeholder() {
       try {
-        // 1. عدد الطلاب
-        const sCount = (db.students || []).filter(s => s.status !== "مفصول" && s.status !== "معطل").length;
+        if (typeof db === "undefined" || !db) return;
         const sEl = document.getElementById("statStudCount");
-        if (sEl) sEl.textContent = sCount || (db.students || []).length || 0;
-
-        // 2. عدد المعلمون
-        const tCount = (db.teachers || []).length;
+        if (sEl) sEl.textContent = String((db.students || []).length);
         const tEl = document.getElementById("statTeachCount");
-        if (tEl) tEl.textContent = tCount || 0;
-
-        // 3. عدد الموظفون
+        if (tEl) tEl.textContent = String((db.teachers || []).length);
         let staffCount = 0;
         if (window._schoolMembers && Array.isArray(window._schoolMembers)) staffCount = window._schoolMembers.length;
         else if (db.settings && Array.isArray(db.settings.teamMembers)) staffCount = db.settings.teamMembers.length;
-        if (!staffCount) staffCount = Math.max(1, (db.teachers || []).filter(t => t.specialty && t.specialty.includes("إداري")).length || 5);
         const stEl = document.getElementById("statStaffCount");
-        if (stEl) stEl.textContent = staffCount;
-
-        // 4. الحصص المتبقية
+        if (stEl) stEl.textContent = String(staffCount);
         let rem = 0;
         if (typeof missingJobs === "function") {
           const miss = missingJobs();
           rem = miss ? miss.length : 0;
         }
         const remEl = document.getElementById("statRemainCount");
-        if (remEl) remEl.textContent = rem;
-
-        // العام الدراسي
+        if (remEl) remEl.textContent = String(rem);
         const yrEl = document.getElementById("emisYearShow");
-        if (yrEl) yrEl.textContent = getAcademicYear();
-      } catch (e) { console.error("Stats update err:", e); }
+        if (yrEl && typeof getAcademicYear === "function") yrEl.textContent = getAcademicYear();
+      } catch (e) { }
     }
 
     function openPromotionModal() {
@@ -19777,7 +20046,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     document.addEventListener("DOMContentLoaded", function () {
       setTimeout(updateEMISHomeStats, 300);
     });
-
-</body >
-
-</html >
+  </script>
+</body>
+</html>
