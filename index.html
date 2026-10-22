@@ -5678,7 +5678,8 @@
   <div class="app">
     <header class="top emis-header no-print">
       <div style="display:flex;align-items:center;gap:16px">
-        <div class="brand-row" style="display:flex;align-items:center;gap:10px">
+        <div class="brand-row" role="button" title="تحديث الصفحة (Ctrl+F5)" onclick="hardRefreshApp()"
+          style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none">
           <div class="emis-logo-badge">
             <svg class="app-logo" width="38" height="38" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:38px;height:38px;display:block"><use href="#appLogoMark"/></svg>
           </div>
@@ -6236,22 +6237,14 @@
             <div class="emis-grid-card-title">تبليغ أولياء الأمور</div>
           </div>
 
-          <!-- 12. النسخ الاحتياطي والحفظ -->
-          <div class="emis-grid-card" onclick="openSet('setData')">
+          <div class="emis-grid-card" onclick="showTab('waBot')">
             <div class="emis-grid-card-icon">
-              <!-- Backup Cloud & Safe Folder -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Safe Folder -->
-                <path d="M12 20a4 4 0 0 1 4-4h11l4 4h21a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V20z"
-                  fill="#f59e0b" />
-                <path d="M12 26h40v18a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V26z" fill="#fbbf24" />
-                <!-- Arrow download / backup -->
-                <circle cx="32" cy="37" r="8" fill="#ffffff" />
-                <path d="M32 32v7m-3-3l3 3 3-3" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round"
-                  stroke-linejoin="round" />
+                <circle cx="32" cy="32" r="22" fill="#25D366" />
+                <path d="M22 42l2.2-7.6A12 12 0 1 1 42 40.5L42 42l-7.4-1.9A12 12 0 0 1 22 42z" fill="#fff" />
               </svg>
             </div>
-            <div class="emis-grid-card-title">نسخ احتياطي للبيانات</div>
+            <div class="emis-grid-card-title">بوت واتساب</div>
           </div>
 
         </div>
@@ -7016,6 +7009,76 @@
             </thead>
             <tbody id="indivStudentsTableBody"></tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="waBot" class="card" hidden>
+      <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="btn w" type="button" onclick="showTab('home')">
+            <span>الرجوع</span>
+          </button>
+          <h2 style="margin:0"><span>بوت واتساب للكادر</span></h2>
+        </div>
+        <span class="ver-chip" style="background:#dcfce7;color:#166534;font-weight:800">صلاحية المدير</span>
+      </div>
+      <p class="hint">المدير يحدد: نشر الجدول في الكروب فقط، أو تنبيه المعلمين على الخاص قبل الدرس بخمس دقائق.
+        وإذا كتب معلم في الكروب أنه يعتذر عن الحضور، يُختار البديل ويُنشر الجدول المحدَّث.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+        <div class="settings-luxury-card" style="padding:16px">
+          <strong style="display:block;margin-bottom:10px;color:#163858">قرارات المدير</strong>
+          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
+            <input type="checkbox" id="waGroupOn" onchange="saveWaBot()">
+            <span>نشر الجدول في كروب الواتساب</span>
+          </label>
+          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
+            <input type="checkbox" id="waPrivateOn" onchange="saveWaBot()">
+            <span>تنبيه المعلم على الخاص قبل الدرس بـ 5 دقائق (استعدي للدرس)</span>
+          </label>
+          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
+            <input type="checkbox" id="waLeaveOn" onchange="saveWaBot()">
+            <span>عند اعتذار معلم في الكروب: تعيين بديل وتحديث الجدول</span>
+          </label>
+          <div class="modern-field" style="margin-top:10px">
+            <label>رابط كروب الواتساب (للنشر)</label>
+            <input id="waGroupLink" dir="ltr" placeholder="https://chat.whatsapp.com/...." onchange="saveWaBot()">
+          </div>
+          <p class="hint" style="margin:8px 0 0">لا تحتاج برنامج واتساب على الجهاز. شغّل واتساب ويب مرة واحدة وامسح الرمز من جوالك. بعدها التجربة تفتح محادثة المعلم في نفس النافذة.</p>
+        </div>
+        <div class="settings-luxury-card" style="padding:0;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:#111b21;color:#fff">
+            <strong>متصفح واتساب داخل البرنامج</strong>
+            <button class="btn g" type="button" onclick="loadWaWebHome()">تشغيل واتساب ويب</button>
+          </div>
+          <div style="padding:16px;background:#0b141a;color:#e2e8f0;text-align:center">
+            <p style="margin:0 0 8px;font-weight:800">امسح رمز واتساب من جوالك مرة واحدة</p>
+            <p style="margin:0 0 12px;opacity:.9;line-height:1.6">واتساب يمنع عرضه داخل الصفحة نفسها. لذلك تُفتح نافذة واحدة تابعة لبوابة مدرستي (مو تبويب كروم جديد كل مرة). ابقَ مسجّلاً فيها.</p>
+            <button class="btn g" type="button" onclick="loadWaWebHome()">فتح نافذة واتساب ويب الآن</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn g" type="button" onclick="publishWaTimetable()">نشر جدول اليوم في الكروب</button>
+          <button class="btn" type="button" onclick="previewWaReminders()">عرض دروس الدقائق الخمس القادمة</button>
+          <button class="btn o" type="button" onclick="testWaOneTeacher()">تجربة الرسالة على معلم لديه رقم</button>
+        </div>
+        <div id="waBotMsg" class="hint"></div>
+        <div class="settings-luxury-card" style="padding:16px">
+          <strong style="display:block;margin-bottom:8px;color:#163858">رسالة اعتذار من الكروب</strong>
+          <textarea id="waLeaveText" rows="4" placeholder="الصق رسالة المعلم من الكروب، مثل: اعتذر عن عدم الحضور اليوم — مروة مهدي"></textarea>
+          <select id="waLeaveTeacher" style="margin-top:8px;width:100%">
+            <option value="">— أو اختر المعلم إذا لم يُذكر الاسم —</option>
+          </select>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn" type="button" onclick="processWaLeave()">تنفيذ الاعتذار وتعيين البديل</button>
+            <button class="btn g" type="button" onclick="publishWaLeaveUpdate()">نشر الجدول المحدَّث</button>
+          </div>
+          <div id="waLeaveOut" class="hint" style="margin-top:8px;white-space:pre-wrap"></div>
+        </div>
+        <div id="waQueueBox" class="settings-luxury-card" style="padding:16px" hidden>
+          <strong style="display:block;margin-bottom:8px">رسائل جاهزة للإرسال</strong>
+          <div id="waQueueList"></div>
+          <button class="btn g" type="button" style="margin-top:8px" onclick="sendNextWaQueue()">إرسال التالي على واتساب</button>
         </div>
       </div>
     </section>
@@ -9841,7 +9904,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.48";
+    const APP_VERSION = "1.49";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10540,7 +10603,7 @@
       if (btn) {
         tab(btn);
       } else {
-        ["homeSection", "teachers", "classes", "subjects", "students", "loads", "settings", "generate", "views", "notices"].forEach(id => {
+        ["homeSection", "teachers", "classes", "subjects", "students", "loads", "settings", "generate", "views", "notices", "waBot"].forEach(id => {
           const el = $(id); if (!el) return;
           const on = (id === tabId);
           el.hidden = !on;
@@ -10552,6 +10615,7 @@
         try { if (tabId === "settings") renderSettings(); } catch (e) { }
         try { if (tabId === "loads") renderLoads(); } catch (e) { }
         try { if (tabId === "notices") initNoticesSection(); } catch (e) { }
+        try { if (tabId === "waBot") fillWaBotForm(); } catch (e) { }
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -10565,7 +10629,7 @@
       if (typeof syncTeacherSel === "function") try { syncTeacherSel(); } catch (e) { }
       if (typeof syncStudentSel === "function") try { syncStudentSel(); } catch (e) { }
       document.querySelectorAll("nav.tabs button").forEach(b => b.classList.toggle("on", b === btn));
-      ["homeSection", "teachers", "classes", "subjects", "students", "loads", "settings", "generate", "views", "notices"].forEach(id => {
+      ["homeSection", "teachers", "classes", "subjects", "students", "loads", "settings", "generate", "views", "notices", "waBot"].forEach(id => {
         const el = $(id); if (!el) return;
         const on = btn.dataset.tab === id;
         el.hidden = !on;
@@ -10577,6 +10641,7 @@
       try { if (btn.dataset.tab === "settings") renderSettings(); } catch (e) { }
       try { if (btn.dataset.tab === "loads") renderLoads(); } catch (e) { }
       try { if (btn.dataset.tab === "notices") initNoticesSection(); } catch (e) { }
+      try { if (btn.dataset.tab === "waBot") fillWaBotForm(); } catch (e) { }
     }
 
     function dayName(i) { return DAYS[i] || ""; }
@@ -16467,6 +16532,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         db.settings.exBy.A3 = Object.assign({}, exDef("A3"), db.settings.exBy.A3 || {});
         loadExProf();
         applyFonts(); showDataPath(); checkLicenseGate();
+        try { startWaBotWatch(); } catch (e) { }
 
       } catch (e) { try { document.body.insertAdjacentHTML("afterbegin", "<div class=msg err>" + String(e) + "</div>"); } catch (x) { } }
     }
@@ -16646,6 +16712,27 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (info.newer) offerUpdate(info, !!manual);
         else { dismissUpdateUi(); if (manual) showLatestUpdate(info.current || cur); }
       }).catch(function () { if (manual) showLatestUpdate(effectiveVer()); });
+    }
+    function hardRefreshApp() {
+      try { if (typeof flushSave === "function") flushSave(); } catch (e) { }
+      function go() {
+        try {
+          const u = new URL(location.href);
+          u.searchParams.set("_r", String(Date.now()));
+          location.replace(u.href);
+        } catch (e2) {
+          location.reload();
+        }
+      }
+      try {
+        if (window.caches && caches.keys) {
+          caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+          }).catch(function () { }).then(go);
+          return;
+        }
+      } catch (e3) { }
+      go();
     }
     function doAppUpdate() {
       const api = pyApi();
@@ -18178,6 +18265,359 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
     }
     window.openSelectedTeacherCard = openSelectedTeacherCard;
+
+
+    var _waQueue = [];
+    var _waLeaveLast = null;
+    function getWaBot() {
+      db.settings = db.settings || {};
+      if (!db.settings.waBot) db.settings.waBot = { groupOn: true, privateOn: false, leaveOn: true, groupLink: "" };
+      return db.settings.waBot;
+    }
+    function fillWaBotForm() {
+      const w = getWaBot();
+      if ($("waGroupOn")) $("waGroupOn").checked = !!w.groupOn;
+      if ($("waPrivateOn")) $("waPrivateOn").checked = !!w.privateOn;
+      if ($("waLeaveOn")) $("waLeaveOn").checked = w.leaveOn !== false;
+      if ($("waGroupLink")) $("waGroupLink").value = w.groupLink || "";
+      const sel = $("waLeaveTeacher");
+      if (sel) {
+        const cur = sel.value;
+        sel.innerHTML = '<option value="">— أو اختر المعلم إذا لم يُذكر الاسم —</option>' +
+          (db.teachers || []).map(x => '<option value="' + x.id + '">' + esc(x.name) + "</option>").join("");
+        if (cur) sel.value = cur;
+      }
+    }
+    function saveWaBot() {
+      const w = getWaBot();
+      w.groupOn = !!($("waGroupOn") && $("waGroupOn").checked);
+      w.privateOn = !!($("waPrivateOn") && $("waPrivateOn").checked);
+      w.leaveOn = !!($("waLeaveOn") && $("waLeaveOn").checked);
+      w.groupLink = ($("waGroupLink") && $("waGroupLink").value.trim()) || "";
+      save();
+      if ($("waBotMsg")) $("waBotMsg").textContent = "تم حفظ إعدادات المدير.";
+    }
+    var _waWebWin = null;
+    function waWebSendUrl(phone, text) {
+      const num = phone ? (typeof iqWaNum === "function" ? iqWaNum(phone) : String(phone).replace(/\D/g, "")) : "";
+      if (num) return "https://web.whatsapp.com/send?phone=" + num + "&text=" + encodeURIComponent(text || "");
+      return "https://web.whatsapp.com/";
+    }
+    function openWaWebWindow(url) {
+      const feats = "popup=yes,width=1100,height=800,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes";
+      try {
+        if (_waWebWin && !_waWebWin.closed) {
+          try { _waWebWin.location.href = url; } catch (eLoc) { }
+          try { _waWebWin.focus(); } catch (eF) { }
+          return _waWebWin;
+        }
+      } catch (e0) { _waWebWin = null; }
+      try { _waWebWin = window.open(url, "madrasati_wa", feats); } catch (e1) { _waWebWin = null; }
+      return _waWebWin;
+    }
+    function loadWaWebHome() {
+      const w = openWaWebWindow("https://web.whatsapp.com/");
+      if ($("waBotMsg")) $("waBotMsg").textContent = w
+        ? "امسح رمز واتساب من تطبيق الجوال مرة واحدة، وابقَ النافذة مفتوحة."
+        : "اسمح بالنوافذ المنبثقة لهذه الصفحة ثم اضغط تشغيل مرة أخرى.";
+    }
+    function waOpen(phone, text) {
+      try { if (navigator.clipboard && text) navigator.clipboard.writeText(text); } catch (e0) { }
+      if (!phone) {
+        const link = (getWaBot().groupLink || "").trim();
+        if (link) {
+          openWaWebWindow(link.indexOf("http") === 0 ? link : "https://web.whatsapp.com/");
+          note("تم نسخ الجدول. الصقه في الكروب من نافذة واتساب.");
+          return;
+        }
+      }
+      const url = waWebSendUrl(phone, text);
+      const w = openWaWebWindow(url);
+      if ($("waBotMsg")) $("waBotMsg").textContent = w
+        ? "فُتحت نافذة واتساب ويب. أول مرة امسح الرمز من الجوال، بعدها اضغط إرسال."
+        : "اسمح بالنوافذ المنبثقة ثم أعد التجربة.";
+    }
+    function waEnqueue(phone, text, label) {
+      _waQueue.push({ phone: phone || "", text: text, label: label || "رسالة" });
+      renderWaQueue();
+    }
+    function renderWaQueue() {
+      const box = $("waQueueBox"), list = $("waQueueList");
+      if (!box || !list) return;
+      box.hidden = !_waQueue.length;
+      list.innerHTML = _waQueue.map((q, i) => '<div style="padding:6px 0;border-bottom:1px solid #e2e8f0">' + (i + 1) + ". " + esc(q.label) + (q.phone ? " — " + esc(q.phone) : "") + "</div>").join("");
+    }
+    function sendNextWaQueue() {
+      if (!_waQueue.length) { note("لا توجد رسائل"); return; }
+      const q = _waQueue.shift();
+      waOpen(q.phone, q.text);
+      renderWaQueue();
+    }
+    function waSchoolDayIndex(offset) {
+      const days = (db.settings && db.settings.days) || [0, 1, 2, 3, 4];
+      let d = new Date().getDay();
+      d = (d + (offset || 0)) % 7;
+      if (days.indexOf(d) >= 0) return d;
+      for (let i = 1; i <= 7; i++) {
+        const n = (d + i) % 7;
+        if (days.indexOf(n) >= 0) return n;
+      }
+      return days[0];
+    }
+    function waPeriodStarts() {
+      const start = (db.settings && db.settings.schoolStartTime) || "08:00";
+      const dur = +(db.settings && db.settings.lessonDuration) || 45;
+      const P = (db.settings && db.settings.periods) || 6;
+      const parts = String(start).split(":");
+      let m = (+parts[0] || 8) * 60 + (+parts[1] || 0);
+      const out = [];
+      for (let p = 0; p < P; p++) {
+        out.push({ p: p, minutes: m, hhmm: String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0") });
+        m += dur;
+      }
+      return out;
+    }
+    function waLessonsAt(day, p) {
+      const rows = [];
+      if (!db.grid) return rows;
+      (db.sections || []).forEach(sec => {
+        const c = db.grid[sec.id] && db.grid[sec.id][day] && db.grid[sec.id][day][p];
+        if (!c || !c.teacherId) return;
+        const v = db.vacancies && db.vacancies[sec.id] && db.vacancies[sec.id][day] && db.vacancies[sec.id][day][p];
+        let tid = coverTid(c.teacherId);
+        if (v && v.teacherId) tid = v.teacherId;
+        else if (v && v.subFor === c.teacherId && !v.teacherId) return;
+        const t = db.teachers.find(x => x.id === tid);
+        if (!t) return;
+        if (t.leave && !(v && v.teacherId === t.id)) return;
+        rows.push({ sec: sec, cell: c, teacher: t, origId: c.teacherId, p: p, d: day });
+      });
+      return rows;
+    }
+    function waTodayText(day) {
+      const school = (db.settings && db.settings.schoolName) || "المدرسة";
+      const P = (db.settings && db.settings.periods) || 6;
+      const starts = waPeriodStarts();
+      let msg = "جدول " + dayName(day) + " — " + school + "\n";
+      for (let p = 0; p < P; p++) {
+        const rows = waLessonsAt(day, p);
+        if (!rows.length) continue;
+        msg += "\nالدرس " + (p + 1) + " (" + (starts[p] ? starts[p].hhmm : "") + ")\n";
+        rows.forEach(r => {
+          const sub = (r.origId !== r.teacher.id) ? " [بديل]" : "";
+          msg += "• " + secName(r.sec.id) + " — " + (r.cell.name || "") + " — " + r.teacher.name + sub + "\n";
+        });
+      }
+      return msg;
+    }
+    function publishWaTimetable() {
+      const w = getWaBot();
+      if (!w.groupOn) { note("المدير لم يفعّل نشر الجدول في الكروب"); return; }
+      const text = waTodayText(waSchoolDayIndex(0));
+      _waLeaveLast = { text: text };
+      waEnqueue("", text, "جدول اليوم للكروب");
+      sendNextWaQueue();
+      if ($("waBotMsg")) $("waBotMsg").textContent = "تم تجهيز جدول اليوم لإرساله إلى الكروب.";
+    }
+    function waNorm(s) {
+      return String(s || "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/[ًٌٍَُِّْ]/g, "").replace(/\s+/g, " ").trim();
+    }
+    function waParseDay(text) {
+      const n = waNorm(text);
+      if (n.indexOf("بعد غد") >= 0 || n.indexOf("بعدغد") >= 0) return waSchoolDayIndex(2);
+      if (n.indexOf("غد") >= 0) return waSchoolDayIndex(1);
+      return waSchoolDayIndex(0);
+    }
+    function waFindTeachers(text) {
+      const n = waNorm(text);
+      const found = [];
+      (db.teachers || []).slice().sort((a, b) => (b.name || "").length - (a.name || "").length).forEach(t => {
+        const nn = waNorm(t.name);
+        if (nn.length < 3) return;
+        let hit = n.indexOf(nn) >= 0;
+        if (!hit) {
+          const parts = nn.split(" ").filter(Boolean);
+          if (parts.length >= 2) {
+            const short = parts[0] + " " + parts[1];
+            if (short.length >= 5 && n.indexOf(short) >= 0) hit = true;
+          }
+        }
+        if (hit && !found.some(x => x.id === t.id)) found.push(t);
+      });
+      return found;
+    }
+    function waPickSub(tid, d) {
+      const self = db.teachers.find(x => x.id === tid);
+      if (self && self.subId) {
+        const s = db.teachers.find(x => x.id === self.subId);
+        if (s && !s.leave && !isOff(s, d)) return s;
+      }
+      let best = null, bestBusy = 99;
+      (db.teachers || []).forEach(t => {
+        if (t.id === tid || t.leave || isOff(t, d)) return;
+        let busy = 0;
+        const P = (db.settings && db.settings.periods) || 6;
+        for (let p = 0; p < P; p++) if (typeof teacherBusyAt === "function" && teacherBusyAt(t.id, d, p)) busy++;
+        if (busy < bestBusy) { bestBusy = busy; best = t; }
+      });
+      return best;
+    }
+    function applyDayCover(t, sub, d) {
+      if (!db.grid) return 0;
+      if (!db.vacancies) db.vacancies = emptyGrid();
+      const P = db.settings.periods || 6;
+      let n = 0;
+      (db.sections || []).forEach(sec => {
+        if (!db.vacancies[sec.id]) db.vacancies[sec.id] = {};
+        if (!db.vacancies[sec.id][d]) db.vacancies[sec.id][d] = Array(P).fill(null);
+        for (let p = 0; p < P; p++) {
+          const c = db.grid[sec.id] && db.grid[sec.id][d] && db.grid[sec.id][d][p];
+          if (c && c.teacherId === t.id) {
+            const busy = sub && typeof teacherBusyAt === "function" && teacherBusyAt(sub.id, d, p);
+            db.vacancies[sec.id][d][p] = busy ? { teacherId: "", name: "شاغر", subFor: t.id } : { teacherId: sub.id, name: "بديل", subFor: t.id };
+            n++;
+          }
+        }
+      });
+      return n;
+    }
+    function processWaLeave() {
+      const w = getWaBot();
+      if (!w.leaveOn) { note("المدير لم يفعّل معالجة الاعتذار"); return; }
+      const raw = ($("waLeaveText") && $("waLeaveText").value) || "";
+      const n = waNorm(raw);
+      if (!/(اعتذر|اعتذار|اجازه|اجازة|ما اكدر|لا استطيع|غائب|غايب)/.test(n)) {
+        if ($("waLeaveOut")) $("waLeaveOut").textContent = "لم يُفهم الاعتذار. اكتب مثلاً: اعتذر عن عدم الحضور اليوم.";
+        return;
+      }
+      const day = waParseDay(raw);
+      let teachers = waFindTeachers(raw);
+      if (!teachers.length && $("waLeaveTeacher") && $("waLeaveTeacher").value) {
+        const t = db.teachers.find(x => x.id === $("waLeaveTeacher").value);
+        if (t) teachers = [t];
+      }
+      if (!teachers.length && window._tSel) {
+        const t = db.teachers.find(x => x.id === window._tSel);
+        if (t) teachers = [t];
+      }
+      if (!teachers.length) {
+        if ($("waLeaveOut")) $("waLeaveOut").textContent = "لم يُعرف اسم المعلم في الرسالة. اكتب الاسم الرباعي مع الاعتذار.";
+        return;
+      }
+      const lines = [];
+      const updates = [];
+      teachers.forEach(t => {
+        const sub = waPickSub(t.id, day);
+        if (!sub) { lines.push(t.name + ": لا يوجد بديل متاح يوم " + dayName(day)); return; }
+        const nLessons = applyDayCover(t, sub, day);
+        updates.push({ t: t, sub: sub, day: day, n: nLessons });
+        lines.push("المجاز: " + t.name + "\nالبديل: " + sub.name + "\nاليوم: " + dayName(day) + " — " + nLessons + " حصة");
+        if (w.privateOn && sub.phone) {
+          waEnqueue(sub.phone, "السلام عليكم\nالأستاذ/ة " + sub.name + "\nكلفتم بديلاً عن " + t.name + " يوم " + dayName(day) + ".\nعدد الحصص: " + nLessons + ".\nيرجى الاستعداد.", "بديل: " + sub.name);
+        }
+      });
+      try { save(); } catch (e) { }
+      _waLeaveLast = { day: day, updates: updates, text: lines.join("\n\n") };
+      if ($("waLeaveOut")) $("waLeaveOut").textContent = lines.join("\n\n") || "لا نتيجة";
+      if (w.groupOn) publishWaLeaveUpdate();
+    }
+    function publishWaLeaveUpdate() {
+      const w = getWaBot();
+      const day = (_waLeaveLast && _waLeaveLast.day != null) ? _waLeaveLast.day : waSchoolDayIndex(0);
+      const school = (db.settings && db.settings.schoolName) || "المدرسة";
+      let msg = "تحديث الجدول — " + school + "\nيوم " + dayName(day) + "\n";
+      if (_waLeaveLast && _waLeaveLast.updates) {
+        msg += "\nالمجازون والبديل:\n";
+        _waLeaveLast.updates.forEach(u => { msg += "• " + u.t.name + " ← البديل " + u.sub.name + "\n"; });
+      }
+      msg += "\n" + waTodayText(day);
+      waEnqueue("", msg, "تحديث الجدول للكروب");
+      sendNextWaQueue();
+    }
+    function previewWaReminders() {
+      const day = waSchoolDayIndex(0);
+      const now = new Date();
+      const mins = now.getHours() * 60 + now.getMinutes();
+      const starts = waPeriodStarts();
+      const soon = starts.filter(s => s.minutes - mins <= 5 && s.minutes - mins >= 0);
+      const rows = [];
+      soon.forEach(s => waLessonsAt(day, s.p).forEach(r => rows.push(r.teacher.name + " — الدرس " + (s.p + 1) + " الساعة " + s.hhmm)));
+      if ($("waBotMsg")) $("waBotMsg").textContent = rows.length ? rows.join(" | ") : "لا توجد حصص خلال خمس دقائق.";
+    }
+    function waReminderKey(day, p, tid) {
+      const ds = new Date();
+      return ds.getFullYear() + "-" + (ds.getMonth() + 1) + "-" + ds.getDate() + "|" + day + "|" + p + "|" + tid;
+    }
+    function waLoadSent() {
+      try { return JSON.parse(localStorage.getItem("waRemSent") || "[]"); } catch (e) { return []; }
+    }
+    function waSaveSent(arr) {
+      try { localStorage.setItem("waRemSent", JSON.stringify(arr.slice(-200))); } catch (e) { }
+    }
+    function tickWaReminders() {
+      const w = getWaBot();
+      if (!w.privateOn) return;
+      if (!db.grid) return;
+      const day = waSchoolDayIndex(0);
+      const now = new Date();
+      const mins = now.getHours() * 60 + now.getMinutes();
+      const sent = waLoadSent();
+      waPeriodStarts().forEach(s => {
+        const left = s.minutes - mins;
+        if (left < 0 || left > 5) return;
+        waLessonsAt(day, s.p).forEach(r => {
+          const key = waReminderKey(day, s.p, r.teacher.id);
+          if (sent.indexOf(key) >= 0) return;
+          sent.push(key);
+          const phone = r.teacher.phone || "";
+          const text = "السلام عليكم\nالأستاذ/ة " + r.teacher.name + "\nسيبدأ درسكم بعد 5 دقائق.\nالدرس " + (s.p + 1) + " — " + (r.cell.name || "") + " — " + secName(r.sec.id) + "\nالساعة " + s.hhmm + "\nاستعدي للدرس.";
+          if (phone) waEnqueue(phone, text, "تنبيه: " + r.teacher.name);
+          else if ($("waBotMsg")) $("waBotMsg").textContent = "لا يوجد رقم لـ " + r.teacher.name;
+        });
+      });
+      waSaveSent(sent);
+      if (_waQueue.length === 1) sendNextWaQueue();
+      else renderWaQueue();
+    }
+    function startWaBotWatch() {
+      try { fillWaBotForm(); } catch (e) { }
+      if (window._waTick) return;
+      window._waTick = setInterval(function () { try { tickWaReminders(); } catch (e) { } }, 30000);
+      setTimeout(function () { try { tickWaReminders(); } catch (e) { } }, 4000);
+    }
+    function waTeachersWithPhone() {
+      return (db.teachers || []).filter(function (x) {
+        return String(x.phone || "").replace(/\D/g, "").length >= 10;
+      });
+    }
+    function testWaOneTeacher() {
+      const listed = waTeachersWithPhone();
+      let t = null;
+      const selId = $("waLeaveTeacher") && $("waLeaveTeacher").value;
+      if (selId) t = listed.find(function (x) { return x.id === selId; }) || (db.teachers || []).find(function (x) { return x.id === selId; });
+      if (!t) t = listed[0];
+      if (!t || !t.phone) {
+        note("لا يوجد معلم برقم واتساب. افتح بطاقة المعلم واكتب الرقم ثم احفظ.");
+        if ($("waBotMsg")) $("waBotMsg").textContent = "اكتب رقم الواتساب في بطاقة المعلم أولاً.";
+        return;
+      }
+      const starts = waPeriodStarts();
+      const day = waSchoolDayIndex(0);
+      let lesson = null;
+      for (let p = 0; p < starts.length && !lesson; p++) {
+        waLessonsAt(day, p).forEach(function (r) {
+          if (!lesson && r.teacher.id === t.id) lesson = { p: p, hhmm: starts[p].hhmm, cell: r.cell, sec: r.sec };
+        });
+      }
+      let text = "السلام عليكم\nالأستاذ/ة " + t.name + "\nهذه تجربة من بوت بوابة مدرستي.";
+      if (lesson) {
+        text += "\nسيبدأ درسكم بعد 5 دقائق.\nالدرس " + (lesson.p + 1) + " — " + (lesson.cell.name || "") + " — " + secName(lesson.sec.id) + "\nالساعة " + lesson.hhmm + "\nاستعدي للدرس.";
+      } else {
+        text += "\nاستعدي للدرس (رسالة تجريبية).";
+      }
+      waOpen(t.phone, text);
+      if ($("waBotMsg")) $("waBotMsg").textContent = "تجربة إلى: " + t.name + " — " + t.phone;
+    }
 
     function sendTeacherScheduleViaWhatsApp() {
       const t = window._currentCardTeacher;
