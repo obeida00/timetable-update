@@ -7355,7 +7355,7 @@
           </button>
           <h2 style="margin:0"><span>لوحة الإعدادات</span></h2>
         </div>
-        <span class="ver-chip" id="settingsVerChip">الإصدار 1.01</span>
+        <span class="ver-chip" id="settingsVerChip">الإصدار 1.49</span>
       </div>
       <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
       <div class="set-tiles no-print">
@@ -18321,6 +18321,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         ? "امسح رمز واتساب من تطبيق الجوال مرة واحدة، وابقَ النافذة مفتوحة."
         : "اسمح بالنوافذ المنبثقة لهذه الصفحة ثم اضغط تشغيل مرة أخرى.";
     }
+    function waTitle(t) { return (t && t.gender === "أنثى") ? "الست" : "الأستاذ"; }
     function waOpen(phone, text) {
       try { if (navigator.clipboard && text) navigator.clipboard.writeText(text); } catch (e0) { }
       if (!phone) {
@@ -18513,7 +18514,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         updates.push({ t: t, sub: sub, day: day, n: nLessons });
         lines.push("المجاز: " + t.name + "\nالبديل: " + sub.name + "\nاليوم: " + dayName(day) + " — " + nLessons + " حصة");
         if (w.privateOn && sub.phone) {
-          waEnqueue(sub.phone, "السلام عليكم\nالأستاذ/ة " + sub.name + "\nكلفتم بديلاً عن " + t.name + " يوم " + dayName(day) + ".\nعدد الحصص: " + nLessons + ".\nيرجى الاستعداد.", "بديل: " + sub.name);
+          waEnqueue(sub.phone, "السلام عليكم\n" + waTitle(sub) + " " + sub.name + "\nكلفتم بديلاً عن " + t.name + " يوم " + dayName(day) + ".\nعدد الحصص: " + nLessons + ".\nيرجى الاستعداد.", "بديل: " + sub.name);
         }
       });
       try { save(); } catch (e) { }
@@ -18570,7 +18571,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           if (sent.indexOf(key) >= 0) return;
           sent.push(key);
           const phone = r.teacher.phone || "";
-          const text = "السلام عليكم\nالأستاذ/ة " + r.teacher.name + "\nسيبدأ درسكم بعد 5 دقائق.\nالدرس " + (s.p + 1) + " — " + (r.cell.name || "") + " — " + secName(r.sec.id) + "\nالساعة " + s.hhmm + "\nاستعدي للدرس.";
+          const isFemale = r.teacher.gender === "أنثى";
+          const text = "السلام عليكم\n" + waTitle(r.teacher) + " " + r.teacher.name + "\nسيبدأ درسكم بعد 5 دقائق.\nالدرس " + (s.p + 1) + " — " + (r.cell.name || "") + " — " + secName(r.sec.id) + "\nالساعة " + s.hhmm + "\n" + (isFemale ? "استعدي للدرس." : "استعد للدرس.");
           if (phone) waEnqueue(phone, text, "تنبيه: " + r.teacher.name);
           else if ($("waBotMsg")) $("waBotMsg").textContent = "لا يوجد رقم لـ " + r.teacher.name;
         });
@@ -18609,11 +18611,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           if (!lesson && r.teacher.id === t.id) lesson = { p: p, hhmm: starts[p].hhmm, cell: r.cell, sec: r.sec };
         });
       }
-      let text = "السلام عليكم\nالأستاذ/ة " + t.name + "\nهذه تجربة من بوت بوابة مدرستي.";
+      const isFemale = t.gender === "أنثى";
+      let text = "السلام عليكم\n" + waTitle(t) + " " + t.name + "\nهذه تجربة من بوت بوابة مدرستي.";
       if (lesson) {
-        text += "\nسيبدأ درسكم بعد 5 دقائق.\nالدرس " + (lesson.p + 1) + " — " + (lesson.cell.name || "") + " — " + secName(lesson.sec.id) + "\nالساعة " + lesson.hhmm + "\nاستعدي للدرس.";
+        text += "\nسيبدأ درسكم بعد 5 دقائق.\nالدرس " + (lesson.p + 1) + " — " + (lesson.cell.name || "") + " — " + secName(lesson.sec.id) + "\nالساعة " + lesson.hhmm + "\n" + (isFemale ? "استعدي للدرس." : "استعد للدرس.");
       } else {
-        text += "\nاستعدي للدرس (رسالة تجريبية).";
+        text += "\n" + (isFemale ? "استعدي للدرس (رسالة تجريبية)." : "استعد للدرس (رسالة تجريبية).");
       }
       waOpen(t.phone, text);
       if ($("waBotMsg")) $("waBotMsg").textContent = "تجربة إلى: " + t.name + " — " + t.phone;
@@ -18633,8 +18636,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const days = (db.settings && db.settings.days) || [0, 1, 2, 3, 4];
       const periods = (db.settings && db.settings.periods) || 6;
 
+      const tTitle = waTitle(t);
+      const tAdj = t.gender === "أنثى" ? "الفاضلة" : "الفاضل";
       let msg = `السلام عليكم ورحمة الله وبركاته 🌹\n`;
-      msg += `الأستاذ/ة الفاضل/ة: *${t.name}*\n`;
+      msg += `${tTitle} ${tAdj}: *${t.name}*\n`;
       msg += `المدرسة: *${school}*\n`;
       msg += `نصاب الحصص الأسبوعي: *${db.subjects.filter(s => s.teacherId === t.id).reduce((sum, s) => sum + (s.weekly || 0), 0)} حصة*\n`;
       msg += `يوم الأوف / التفرغ: *${(t.offDays || []).map(dayName).join("، ") || "لا يوجد"}*\n\n`;
