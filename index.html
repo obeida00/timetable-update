@@ -18298,12 +18298,22 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if ($("waBotMsg")) $("waBotMsg").textContent = "تم حفظ إعدادات المدير.";
     }
     var _waWebWin = null;
+    function isWaMobile() {
+      return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || "");
+    }
     function waWebSendUrl(phone, text) {
       const num = phone ? (typeof iqWaNum === "function" ? iqWaNum(phone) : String(phone).replace(/\D/g, "")) : "";
+      if (isWaMobile()) {
+        if (num) return "https://wa.me/" + num + "?text=" + encodeURIComponent(text || "");
+        return "https://wa.me/?text=" + encodeURIComponent(text || "");
+      }
       if (num) return "https://web.whatsapp.com/send?phone=" + num + "&text=" + encodeURIComponent(text || "");
       return "https://web.whatsapp.com/";
     }
     function openWaWebWindow(url) {
+      if (isWaMobile()) {
+        try { window.open(url, "_blank"); return true; } catch (e) { location.href = url; return true; }
+      }
       const feats = "popup=yes,width=1100,height=800,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes";
       try {
         if (_waWebWin && !_waWebWin.closed) {
@@ -18316,6 +18326,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       return _waWebWin;
     }
     function loadWaWebHome() {
+      if (isWaMobile()) {
+        try { window.open("https://wa.me/", "_blank"); } catch (e) { location.href = "https://wa.me/"; }
+        if ($("waBotMsg")) $("waBotMsg").textContent = "تم فتح واتساب على الموبايل.";
+        return;
+      }
       const w = openWaWebWindow("https://web.whatsapp.com/");
       if ($("waBotMsg")) $("waBotMsg").textContent = w
         ? "امسح رمز واتساب من تطبيق الجوال مرة واحدة، وابقَ النافذة مفتوحة."
@@ -18327,16 +18342,20 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (!phone) {
         const link = (getWaBot().groupLink || "").trim();
         if (link) {
-          openWaWebWindow(link.indexOf("http") === 0 ? link : "https://web.whatsapp.com/");
-          note("تم نسخ الجدول. الصقه في الكروب من نافذة واتساب.");
+          if (isWaMobile()) {
+            try { window.open(link.indexOf("http") === 0 ? link : "https://wa.me/", "_blank"); } catch (e) { location.href = link; }
+          } else {
+            openWaWebWindow(link.indexOf("http") === 0 ? link : "https://web.whatsapp.com/");
+          }
+          note("تم نسخ الجدول. الصقه في الكروب من تطبيق واتساب.");
           return;
         }
       }
       const url = waWebSendUrl(phone, text);
       const w = openWaWebWindow(url);
-      if ($("waBotMsg")) $("waBotMsg").textContent = w
-        ? "فُتحت نافذة واتساب ويب. أول مرة امسح الرمز من الجوال، بعدها اضغط إرسال."
-        : "اسمح بالنوافذ المنبثقة ثم أعد التجربة.";
+      if ($("waBotMsg")) $("waBotMsg").textContent = isWaMobile()
+        ? "جاري فتح تطبيق واتساب وإرسال الرسالة..."
+        : (w ? "فُتحت نافذة واتساب ويب. أول مرة امسح الرمز من الجوال، بعدها اضغط إرسال." : "اسمح بالنوافذ المنبثقة ثم أعد التجربة.");
     }
     function waEnqueue(phone, text, label) {
       _waQueue.push({ phone: phone || "", text: text, label: label || "رسالة" });
