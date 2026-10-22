@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
     "version": "1.49",
     "notes": "تحديث 1.49:\n• بطاقة بوت واتساب للكادر: نشر الجدول، تنبيه قبل الدرس بـ 5 دقائق، واعتذار مع تعيين بديل.\n• إرسال عبر واتساب ويب بنافذة واحدة بدون تثبيت برنامج واتساب.\n• نقل النسخ الاحتياطي من الرئيسية إلى الإعدادات فقط."
 }
+=======
+{
+    "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
+    "version": "1.48",
+    "notes": "تحديث 1.48:\n• إصلاح ربط البوت من داخل البرنامج (رمز جديد عند الضغط).\n• تعليمات الربط برقم الهاتف ورمز الدخول بدل Google."
+}
+>>>>>>> 2a142c7a24f3e6090666a264e7478cc2ed672823
