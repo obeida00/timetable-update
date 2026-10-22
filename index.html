@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="الجداول">
-  <title>نظام الجداول المدرسية</title>
+  <meta name="apple-mobile-web-app-title" content="بوابة مدرستي">
+  <title>بوابة مدرستي</title>
   <link rel="icon" href="logo.png">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3802,6 +3802,17 @@
         line-height: 1.2;
       }
 
+      header.top .emis-app-tagline {
+        font-size: 0.62rem !important;
+        font-weight: 700;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+        margin-top: 1px;
+      }
+
       header.top .dev-wrap {
         gap: 6px;
         flex: 0 0 auto;
@@ -4767,6 +4778,15 @@
         margin: 0;
       }
 
+      .emis-app-tagline {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #5b7a96;
+        letter-spacing: 0.1px;
+        margin-top: 1px;
+        line-height: 1.25;
+      }
+
       .emis-user-chip {
         display: inline-flex;
         align-items: center;
@@ -5420,6 +5440,11 @@
         font-size: 1.35rem !important;
         font-weight: 800 !important;
       }
+      header.top.emis-header .emis-app-tagline {
+        color: #5b7a96 !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+      }
       header.top.emis-header .emis-logo-badge {
         display: flex !important;
         background: #ffffff !important;
@@ -5618,15 +5643,48 @@
 </head>
 
 <body>
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <symbol id="appLogoMark" viewBox="0 0 64 64">
+      <defs>
+        <linearGradient id="appLogoGrad" x1="32" y1="2" x2="32" y2="62" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#0c4d86"/>
+          <stop offset="1" stop-color="#2b96d8"/>
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="30" fill="url(#appLogoGrad)"/>
+      <circle cx="32" cy="32" r="28.4" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.3"/>
+      <circle cx="32" cy="32" r="26.6" fill="none" stroke="#f0c050" stroke-opacity=".55" stroke-width=".7"/>
+      <polygon points="32,7.5 49,16.5 32,21 15,16.5" fill="#fff"/>
+      <rect x="24.5" y="18.2" width="15" height="6.2" rx="0.6" fill="#fff"/>
+      <line x1="49" y1="16.5" x2="49" y2="25" stroke="#e8b84a" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="49" cy="26.4" r="1.7" fill="#e8b84a"/>
+      <polygon points="31.2,30 15.5,24 13.8,48.5 31.2,53" fill="#fff"/>
+      <polygon points="32.8,30 48.5,24 50.2,48.5 32.8,53" fill="#fff"/>
+      <line x1="32" y1="29" x2="32" y2="53" stroke="#e8b84a" stroke-width="1.8" stroke-linecap="round"/>
+      <g stroke="#b9d8f0" stroke-width=".7" fill="none">
+        <line x1="19" y1="30" x2="18.2" y2="47"/>
+        <line x1="24" y1="32" x2="23.4" y2="48.5"/>
+        <line x1="16.8" y1="36" x2="29.5" y2="40"/>
+        <line x1="16.2" y1="42" x2="29.5" y2="46"/>
+        <line x1="45" y1="30" x2="45.8" y2="47"/>
+        <line x1="40" y1="32" x2="40.6" y2="48.5"/>
+        <line x1="34.5" y1="36" x2="47.2" y2="40"/>
+        <line x1="34.5" y1="42" x2="47.8" y2="46"/>
+      </g>
+    </symbol>
+  </svg>
+
   <div class="app">
     <header class="top emis-header no-print">
       <div style="display:flex;align-items:center;gap:16px">
         <div class="brand-row" style="display:flex;align-items:center;gap:10px">
           <div class="emis-logo-badge">
-            <img class="app-logo" src="logo.png" alt="شعار النظام" style="width:38px;height:38px;object-fit:contain">
+            <svg class="app-logo" width="38" height="38" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:38px;height:38px;display:block"><use href="#appLogoMark"/></svg>
           </div>
           <div class="emis-brand-text">
-            <h1 class="emis-app-title">نظام الجداول المدرسية</h1>
+            <h1 class="emis-app-title">بوابة مدرستي</h1>
+            <div class="emis-app-tagline">إدارة الجداول والكادر والطلاب</div>
           </div>
         </div>
 
@@ -6082,7 +6140,7 @@
           </div>
 
           <!-- 8. درجات الطلاب وسجل التقويم -->
-          <div class="emis-grid-card" onclick="showTab('students');setTimeout(()=>executeStudentExport('grades'), 200)">
+          <div class="emis-grid-card" onclick="openGradeEntry()">
             <div class="emis-grid-card-icon">
               <!-- Grade Sheet with A+ badge -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6695,6 +6753,9 @@
               onclick="hideDrops();document.getElementById('studExcelFile').click()">
               <span>📤 استيراد من ملف Excel</span>
             </button>
+            <button type="button" class="drop-item" onclick="hideDrops();openGradeEntry()">
+              <span>📝 إدخال درجات الطلاب</span>
+            </button>
             <button type="button" class="drop-item" onclick="hideDrops();openQuickAttendance()">
               <span>📋 رصد الحضور والغياب اليومي</span>
             </button>
@@ -6966,14 +7027,13 @@
         <div class="emis-login-brand">
           <div class="emis-brand-content">
             <div class="emis-logo-box">
-              <img src="logo.png" alt="شعار النظام">
+              <svg class="app-logo" width="88" height="88" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:88px;height:88px;display:block"><use href="#appLogoMark"/></svg>
             </div>
             <div class="emis-brand-div"></div>
-            <h2 class="emis-brand-gov">نظام الجداول المدرسية</h2>
-            <div class="emis-brand-sub">إدارة وتوزيع الحصص والأنصبة المدرسية</div>
+            <h2 class="emis-brand-gov">بوابة مدرستي</h2>
+            <div class="emis-brand-sub">إدارة شاملة للمدرسة: الكادر، الطلاب، الجداول والأنصبة</div>
             <p class="emis-brand-desc">
-              المنظومة الذكية المتكاملة لتنظيم الجداول والحصص الأسبوعية، توزيع أنصبة الكادر التعليمي، وطباعة الجداول
-              المدرسية الرسمية بدقة وسرعة فائقة.
+              المنظومة المتكاملة لإدارة شؤون المدرسة: الكادر والطلاب والقيود، توزيع الأنصبة والجداول، والطباعة الرسمية.
             </p>
             <div class="emis-brand-copy">
               جميع الحقوق محفوظة عبيدة العيثاوي © 2026
@@ -8115,7 +8175,7 @@
     <footer class="app-footer no-print"
       style="margin-top:20px;padding:14px 20px;text-align:center;color:#64748b;font-size:0.84rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid #e2e8f0;border-radius:14px;background:rgba(255,255,255,0.7)">
       <div style="display:flex;align-items:center;gap:8px">
-        <span>نظام الجداول المدرسية الذكي</span>
+        <span>بوابة مدرستي</span>
         <span style="color:#cbd5e1">•</span>
         <span id="footerSchoolShow">المدرسة</span>
       </div>
@@ -8752,6 +8812,44 @@
     </div>
   </div>
 
+
+  <div id="gradeEntryBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+    <div class="modal-card" style="width:min(980px,96vw);max-height:92vh;display:flex;flex-direction:column"
+      onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap">
+        <h2 style="margin:0">📝 إدخال درجات الطلاب</h2>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="grdSecPick" onchange="onGradeFiltersChange()" style="font-weight:700;min-width:160px"></select>
+          <select id="grdSubject" onchange="loadGradeList()" style="font-weight:700;min-width:160px"></select>
+        </div>
+      </div>
+      <p class="hint" style="margin:0 0 8px">اختر الشعبة والمادة ثم أدخل الدرجات. تُحفظ في سجل المدرسة ولا تُفتح الطباعة إلا إذا ضغطت «طباعة».</p>
+      <div style="flex:1;overflow:auto;border:1px solid #e2e8f0;border-radius:8px;padding:8px">
+        <table class="slim" id="gradeEntryTable">
+          <thead>
+            <tr>
+              <th style="width:40px">#</th>
+              <th>اسم الطالب</th>
+              <th style="width:80px">شهر 1</th>
+              <th style="width:80px">شهر 2</th>
+              <th style="width:90px">نصف السنة</th>
+              <th style="width:80px">النهائي</th>
+              <th>ملاحظات</th>
+            </tr>
+          </thead>
+          <tbody id="grdBody"></tbody>
+        </table>
+      </div>
+      <div class="form-actions" style="margin-top:12px;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <button class="btn w" type="button" onclick="printEnteredGrades()">🖨️ طباعة السجل</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn" type="button" onclick="saveGrades()">💾 حفظ الدرجات</button>
+          <button class="btn d" type="button" onclick="document.getElementById('gradeEntryBox').hidden=true">إغلاق</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="ioBox" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
     <div class="modal-card" onclick="event.stopPropagation()">
       <h2 id="ioTitle">تصدير</h2>
@@ -9231,8 +9329,7 @@
         <div
           style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2487d0;padding-bottom:12px;margin-bottom:14px">
           <div style="display:flex;align-items:center;gap:12px">
-            <img src="logo.png"
-              style="width:48px;height:48px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;padding:2px">
+            <svg class="app-logo" width="48" height="48" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:48px;height:48px;display:inline-block;vertical-align:middle"><use href="#appLogoMark"/></svg>
             <div>
               <h3 id="tCardSchool" style="margin:0;font-size:1.1rem;color:#163858">المدرسة</h3>
               <span style="font-size:0.78rem;color:#6b8ba6">بطاقة التدريسي والجدول الأسبوعي المعتمد</span>
@@ -9299,7 +9396,7 @@
       </div>
       <div id="studCardPrintArea" style="background:#fff;border:1.5px solid #d3e1ee;border-radius:14px;padding:18px;text-align:right">
         <div style="display:flex;align-items:center;gap:12px;border-bottom:2px solid #2487d0;padding-bottom:12px;margin-bottom:14px">
-          <img src="logo.png" style="width:48px;height:48px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;padding:2px">
+          <svg class="app-logo" width="48" height="48" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:48px;height:48px;display:inline-block;vertical-align:middle"><use href="#appLogoMark"/></svg>
           <div>
             <h3 id="studCardSchool" style="margin:0;font-size:1.1rem;color:#163858">المدرسة</h3>
             <span style="font-size:0.78rem;color:#6b8ba6">بطاقة الطالب وبيانات القيد</span>
@@ -9744,7 +9841,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.46";
+    const APP_VERSION = "1.47";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -11433,7 +11530,7 @@
     }
 
     function exportSecOverExcel() {
-      const school = db.settings.schoolName || "نظام الجداول المدرسية";
+      const school = db.settings.schoolName || "بوابة مدرستي";
       const days = (db.settings.days || []).length || 5, P = db.settings.periods || 6, cap = days * P;
       let rowsHtml = "";
       db.sections.forEach(s => {
@@ -11499,7 +11596,7 @@ td{background:#ffffff;color:#163858;font-size:10pt}
       return rowsHtml;
     }
     function exportSecOverWord() {
-      const school = db.settings.schoolName || "نظام الجداول المدرسية";
+      const school = db.settings.schoolName || "بوابة مدرستي";
       const html = `<html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>ملخص نصاب الشعب</title>
 <style>@page{size:A4 landscape;margin:10mm}
 body{font-family:Tahoma,Arial,sans-serif;direction:rtl;color:#000}
@@ -11509,13 +11606,13 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
 <div style="text-align:center;font-size:16pt;font-weight:bold;margin-bottom:10px">${esc(school)} — ملخص نصاب الشعب والمواد</div>
 <table><thead><tr><th>الشعبة</th><th>الدروس الأسبوعية</th><th>سعة الدوام</th><th>حالة النصاب</th><th>المعلمون ودروسهم</th><th>المواد وتوزيعها</th></tr></thead>
 <tbody>${secOverRowsHtml()}</tbody></table>
-<div style="margin-top:10px;font-size:9pt">تاريخ الطباعة: ${ymd(new Date())} — نظام الجداول المدرسية</div>
+<div style="margin-top:10px;font-size:9pt">تاريخ الطباعة: ${ymd(new Date())} — بوابة مدرستي</div>
 </body></html>`;
       downloadBlob("ملخص_الشعب_" + String(school).replace(/\s+/g, "_") + ".doc", "application/msword", html);
       okNote("تم تصدير ملخص الشعب إلى Word");
     }
     function printSecOver() {
-      const school = db.settings.schoolName || "نظام الجداول المدرسية";
+      const school = db.settings.schoolName || "بوابة مدرستي";
       const tbl = document.getElementById("secOverTable");
       if (!tbl) { return; }
       const w = window.open("", "_blank");
@@ -13319,7 +13416,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
     }
 
     function exportDutyExcel() {
-      const school = db.settings.schoolName || "نظام الجداول المدرسية";
+      const school = db.settings.schoolName || "بوابة مدرستي";
       const ds = getDutySettings();
       const days = db.settings.days || [];
       const locations = ds.locations || [];
@@ -13359,7 +13456,7 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
     }
 
     function printDutySchedule() {
-      const school = db.settings.schoolName || "نظام الجداول المدرسية";
+      const school = db.settings.schoolName || "بوابة مدرستي";
       const ds = getDutySettings();
       const days = db.settings.days || [];
       const locations = ds.locations || [];
@@ -14133,7 +14230,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
       const P = db.settings.periods || 6;
 
-      const school = db.settings.schoolName || "نظام الجداول";
+      const school = db.settings.schoolName || "بوابة مدرستي";
 
       const logoData = db.settings.schoolLogo || "";
 
@@ -14305,7 +14402,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       catch (e) { cb(null); }
     }
     function reportData(kind) {
-      const school = (db.settings && db.settings.schoolName) || "نظام الجداول المدرسية";
+      const school = (db.settings && db.settings.schoolName) || "بوابة مدرستي";
       const days = (db.settings.days || []).length || 5, P = db.settings.periods || 6, cap = days * P;
       if (kind === "subjects") {
         return {
@@ -14425,7 +14522,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         const d = reportData(kind);
         const today = ymd(new Date());
         d.sub = "عدد السجلات: " + d.rows.length + "   |   التاريخ: " + today;
-        d.footer = "نظام الجداول المدرسية";
+        d.footer = "بوابة مدرستي";
         const W = 1754, H = 1240, PW = 842, PH = 595, pad = 52;
         if (!d.rows.length) { cb && cb(null); return; }
         const probe = document.createElement("canvas").getContext("2d");
@@ -15234,9 +15331,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     var _waLast = { phone: "", text: "" };
     function accountWaText(kind, phone, pin) {
       if (kind === "welcome") {
-        return "مرحباً بك في نظام الجداول المدرسية 🌿\n\nتم إنشاء حسابك بنجاح.\n\nرقم الموبايل: " + phone + "\nرمز الدخول: " + pin + "\n\nاحتفظ بهذه الرسالة.\nلك أسبوع تجربة ثم اشتراك سنوي.\nمع تمنياتنا لك بجدول منظم وسنة موفقة ✨";
+        return "مرحباً بك في بوابة مدرستي 🌿\n\nتم إنشاء حسابك بنجاح.\n\nرقم الموبايل: " + phone + "\nرمز الدخول: " + pin + "\n\nاحتفظ بهذه الرسالة.\nلك أسبوع تجربة ثم اشتراك سنوي.\nمع تمنياتنا لك بجدول منظم وسنة موفقة ✨";
       }
-      return "نظام الجداول المدرسية\n\nتم تعيين رمز دخول جديد لحسابك.\n\nالرقم: " + phone + "\nالرمز الجديد: " + pin + "\n\nاحفظ الرسالة ولا تشارك الرمز مع أحد.";
+      return "بوابة مدرستي\n\nتم تعيين رمز دخول جديد لحسابك.\n\nالرقم: " + phone + "\nالرمز الجديد: " + pin + "\n\nاحفظ الرسالة ولا تشارك الرمز مع أحد.";
     }
     function sendAccountWa(kind, phone, pin) {
       var text = accountWaText(kind, phone, pin);
@@ -15546,7 +15643,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
       // فتح محادثة الدعم/التحقق على واتساب مباشرة بالرقم المعتمد
       const devPhone = "07813332882";
-      const text = "مرحباً، أطلب رمز التحقق لتفعيل حسابي في نظام الجداول المدرسية 🌿\n\nرقم حسابي: " + acc;
+      const text = "مرحباً، أطلب رمز التحقق لتفعيل حسابي في بوابة مدرستي 🌿\n\nرقم حسابي: " + acc;
       const api = pyApi();
       if (api && api.open_whatsapp) {
         try { api.open_whatsapp(devPhone, text); } catch (e) { }
@@ -16900,7 +16997,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       h += '<table class="gold" style="margin-top:6px"><tr>'
         + '<td style="width:34%">اسم مدير المدرسة</td><td style="width:33%">تاريخ تثبيت جدول الحصص</td><td style="width:33%">توقيع المعاونين (الاختصاص)</td></tr>'
         + '<tr><td style="background:#fff;height:26px">' + esc(o.manager) + '</td><td style="background:#fff">' + esc(o.fixDate) + '</td><td style="background:#fff"></td></tr></table>';
-      h += '<div style="text-align:left;font-size:8pt;margin-top:4px">نظام الجداول المدرسية — ' + ymd(new Date()) + '</div>';
+      h += '<div style="text-align:left;font-size:8pt;margin-top:4px">بوابة مدرستي — ' + ymd(new Date()) + '</div>';
       h += '</body></html>';
       return h;
     }
@@ -17042,7 +17139,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
             box(fx, fy + fh1, fw, fh2, "#fff", 2);
             if (fVals[k]) t(fVals[k], fx + fw / 2, fy + fh1 + fh2 / 2, "bold 26px Tahoma,Arial");
           }
-          t("نظام الجداول المدرسية — " + ymd(new Date()), pad, H - 30, "22px Tahoma,Arial", "right", "#666");
+          t("بوابة مدرستي — " + ymd(new Date()), pad, H - 30, "22px Tahoma,Arial", "right", "#666");
           _cvJpeg(cv, function (u8) {
             if (!u8) { cb && cb(null); return; }
             var blob = pdfFromJpegPages([{ u8: u8, w: W, h: H }], 1191, Math.round(1191 * H / W));
@@ -17114,8 +17211,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     onclick="if(event.target===this)regCancel()">
     <div onclick="event.stopPropagation()"
       style="background:#fff;border-radius:20px;padding:20px;width:min(400px,94vw);max-height:96vh;overflow-y:auto;text-align:center;box-shadow:0 20px 50px rgba(38,82,124,.22)">
-      <img src="logo.png" alt=""
-        style="width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #e2e8f0;margin-bottom:8px">
+      <svg class="app-logo" width="48" height="48" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:48px;height:48px;display:inline-block;vertical-align:middle"><use href="#appLogoMark"/></svg>
       <h2 style="margin:0 0 4px;font-size:1.1rem;color:#163858;font-weight:800">حساب جديد</h2>
       <div style="font-size:.75rem;color:#176ab0;font-weight:700;margin-bottom:14px">الخطوة ١ من ٢ — بياناتك</div>
       <div style="text-align:right;margin-bottom:10px">
@@ -17157,8 +17253,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     onclick="if(event.target===this)regCancel()">
     <div onclick="event.stopPropagation()"
       style="background:#fff;border-radius:20px;padding:20px;width:min(480px,94vw);max-height:96vh;overflow-y:auto;text-align:center;box-shadow:0 20px 50px rgba(38,82,124,.22)">
-      <img src="logo.png" alt=""
-        style="width:46px;height:46px;object-fit:contain;border-radius:13px;background:#fff;padding:3px;border:1px solid #e2e8f0;margin-bottom:8px">
+      <svg class="app-logo" width="48" height="48" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:48px;height:48px;display:inline-block;vertical-align:middle"><use href="#appLogoMark"/></svg>
       <h2 style="margin:0 0 4px;font-size:1.1rem;color:#163858;font-weight:800">بيانات المدرسة</h2>
       <div style="font-size:.75rem;color:#176ab0;font-weight:700;margin-bottom:14px">الخطوة ٢ من ٢ — مدرستك</div>
       <div style="text-align:right;margin-bottom:10px">
@@ -18454,6 +18549,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (attSec) {
         attSec.innerHTML = secs.map(s => `<option value="${s.id}">${secName(s.id)}</option>`).join('');
         if (curA) attSec.value = curA;
+      }
+      const grdSec = $("grdSecPick");
+      if (grdSec) {
+        const curG = grdSec.value;
+        grdSec.innerHTML = secs.map(s => `<option value="${s.id}">${secName(s.id)}</option>`).join('');
+        if (curG) grdSec.value = curG;
       }
     }
 
@@ -19766,6 +19867,152 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     // ------------------------------------------
     // تسجيل وتفقد الغياب اليومي (Quick Attendance)
     // ------------------------------------------
+
+    var GRADE_COLS = ["m1", "m2", "mid", "final", "note"];
+
+    function currentGradeKey() {
+      const yr = (typeof getAcademicYear === "function") ? getAcademicYear() : ((db.settings && db.settings.academicYear) || "");
+      const secId = $("grdSecPick") ? $("grdSecPick").value : "";
+      const subj = $("grdSubject") ? String($("grdSubject").value || "").trim() : "";
+      return yr + "|" + secId + "|" + subj;
+    }
+
+    function fillGradeSubjects() {
+      const sel = $("grdSubject");
+      if (!sel) return;
+      const secId = $("grdSecPick") ? $("grdSecPick").value : "";
+      const names = [];
+      const seen = {};
+      (db.subjects || []).forEach(function (s) {
+        const n = String(s.name || "").trim();
+        if (!n || seen[n]) return;
+        if (secId && s.sectionId && s.sectionId !== secId) return;
+        seen[n] = 1;
+        names.push(n);
+      });
+      names.sort(function (a, b) { return a.localeCompare(b, "ar"); });
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">— اختر المادة —</option>' + names.map(function (n) {
+        return '<option value="' + esc(n) + '">' + esc(n) + "</option>";
+      }).join("");
+      if (cur && seen[cur]) sel.value = cur;
+      else if (names.length) sel.value = names[0];
+    }
+
+    function onGradeFiltersChange() {
+      fillGradeSubjects();
+      loadGradeList();
+    }
+
+    function openGradeEntry() {
+      if (!db.sections || !db.sections.length) {
+        alert("يرجى إضافة صفوف وشعب أولاً.");
+        return;
+      }
+      if (!db.students || !db.students.length) {
+        alert("لا يوجد طلاب مسجلون. أضف الطلاب أولاً من سجل الطلاب.");
+        showTab("students");
+        return;
+      }
+      fillStudentSections();
+      fillGradeSubjects();
+      loadGradeList();
+      $("gradeEntryBox").hidden = false;
+    }
+
+    function loadGradeList() {
+      const tb = $("grdBody");
+      if (!tb) return;
+      const secId = $("grdSecPick") ? $("grdSecPick").value : "";
+      const subj = $("grdSubject") ? String($("grdSubject").value || "").trim() : "";
+      const list = (db.students || []).filter(function (s) { return s.sectionId === secId; });
+      list.sort(function (a, b) { return String(a.name || "").localeCompare(String(b.name || ""), "ar"); });
+      if (!secId) {
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#94a3b8">اختر الشعبة.</td></tr>';
+        return;
+      }
+      if (!subj) {
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#94a3b8">اختر المادة لإدخال الدرجات.</td></tr>';
+        return;
+      }
+      if (!list.length) {
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#94a3b8">لا يوجد طلاب في هذه الشعبة.</td></tr>';
+        return;
+      }
+      if (!db.grades) db.grades = {};
+      const rec = db.grades[currentGradeKey()] || {};
+      tb.innerHTML = list.map(function (st, idx) {
+        const g = rec[st.id] || {};
+        function inp(k, ph) {
+          return '<input class="grd-in" data-k="' + k + '" value="' + esc(g[k] || "") + '" placeholder="' + ph + '" inputmode="decimal" style="width:100%;height:32px;text-align:center;font-weight:700;font-size:.85rem">';
+        }
+        return '<tr data-stud="' + st.id + '">'
+          + "<td>" + (idx + 1) + "</td>"
+          + '<td style="font-weight:700;text-align:right;padding-right:10px">' + esc(st.name) + "</td>"
+          + "<td>" + inp("m1", "") + "</td>"
+          + "<td>" + inp("m2", "") + "</td>"
+          + "<td>" + inp("mid", "") + "</td>"
+          + "<td>" + inp("final", "") + "</td>"
+          + '<td><input class="grd-in" data-k="note" value="' + esc(g.note || "") + '" placeholder="ملاحظة" style="width:100%;height:32px;font-size:.85rem"></td>'
+          + "</tr>";
+      }).join("");
+    }
+
+    function collectGradeScores() {
+      const out = {};
+      document.querySelectorAll("#grdBody tr[data-stud]").forEach(function (tr) {
+        const id = tr.getAttribute("data-stud");
+        const row = {};
+        tr.querySelectorAll(".grd-in").forEach(function (inp) {
+          row[inp.getAttribute("data-k")] = String(inp.value || "").trim();
+        });
+        out[id] = row;
+      });
+      return out;
+    }
+
+    function saveGrades() {
+      const subj = $("grdSubject") ? String($("grdSubject").value || "").trim() : "";
+      const secId = $("grdSecPick") ? $("grdSecPick").value : "";
+      if (!secId || !subj) { alert("اختر الشعبة والمادة أولاً."); return false; }
+      if (!db.grades) db.grades = {};
+      db.grades[currentGradeKey()] = collectGradeScores();
+      save();
+      note("تم حفظ درجات مادة «" + subj + "» لشعبة " + secName(secId));
+      return true;
+    }
+
+    function printEnteredGrades() {
+      if (!saveGrades()) return;
+      const secId = $("grdSecPick").value;
+      const subj = String($("grdSubject").value || "").trim();
+      const schName = (db.settings && db.settings.schoolName) || "بوابة مدرستي";
+      const yr = (typeof getAcademicYear === "function") ? getAcademicYear() : "";
+      const rec = (db.grades && db.grades[currentGradeKey()]) || {};
+      const list = (db.students || []).filter(function (s) { return s.sectionId === secId; });
+      list.sort(function (a, b) { return String(a.name || "").localeCompare(String(b.name || ""), "ar"); });
+      let rows = "";
+      list.forEach(function (st, i) {
+        const g = rec[st.id] || {};
+        rows += "<tr><td>" + (i + 1) + "</td><td style='text-align:right;padding-right:8px;font-weight:600'>" + esc(st.name)
+          + "</td><td>" + esc(g.m1 || "") + "</td><td>" + esc(g.m2 || "") + "</td><td>" + esc(g.mid || "")
+          + "</td><td>" + esc(g.final || "") + "</td><td>" + esc(g.note || "") + "</td></tr>";
+      });
+      const w = window.open("", "_blank");
+      if (!w) { alert("يرجى السماح بالنوافذ المنبثقة للطباعة"); return; }
+      w.document.write("<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='utf-8'><title>سجل الدرجات</title>"
+        + "<style>body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;padding:16px;font-size:13px}"
+        + "table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:5px 6px;text-align:center}"
+        + "th{background:#f1f5f9}h2{margin:0 0 8px;color:#145d9b}@media print{.no-print{display:none}}</style></head><body>"
+        + '<div class="no-print" style="text-align:center;margin-bottom:10px"><button onclick="window.print()" style="padding:8px 20px;font-weight:800;background:#2487d0;color:#fff;border:0;border-radius:8px;cursor:pointer">طباعة</button></div>'
+        + "<div style='display:flex;justify-content:space-between;margin-bottom:10px'><div><b>" + esc(schName) + "</b><div>المادة: " + esc(subj) + "</div></div>"
+        + "<div style='text-align:left'>الشعبة: " + esc(secName(secId)) + "<br>العام: " + esc(yr) + "</div></div>"
+        + "<h2 style='text-align:center'>سجل رصد الدرجات</h2>"
+        + "<table><thead><tr><th>ت</th><th>اسم الطالب</th><th>شهر 1</th><th>شهر 2</th><th>نصف السنة</th><th>النهائي</th><th>ملاحظات</th></tr></thead><tbody>"
+        + rows + "</tbody></table></body></html>");
+      w.document.close();
+    }
+
     function openQuickAttendance() {
       if (!db.sections || !db.sections.length) {
         alert("يرجى إضافة صفوف وشعب أولاً.");
