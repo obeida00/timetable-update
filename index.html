@@ -9841,7 +9841,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.47";
+    const APP_VERSION = "1.48";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -14310,17 +14310,27 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     function openBotBind() {
       const acc = String(window._acc || (loadAuth().session || "") || (($('accIn') && $('accIn').value) || "")).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-      let tok = "";
-      try { tok = localStorage.getItem("tt_bind_tok_" + acc) || ""; } catch (e) { }
-      if (!acc || !tok) {
-        const m = $('licMsg'); if (m) { m.style.color = "#b45309"; m.textContent = "سجّل دخول بحساب مدرستك أولاً ثم اضغط الزر مرة أخرى."; }
+      if (!acc) {
+        const m = $('licMsg'); if (m) { m.style.color = "#b45309"; m.textContent = "سجّل دخول برقم الهاتف ورمز الدخول أولاً ثم اضغط الزر."; }
         okNote("سجّل دخول بحساب مدرستك أولاً");
         return;
       }
-      const url = "https://t.me/ScholTableBot?start=acc_" + encodeURIComponent(acc) + "_" + encodeURIComponent(tok);
-      const api = pyApi();
-      if (api && api.open_url) api.open_url(url);
-      else { try { window.open(url, "_blank"); } catch (e) { location.href = url; } }
+      okNote("جارٍ تجهيز رابط الربط...");
+      const apiUrl = withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/get_bind_token?acc=" + encodeURIComponent(acc), acc);
+      fetch(apiUrl).then(function (r) { return r.json(); }).then(function (j) {
+        const tok = (j && j.ok && j.bind_token) ? String(j.bind_token) : "";
+        if (!tok) {
+          okNote("تعذّر إصدار رابط الربط. سجّل دخول ثم أعد المحاولة.");
+          return;
+        }
+        try { localStorage.setItem("tt_bind_tok_" + acc, tok); } catch (e) { }
+        const url = "https://t.me/ScholTableBot?start=acc_" + encodeURIComponent(acc) + "_" + encodeURIComponent(tok);
+        const api = pyApi();
+        if (api && api.open_url) api.open_url(url);
+        else { try { window.open(url, "_blank"); } catch (e) { location.href = url; } }
+      }).catch(function () {
+        okNote("تعذّر الاتصال. تأكد من الإنترنت ثم أعد المحاولة.");
+      });
     }
     function openSubInfoOrPayment() {
       const s = localStatus();
