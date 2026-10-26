@@ -5896,6 +5896,284 @@
         justify-content: flex-start !important;
         direction: rtl;
       }
+  
+    /* === تحسينات التحكم بالجدول والإيماءات للهواتف (Mobile Timetable & Sheet CSS) === */
+    .mob-table-scroll {
+      overflow-x: auto !important;
+      overflow-y: visible !important;
+      -webkit-overflow-scrolling: touch !important;
+      max-width: 100% !important;
+      display: block !important;
+      border-radius: 12px;
+      touch-action: pan-x pan-y !important;
+    }
+    .week-class-filter-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+    }
+    .week-filter-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .week-filter-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .week-filter-chips::-webkit-scrollbar { display: none; }
+    .week-chip-btn {
+      white-space: nowrap;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+    .week-chip-btn:active {
+      transform: scale(0.96);
+    }
+    .week-chip-btn.active {
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      border-color: #0284c7 !important;
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.3);
+    }
+    .cell-active-editing {
+      outline: 3px solid #0284c7 !important;
+      outline-offset: -2px !important;
+      background: #e0f2fe !important;
+      position: relative;
+      z-index: 5;
+      animation: pulseCell 1.2s infinite alternate;
+    }
+    @keyframes pulseCell {
+      from { box-shadow: inset 0 0 0 2px #0284c7; }
+      to { box-shadow: inset 0 0 0 4px #0369a1, 0 0 10px rgba(2, 132, 199, 0.5); }
+    }
+
+    @media (max-width: 800px) {
+      .week-grid th.day-v {
+        position: sticky !important;
+        right: 0 !important;
+        z-index: 10 !important;
+        background: #f8fafc !important;
+        box-shadow: -2px 0 6px rgba(0,0,0,0.06);
+      }
+      .week-grid th.per-col {
+        position: sticky !important;
+        right: 32px !important;
+        z-index: 10 !important;
+        background: #f1f5f9 !important;
+        box-shadow: -2px 0 6px rgba(0,0,0,0.06);
+      }
+      .week-grid thead tr:first-child th:first-child {
+        position: sticky !important;
+        right: 0 !important;
+        z-index: 12 !important;
+      }
+      .week-grid thead tr:first-child th:nth-child(2) {
+        position: sticky !important;
+        right: 32px !important;
+        z-index: 12 !important;
+      }
+      .week-grid td {
+        min-width: 68px !important;
+        min-height: 52px !important;
+        font-size: 0.82rem !important;
+        touch-action: manipulation;
+        padding: 6px 4px !important;
+      }
+      .week-grid td.clk:active {
+        background: #e0f2fe !important;
+        transform: scale(0.97);
+      }
+      .edit-bar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 10000;
+        animation: fadeInBackdrop 0.2s ease-out;
+      }
+      @keyframes fadeInBackdrop {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .edit-sheet {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        background: #ffffff !important;
+        border-radius: 24px 24px 0 0 !important;
+        border: 1px solid #cbd5e1 !important;
+        border-bottom: none !important;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.28) !important;
+        padding: 16px 20px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+        z-index: 10001 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        animation: slideUpEditSheet 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        max-height: 85vh !important;
+        overflow-y: auto !important;
+      }
+      @keyframes slideUpEditSheet {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+      .edit-sheet-handle {
+        width: 44px;
+        height: 5px;
+        background: #cbd5e1;
+        border-radius: 3px;
+        margin: 0 auto 4px auto;
+      }
+      .edit-sheet-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+      .edit-sheet-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 0;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 1.15rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+      }
+      .edit-sheet-close:active {
+        background: #e2e8f0;
+      }
+      .edit-sheet-sub {
+        font-size: 0.82rem;
+        color: #0284c7;
+        font-weight: 700;
+        margin-top: 2px;
+      }
+      .edit-current-badge {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 0.84rem;
+      }
+      .edit-sheet-select {
+        width: 100% !important;
+        height: 48px !important;
+        font-size: 16px !important;
+        border-radius: 12px !important;
+        border: 1.5px solid #0284c7 !important;
+        background: #ffffff !important;
+        padding: 0 12px !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+      }
+      .edit-sheet-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        width: 100%;
+      }
+      .edit-sheet-actions .edit-btn-save {
+        background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+        color: #fff !important;
+        height: 48px !important;
+        border-radius: 12px !important;
+        font-weight: 800 !important;
+        font-size: 0.95rem !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35) !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        touch-action: manipulation;
+      }
+      .edit-sheet-actions .edit-btn-save:active {
+        transform: scale(0.97);
+      }
+      .edit-sheet-actions .edit-btn-clear {
+        background: #fee2e2 !important;
+        color: #b91c1c !important;
+        height: 48px !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 0.9rem !important;
+        border: 1px solid #fecaca !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        touch-action: manipulation;
+      }
+      .edit-sheet-actions .edit-btn-clear:active {
+        transform: scale(0.97);
+      }
+      .edit-sheet-move-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+        margin-top: 2px;
+      }
+      .edit-move-btn {
+        height: 42px;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        color: #0369a1;
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+      }
+      .edit-move-btn:active {
+        background: #e0f2fe;
+        transform: scale(0.97);
+      }
+      .edit-btn-undo {
+        height: 42px !important;
+        border-radius: 10px !important;
+        font-size: 0.8rem !important;
+        font-weight: 700 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+      }
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -8612,13 +8890,46 @@
           إعدادات الطباعة المتقدمة
         </button>
       </div>
-      <div id="editBar" class="no-print" hidden>
-        <strong id="editWhere"></strong>
-        <select id="editSubj"></select>
-        <button class="btn s" type="button" onclick="applyEdit()">حفظ التعديل</button>
-        <button class="btn w s" type="button" onclick="clearEdit()">تفريغ الخانة</button>
-        <button class="btn o s" type="button" onclick="undoLast()">ترجيع</button>
-        <button class="btn w s" type="button" onclick="$('editBar').hidden=true">إغلاق</button>
+      <!-- لوحة تحكم ومودال تعديل الحصة السريع للهواتف والكمبيوتر -->
+      <div id="editBarBackdrop" class="edit-bar-backdrop no-print" hidden onclick="closeEditBar()"></div>
+      <div id="editBar" class="no-print edit-sheet" hidden>
+        <div class="edit-sheet-handle no-print"></div>
+        <div class="edit-sheet-head">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="edit-sheet-icon" style="font-size:1.3rem">✏️</span>
+            <div>
+              <h4 style="margin:0;font-size:0.96rem;font-weight:800;color:#0f172a">تعديل الحصة</h4>
+              <div id="editWhere" class="edit-sheet-sub"></div>
+            </div>
+          </div>
+          <button type="button" class="edit-sheet-close" onclick="closeEditBar()" aria-label="إغلاق">✕</button>
+        </div>
+        <div id="editCurrentInfo" class="edit-current-badge"></div>
+        <div class="edit-sheet-body">
+          <label class="edit-sheet-label" for="editSubj" style="font-size:0.82rem;font-weight:700;color:#475569;display:block;margin-bottom:4px">اختر المادة والمعلم الجديد:</label>
+          <select id="editSubj" class="edit-sheet-select"></select>
+        </div>
+        <div class="edit-sheet-actions">
+          <button class="btn s edit-btn-save" type="button" onclick="applyEdit()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            حفظ التعديل
+          </button>
+          <button class="btn w s edit-btn-clear" type="button" onclick="clearEdit()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            تفريغ الخانة
+          </button>
+        </div>
+        <div class="edit-sheet-move-row">
+          <button type="button" class="edit-move-btn" onclick="moveCurrentEditLesson(-1)" id="btnMoveUp" title="تقديم الحصة للدرس السابق">
+            <span>▲ تقديم للدرس السابق</span>
+          </button>
+          <button type="button" class="edit-move-btn" onclick="moveCurrentEditLesson(1)" id="btnMoveDown" title="تأخير الحصة للدرس اللاحق">
+            <span>▼ تأخير للدرس اللاحق</span>
+          </button>
+          <button class="btn o s edit-btn-undo" type="button" onclick="undoLast()" title="تراجع عن آخر خطوة">
+            <span>↩ ترجيع</span>
+          </button>
+        </div>
       </div>
       <div class="mob-scroll-hint no-print">↔ اسحب الجدول أفقياً (يمين / يسار) للاطلاع على كافة الصفوف والحصص بسهولة</div>
       <div id="viewOut"></div>
@@ -10270,7 +10581,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.57";
+    const APP_VERSION = "1.58";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -11064,7 +11375,7 @@
         if (!t.sections.includes(sec.id)) t.sections.push(sec.id);
       });
     }
-    function showTab(tabId) {
+    function showTab(tabId, skipPush) {
       var _to = (tabId === "home") ? "homeSection" : tabId;
       if (_to !== "grades" && $("grades") && !$("grades").hidden) {
         try { saveGradesSilent(); } catch (e) { }
@@ -11079,6 +11390,28 @@
       if (typeof syncTeacherSel === "function") try { syncTeacherSel(); } catch (e) { }
       if (typeof syncStudentSel === "function") try { syncStudentSel(); } catch (e) { }
       if (tabId === 'home') tabId = 'homeSection';
+      window._currentTab = tabId;
+
+      // History API State Management for mobile back gesture (swiping to go back)
+      if (!skipPush && !window.pywebview) {
+        try {
+          if (!history.state || history.state.tab !== tabId) {
+            history.pushState({ tab: tabId }, '', window.location.pathname + window.location.search + '#' + tabId);
+          }
+        } catch (e) { }
+      }
+
+      // Telegram WebApp Back Button Sync
+      try {
+        const tg = (window.Telegram && window.Telegram.WebApp) || null;
+        if (tg && tg.BackButton) {
+          if (tabId === 'home' || tabId === 'homeSection') {
+            tg.BackButton.hide();
+          } else {
+            tg.BackButton.show();
+          }
+        }
+      } catch (e) { }
       const btn = document.querySelector(`nav.tabs button[data-tab="${tabId}"]`);
       if (btn) {
         tab(btn);
@@ -11145,6 +11478,11 @@
         }
       } catch (e) { }
     }
+
+    
+    window.switchMobileTab = function(tabId) {
+      showTab(tabId);
+    };
 
     function dayName(i) { return DAYS[i] || ""; }
     function className(id) { return (db.classes.find(c => c.id === id) || {}).name || ""; }
@@ -13447,19 +13785,102 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       return h + `</tbody></table></div>`;
     }
     let editTarget = null;
+
+    function openEditBar() {
+      const bar = $("editBar");
+      const bdrop = $("editBarBackdrop");
+      if (bar) {
+        bar.hidden = false;
+        bar.style.display = "";
+      }
+      if (bdrop) {
+        bdrop.hidden = false;
+        bdrop.style.display = "";
+      }
+      // Push history state on mobile so back gesture closes the sheet instead of exiting
+      if (!window.pywebview && window.innerWidth <= 800) {
+        try {
+          history.pushState({ modal: 'editBar', tab: window._currentTab || 'views' }, '', '#edit-cell');
+        } catch (e) { }
+      }
+      try {
+        const tg = tgApp();
+        if (tg && tg.BackButton) tg.BackButton.show();
+      } catch (e) { }
+    }
+
+    function closeEditBar(skipHistoryBack) {
+      const bar = $("editBar");
+      const bdrop = $("editBarBackdrop");
+      const wasOpen = bar && (!bar.hidden || bar.style.display === "flex" || bar.style.display === "block");
+      if (bar) {
+        bar.hidden = true;
+        bar.style.display = "none";
+      }
+      if (bdrop) {
+        bdrop.hidden = true;
+        bdrop.style.display = "none";
+      }
+      document.querySelectorAll('.cell-active-editing').forEach(el => el.classList.remove('cell-active-editing'));
+      if (wasOpen && !skipHistoryBack && history.state && history.state.modal === 'editBar') {
+        try { history.back(); } catch (e) { }
+      }
+      return wasOpen;
+    }
+
+    function updateEditSheetCurrentInfo() {
+      const infoEl = $("editCurrentInfo");
+      if (!infoEl || !editTarget) return;
+      const { secId, d, p } = editTarget;
+      const cur = db.grid && db.grid[secId] && db.grid[secId][d] && db.grid[secId][d][p];
+      if (cur) {
+        infoEl.innerHTML = `<span style="color:#0369a1;font-weight:700">الحصة الحالية:</span> <b>${esc(cur.name || subjName(cur.subjectId))}</b> <span style="color:#64748b">(${esc(teacherName(cur.teacherId))})</span>`;
+        infoEl.style.display = "block";
+      } else {
+        infoEl.innerHTML = `<span style="color:#94a3b8;font-weight:700">هذه الخانة فارغة حالياً</span>`;
+        infoEl.style.display = "block";
+      }
+    }
+
+    function highlightActiveEditingCell(secId, d, p) {
+      document.querySelectorAll('.cell-active-editing').forEach(el => el.classList.remove('cell-active-editing'));
+      const td = document.querySelector(`td[data-sec="${secId}"][data-day="${d}"][data-per="${p}"]`);
+      if (td) td.classList.add('cell-active-editing');
+    }
+
+    function moveCurrentEditLesson(dir) {
+      if (!editTarget) return;
+      const { secId, d, p } = editTarget;
+      const P = db.settings.periods || 6;
+      const nextP = p + dir;
+      if (nextP < 0 || nextP >= P) {
+        if (typeof note === "function") note(dir < 0 ? "هذا هو الدرس الأول في اليوم" : "هذا هو الدرس الأخير في اليوم");
+        return;
+      }
+      moveLesson(secId, d, p, dir);
+      editTarget.p = nextP;
+      if ($("editWhere")) $("editWhere").textContent = secName(secId) + " — " + dayName(d) + " — درس " + (nextP + 1);
+      updateEditSheetCurrentInfo();
+      highlightActiveEditingCell(secId, d, nextP);
+    }
+
     function editCell(secId, d, p) {
       if (!db.grid) db.grid = emptyGrid();
       if (!db.grid[secId]) db.grid = Object.assign(emptyGrid(), db.grid);
       if (!db.grid[secId][d]) db.grid[secId][d] = Array(db.settings.periods).fill(null);
       editTarget = { secId, d, p };
       const list = db.subjects.filter(s => s.sectionId === secId);
-      $("editWhere").textContent = secName(secId) + " — " + dayName(d) + " — درس " + (p + 1);
-      $("editSubj").innerHTML = '<option value="">— اختر المادة —</option>' + list.map(s => `<option value="${s.id}">${esc(s.name)} — ${esc(teacherName(s.teacherId))}</option>`).join("");
+      if ($("editWhere")) $("editWhere").textContent = secName(secId) + " — " + dayName(d) + " — درس " + (p + 1);
+      if ($("editSubj")) {
+        $("editSubj").innerHTML = '<option value="">— اختر المادة —</option>' + list.map(s => `<option value="${s.id}">${esc(s.name)} — ${esc(teacherName(s.teacherId))}</option>`).join("");
+      }
       const cur = db.grid[secId][d][p];
-      if (cur) $("editSubj").value = cur.subjectId || "";
-      $("editBar").hidden = false;
-      $("editBar").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      if (cur && $("editSubj")) $("editSubj").value = cur.subjectId || "";
+      updateEditSheetCurrentInfo();
+      highlightActiveEditingCell(secId, d, p);
+      openEditBar();
     }
+
     function applyEdit() {
       if (!editTarget) return;
       const { secId, d, p } = editTarget;
@@ -13475,12 +13896,18 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       }
       if (isSport(s) && yardBusy(d, p) >= maxYard()) { alert("الساحة: الحد " + maxYard() + " شعب في نفس الدرس."); return; }
       db.grid[secId][d][p] = { subjectId: s.id, teacherId: s.teacherId, name: s.name };
-      save(); $("editBar").hidden = true; renderViews();
+      save();
+      closeEditBar(true);
+      renderViews();
     }
+
     function clearEdit() {
       if (!editTarget) return;
       const { secId, d, p } = editTarget;
-      db.grid[secId][d][p] = null; save(); $("editBar").hidden = true; renderViews();
+      db.grid[secId][d][p] = null;
+      save();
+      closeEditBar(true);
+      renderViews();
     }
 
     function cellHTML(c) {
@@ -13587,16 +14014,42 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
     function colHead(s) {
       return `<div>${esc(className(s.classId))}</div><div>${esc(s.name)}</div>`;
     }
+    function setWeekClassFilter(cid) {
+      window._weekClassFilter = cid || "";
+      renderViews();
+    }
+
     function renderDayAll() {
       const d = +$("dayPick").value;
       const P = db.settings.periods;
-      const secs = orderedSections();
+      let allSecs = orderedSections();
+      const selectedClassId = window._weekClassFilter || "";
+      const secs = selectedClassId ? allSecs.filter(s => s.classId === selectedClassId) : allSecs;
       const logo = db.settings.schoolLogo || "";
       const wmImg = logo ? `<img class="watermark-img" src="${logo}" alt="">` : "";
-      let h = `<div class="print-sheet">${sheetHead("جدول الدروس", dayName(d))}<div class="table-watermark-wrap" style="overflow:visible">${wmImg}<table class="onepage week-grid"><thead><tr><th rowspan="2" class="day-v"><span>اليوم</span></th><th rowspan="2" class="per-col"><span>الدرس</span></th>`;
-      db.classes.forEach((c, i) => {
-        const n = secs.filter(s => s.classId === c.id).length || 1;
-        h += `<th colspan="${n}" class="${i ? "g-split" : ""}">${esc(c.name)}</th>`;
+
+      let filterBar = "";
+      if ((db.classes || []).length > 1) {
+        filterBar = `<div class="week-class-filter-bar no-print">
+          <div class="week-filter-title">🔍 تصفية حسب الصف:</div>
+          <div class="week-filter-chips">
+            <button type="button" class="week-chip-btn ${!selectedClassId ? 'active' : ''}" onclick="setWeekClassFilter('')">الكل (${allSecs.length} شعبة)</button>
+            ${(db.classes || []).map(c => {
+              const cnt = allSecs.filter(s => s.classId === c.id).length;
+              const act = selectedClassId === c.id ? 'active' : '';
+              return `<button type="button" class="week-chip-btn ${act}" onclick="setWeekClassFilter('${c.id}')">${esc(c.name)} (${cnt})</button>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }
+
+      let h = filterBar + `<div class="print-sheet">${sheetHead("جدول الدروس", dayName(d))}<div class="table-watermark-wrap mob-table-scroll">${wmImg}<table class="onepage week-grid"><thead><tr><th rowspan="2" class="day-v"><span>اليوم</span></th><th rowspan="2" class="per-col"><span>الدرس</span></th>`;
+      const displayClasses = selectedClassId ? (db.classes || []).filter(c => c.id === selectedClassId) : (db.classes || []);
+      displayClasses.forEach((c, i) => {
+        const n = secs.filter(s => s.classId === c.id).length;
+        if (n > 0) {
+          h += `<th colspan="${n}" class="${i ? "g-split" : ""}">${esc(c.name)}</th>`;
+        }
       });
       h += `</tr><tr>`;
       secs.forEach((s, i) => {
@@ -13613,22 +14066,44 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
           const split = i && secs[i - 1].classId !== s.classId ? "g-split" : "";
           const secColCls = (i % 2 === 1) ? " sec-col-odd" : "";
           const c = db.grid[s.id] && db.grid[s.id][d] && db.grid[s.id][d][p];
-          h += `<td class="clk ${split}${secColCls}${c ? "" : " empty-cell"}" onclick="editCell('${s.id}',${d},${p})">${moveBtns(s.id, d, p)}${miniCell(c)}</td>`;
+          h += `<td class="clk ${split}${secColCls}${c ? "" : " empty-cell"}" data-sec="${s.id}" data-day="${d}" data-per="${p}" onclick="editCell('${s.id}',${d},${p})">${moveBtns(s.id, d, p)}${miniCell(c)}</td>`;
         });
         h += `</tr>`;
       }
       return h + `</tbody></table></div>${sheetFoot()}</div>`;
     }
+
     function renderWeekAll() {
       const days = db.settings.days || [];
       const P = db.settings.periods;
-      const secs = orderedSections();
+      let allSecs = orderedSections();
+      const selectedClassId = window._weekClassFilter || "";
+      const secs = selectedClassId ? allSecs.filter(s => s.classId === selectedClassId) : allSecs;
       const logo = db.settings.schoolLogo || "";
       const wmImg = logo ? `<img class="watermark-img watermark-img-week" src="${logo}" alt="" style="width:min(480px,70%);max-height:80%;opacity:0.13">` : "";
-      let h = `<div class="print-sheet">${sheetHead("جدول الدروس", "الأسبوع")}<div class="table-watermark-wrap" style="overflow:visible">${wmImg}<table class="onepage week-grid"><thead><tr><th rowspan="2" class="day-v"><span>اليوم</span></th><th rowspan="2" class="per-col"><span>الدرس</span></th>`;
-      db.classes.forEach((c, i) => {
-        const n = secs.filter(s => s.classId === c.id).length || 1;
-        h += `<th colspan="${n}" class="${i ? "g-split" : ""}">${esc(c.name)}</th>`;
+
+      let filterBar = "";
+      if ((db.classes || []).length > 1) {
+        filterBar = `<div class="week-class-filter-bar no-print">
+          <div class="week-filter-title">🔍 تصفية حسب الصف:</div>
+          <div class="week-filter-chips">
+            <button type="button" class="week-chip-btn ${!selectedClassId ? 'active' : ''}" onclick="setWeekClassFilter('')">الكل (${allSecs.length} شعبة)</button>
+            ${(db.classes || []).map(c => {
+              const cnt = allSecs.filter(s => s.classId === c.id).length;
+              const act = selectedClassId === c.id ? 'active' : '';
+              return `<button type="button" class="week-chip-btn ${act}" onclick="setWeekClassFilter('${c.id}')">${esc(c.name)} (${cnt})</button>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }
+
+      let h = filterBar + `<div class="print-sheet">${sheetHead("جدول الدروس", "الأسبوع")}<div class="table-watermark-wrap mob-table-scroll">${wmImg}<table class="onepage week-grid"><thead><tr><th rowspan="2" class="day-v"><span>اليوم</span></th><th rowspan="2" class="per-col"><span>الدرس</span></th>`;
+      const displayClasses = selectedClassId ? (db.classes || []).filter(c => c.id === selectedClassId) : (db.classes || []);
+      displayClasses.forEach((c, i) => {
+        const n = secs.filter(s => s.classId === c.id).length;
+        if (n > 0) {
+          h += `<th colspan="${n}" class="${i ? "g-split" : ""}">${esc(c.name)}</th>`;
+        }
       });
       h += `</tr><tr>`;
       secs.forEach((s, i) => {
@@ -13646,7 +14121,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
             const split = i && secs[i - 1].classId !== s.classId ? "g-split" : "";
             const secColCls = (i % 2 === 1) ? " sec-col-odd" : "";
             const c = db.grid[s.id] && db.grid[s.id][d] && db.grid[s.id][d][p];
-            h += `<td class="clk ${split}${secColCls}${c ? "" : " empty-cell"}" onclick="editCell('${s.id}',${d},${p})">${moveBtns(s.id, d, p)}${miniCell(c)}</td>`;
+            h += `<td class="clk ${split}${secColCls}${c ? "" : " empty-cell"}" data-sec="${s.id}" data-day="${d}" data-per="${p}" onclick="editCell('${s.id}',${d},${p})">${moveBtns(s.id, d, p)}${miniCell(c)}</td>`;
           });
           h += `</tr>`;
         }
@@ -22209,6 +22684,140 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         }
       }
     }
+    
+    // =========================================================================
+    // نظام التحكم بإيماءات السحب والرجوع للخلف (Mobile Gestures & History Management)
+    // =========================================================================
+    function closeActiveModalOrSheet() {
+      // 1. Check editBar / bottom sheet
+      if (typeof closeEditBar === "function") {
+        const bar = document.getElementById("editBar");
+        if (bar && (!bar.hidden || bar.style.display === "flex" || bar.style.display === "block")) {
+          closeEditBar(true);
+          return true;
+        }
+      }
+      // 2. Check general modals
+      const modals = document.querySelectorAll('.modal:not([hidden]), #subBox:not([hidden]), #tBox:not([hidden]), #substiModal:not([hidden]), #cBox:not([hidden]), #assignBox:not([hidden])');
+      for (let i = 0; i < modals.length; i++) {
+        const m = modals[i];
+        if (m && m.style.display !== 'none' && !m.hidden) {
+          m.hidden = true;
+          m.style.display = 'none';
+          return true;
+        }
+      }
+      return false;
+    }
+
+    (function initMobileGesturesAndHistory() {
+      if (window.pywebview) return; // تطبيق سطح المكتب معزول تماماً
+
+      // 1. Initial State Setup
+      try {
+        if (!history.state) {
+          history.replaceState({ tab: 'homeSection' }, '', window.location.pathname + window.location.search + '#home');
+        }
+      } catch (e) { }
+
+      // 2. Browser / System Back Gesture Listener (popstate)
+      window.addEventListener('popstate', function(e) {
+        // If a modal or sheet is open, close it without leaving the page
+        if (closeActiveModalOrSheet()) {
+          return;
+        }
+        const targetTab = (e.state && e.state.tab) ? e.state.tab : 'homeSection';
+        if (typeof showTab === 'function') {
+          showTab(targetTab, true);
+        }
+      });
+
+      // 3. Telegram WebApp Integration: Prevent Exit & Back Gesture
+      try {
+        const tg = (window.Telegram && window.Telegram.WebApp) || null;
+        if (tg) {
+          if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+          if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+          if (tg.expand) tg.expand();
+          if (tg.BackButton) {
+            tg.BackButton.onClick(function() {
+              if (closeActiveModalOrSheet()) return;
+              if (window._currentTab && window._currentTab !== 'homeSection' && window._currentTab !== 'home') {
+                history.back();
+              }
+            });
+            if (window._currentTab && window._currentTab !== 'homeSection' && window._currentTab !== 'home') {
+              tg.BackButton.show();
+            } else {
+              tg.BackButton.hide();
+            }
+          }
+        }
+      } catch (e) { }
+
+      // 4. On-Screen Touch Swipe Gestures
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchStartTime = 0;
+      let isPotentialSwipe = false;
+
+      function isScrollableElement(el) {
+        while (el && el !== document.body && el !== document.documentElement) {
+          if (el.classList && (el.classList.contains('mob-table-scroll') || el.classList.contains('table-watermark-wrap') || el.classList.contains('table-wrap') || el.classList.contains('week-filter-chips'))) {
+            return true;
+          }
+          if (el.tagName === 'TABLE' || el.tagName === 'SELECT' || el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            return true;
+          }
+          try {
+            const style = window.getComputedStyle(el);
+            if ((style.overflowX === 'auto' || style.overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 8) {
+              return true;
+            }
+          } catch (e) { }
+          el = el.parentElement;
+        }
+        return false;
+      }
+
+      document.addEventListener('touchstart', function(e) {
+        if (!e.touches || e.touches.length !== 1) return;
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTime = Date.now();
+        isPotentialSwipe = !isScrollableElement(e.target);
+      }, { passive: true });
+
+      document.addEventListener('touchend', function(e) {
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        const t = e.changedTouches[0];
+        const deltaX = t.clientX - touchStartX;
+        const deltaY = t.clientY - touchStartY;
+        const elapsed = Date.now() - touchStartTime;
+
+        // Check vertical swipe inside bottom sheet to dismiss
+        const editSheet = document.getElementById('editBar');
+        if (editSheet && !editSheet.hidden && deltaY > 65 && Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+          closeEditBar();
+          return;
+        }
+
+        // Horizontal Swipe to Go Back (edge swipe or screen swipe):
+        // Swipe threshold 75px, rapid swipe (< 500ms)
+        if (isPotentialSwipe && elapsed < 500 && Math.abs(deltaX) > 75 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+          const curTab = window._currentTab || 'homeSection';
+          if (closeActiveModalOrSheet()) {
+            return;
+          }
+          if (curTab !== 'homeSection' && curTab !== 'home') {
+            try { if (navigator.vibrate) navigator.vibrate(20); } catch(e){}
+            history.back();
+          }
+        }
+      }, { passive: true });
+    })();
+
     purgeMobileOnlyOnDesktop();
     window.addEventListener('DOMContentLoaded', purgeMobileOnlyOnDesktop);
 
