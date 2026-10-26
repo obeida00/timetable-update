@@ -10064,7 +10064,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.54";
+    const APP_VERSION = "1.55";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15637,6 +15637,17 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         } catch (e) { }
       }, 300);
 
+      try {
+        if (cloudRes.owner_acc && !cloudRes.is_owner) {
+          if (!db.settings) db.settings = {};
+          db.settings.linkedSchool = cloudRes.owner_acc;
+          if (cloudRes.school) db.settings.schoolName = cloudRes.school;
+          if (cloudRes.school_code) db.settings.schoolCode = cloudRes.school_code;
+          window._schoolOwner = cloudRes.owner_acc;
+          window._isOwner = false;
+          localStorage.setItem("tt_linked_school_" + acc, cloudRes.owner_acc);
+        }
+      } catch (eOwn) { }
       // إذا كان الحساب منضماً لمدرسة ولديه بيانات مشتركة
       const activeData = cloudRes.data || cloudRes.shared_data || "";
       okBeep();
@@ -16389,6 +16400,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (!box || !list) return;
 
       box.style.display = 'block';
+      try {
+        var addNm = document.getElementById("newAssistName");
+        if (addNm) {
+          var addCard = addNm.closest(".settings-luxury-card") || addNm.parentElement;
+          if (addCard) addCard.style.display = isOwner ? "" : "none";
+        }
+      } catch (eHide) { }
       try { if (!window._pendingJoin) window._pendingJoin = (db.settings && db.settings.pendingJoin) || null; } catch (e) { }
       if (!isOwner && db && db.settings && db.settings.schoolName && db.settings.linkedSchool) {
         var joinBanner = '<div style="padding:8px 10px;margin-bottom:8px;border-radius:10px;background:#ecfdf5;border:1px solid #86efac;color:#166534;font-weight:800">✅ أنت معاون في مدرسة «' + esc(db.settings.schoolName) + '»</div>';
@@ -16461,7 +16479,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (!r) return;
       if (r.removed) { handleRemovedFromSchool(); return; }
       if (!r.ok) return;
-      if (r.limited) return;
+      if (r.limited) {
+        try {
+          var listL = document.getElementById("teamMembersList");
+          if (listL) listL.innerHTML = '<span style="color:#b45309;font-weight:700">تعذّر تحميل الفريق. سجّل دخول من جديد ثم اضغط تحديث القائمة.</span>';
+        } catch (eL2) { }
+        return;
+      }
       if (r.owner_acc) window._schoolOwner = r.owner_acc;
       try {
         if (!db.settings) db.settings = {};
@@ -18222,6 +18246,22 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           a.session = res.account;
           saveAuth(a);
         }
+        if (res && res.ok && res.owner_acc) {
+          try {
+            if (!db.settings) db.settings = {};
+            db.settings.linkedSchool = res.owner_acc;
+            if (res.school) db.settings.schoolName = res.school;
+            if (res.school_code) db.settings.schoolCode = res.school_code;
+            window._schoolOwner = res.owner_acc;
+            window._isOwner = false;
+            localStorage.setItem("tt_linked_school_" + (window._acc || ""), res.owner_acc);
+            save();
+          } catch (eLk) { }
+          if (res.shared_data) {
+            try { mergeDisk(res.shared_data, true); } catch (eMd) { }
+          }
+        }
+        try { setTimeout(refreshTeamMembers, 400); } catch (eRt) { }
       }).catch(function () { });
 
       save(true);
