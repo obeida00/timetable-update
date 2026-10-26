@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="بوابة مدرستي">
   <title>بوابة مدرستي</title>
   <link rel="icon" href="logo.png">
+  <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3912,8 +3913,22 @@
         height: 15px;
       }
 
-      header.top .emis-user-info {
+      header.top .emis-user-text-col,
+      header.top .caret,
+      header.top .emis-app-tagline,
+      header.top #emisYearBadge {
         display: none !important;
+      }
+
+      header.top .emis-user-chip {
+        padding: 4px 6px !important;
+        gap: 4px !important;
+        border-radius: 12px !important;
+      }
+
+      .emis-home-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
       }
 
       /* 3. شريط التبويبات العلوي للموبايل (Pill Segmented Chips) */
@@ -4095,14 +4110,14 @@
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
-        height: 64px !important;
-        background: rgba(255, 255, 255, 0.94) !important;
+        height: 72px !important;
+        background: rgba(255, 255, 255, 0.98) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
-        box-shadow: 0 -4px 25px rgba(22, 56, 88, 0.08) !important;
+        box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.05) !important;
         z-index: 200000 !important;
-        padding: 0 4px env(safe-area-inset-bottom) 4px !important;
+        padding: 0 4px calc(4px + env(safe-area-inset-bottom)) 4px !important;
         align-items: center !important;
         justify-content: space-around !important;
       }
@@ -4112,44 +4127,65 @@
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 2px !important;
+        gap: 4px !important;
         background: transparent !important;
         border: none !important;
-        color: #64748b !important;
-        font-size: 0.72rem !important;
+        color: #475569 !important;
+        font-size: 0.76rem !important;
         font-weight: 700 !important;
         cursor: pointer !important;
-        padding: 4px 6px !important;
-        border-radius: 14px !important;
-        transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 6px 4px !important;
+        border-radius: 12px !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         flex: 1 !important;
-        min-height: 52px !important;
+        min-height: 60px !important;
       }
 
       .mob-nav-btn svg {
-        width: 22px !important;
-        height: 22px !important;
-        stroke-width: 2.2 !important;
-        transition: transform 0.18s ease;
+        width: 24px !important;
+        height: 24px !important;
+        stroke-width: 2 !important;
+        transition: transform 0.2s ease;
       }
 
-      .mob-nav-btn.active,
-      .mob-nav-btn:active {
+      .mob-nav-btn.active {
         color: #2487d0 !important;
         font-weight: 800 !important;
+        background: rgba(36, 135, 208, 0.08) !important;
       }
 
       .mob-nav-btn.active svg {
-        transform: translateY(-2px) scale(1.12) !important;
         stroke: #2487d0 !important;
+        fill: rgba(36, 135, 208, 0.1);
       }
 
       body {
-        padding-bottom: 78px !important;
+        padding-bottom: 90px !important;
       }
 
       .app-footer {
         display: none !important;
+      }
+
+      /* 9. تحسين تصميم القائمة الرئيسية للهاتف */
+      .emis-home-shell {
+        gap: 10px !important;
+      }
+      .emis-grid-card {
+        min-height: 80px !important;
+        flex-direction: row !important;
+        padding: 8px 12px !important;
+        gap: 12px !important;
+        border-radius: 16px !important;
+      }
+      .emis-grid-card-icon {
+        flex: 0 0 auto !important;
+        width: 40px !important;
+        height: 40px !important;
+      }
+      .emis-grid-card-title {
+        font-size: 0.9rem !important;
+        font-weight: 700 !important;
       }
     }
 
@@ -10056,7 +10092,7 @@
     window._acc = (function () {
       try {
         const a = JSON.parse(localStorage.getItem("school_tt_auth_v1_fresh") || "{}");
-        if (a && a.session) return String(a.session).toUpperCase().replace(/[^A-Z0-9]/g, "");
+        if (a && a.session) return String(a.session).trim();
       } catch (e) { }
       return "";
     })();
@@ -15438,7 +15474,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (r && r.data) { adoptAccount(acc, r.data); done(true); return; }
       const a = pyApi();
       if (a && a.load_data) {
-        window._acc = normAcc(acc);
+        window._acc = acc;
         Promise.resolve(a.load_data()).then(function (txt) {
           if (txt && dbScore(parseDb(txt)) > 0) {
             adoptAccount(acc, txt);
@@ -16535,11 +16571,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (r.removed) { handleRemovedFromSchool(); return; }
       if (!r.ok) return;
       if (r.limited) {
-        try {
-          var listL = document.getElementById("teamMembersList");
-          if (listL) listL.innerHTML = '<span style="color:#b45309;font-weight:700">تعذّر تحميل الفريق. سجّل دخول من جديد ثم اضغط تحديث القائمة.</span>';
-        } catch (eL2) { }
-        return;
+        // لا نوقف الانضمام بسبب التوكن — نكمل بالمتاح
       }
       if (r.owner_acc) window._schoolOwner = r.owner_acc;
       try {
@@ -18035,18 +18067,61 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       okNote("تم تصفير كل البيانات");
     };
 
+
+    function googleOAuthUrl(sess) {
+      const state = String(sess || "") + "___" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      const q = new URLSearchParams({
+        client_id: "486936352309-v3v31fl5r4kh80ti6g85evocpogf441h.apps.googleusercontent.com",
+        redirect_uri: "https://schol-table-bot.iq-school-timetable.workers.dev/auth/google/callback",
+        response_type: "code",
+        scope: "openid email profile",
+        prompt: "select_account",
+        state: state
+      });
+      return "https://accounts.google.com/o/oauth2/v2/auth?" + q.toString();
+    }
+    function openGoogleAuthWindow(authUrl) {
+      const w = 520, hh = 680;
+      const left = Math.max(0, ((window.screen.width || 1200) - w) / 2);
+      const top = Math.max(0, ((window.screen.height || 800) - hh) / 2);
+      const feats = "width=" + w + ",height=" + hh + ",top=" + top + ",left=" + left + ",status=no,resizable=yes,scrollbars=yes";
+      let popup = null;
+      try { popup = window.open("about:blank", "google_login_window", feats); } catch (e) { popup = null; }
+      if (popup) {
+        try {
+          popup.document.open();
+          popup.document.write("<!DOCTYPE html><html dir='rtl'><head><meta charset='utf-8'><title>Google</title></head><body style='margin:0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:Tahoma,sans-serif;background:#f8fafc;color:#145d9b;font-weight:700'>جاري فتح Google...</body></html>");
+          popup.document.close();
+        } catch (e2) { }
+        try { popup.location.replace(authUrl); } catch (e3) {
+          try { popup.location.href = authUrl; } catch (e4) { }
+        }
+        try { popup.focus(); } catch (e5) { }
+        return popup;
+      }
+      try { return window.open(authUrl, "google_login_window", feats); } catch (e6) { return null; }
+    }
+    function closeGoogleAuthWindow(popup) {
+      function kick() {
+        try { if (popup && !popup.closed) popup.close(); } catch (e) { }
+        try {
+          const api = pyApi();
+          if (api && api.close_auth_window) api.close_auth_window();
+        } catch (e2) { }
+      }
+      kick();
+      setTimeout(kick, 400);
+      setTimeout(kick, 1200);
+    }
+
     // الدخول الرسمي الحقيقي 100% بحساب Google OAuth 2.0
     window.loginWithGoogleMain = function () {
       const sess = "sess_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-      const authUrl = "https://schol-table-bot.iq-school-timetable.workers.dev/auth/google/start?sess=" + encodeURIComponent(sess);
+      const authUrl = googleOAuthUrl(sess);
 
       if (typeof loginMsg === "function") loginMsg("⏳ جاري فتح نافذة Google الرسمية لاختيار الحساب...");
 
-      // فتح نافذة Google الرسمية المنبثقة
-      const w = 500, h = 600;
-      const left = window.screen.width ? (window.screen.width - w) / 2 : 100;
-      const top = window.screen.height ? (window.screen.height - h) / 2 : 100;
-      const popup = window.open(authUrl, "google_login_window", `width=${w},height=${h},top=${top},left=${left},status=no,resizable=yes`);
+      const popup = openGoogleAuthWindow(authUrl);
 
       let pollTimer = null;
       let done = false;
@@ -18055,7 +18130,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (done) return;
         done = true;
         if (pollTimer) clearInterval(pollTimer);
-        try { if (popup && !popup.closed) popup.close(); } catch (e) { }
+        closeGoogleAuthWindow(popup);
 
         const finalAcc = (data && data.account) || "";
         const finalEmail = (data && data.email) || "";
@@ -18118,7 +18193,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
             }
           })
           .catch(function () { });
-      }, 1200);
+      }, 400);
 
       // إيقاف الفحص بعد 4 دقائق إذا لم يكمل المستخدم
       setTimeout(function () {
@@ -18133,7 +18208,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     window.startGoogleLink = function () {
       const currentAcc = window._acc || (document.getElementById("userPhoneInput") && document.getElementById("userPhoneInput").value.trim()) || "07813332882";
       const sess = "sess_link_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-      const authUrl = "https://schol-table-bot.iq-school-timetable.workers.dev/auth/google/start?sess=" + encodeURIComponent(sess);
+      const authUrl = googleOAuthUrl(sess);
 
       const msgEl = document.getElementById("googleLinkMsg");
       const btnTxt = document.getElementById("googleBtnTxt");
@@ -18143,10 +18218,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
       if (btnTxt) btnTxt.textContent = "جاري الاتصال بـ Google...";
 
-      const w = 500, h = 600;
-      const left = window.screen.width ? (window.screen.width - w) / 2 : 100;
-      const top = window.screen.height ? (window.screen.height - h) / 2 : 100;
-      const popup = window.open(authUrl, "google_link_window", `width=${w},height=${h},top=${top},left=${left},status=no,resizable=yes`);
+      const popup = openGoogleAuthWindow(authUrl);
 
       let pollTimer = null;
       let done = false;
@@ -18155,7 +18227,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (done) return;
         done = true;
         if (pollTimer) clearInterval(pollTimer);
-        try { if (popup && !popup.closed) popup.close(); } catch (e) { }
+        closeGoogleAuthWindow(popup);
 
         const realEmail = (data && data.email) || "";
         if (!realEmail) {
@@ -18221,7 +18293,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
             }
           })
           .catch(function () { });
-      }, 1200);
+      }, 400);
 
       setTimeout(function () {
         if (!done) {
@@ -21933,6 +22005,16 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     document.addEventListener("DOMContentLoaded", function () {
       setTimeout(function(){ try{ window.updateEMISHomeStats(); }catch(e){} }, 300);
     });
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('SW registered!', reg))
+          .catch(err => console.log('SW failed', err));
+      });
+    }
   </script>
 </body>
 </html>
