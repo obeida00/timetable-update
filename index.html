@@ -487,6 +487,13 @@
       box-shadow: 0 1px 3px rgba(2, 132, 199, .08);
     }
 
+    /* إخفاء شريط الهاتف السفلي وبنر التثبيت نهائياً عن تطبيق سطح المكتب والشاشات الكبيرة */
+    .mobile-bottom-nav,
+    #mobileBottomNav,
+    #pwaInstallBanner {
+      display: none !important;
+    }
+
     .btn.w:hover {
       background: #f0f9ff;
       border-color: #0369a1;
@@ -4273,11 +4280,12 @@
         color: #1e3a8a !important;
         text-align: right !important;
       }
-      }
     }
 
     @media(min-width: 801px) {
-      .mobile-bottom-nav {
+      .mobile-bottom-nav,
+      #mobileBottomNav,
+      #pwaInstallBanner {
         display: none !important;
       }
     }
@@ -22127,6 +22135,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     });
 
     function showPwaBanner() {
+      if (window.innerWidth > 800) return; // منع الظهور نهائياً على الكمبيوتر وسطح المكتب
       const b = document.getElementById('pwaInstallBanner');
       if (!b || isStandalone) return;
       if (isIos) {
