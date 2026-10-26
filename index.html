@@ -5745,7 +5745,7 @@
         <div class="brand-row" role="button" title="تحديث الصفحة (Ctrl+F5)" onclick="hardRefreshApp()"
           style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none">
           <div class="emis-logo-badge">
-            <svg class="app-logo" width="38" height="38" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:38px;height:38px;display:block"><use href="#appLogoMark"/></svg>
+<svg class="app-logo" width="38" height="38" viewBox="0 0 64 64" role="img" aria-label="شعار بوابة مدرستي" style="width:38px;height:38px;display:block"><use href="#appLogoMark"/></svg>
           </div>
           <div class="emis-brand-text">
             <h1 class="emis-app-title">بوابة مدرستي</h1>
@@ -10064,7 +10064,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.55";
+    const APP_VERSION = "1.56";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10160,6 +10160,43 @@
       try { localStorage.removeItem(KEY + "_guest"); } catch (e) { }
     }
 
+    function isLinkedAssistant() {
+      try {
+        if (window._isOwner === false) return true;
+        if (db && db.settings && db.settings.linkedSchool) return true;
+        var acc0 = window._acc || "";
+        if (acc0 && localStorage.getItem("tt_linked_school_" + acc0)) return true;
+      } catch (e) { }
+      return false;
+    }
+    function restoreAssistantProfile() {
+      if (!isLinkedAssistant()) return;
+      if (!db.settings) db.settings = {};
+      var acc = window._acc || "";
+      var myName = "", myPhone = "", myPin = "";
+      try { myName = localStorage.getItem("tt_user_name_" + acc) || ""; } catch (e) { }
+      try { myPhone = localStorage.getItem("tt_user_phone_" + acc) || ""; } catch (e) { }
+      try { myPin = localStorage.getItem("tt_user_pin_" + acc) || ""; } catch (e) { }
+      var ownerAcc = String(db.settings.linkedSchool || window._schoolOwner || "");
+      var ownerDigits = ownerAcc.replace(/\D/g, "");
+      var curPhone = String(db.settings.userPhone || "").replace(/\D/g, "");
+      db.settings.userRole = "assistant";
+      if (ownerDigits && curPhone && curPhone === ownerDigits) {
+        db.settings.userPhone = myPhone || "";
+        db.settings.userPin = myPin || "";
+      } else {
+        if (myPhone) db.settings.userPhone = myPhone;
+        if (myPin) db.settings.userPin = myPin;
+        else db.settings.userPin = "";
+      }
+      var mgr = String(db.settings.schoolManager || "").trim();
+      if (myName && myName !== mgr) db.settings.userName = myName;
+      else db.settings.userName = myName || "معاون المدرسة";
+      try {
+        var rs = document.getElementById("userRoleSelect");
+        if (rs) { rs.value = "assistant"; rs.disabled = true; }
+      } catch (e) { }
+    }
     function adoptAccount(acc, raw, force) {
       const next = normAcc(acc);
       const prev = window._acc || "";
@@ -10212,6 +10249,7 @@
         if (mergedSt.length) db.students = mergedSt;
       } catch (eSt) { }
       _diskReady = !!next;
+      try { restoreAssistantProfile(); } catch (eAs) { }
       _adopting = true;
       try { save(true); } finally { _adopting = false; }
       try { localStorage.removeItem(KEY + "_guest"); } catch (e) { }
@@ -12411,7 +12449,9 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       // توليد رمز المدرسة ديناميكياً من حساب المدرسة أو من السحابة دون تثبيت يدوي
       const rawCode = (db.settings && db.settings.schoolCode) || localStorage.getItem("tt_school_code_" + displayAcc);
       let effectiveSchoolCode = rawCode || "";
-      if (!effectiveSchoolCode && displayAcc) {
+      if (window._pendingJoin && window._pendingJoin.code) effectiveSchoolCode = window._pendingJoin.code;
+      else if (db.settings && db.settings.linkedSchool && db.settings.schoolCode) effectiveSchoolCode = db.settings.schoolCode;
+      if (!effectiveSchoolCode && displayAcc && !(db.settings && db.settings.linkedSchool)) {
         const digits = displayAcc.replace(/\D/g, "");
         effectiveSchoolCode = "SCH-" + (digits.length >= 4 ? digits.slice(-4) : (digits + "9999").slice(0, 4));
       }
@@ -12449,8 +12489,12 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       const curPhone = (db.settings && db.settings.userPhone) || localStorage.getItem("tt_user_phone_" + (window._acc || "")) || displayAcc || "";
       if (document.getElementById("userPhoneInput")) document.getElementById("userPhoneInput").value = curPhone;
 
-      const curRole = (db.settings && db.settings.userRole) || localStorage.getItem("tt_user_role_" + (window._acc || "")) || "owner";
-      if (document.getElementById("userRoleSelect")) document.getElementById("userRoleSelect").value = curRole;
+      let curRole = (db.settings && db.settings.userRole) || localStorage.getItem("tt_user_role_" + (window._acc || "")) || "owner";
+      if (isLinkedAssistant()) curRole = "assistant";
+      if (document.getElementById("userRoleSelect")) {
+        document.getElementById("userRoleSelect").value = curRole;
+        document.getElementById("userRoleSelect").disabled = isLinkedAssistant();
+      }
 
       const curPin = (db.settings && db.settings.userPin) || localStorage.getItem("tt_user_pin_" + (window._acc || "")) || "";
       if (document.getElementById("userPinInput") && curPin) document.getElementById("userPinInput").value = curPin;
@@ -16361,7 +16405,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       // مسح النسخة الاحتياطية المحلية على سطح المكتب حتى لا تُسترجع البيانات
       try {
         const a = pyApi();
-        if (a && a.save_backup) { try { a.save_backup(JSON.stringify(blankDb()), "backup"); } catch (e) { } }
+        if (a && a.save_data) { try { a.save_data(JSON.stringify(blankDb())); } catch (e) { } }
       } catch (e) { }
       try { refreshAll(); } catch (e) { }
       try { renderMembersUI([], false, null); } catch (e) { }
@@ -16375,7 +16419,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           db = blankDb();
           save(true); try { flushSave(); } catch (e) { }
           const a = pyApi();
-          if (a && a.save_backup) { try { a.save_backup(JSON.stringify(blankDb()), "backup"); } catch (e) { } }
+          if (a && a.save_data) { try { a.save_data(JSON.stringify(blankDb())); } catch (e) { } }
           if (a && a.save_data) { try { a.save_data(JSON.stringify(blankDb())); } catch (e) { } }
         } catch (e) { }
       }, 2500);
@@ -16408,6 +16452,17 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         }
       } catch (eHide) { }
       try { if (!window._pendingJoin) window._pendingJoin = (db.settings && db.settings.pendingJoin) || null; } catch (e) { }
+      try {
+        var scLab = document.getElementById("mySchoolCode");
+        if (scLab && scLab.previousElementSibling) {
+          scLab.previousElementSibling.textContent = isOwner ? "رمز مدرستك الرسمي للمشاركة:" : "رمز المدرسة التي انضممت إليها:";
+        }
+        var joinIn = document.getElementById("joinSchoolIn");
+        if (joinIn && joinIn.parentElement) {
+          var linked = !!(!isOwner && db && db.settings && db.settings.linkedSchool);
+          joinIn.parentElement.style.display = linked ? "none" : "";
+        }
+      } catch (eLab) { }
       if (!isOwner && db && db.settings && db.settings.schoolName && db.settings.linkedSchool) {
         var joinBanner = '<div style="padding:8px 10px;margin-bottom:8px;border-radius:10px;background:#ecfdf5;border:1px solid #86efac;color:#166534;font-weight:800">✅ أنت معاون في مدرسة «' + esc(db.settings.schoolName) + '»</div>';
       } else var joinBanner = "";
@@ -16471,6 +16526,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (dbScore(parseDb(s)) <= 0) return;
       window._lastSharedDataHash = hh;
       mergeDisk(s, true);
+      try { restoreAssistantProfile(); } catch (eAs2) { }
       try { renderSettings(); } catch (e) { }
       try { if (typeof renderViews === "function") renderViews(); } catch (e) { }
       okNote("🔄 تم تحديث جدول وبيانات المدرسة تلقائياً");
@@ -16489,12 +16545,20 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (r.owner_acc) window._schoolOwner = r.owner_acc;
       try {
         if (!db.settings) db.settings = {};
+        if (window._pendingJoin && r.is_owner && String(r.owner_acc || "") !== String(window._pendingJoin.owner_acc || "")) {
+          renderMembersUI([], false, window._pendingJoin.code || "");
+          return;
+        }
+        if (r.is_owner && db.settings.linkedSchool && String(db.settings.linkedSchool) !== String(r.owner_acc || "")) {
+          r.is_owner = false;
+        }
         if (r.school_code) db.settings.schoolCode = r.school_code;
         if (r.school_name && !r.is_owner) db.settings.schoolName = r.school_name;
         if (r.owner_acc && !r.is_owner) {
           db.settings.linkedSchool = r.owner_acc;
           window._isOwner = false;
           try { localStorage.setItem("tt_linked_school_" + (window._acc || ""), r.owner_acc); } catch (eL) { }
+          try { restoreAssistantProfile(); } catch (eAs3) { }
         }
       } catch (e) { }
       // الاشتراك يُورّث من أي حساب مفعّل داخل الفريق (المالك أو أي عضو منضم)
@@ -16691,6 +16755,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
               $("schoolTeamMsg").textContent = "⏳ أُرسل طلب الانضمام إلى «" + (r.school_name || "") + "» — بانتظار موافقة مدير المدرسة.";
             }
             okNote("⏳ طلب الانضمام أُرسل لمدير المدرسة «" + (r.school_name || "") + "» — راح توصلك الموافقة تلقائياً.");
+            try { renderMembersUI([], false, r.school_code || sc); } catch (eR) { }
             return;
           }
           if ($("mySchoolCode")) $("mySchoolCode").textContent = r.school_code;
@@ -16910,13 +16975,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function offerUpdate(info, force) {
       if (!info || !info.newer) { setBell(false); return; }
       _updInfo = info;
-      setBell(true);
-      showUpdBar(info);
-      const notes = String(info.notes || "تحسينات وإصلاحات وتكامل كامل مع بوت التيليجرام.").replace(/\n/g, "\n");
-      const msg = "⚠️ يتوفر تحديث إجباري جديد للنظام (إصدار " + (info.remote || "") + ")\nالإصدار الحالي: " + (info.current || APP_VERSION) + "\n\nالمميزات والتعديلات:\n" + notes + "\n\nيجب تطبيق هذا التحديث للمتابعة واستخدام النظام.";
-      appDlg(msg, "تحديث إجباري للنظام", false, "upd").then(function () {
-        doAppUpdate();
-      });
+      doAppUpdate(true);
     }
     function openNotif() {
       // طلبات الانضمام المعلّقة لها الأولوية في جرس الإشعارات
@@ -17098,20 +17157,29 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       } catch (e3) { }
       go();
     }
-    function doAppUpdate() {
+    function doAppUpdate(silent) {
       const api = pyApi();
-      if (!api || !api.apply_update) { note("التحديث غير متاح هنا"); return; }
       try { flushSave(); } catch (e) { }
+      if (!api || !api.apply_update) {
+        hardRefreshApp();
+        return;
+      }
       Promise.resolve(api.apply_update()).then(function (r) {
         if (r && r.ok) {
           try { localStorage.setItem("uiVer", (_updInfo && _updInfo.remote) || APP_VERSION); } catch (e) { }
           try { flushSave(); } catch (e) { }
           dismissUpdateUi();
-          okNote("تم التحديث بنجاح! جاري إعادة التحميل...");
-          setTimeout(function () { location.reload(); }, 500);
+          if (!silent) okNote("تم التحديث بنجاح! جاري إعادة التحميل...");
+          setTimeout(function () { location.reload(); }, silent ? 150 : 500);
+        } else if (silent) {
+          hardRefreshApp();
+        } else {
+          note("تعذر التحديث. تأكد من رابط الملفات.");
         }
-        else note("تعذر التحديث. تأكد من رابط الملفات.");
-      }).catch(function () { note("تعذر التحديث"); });
+      }).catch(function () {
+        if (silent) hardRefreshApp();
+        else note("تعذر التحديث");
+      });
     }
     setTimeout(function () { checkAppUpdate(false); }, 600);
     // مزامنة سحابية فورية كل 5 ثوانٍ للأعضاء + كل 20 ثانية للمالك والتحديثات
