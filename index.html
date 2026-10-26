@@ -368,7 +368,7 @@
       font-weight: 800;
       padding: 12px 24px;
       border-radius: 10px;
-      z-index: 9999;
+      z-index: 200001;
       opacity: 0;
       pointer-events: none;
       transition: opacity .25s, transform .25s;
@@ -1811,10 +1811,13 @@
     }
 
 
+    #appDlg.modal {
+      z-index: 300000 !important;
+    }
     #subBox {
       overflow: hidden;
       padding: 12px;
-      z-index: 9999 !important
+      z-index: 200000 !important
     }
 
     #subBox .modal-card {
@@ -4037,7 +4040,7 @@
         -webkit-backdrop-filter: blur(20px) !important;
         border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
         box-shadow: 0 -4px 25px rgba(22, 56, 88, 0.08) !important;
-        z-index: 9999 !important;
+        z-index: 200000 !important;
         padding: 0 4px env(safe-area-inset-bottom) 4px !important;
         align-items: center !important;
         justify-content: space-around !important;
@@ -8009,7 +8012,7 @@
           <div class="form-section-card">
             <span class="sec-label">الاشتراك والخيارات الإضافية</span>
             <div class="data-actions-grid data-actions-sub">
-              <button class="btn o action-card-btn" type="button" onclick="if($('subBox'))$('subBox').hidden=false">
+              <button class="btn o action-card-btn" type="button" onclick="openSubInfoOrPayment()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
                   <line x1="1" y1="10" x2="23" y2="10" />
@@ -8886,18 +8889,23 @@
           <select id="grdSubject" onchange="loadGradeList()" style="font-weight:700;min-width:160px"></select>
         </div>
       </div>
-      <p class="hint" style="margin:0 0 8px">اختر الشعبة والمادة ثم أدخل الدرجات. تُحفظ في سجل المدرسة ولا تُفتح الطباعة إلا إذا ضغطت «طباعة».</p>
+      <p class="hint" style="margin:0 0 8px">اختر الشعبة والمادة ثم أدخل الدرجات. من سجل الأعمدة أضف أو احذف عموداً، أو اضغط عنوان العمود لتغيير اسمه.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px">
+        <input id="grdNewColName" placeholder="اسم عمود جديد مثل: شهر 3" onkeydown="if(event.key==='Enter'){event.preventDefault();addGradeCol();}" style="height:34px;min-width:200px;padding:0 10px;border:1px solid #cbd5e1;border-radius:8px;font-weight:700">
+        <button class="btn g s" type="button" onclick="addGradeCol()">+ إضافة عمود</button>
+        <span id="grdColBar" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"></span>
+      </div>
       <div style="flex:1;overflow:auto;border:1px solid #e2e8f0;border-radius:8px;padding:8px">
         <table class="slim" id="gradeEntryTable">
           <thead>
             <tr>
               <th style="width:40px">#</th>
               <th>اسم الطالب</th>
-              <th style="width:80px">شهر 1</th>
-              <th style="width:80px">شهر 2</th>
-              <th style="width:90px">نصف السنة</th>
-              <th style="width:80px">النهائي</th>
-              <th>ملاحظات</th>
+              <th id="grdH_m1" data-col="m1" contenteditable="true" title="اضغط لتغيير الاسم" style="width:80px;cursor:text">شهر 1</th>
+              <th id="grdH_m2" contenteditable="true" title="اضغط لتغيير الاسم" style="width:80px;cursor:text">شهر 2</th>
+              <th id="grdH_mid" contenteditable="true" title="اضغط لتغيير الاسم" style="width:90px;cursor:text">نصف السنة</th>
+              <th id="grdH_final" contenteditable="true" title="اضغط لتغيير الاسم" style="width:80px;cursor:text">النهائي</th>
+              <th id="grdH_note" contenteditable="true" title="اضغط لتغيير الاسم" style="cursor:text">ملاحظات</th>
             </tr>
           </thead>
           <tbody id="grdBody"></tbody>
@@ -9904,7 +9912,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.49";
+    const APP_VERSION = "1.51";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -12118,8 +12126,12 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
     }
 
     function openSet(id) {
+      if ($(id)) $(id).hidden = false;
       try { renderSettings(); } catch (e) { }
-      if (id === 'setUser') { try { refreshTeamMembers(); } catch (e) { } }
+      setTimeout(function () {
+        try { renderSettings(); } catch (e2) { }
+        if (id === 'setUser') { try { refreshTeamMembers(); } catch (e3) { } }
+      }, 0);
       if ($(id)) $(id).hidden = false;
     }
     function openDaysBox() {
@@ -14398,6 +14410,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       });
     }
     function openSubInfoOrPayment() {
+      var _subNow = $("subBox");
+      if (_subNow) _subNow.hidden = false;
       const s = localStatus();
       const paidish = !!(s && s.ok && (s.mode === "paid" || s.mode === "shared"));
       const bar = $('subStatBar');
@@ -16693,9 +16707,69 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       setBell(false);
       _updInfo = null;
     }
+    var _updBusy = false, _updLastAt = 0;
+    function fetchRemoteUpdateJson() {
+      var t = Date.now();
+      var urls = [
+        "https://raw.githubusercontent.com/obeida00/timetable-update/main/update.json?t=" + t,
+        "https://obeida00.github.io/timetable-update/update.json?t=" + t
+      ];
+      return new Promise(function (resolve, reject) {
+        var left = urls.length, won = false;
+        urls.forEach(function (u) {
+          fetch(u, { cache: "no-store" }).then(function (r) {
+            if (!r.ok) throw new Error("http");
+            return r.json();
+          }).then(function (j) {
+            if (won) return;
+            if (j && j.version) { won = true; resolve(j); }
+            else if (--left === 0) reject(new Error("bad"));
+          }).catch(function () {
+            if (!won && --left === 0) reject(new Error("net"));
+          });
+        });
+      });
+    }
+    function applyUpdateInfo(info, manual) {
+      var cur = effectiveVer();
+      if (!info || !info.ok) {
+        if (manual) showLatestUpdate(info && info.current ? info.current : cur);
+        return;
+      }
+      if (info.remote && !verNewer(info.remote, cur)) {
+        info.newer = false;
+        info.current = cur;
+      }
+      if (info.newer) offerUpdate(info, !!manual);
+      else { dismissUpdateUi(); if (manual) showLatestUpdate(info.current || cur); }
+    }
     function checkAppUpdate(manual) {
       const api = pyApi();
-      if (!api || !api.check_update) {
+      if (_updBusy && !manual) return;
+      if (!manual && _updLastAt && (Date.now() - _updLastAt) < 40000) return;
+      _updBusy = true;
+      if (manual) toast("جاري التحقق من التحديث...");
+      var finished = false;
+      function done(info) {
+        if (finished) return;
+        finished = true;
+        _updBusy = false;
+        _updLastAt = Date.now();
+        applyUpdateInfo(info, !!manual);
+      }
+      fetchRemoteUpdateJson().then(function (j) {
+        var cur = effectiveVer();
+        var remote = String(j.version || "");
+        done({ ok: true, newer: verNewer(remote, cur), remote: remote, current: cur, notes: j.notes || "" });
+      }).catch(function () {
+        var api2 = pyApi();
+        if (api2 && api2.check_update) {
+          Promise.resolve(api2.check_update()).then(function (info) { done(info); }).catch(function () { done(null); });
+        } else done(null);
+      });
+      setTimeout(function () { if (!finished) done(null); }, 8000);
+      return;
+      if (false && !api) {
         if (manual) showLatestUpdate(effectiveVer());
         return;
       }
@@ -16759,6 +16833,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       // مزامنة بيانات التطبيق للمالك كل 20 ثانية (كل 4 دورات)
       if (_syncCounter % 4 === 0) {
         try { if (window._acc) syncToCloudNow(false); } catch (e) { }
+        try { /* update moved */ } catch (e) { }
+      }
+      if (_syncCounter % 12 === 0) {
         try { checkAppUpdate(false); } catch (e) { }
       }
     }, 5000);
@@ -20378,6 +20455,103 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       loadGradeList();
     }
 
+    function defaultGradeCols() {
+      var L = (db.settings && db.settings.gradeColLabels) || {};
+      return [
+        { id: "m1", label: L.m1 || "شهر 1" },
+        { id: "m2", label: L.m2 || "شهر 2" },
+        { id: "mid", label: L.mid || "نصف السنة" },
+        { id: "final", label: L.final || "النهائي" },
+        { id: "note", label: L.note || "ملاحظات" }
+      ];
+    }
+    function getGradeCols() {
+      var cols = (db.settings && Array.isArray(db.settings.gradeCols)) ? db.settings.gradeCols : [];
+      if (!cols.length) cols = defaultGradeCols();
+      return cols.map(function (c, i) {
+        return { id: String((c && c.id) || ("c" + i)), label: String((c && c.label) || "عمود").replace(/\s+/g, " ").trim() || "عمود" };
+      });
+    }
+    function setGradeCols(cols) {
+      if (!db.settings) db.settings = {};
+      db.settings.gradeCols = cols;
+      try { save(); } catch (e) { }
+    }
+    function gradeColLabels() {
+      var o = {};
+      getGradeCols().forEach(function (c) { o[c.id] = c.label; });
+      var d = (db.settings && db.settings.gradeColLabels) || {};
+      return {
+        m1: o.m1 || d.m1 || "شهر 1",
+        m2: o.m2 || d.m2 || "شهر 2",
+        mid: o.mid || d.mid || "نصف السنة",
+        final: o.final || d.final || "النهائي",
+        note: o.note || d.note || "ملاحظات"
+      };
+    }
+    function renderGradeHead() {
+      var tr = document.querySelector("#gradeEntryTable thead tr");
+      if (!tr) return;
+      var cols = getGradeCols();
+      var h = '<th style="width:40px">#</th><th>اسم الطالب</th>';
+      cols.forEach(function (c) {
+        h += '<th data-col="' + esc(c.id) + '" contenteditable="true" onblur="saveGradeHeadFromDom()" title="اضغط لتغيير الاسم" style="min-width:88px;cursor:text">' + esc(c.label) + "</th>";
+      });
+      tr.innerHTML = h;
+      var bar = $("grdColBar");
+      if (bar) {
+        bar.innerHTML = cols.map(function (c) {
+          return '<span style="display:inline-flex;align-items:center;gap:4px;background:#e0f2fe;color:#075985;border-radius:999px;padding:4px 8px 4px 4px;font-weight:800;font-size:.78rem">'
+            + esc(c.label)
+            + ' <button type="button" onclick="deleteGradeCol(\'' + String(c.id).replace(/'/g, "") + '\')" title="حذف العمود" style="width:22px;height:22px;border:0;border-radius:50%;background:#fee2e2;color:#b91c1c;font-weight:800;cursor:pointer;line-height:1">×</button></span>';
+        }).join("");
+      }
+    }
+    function saveGradeHeadFromDom() {
+      var cols = [];
+      document.querySelectorAll("#gradeEntryTable thead th[data-col]").forEach(function (th) {
+        var id = th.getAttribute("data-col");
+        var label = String(th.textContent || "").replace(/\s+/g, " ").trim() || "عمود";
+        cols.push({ id: id, label: label });
+      });
+      if (cols.length) {
+        if (!db.settings) db.settings = {};
+        db.settings.gradeCols = cols;
+        try { save(); } catch (e) { }
+      }
+    }
+    function addGradeCol() {
+      saveGradeHeadFromDom();
+      var inp = $("grdNewColName");
+      var name = inp ? String(inp.value || "").trim() : "";
+      if (!name) { note("اكتب اسم العمود أولاً"); if (inp) inp.focus(); return; }
+      var cols = getGradeCols();
+      cols.push({ id: "g" + Date.now().toString(36), label: name });
+      setGradeCols(cols);
+      if (inp) inp.value = "";
+      renderGradeHead();
+      loadGradeList();
+      okNote("تمت إضافة العمود «" + name + "»");
+    }
+    function deleteGradeCol(id) {
+      saveGradeHeadFromDom();
+      var cols = getGradeCols();
+      if (cols.length <= 1) { note("يجب أن يبقى عمود واحد على الأقل"); return; }
+      var col = null;
+      cols.forEach(function (c) { if (c.id === id) col = c; });
+      ask("حذف عمود «" + ((col && col.label) || "") + "» من جدول الدرجات؟").then(function (ok) {
+        if (!ok) return;
+        setGradeCols(cols.filter(function (c) { return c.id !== id; }));
+        renderGradeHead();
+        loadGradeList();
+      });
+    }
+    function applyGradeColHeaders() {
+      renderGradeHead();
+    }
+    function saveGradeColLabels() {
+      saveGradeHeadFromDom();
+    }
     function openGradeEntry() {
       if (!db.sections || !db.sections.length) {
         alert("يرجى إضافة صفوف وشعب أولاً.");
@@ -20390,6 +20564,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
       fillStudentSections();
       fillGradeSubjects();
+      renderGradeHead();
       loadGradeList();
       $("gradeEntryBox").hidden = false;
     }
@@ -20397,37 +20572,38 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function loadGradeList() {
       const tb = $("grdBody");
       if (!tb) return;
+      const cols = getGradeCols();
+      const span = String(2 + cols.length);
       const secId = $("grdSecPick") ? $("grdSecPick").value : "";
       const subj = $("grdSubject") ? String($("grdSubject").value || "").trim() : "";
       const list = (db.students || []).filter(function (s) { return s.sectionId === secId; });
       list.sort(function (a, b) { return String(a.name || "").localeCompare(String(b.name || ""), "ar"); });
       if (!secId) {
-        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#94a3b8">اختر الشعبة.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="' + span + '" style="text-align:center;padding:16px;color:#94a3b8">اختر الشعبة.</td></tr>';
         return;
       }
       if (!subj) {
-        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#94a3b8">اختر المادة لإدخال الدرجات.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="' + span + '" style="text-align:center;padding:16px;color:#94a3b8">اختر المادة لإدخال الدرجات.</td></tr>';
         return;
       }
       if (!list.length) {
-        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#94a3b8">لا يوجد طلاب في هذه الشعبة.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="' + span + '" style="text-align:center;padding:16px;color:#94a3b8">لا يوجد طلاب في هذه الشعبة.</td></tr>';
         return;
       }
       if (!db.grades) db.grades = {};
       const rec = db.grades[currentGradeKey()] || {};
       tb.innerHTML = list.map(function (st, idx) {
         const g = rec[st.id] || {};
-        function inp(k, ph) {
-          return '<input class="grd-in" data-k="' + k + '" value="' + esc(g[k] || "") + '" placeholder="' + ph + '" inputmode="decimal" style="width:100%;height:32px;text-align:center;font-weight:700;font-size:.85rem">';
-        }
+        const cells = cols.map(function (c) {
+          const isNote = c.id === "note" || /ملاحظ/.test(c.label);
+          return '<td><input class="grd-in" data-k="' + esc(c.id) + '" value="' + esc(g[c.id] || "") + '"'
+            + (isNote ? "" : ' inputmode="decimal"')
+            + ' style="width:100%;height:32px;text-align:center;font-weight:700;font-size:.85rem"></td>';
+        }).join("");
         return '<tr data-stud="' + st.id + '">'
           + "<td>" + (idx + 1) + "</td>"
           + '<td style="font-weight:700;text-align:right;padding-right:10px">' + esc(st.name) + "</td>"
-          + "<td>" + inp("m1", "") + "</td>"
-          + "<td>" + inp("m2", "") + "</td>"
-          + "<td>" + inp("mid", "") + "</td>"
-          + "<td>" + inp("final", "") + "</td>"
-          + '<td><input class="grd-in" data-k="note" value="' + esc(g.note || "") + '" placeholder="ملاحظة" style="width:100%;height:32px;font-size:.85rem"></td>'
+          + cells
           + "</tr>";
       }).join("");
     }
@@ -20450,6 +20626,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const secId = $("grdSecPick") ? $("grdSecPick").value : "";
       if (!secId || !subj) { alert("اختر الشعبة والمادة أولاً."); return false; }
       if (!db.grades) db.grades = {};
+      saveGradeColLabels();
       db.grades[currentGradeKey()] = collectGradeScores();
       save();
       note("تم حفظ درجات مادة «" + subj + "» لشعبة " + secName(secId));
@@ -20460,6 +20637,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (!saveGrades()) return;
       const secId = $("grdSecPick").value;
       const subj = String($("grdSubject").value || "").trim();
+      const cols = getGradeCols();
       const schName = (db.settings && db.settings.schoolName) || "بوابة مدرستي";
       const yr = (typeof getAcademicYear === "function") ? getAcademicYear() : "";
       const rec = (db.grades && db.grades[currentGradeKey()]) || {};
@@ -20468,10 +20646,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       let rows = "";
       list.forEach(function (st, i) {
         const g = rec[st.id] || {};
+        const cells = cols.map(function (c) { return "<td>" + esc(g[c.id] || "") + "</td>"; }).join("");
         rows += "<tr><td>" + (i + 1) + "</td><td style='text-align:right;padding-right:8px;font-weight:600'>" + esc(st.name)
-          + "</td><td>" + esc(g.m1 || "") + "</td><td>" + esc(g.m2 || "") + "</td><td>" + esc(g.mid || "")
-          + "</td><td>" + esc(g.final || "") + "</td><td>" + esc(g.note || "") + "</td></tr>";
+          + "</td>" + cells + "</tr>";
       });
+      const heads = cols.map(function (c) { return "<th>" + esc(c.label) + "</th>"; }).join("");
       const w = window.open("", "_blank");
       if (!w) { alert("يرجى السماح بالنوافذ المنبثقة للطباعة"); return; }
       w.document.write("<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='utf-8'><title>سجل الدرجات</title>"
@@ -20482,7 +20661,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         + "<div style='display:flex;justify-content:space-between;margin-bottom:10px'><div><b>" + esc(schName) + "</b><div>المادة: " + esc(subj) + "</div></div>"
         + "<div style='text-align:left'>الشعبة: " + esc(secName(secId)) + "<br>العام: " + esc(yr) + "</div></div>"
         + "<h2 style='text-align:center'>سجل رصد الدرجات</h2>"
-        + "<table><thead><tr><th>ت</th><th>اسم الطالب</th><th>شهر 1</th><th>شهر 2</th><th>نصف السنة</th><th>النهائي</th><th>ملاحظات</th></tr></thead><tbody>"
+        + "<table><thead><tr><th>ت</th><th>اسم الطالب</th>" + heads + "</tr></thead><tbody>"
         + rows + "</tbody></table></body></html>");
       w.document.close();
     }
