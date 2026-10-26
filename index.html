@@ -10064,7 +10064,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.52";
+    const APP_VERSION = "1.53";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -16389,15 +16389,18 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
       box.style.display = 'block';
       try { if (!window._pendingJoin) window._pendingJoin = (db.settings && db.settings.pendingJoin) || null; } catch (e) { }
+      if (!isOwner && db && db.settings && db.settings.schoolName && db.settings.linkedSchool) {
+        var joinBanner = '<div style="padding:8px 10px;margin-bottom:8px;border-radius:10px;background:#ecfdf5;border:1px solid #86efac;color:#166534;font-weight:800">✅ أنت معاون في مدرسة «' + esc(db.settings.schoolName) + '»</div>';
+      } else var joinBanner = "";
       if (!members || members.length === 0) {
         if (window._pendingJoin && window._pendingJoin.name) {
           list.innerHTML = '<span style="color:#b45309;font-weight:700">⏳ طلب انضمامك إلى «' + esc(window._pendingJoin.name) + '» بانتظار موافقة مدير المدرسة.</span>';
           return;
         }
-        list.innerHTML = '<span style="color:#9ca3af">لم ينضم أحد بعد. شارك رمز المدرسة لأعضاء الفريق.</span>';
+        list.innerHTML = joinBanner + '<span style="color:#9ca3af">لم ينضم أحد بعد. شارك رمز المدرسة لأعضاء الفريق.</span>';
         return;
       }
-      list.innerHTML = members.map(function (m) {
+      list.innerHTML = joinBanner + members.map(function (m) {
         var acc = m.account || '-';
         var name = m.name ? (' (' + m.name + ')') : '';
         var masked = acc.length > 6 ? acc.slice(0, 3) + '****' + acc.slice(-3) : acc;
@@ -16415,7 +16418,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
     function cloudFetchData(acc) {
       if (!acc) return Promise.resolve("");
-      return fetch(withTok(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc=" + encodeURIComponent(acc), acc), acc))
+      const me = window._acc || acc;
+      return fetch(withTok("https://schol-table-bot.iq-school-timetable.workers.dev/api/sync?acc=" + encodeURIComponent(acc) + "&as=" + encodeURIComponent(me), me))
         .then(function (res) { return res.json(); })
         .then(function (d) { return (d && d.ok && d.data) || ""; })
         .catch(function () { return ""; });
@@ -16454,10 +16458,20 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     function applySchoolInfo(r) {
       if (!r) return;
-      // السيرفر يؤكد أن هذا الحساب أُزيل من الفريق — تُحذف بياناته ويرجع لتجربة 7 أيام
       if (r.removed) { handleRemovedFromSchool(); return; }
       if (!r.ok) return;
+      if (r.limited) return;
       if (r.owner_acc) window._schoolOwner = r.owner_acc;
+      try {
+        if (!db.settings) db.settings = {};
+        if (r.school_code) db.settings.schoolCode = r.school_code;
+        if (r.school_name && !r.is_owner) db.settings.schoolName = r.school_name;
+        if (r.owner_acc && !r.is_owner) {
+          db.settings.linkedSchool = r.owner_acc;
+          window._isOwner = false;
+          try { localStorage.setItem("tt_linked_school_" + (window._acc || ""), r.owner_acc); } catch (eL) { }
+        }
+      } catch (e) { }
       // الاشتراك يُورّث من أي حساب مفعّل داخل الفريق (المالك أو أي عضو منضم)
       if (r.owner_paid && r.owner_until) {
         var lo = window._linkedOwner || {};
@@ -17971,6 +17985,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           box.style.display = "none";
         }
 
+        if (data && data.bind_token) {
+          try { localStorage.setItem("tt_sess_tok_" + normAcc(finalAcc), data.bind_token); } catch (e) { }
+          try { localStorage.setItem("tt_bind_tok_" + finalAcc, data.bind_token); } catch (e) { }
+        }
         onCloudLoginSuccess(finalAcc, finalAcc, {
           ok: true,
           account: finalAcc,
@@ -17981,6 +17999,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           school: (data && data.school) || "",
           school_code: (data && data.school_code) || "",
           data: (data && data.data) || "",
+          shared_data: (data && data.shared_data) || "",
+          bind_token: (data && data.bind_token) || "",
           is_new: !!(data && data.is_new)
         });
       }
