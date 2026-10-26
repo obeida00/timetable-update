@@ -1,18 +1,33 @@
 {
-  "name": "بوابة مدرستي",
+  "name": "بوابة مدرستي - إدارة الجداول والكادر والطلاب",
   "short_name": "بوابة مدرستي",
-  "start_url": "./",
+  "description": "المنصة السحابية المدرسية لإدارة الجداول والطلاب والكادر التعليمي",
+  "start_url": "/app",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
   "theme_color": "#2487d0",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "logo.png",
+      "src": "/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
