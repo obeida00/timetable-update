@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.58",
-    "notes": "تحسين كامل للتحكم بالجدول الأسبوعي والإيماءات على الهاتف"
+    "version": "1.59",
+    "notes": "دعم العمل بدون إنترنت كلياً وتثبيت التطبيق على هواتف أندرويد وآيفون وحفظ الجلسة الدائمة"
 }
