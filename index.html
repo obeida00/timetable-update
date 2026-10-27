@@ -7892,7 +7892,8 @@
                   </svg>
                 </div>
                 <input id="loginAcc" placeholder="07XXXXXXXXX" inputmode="numeric"
-                  style="direction:ltr;text-align:center;letter-spacing:1px">
+                  style="direction:ltr;text-align:center;letter-spacing:1px"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();var p=document.getElementById('loginPw'); if(p) p.focus();}">
               </div>
             </div>
 
@@ -7905,7 +7906,8 @@
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 </div>
-                <input id="loginPw" type="password" placeholder="••••••••" style="text-align:center;letter-spacing:3px">
+                <input id="loginPw" type="password" placeholder="••••••••" style="text-align:center;letter-spacing:3px"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin();}">
               </div>
             </div>
 
@@ -10661,7 +10663,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.65";
+    const APP_VERSION = "1.66";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -17691,11 +17693,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         return;
       }
       const api = window.pywebview && window.pywebview.api;
-      const ls = localStatus();
-      const pAcc = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : "";
-      
-      // If pywebview api has load_auth_state, try restoring disk auth immediately
-      if (api && api.load_auth_state && !ls.account && !pAcc) {
+      if (api && api.load_auth_state) {
         try {
           Promise.resolve(api.load_auth_state()).then(function (raw) {
             if (raw) {
@@ -17704,8 +17702,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
                 if (diskA && diskA.session) {
                   localStorage.setItem(AUTH_KEY, raw);
                   window.setPersistentAccount(diskA.session);
-                  applyGate(localStatus());
-                  return;
+                  window._acc = diskA.session;
                 }
               } catch (ex) { }
             }
