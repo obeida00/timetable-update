@@ -10578,17 +10578,64 @@
   <script>
     const DAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
     const KEY = "school_tt_v5_fresh_start";
-    window._acc = (function () {
+    window.getPersistentAccount = function () {
       try {
+        // 1. Check primary auth key session
         const a = JSON.parse(localStorage.getItem("school_tt_auth_v1_fresh") || "{}");
-        if (a && a.session) return String(a.session).trim();
+        if (a && a.session && String(a.session).trim()) return String(a.session).trim();
+        // 2. Check dedicated persistent account key
+        const pAcc = localStorage.getItem("tt_persistent_account");
+        if (pAcc && String(pAcc).trim()) return String(pAcc).trim();
+        // 3. Check Google linked email
+        const gLinked = localStorage.getItem("tt_google_linked_email");
+        if (gLinked && gLinked.indexOf("|") >= 0) {
+          const parts = gLinked.split("|");
+          if (parts[1] && parts[1].trim()) return parts[1].trim();
+        }
+        // 4. Check cookie
+        const match = document.cookie.match(/(?:^|; )tt_acc=([^;]*)/);
+        if (match && match[1]) return decodeURIComponent(match[1]).trim();
+        // 5. Check if exactly one user in users map
+        if (a && a.users) {
+          const uKeys = Object.keys(a.users);
+          if (uKeys.length === 1 && uKeys[0]) return uKeys[0].trim();
+        }
       } catch (e) { }
+      return "";
+    };
+    window.setPersistentAccount = function (acc) {
+      if (!acc) return;
+      try {
+        localStorage.setItem("tt_persistent_account", acc);
+        document.cookie = "tt_acc=" + encodeURIComponent(acc) + ";path=/;max-age=315360000;SameSite=Lax";
+      } catch (e) { }
+    };
+    window.clearPersistentAccount = function () {
+      try {
+        localStorage.removeItem("tt_persistent_account");
+        document.cookie = "tt_acc=;path=/;max-age=0;SameSite=Lax";
+      } catch (e) { }
+    };
+    window._acc = (function () {
+      const recovered = window.getPersistentAccount();
+      if (recovered) {
+        try {
+          const a = JSON.parse(localStorage.getItem("school_tt_auth_v1_fresh") || "{}");
+          if (a.session !== recovered) {
+            a.session = recovered;
+            if (!a.users) a.users = {};
+            if (!a.users[recovered]) a.users[recovered] = { first: new Date().toISOString().slice(0, 10) };
+            localStorage.setItem("school_tt_auth_v1_fresh", JSON.stringify(a));
+          }
+        } catch (e) { }
+        return recovered;
+      }
       return "";
     })();
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.59";
+    const APP_VERSION = "1.60";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15903,9 +15950,28 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function loginMsg(s) { if ($("loginMsg")) $("loginMsg").textContent = s || ""; }
     function normAcc(s) { return String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); }
     function loadAuth() {
-      try { return JSON.parse(localStorage.getItem(AUTH_KEY) || "{}") || {}; } catch (e) { return {}; }
+      let a = {};
+      try { a = JSON.parse(localStorage.getItem(AUTH_KEY) || "{}") || {}; } catch (e) { a = {}; }
+      if (!a.session) {
+        const pAcc = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : (localStorage.getItem("tt_persistent_account") || "");
+        if (pAcc) {
+          a.session = pAcc;
+          if (!a.users) a.users = {};
+          if (!a.users[pAcc]) a.users[pAcc] = { first: ymd(new Date()) };
+          try { localStorage.setItem(AUTH_KEY, JSON.stringify(a)); } catch (e) { }
+        }
+      }
+      return a;
     }
-    function saveAuth(a) { try { localStorage.setItem(AUTH_KEY, JSON.stringify(a)); } catch (e) { } }
+    function saveAuth(a) {
+      try {
+        localStorage.setItem(AUTH_KEY, JSON.stringify(a));
+        if (a && a.session) {
+          if (typeof window.setPersistentAccount === "function") window.setPersistentAccount(a.session);
+          else localStorage.setItem("tt_persistent_account", a.session);
+        }
+      } catch (e) { }
+    }
     function pwHash(acc, pw) { return "h:" + normAcc(acc) + "|" + String(pw || ""); }
     function ymd(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
     // حالة الاشتراك المرثية من المالك (للحساب الثاني المنضم)
@@ -16042,7 +16108,16 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       lb.style.display = "none";
     }
     function applyGate(s) {
-      const logged = !!(s && s.account);
+      let logged = !!(s && s.account);
+      if (!logged) {
+        const pAcc = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : "";
+        if (pAcc) {
+          logged = true;
+          s = s || {};
+          s.account = pAcc;
+          if (!s.ok) s.ok = true;
+        }
+      }
       if (!logged) {
         showLoginBox();
         return;
@@ -16118,13 +16193,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if ($("loginBox")) $("loginBox").hidden = true;
       if (acc) {
         try {
+          window.setPersistentAccount(acc);
           const a = loadAuth();
-          if (a.session !== acc) {
-            a.session = acc;
-            if (!a.users) a.users = {};
-            if (!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
-            saveAuth(a);
-          }
+          a.session = acc;
+          if (!a.users) a.users = {};
+          if (!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
+          saveAuth(a);
         } catch (e) { }
         const api = pyApi();
         if (api && api.login_account) {
@@ -16364,6 +16438,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       a.session = acc;
       if (cloudRes.user_name) a.users[acc].name = cloudRes.user_name;
       saveAuth(a);
+      window.setPersistentAccount(acc);
 
       // حفظ الاسم والإيميل بشكل صحيح
       const finalEmail = cloudRes.email || "";
@@ -16906,8 +16981,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
         // مسح الجلسة وكافة التخزينات المؤقتة
         try {
+          window.clearPersistentAccount();
           localStorage.removeItem(AUTH_KEY);
           localStorage.removeItem("tt_google_linked_email");
+          localStorage.removeItem("tt_persistent_account");
           sessionStorage.clear();
           const a = loadAuth();
           a.session = "";
@@ -17566,10 +17643,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function checkLicenseGate() {
       const api = window.pywebview && window.pywebview.api;
       const ls = localStatus();
+      const pAcc = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : "";
       if (api && api.license_status) {
         api.license_status().then(function (s) {
           if (s && s.account) {
             const acc = normAcc(s.account);
+            window.setPersistentAccount(acc);
             const a = loadAuth();
             if (a.session !== acc) {
               a.session = acc;
@@ -17582,16 +17661,28 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
             applyGate(s);
             return;
           }
-          if (ls && ls.account) applyGate(ls);
-          else applyGate({ ok: false, account: "" });
+          if (ls && ls.account) {
+            applyGate(ls);
+          } else if (pAcc) {
+            applyGate({ ok: true, account: pAcc, mode: "trial", days: 7 });
+          } else {
+            applyGate({ ok: false, account: "" });
+          }
         }).catch(function () {
-          if (ls && ls.account) applyGate(ls);
-          else applyGate({ ok: false, account: "" });
+          if (ls && ls.account) {
+            applyGate(ls);
+          } else if (pAcc) {
+            applyGate({ ok: true, account: pAcc, mode: "trial", days: 7 });
+          } else {
+            applyGate({ ok: false, account: "" });
+          }
         });
         return;
       }
       if (ls && ls.account) {
         applyGate(ls);
+      } else if (pAcc) {
+        applyGate({ ok: true, account: pAcc, mode: "trial", days: 7 });
       } else {
         applyGate({ ok: false, account: "" });
       }
