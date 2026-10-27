@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.65",
-    "notes": "دعم تثبيت التطبيق بضغطة زر وتوجيه مرئي ذكي للآيفون والأندرويد مع دعم كامل للتشغيل بدون إنترنت بدون أخطاء ERR_FAILED"
+    "version": "1.66",
+    "notes": "Enter لتسجيل الدخول، بقاء الجلسة بعد إغلاق النافذة، وعدم رجوع أسماء الطلاب المحذوفة"
 }
