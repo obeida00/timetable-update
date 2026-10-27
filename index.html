@@ -10634,7 +10634,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.64";
+    const APP_VERSION = "1.65";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -17861,7 +17861,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function offerUpdate(info, force) {
       if (!info || !info.newer) { setBell(false); return; }
       _updInfo = info;
-      doAppUpdate(true);
+      if (force) {
+        doAppUpdate(false);
+      } else {
+        setBell(true);
+        showUpdateBanner(info);
+      }
     }
     function openNotif() {
       // طلبات الانضمام المعلّقة لها الأولوية في جرس الإشعارات
