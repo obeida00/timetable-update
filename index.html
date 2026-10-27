@@ -10635,7 +10635,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.61";
+    const APP_VERSION = "1.62";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10707,7 +10707,7 @@
     }
     function dbScore(d) {
       if (!d || typeof d !== "object") return -1;
-      return ((d.classes || []).length || 0) * 20 + ((d.teachers || []).length || 0) * 8 + ((d.subjects || []).length || 0);
+      return ((d.classes || []).length || 0) * 20 + ((d.teachers || []).length || 0) * 8 + ((d.subjects || []).length || 0) + ((d.students || []).length || 0) * 2;
     }
     function parseDb(raw) {
       if (!raw) return null;
@@ -10717,18 +10717,8 @@
       } catch (e) { return null; }
     }
     function purgeAccountKeys(acc) {
+      // لا نحذف بيانات الحساب من التخزين المحلي حتى لا تضيع بيانات الطلاب عند الفتح في جهاز جديد
       if (!acc) return;
-      const A = normAcc(acc);
-      if (!A) return;
-      const del = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i) || "";
-        if (k === AUTH_KEY) continue;
-        if (k.indexOf(A) >= 0) del.push(k);
-        if (k === KEY + "_guest") del.push(k);
-      }
-      del.forEach(k => { try { localStorage.removeItem(k); } catch (e) { } });
-      try { localStorage.removeItem(KEY + "_guest"); } catch (e) { }
     }
 
     function isLinkedAssistant() {
@@ -10793,8 +10783,18 @@
       hist = [];
       _lastSaved = "";
       if (best) {
+        // إذا كانت النسخة الأفضل لا تحتوي طلاب أو طلابها أقل، افحص المرشحين الآخرين لحماية قائمة الطلاب من الضياع
+        let maxStudents = (best.students && Array.isArray(best.students)) ? best.students : [];
+        cands.forEach(function (c) {
+          if (c && Array.isArray(c.students) && c.students.length > maxStudents.length) {
+            maxStudents = c.students;
+          }
+        });
         db = Object.assign(blankDb(), best);
         if (best.settings) db.settings = Object.assign(blankDb().settings, best.settings);
+        if (maxStudents.length > (db.students || []).length) {
+          db.students = maxStudents;
+        }
       } else {
         db = blankDb();
       }
@@ -11187,7 +11187,7 @@
       }
       function score(d) {
         if (!d || typeof d !== "object") return -1;
-        return ((d.classes || []).length || 0) * 20 + ((d.teachers || []).length || 0) * 8 + ((d.subjects || []).length || 0);
+        return ((d.classes || []).length || 0) * 20 + ((d.teachers || []).length || 0) * 8 + ((d.subjects || []).length || 0) + ((d.students || []).length || 0) * 2;
       }
       let best = null, bestN = -1;
       function consider(raw) {
@@ -18832,18 +18832,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
     // دالة تنقية المفاتيح
     function purgeAccountKeys(acc) {
+      // لا نحذف بيانات الحساب من التخزين المحلي حتى لا تضيع بيانات الطلاب عند الفتح في جهاز جديد
       if (!acc) return;
-      const A = normAcc(acc);
-      if (!A) return;
-      const del = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i) || "";
-        if (k === AUTH_KEY) continue;
-        if (k.indexOf(A) >= 0) del.push(k);
-        if (k === KEY + "_guest") del.push(k);
-      }
-      del.forEach(k => { try { localStorage.removeItem(k); } catch (e) { } });
-      try { localStorage.removeItem(KEY + "_guest"); } catch (e) { }
     }
 
     // اعتراض adoptAccount
