@@ -8319,6 +8319,14 @@
                   تأكيد وحفظ بيانات الحساب
                 </button>
               </div>
+              <div style="margin-top:14px;padding:12px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7">
+                <div style="font-weight:800;color:#b91c1c;margin-bottom:6px">إلغاء أو حذف الحساب</div>
+                <div style="font-size:0.78rem;color:#7f1d1d;line-height:1.6;margin-bottom:8px">
+                  المعاون: يغادر المدرسة ويُلغى دخوله. المدير: يحذف حساب المدرسة وبياناتها نهائياً.
+                </div>
+                <button type="button" class="btn" style="height:36px;background:#fff;border:1px solid #fca5a5;color:#b91c1c;font-weight:800;border-radius:10px"
+                  onclick="deleteOrLeaveMyAccount()">إلغاء / حذف حسابي</button>
+              </div>
             </div>
 
           </div>
@@ -8488,11 +8496,22 @@
                 </div>
                 <div class="modern-field">
                   <label>صلاحية المعاون في المدرسة:</label>
-                  <select id="newAssistRole">
-                    <option value="assistant">معاون مدرسة (تعديل الجدول والغيابات والاحتياط)</option>
-                    <option value="viewer">مساعد / مراقب (مشاهدة الجدول وطباعته فقط)</option>
+                  <select id="newAssistRole" onchange="fillAssistPermsFromRole()">
+                    <option value="assistant">معاون مدرسة (تعديل حسب الصلاحيات أدناه)</option>
+                    <option value="viewer">مساعد / مراقب (عرض وطباعة فقط)</option>
                   </select>
                 </div>
+              </div>
+              <div id="assistPermBox" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px;padding:10px;border:1px dashed #d3e1ee;border-radius:10px;background:#f8fbff;font-size:0.8rem;font-weight:700;color:#163858">
+                <label><input type="checkbox" data-perm="timetable" checked> إنشاء وتعديل الجدول</label>
+                <label><input type="checkbox" data-perm="absences" checked> الغيابات والاحتياط</label>
+                <label><input type="checkbox" data-perm="teachers" checked> المعلمون</label>
+                <label><input type="checkbox" data-perm="subjects" checked> المواد والنصاب</label>
+                <label><input type="checkbox" data-perm="students" checked> الطلاب</label>
+                <label><input type="checkbox" data-perm="classes" checked> الصفوف والشعب</label>
+                <label><input type="checkbox" data-perm="notices" checked> التبليغات</label>
+                <label><input type="checkbox" data-perm="views" checked> عرض وطباعة الجدول</label>
+                <label><input type="checkbox" data-perm="settings"> إعدادات المدرسة</label>
               </div>
 
               <div
@@ -10652,7 +10671,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.67";
+    const APP_VERSION = "1.68";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10738,16 +10757,84 @@
       if (!acc) return;
     }
 
+    function sameLoginAcc(a, b) {
+      a = String(a || "").trim();
+      b = String(b || "").trim();
+      if (!a || !b) return false;
+      if (a === b) return true;
+      if (a.toLowerCase() === b.toLowerCase()) return true;
+      var da = a.replace(/\D/g, ""), dbn = b.replace(/\D/g, "");
+      return !!(da.length >= 8 && dbn.length >= 8 && da === dbn);
+    }
     function isLinkedAssistant() {
       try {
-        if (window._isOwner === false) return true;
-        if (db && db.settings && db.settings.linkedSchool) return true;
+        if (window._isOwner === true) return false;
         var acc0 = window._acc || "";
-        if (acc0 && localStorage.getItem("tt_linked_school_" + acc0)) return true;
+        var linked = "";
+        try { linked = String((db && db.settings && db.settings.linkedSchool) || ""); } catch (e0) { }
+        if (!linked && acc0) {
+          try { linked = localStorage.getItem("tt_linked_school_" + acc0) || ""; } catch (e1) { }
+        }
+        if (linked && acc0 && sameLoginAcc(linked, acc0)) return false;
+        if (window._schoolOwner && acc0 && sameLoginAcc(window._schoolOwner, acc0)) return false;
+        if (window._isOwner === false) return true;
+        if (linked && acc0 && !sameLoginAcc(linked, acc0)) return true;
       } catch (e) { }
       return false;
     }
+    function defaultClientPerms(role) {
+      if (role === "viewer") {
+        return { timetable: false, absences: false, teachers: false, subjects: false, students: false, classes: false, settings: false, notices: false, print: true, views: true };
+      }
+      return { timetable: true, absences: true, teachers: true, subjects: true, students: true, classes: true, settings: false, notices: true, print: true, views: true };
+    }
+    function canPerm(k) {
+      if (!isLinkedAssistant()) return true;
+      var p = window._myPerms;
+      if (!p) {
+        var role = (db && db.settings && db.settings.userRole) || "assistant";
+        p = defaultClientPerms(role);
+      }
+      if (k === "print") return p.print !== false || p.views !== false;
+      return p[k] !== false;
+    }
+    function collectAssistPerms(boxId) {
+      var box = document.getElementById(boxId || "assistPermBox");
+      var out = defaultClientPerms(((document.getElementById("newAssistRole") || {}).value) || "assistant");
+      if (!box) return out;
+      box.querySelectorAll("input[data-perm]").forEach(function (inp) {
+        out[inp.getAttribute("data-perm")] = !!inp.checked;
+      });
+      out.print = !!out.views;
+      return out;
+    }
+    window.fillAssistPermsFromRole = function () {
+      var role = ((document.getElementById("newAssistRole") || {}).value) || "assistant";
+      var p = defaultClientPerms(role);
+      var box = document.getElementById("assistPermBox");
+      if (!box) return;
+      box.querySelectorAll("input[data-perm]").forEach(function (inp) {
+        var k = inp.getAttribute("data-perm");
+        inp.checked = p[k] !== false;
+      });
+    };
+    function applyPermNav() {
+      var map = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", views: "views", notices: "notices" };
+      document.querySelectorAll("nav.tabs button[data-tab]").forEach(function (b) {
+        var k = map[b.getAttribute("data-tab")];
+        if (!k) { b.style.display = ""; return; }
+        b.style.display = canPerm(k) ? "" : "none";
+      });
+      try {
+        var addNm = document.getElementById("newAssistName");
+        if (addNm) {
+          var card = addNm.closest(".settings-luxury-card");
+          if (card) card.style.display = (!isLinkedAssistant() || canPerm("settings")) ? "" : "none";
+        }
+      } catch (e) { }
+    }
     function restoreAssistantProfile() {
+
       if (!isLinkedAssistant()) return;
       if (!db.settings) db.settings = {};
       var acc = window._acc || "";
@@ -11518,6 +11605,12 @@
 
     function tab(btn) {
       if (!btn) return;
+      var need = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", views: "views", notices: "notices", attendance: "absences" };
+      var req = need[btn.dataset.tab];
+      if (req && typeof canPerm === "function" && !canPerm(req)) {
+        try { note("ما عندك صلاحية على هذا القسم — راجع المدير"); } catch (eP) { }
+        return;
+      }
       if (typeof selectedTeacherIds !== "undefined") selectedTeacherIds.clear();
       window._tSel = null;
       if (typeof selectedStudentIds !== "undefined") selectedStudentIds.clear();
@@ -13105,11 +13198,13 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       if (document.getElementById("userPhoneInput")) document.getElementById("userPhoneInput").value = curPhone;
 
       let curRole = (db.settings && db.settings.userRole) || localStorage.getItem("tt_user_role_" + (window._acc || "")) || "owner";
-      if (isLinkedAssistant()) curRole = "assistant";
+      if (isLinkedAssistant()) curRole = (curRole === "viewer") ? "viewer" : "assistant";
+      else curRole = "owner";
       if (document.getElementById("userRoleSelect")) {
         document.getElementById("userRoleSelect").value = curRole;
-        document.getElementById("userRoleSelect").disabled = isLinkedAssistant();
+        document.getElementById("userRoleSelect").disabled = true;
       }
+      try { applyPermNav(); } catch (eNav) { }
 
       const curPin = (db.settings && db.settings.userPin) || localStorage.getItem("tt_user_pin_" + (window._acc || "")) || "";
       if (document.getElementById("userPinInput") && curPin) document.getElementById("userPinInput").value = curPin;
@@ -17264,9 +17359,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         var name = m.name ? (' (' + m.name + ')') : '';
         var masked = acc.length > 6 ? acc.slice(0, 3) + '****' + acc.slice(-3) : acc;
         var joined = m.joined || '-';
+        var roleLab = (m.role === "viewer") ? "مساعد" : "معاون";
         var delBtn = isOwner
-          ? '<button onclick="removeMember(\'' + acc + '\')" style="margin-right:auto;background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700" title="إزالة العضو">🗑️ إزالة</button>'
-          : '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">انضم ' + joined + '</span>';
+          ? ('<span style="display:flex;gap:6px;margin-right:auto">'
+            + '<span style="font-size:.7rem;color:#176ab0;font-weight:800">' + roleLab + '</span>'
+            + '<button type="button" onclick="openMemberPerms(\'' + acc + '\')" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700">صلاحيات</button>'
+            + '<button type="button" onclick="removeMember(\'' + acc + '\')" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700">إزالة</button></span>')
+          : '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">' + roleLab + ' · انضم ' + joined + '</span>';
         return '<div style="padding:4px 0;border-bottom:1px dashed #d3e1ee;display:flex;gap:8px;align-items:center">'
           + '<span>👤</span>'
           + '<span style="font-weight:700;color:#145d9b;direction:rtl">' + masked + name + '</span>'
@@ -17330,16 +17429,26 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           renderMembersUI([], false, window._pendingJoin.code || "");
           return;
         }
-        if (r.is_owner && db.settings.linkedSchool && String(db.settings.linkedSchool) !== String(r.owner_acc || "")) {
+        if (r.is_owner && db.settings.linkedSchool && !sameLoginAcc(db.settings.linkedSchool, r.owner_acc || window._acc || "")) {
           r.is_owner = false;
+        }
+        if (r.is_owner) {
+          window._isOwner = true;
+          db.settings.userRole = "owner";
+          window._myPerms = null;
+          try { applyPermNav(); } catch (ePn2) { }
+          try { localStorage.setItem("tt_user_role_" + (window._acc || ""), "owner"); } catch (eOw) { }
         }
         if (r.school_code) db.settings.schoolCode = r.school_code;
         if (r.school_name && !r.is_owner) db.settings.schoolName = r.school_name;
         if (r.owner_acc && !r.is_owner) {
           db.settings.linkedSchool = r.owner_acc;
           window._isOwner = false;
+          db.settings.userRole = (r.my_role === "viewer") ? "viewer" : "assistant";
+          window._myPerms = r.my_perms || defaultClientPerms(db.settings.userRole);
           try { localStorage.setItem("tt_linked_school_" + (window._acc || ""), r.owner_acc); } catch (eL) { }
           try { restoreAssistantProfile(); } catch (eAs3) { }
+          try { applyPermNav(); } catch (ePn) { }
         }
       } catch (e) { }
       // الاشتراك يُورّث من أي حساب مفعّل داخل الفريق (المالك أو أي عضو منضم)
@@ -19197,7 +19306,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
     // حفظ إعدادات المستخدم الجديد الإجبارية
     window.saveNewUserSetup = function () {
-      const role = (document.getElementById("userRoleSelect") && document.getElementById("userRoleSelect").value) || "owner";
+      const role = isLinkedAssistant()
+        ? (((document.getElementById("userRoleSelect") && document.getElementById("userRoleSelect").value) || "assistant"))
+        : "owner";
       const name = (document.getElementById("userNameInput") && document.getElementById("userNameInput").value.trim()) || "";
       const phone = (document.getElementById("userPhoneInput") && document.getElementById("userPhoneInput").value.trim()) || "";
       const pin = (document.getElementById("userPinInput") && document.getElementById("userPinInput").value.trim()) || "";
@@ -19264,7 +19375,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           google_email: linkedEmail,
           pw: pin,
           user_name: name,
-          role: role
+          role: role,
+          perms: collectAssistPerms()
         })
       }).then(function (r) { return r.json(); }).then(function (res) {
         if (res && res.ok && res.account) {
@@ -19334,7 +19446,97 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }, 500);
     };
 
+    window.openMemberPerms = function (memberAcc) {
+      var members = window._schoolMembers || [];
+      var m = members.find(function (x) { return x && x.account === memberAcc; });
+      if (!m) return;
+      var p = defaultClientPerms(m.role || "assistant");
+      if (m.perms) Object.keys(p).forEach(function (k) { if (typeof m.perms[k] === "boolean") p[k] = m.perms[k]; });
+      var keys = [
+        ["timetable", "إنشاء وتعديل الجدول"],
+        ["absences", "الغيابات والاحتياط"],
+        ["teachers", "المعلمون"],
+        ["subjects", "المواد والنصاب"],
+        ["students", "الطلاب"],
+        ["classes", "الصفوف والشعب"],
+        ["notices", "التبليغات"],
+        ["views", "عرض وطباعة الجدول"],
+        ["settings", "إعدادات المدرسة"]
+      ];
+      var html = '<div id="permPop" style="position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id===\'permPop\')this.remove()">'
+        + '<div style="background:#fff;border-radius:16px;max-width:420px;width:100%;padding:16px;direction:rtl">'
+        + '<div style="font-weight:900;color:#163858;margin-bottom:8px">صلاحيات ' + (m.name || memberAcc) + '</div>'
+        + '<select id="permRoleSel" style="width:100%;margin-bottom:10px;height:38px;border-radius:8px;border:1px solid #d3e1ee">'
+        + '<option value="assistant"' + (m.role !== "viewer" ? " selected" : "") + '>معاون</option>'
+        + '<option value="viewer"' + (m.role === "viewer" ? " selected" : "") + '>مساعد / مراقب</option></select>'
+        + keys.map(function (kv) {
+          return '<label style="display:flex;gap:8px;align-items:center;padding:4px 0;font-weight:700;font-size:.86rem"><input type="checkbox" data-edit-perm="' + kv[0] + '"' + (p[kv[0]] !== false ? " checked" : "") + '> ' + kv[1] + '</label>';
+        }).join("")
+        + '<div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">'
+        + '<button type="button" class="btn w" onclick="document.getElementById(\'permPop\').remove()">إلغاء</button>'
+        + '<button type="button" class="btn g" onclick="saveMemberPerms(\'' + memberAcc + '\')">حفظ الصلاحيات</button>'
+        + '</div></div></div>';
+      document.body.insertAdjacentHTML("beforeend", html);
+    };
+    window.saveMemberPerms = function (memberAcc) {
+      var role = ((document.getElementById("permRoleSel") || {}).value) || "assistant";
+      var perms = defaultClientPerms(role);
+      document.querySelectorAll("#permPop input[data-edit-perm]").forEach(function (inp) {
+        perms[inp.getAttribute("data-edit-perm")] = !!inp.checked;
+      });
+      perms.print = !!perms.views;
+      fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/update_member", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ owner_acc: window._acc, member_acc: memberAcc, role: role, perms: perms })
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (res && res.ok) {
+          window._schoolMembers = res.members || window._schoolMembers;
+          renderMembersUI(window._schoolMembers, true, null);
+          var pop = document.getElementById("permPop");
+          if (pop) pop.remove();
+          okNote("تم حفظ صلاحيات المعاون");
+        } else {
+          note((res && res.message) || "تعذر حفظ الصلاحيات");
+        }
+      }).catch(function () { note("تعذر الاتصال"); });
+    };
+    window.deleteOrLeaveMyAccount = function () {
+      var acc = window._acc || "";
+      if (!acc) return;
+      if (acc === "07813332882") { note("حساب المطور لا يُحذف"); return; }
+      if (isLinkedAssistant()) {
+        if (!confirm("تأكيد مغادرة المدرسة وحذف حساب المعاون من هذا الجهاز؟")) return;
+        fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/leave_school", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ acc: acc })
+        }).then(function (r) { return r.json(); }).then(function (res) {
+          if (res && res.ok) {
+            try { handleRemovedFromSchool(); } catch (e) { }
+            doLogout();
+            okNote("تم إلغاء حسابك كمعاون");
+          } else {
+            note((res && res.message) || "تعذر المغادرة");
+          }
+        }).catch(function () { note("تعذر الاتصال"); });
+        return;
+      }
+      var w = prompt("سيتم حذف مدرسة كاملة وبياناتها نهائياً. اكتب كلمة حذف للتأكيد:");
+      if (w !== "حذف") { note("تم إلغاء الحذف"); return; }
+      fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/delete_account", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acc: acc, confirm: "حذف" })
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (res && res.ok) {
+          try { db = blankDb(); save(true); } catch (e) { }
+          doLogout();
+          okNote("تم حذف حساب المدرسة");
+        } else {
+          note((res && res.message) || "تعذر حذف الحساب");
+        }
+      }).catch(function () { note("تعذر الاتصال"); });
+    };
     // إنشاء حساب المعاون مباشرة من قبل مدير المدرسة
+
     window.createAssistantDirectly = function () {
       const name = (document.getElementById("newAssistName") && document.getElementById("newAssistName").value.trim()) || "";
       const phone = (document.getElementById("newAssistPhone") && document.getElementById("newAssistPhone").value.trim()) || "";
