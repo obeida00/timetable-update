@@ -10635,7 +10635,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.63";
+    const APP_VERSION = "1.64";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -17816,7 +17816,25 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }, 7000);
     // فحص فوري عند العودة للتطبيق
     document.addEventListener("visibilitychange", function () {
-      try { if (!document.hidden && window._acc) refreshTeamMembers(); } catch (e) { }
+      try {
+        if (!document.hidden && window._acc) {
+          refreshTeamMembers();
+          syncToCloudNow(false);
+        }
+      } catch (e) { }
+    });
+    // مزامنة تلقائية فور عودة اتصال الإنترنت في الهاتف
+    window.addEventListener("online", function () {
+      try {
+        if (window._acc) {
+          syncToCloudNow(false);
+          refreshTeamMembers();
+          okNote("🟢 تم استعادة الاتصال بالإنترنت والمزامنة بنجاح");
+        }
+      } catch (e) { }
+    });
+    window.addEventListener("offline", function () {
+      try { note("📡 وضع عدم الاتصال: التطبيق يعمل بكامل ميزاته أوفلاين"); } catch (e) { }
     });
     let _updInfo = null;
     function setBell(on) {
