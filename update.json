@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.68",
-    "notes": "صلاحيات المعاون والمساعد يحددها المدير، وإلغاء أو حذف الحساب من التطبيق"
+    "version": "1.69",
+    "notes": "حذف الحسابات من بوت المطور نهائي ولا ترجع بالمزامنة"
 }
