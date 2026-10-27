@@ -10580,6 +10580,7 @@
     const KEY = "school_tt_v5_fresh_start";
     window.getPersistentAccount = function () {
       try {
+        if (localStorage.getItem("tt_logged_out") === "1") return "";
         // 1. Check primary auth key session
         const a = JSON.parse(localStorage.getItem("school_tt_auth_v1_fresh") || "{}");
         if (a && a.session && String(a.session).trim()) return String(a.session).trim();
@@ -10595,24 +10596,22 @@
         // 4. Check cookie
         const match = document.cookie.match(/(?:^|; )tt_acc=([^;]*)/);
         if (match && match[1]) return decodeURIComponent(match[1]).trim();
-        // 5. Check if exactly one user in users map
-        if (a && a.users) {
-          const uKeys = Object.keys(a.users);
-          if (uKeys.length === 1 && uKeys[0]) return uKeys[0].trim();
-        }
       } catch (e) { }
       return "";
     };
     window.setPersistentAccount = function (acc) {
       if (!acc) return;
       try {
+        localStorage.removeItem("tt_logged_out");
         localStorage.setItem("tt_persistent_account", acc);
         document.cookie = "tt_acc=" + encodeURIComponent(acc) + ";path=/;max-age=315360000;SameSite=Lax";
       } catch (e) { }
     };
     window.clearPersistentAccount = function () {
       try {
+        localStorage.setItem("tt_logged_out", "1");
         localStorage.removeItem("tt_persistent_account");
+        localStorage.removeItem("tt_google_linked_email");
         document.cookie = "tt_acc=;path=/;max-age=0;SameSite=Lax";
       } catch (e) { }
     };
@@ -16115,6 +16114,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       lb.style.display = "none";
     }
     function applyGate(s) {
+      if (localStorage.getItem("tt_logged_out") === "1") {
+        showLoginBox();
+        return;
+      }
       let logged = !!(s && s.account);
       if (!logged) {
         const pAcc = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : "";
@@ -16988,14 +16991,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
         // مسح الجلسة وكافة التخزينات المؤقتة
         try {
+          localStorage.setItem("tt_logged_out", "1");
           window.clearPersistentAccount();
           localStorage.removeItem(AUTH_KEY);
+          localStorage.removeItem("school_tt_auth_v1_fresh");
           localStorage.removeItem("tt_google_linked_email");
           localStorage.removeItem("tt_persistent_account");
           sessionStorage.clear();
-          const a = loadAuth();
-          a.session = "";
-          saveAuth(a);
         } catch (e) { }
 
         // مسح المتغيرات المؤقتة
@@ -17657,6 +17659,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       });
     }
     function checkLicenseGate() {
+      if (localStorage.getItem("tt_logged_out") === "1") {
+        try { applyGate({ ok: false, account: "" }); } catch (e) { }
+        return;
+      }
       const api = window.pywebview && window.pywebview.api;
       const ls = localStatus();
       const pAcc = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : "";
@@ -17771,6 +17777,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function kickoff() {
       if (!started) startApp("");
       _diskReady = true;
+      if (localStorage.getItem("tt_logged_out") === "1") {
+        checkLicenseGate();
+        return;
+      }
       const api = pyApi();
       if (api && api.load_auth_state) {
         try {
