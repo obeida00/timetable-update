@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.69",
-    "notes": "حذف الحسابات من بوت المطور نهائي ولا ترجع بالمزامنة"
+    "version": "1.70",
+    "notes": "صلاحية العضو من قائمة منسدلة: معاون يعدّل، ومساعد عرض فقط"
 }
