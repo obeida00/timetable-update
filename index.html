@@ -7235,7 +7235,7 @@
           <strong>«تعديل ✏️»</strong> أو <strong>«بطاقة»</strong> أو <strong>«حذف»</strong></span>
       </p>
       <div class="toolbar no-print" id="studBar">
-        <button class="btn" type="button" onclick="openStudent()">
+        <button class="btn" type="button" id="studAddBtn" onclick="openStudent()">
           <span>جديد</span>
           <span style="font-size:1.15rem;font-weight:900;line-height:1;margin-top:-1px">+</span>
         </button>
@@ -10660,7 +10660,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.70";
+    const APP_VERSION = "1.71";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10773,12 +10773,16 @@
     }
     function defaultClientPerms(role) {
       if (role === "viewer") {
-        return { timetable: false, absences: false, teachers: false, subjects: false, students: false, classes: false, settings: false, notices: false, print: true, views: true };
+        return { timetable: false, absences: false, teachers: false, subjects: false, students: true, classes: false, settings: false, notices: false, print: true, views: true };
       }
       return { timetable: true, absences: true, teachers: true, subjects: true, students: true, classes: true, settings: false, notices: true, print: true, views: true };
     }
+    function isViewOnly() {
+      return isLinkedAssistant() && ((db && db.settings && db.settings.userRole) === "viewer");
+    }
     function canPerm(k) {
       if (!isLinkedAssistant()) return true;
+      if (isViewOnly()) return k === "views" || k === "print" || k === "students";
       var p = window._myPerms;
       if (!p) {
         var role = (db && db.settings && db.settings.userRole) || "assistant";
@@ -10792,6 +10796,21 @@
       return defaultClientPerms(role);
     }
     window.fillAssistPermsFromRole = function () { };
+    function applyViewOnlyUI() {
+      var vo = isViewOnly();
+      document.body.classList.toggle("view-only", !!vo);
+      ["studAddBtn", "studEditBtn", "studPromoteBtn"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = vo ? "none" : "";
+      });
+      var drops = document.querySelectorAll("#studBar .drop");
+      if (drops.length > 1) drops[drops.length - 1].style.display = vo ? "none" : "";
+      var saveG = document.querySelector("#grdBar > button.btn");
+      if (saveG) saveG.style.display = vo ? "none" : "";
+      document.querySelectorAll('button[onclick="openSubstiModal()"]').forEach(function (b) {
+        b.style.display = vo ? "none" : "";
+      });
+    }
     function applyPermNav() {
       var map = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", views: "views", notices: "notices" };
       document.querySelectorAll("nav.tabs button[data-tab]").forEach(function (b) {
@@ -10806,6 +10825,7 @@
           if (card) card.style.display = (!isLinkedAssistant() || canPerm("settings")) ? "" : "none";
         }
       } catch (e) { }
+      try { applyViewOnlyUI(); } catch (eVo) { }
       try {
         var onBtn = document.querySelector("nav.tabs button.on");
         var t = onBtn && onBtn.getAttribute("data-tab");
@@ -11154,6 +11174,7 @@
       }).catch(function () { });
     }
     function persistCloud(s) {
+      if (typeof isViewOnly === "function" && isViewOnly()) return;
       const acc = window._acc || "";
       if (!acc || acc.length < 8) return;
       clearTimeout(_cloudPushTimer);
@@ -14014,6 +14035,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
     }
 
     function editCell(secId, d, p) {
+      if (isViewOnly()) { try { note("المساعد يشوف ويطبّع فقط"); } catch (e) { } return; }
       if (!db.grid) db.grid = emptyGrid();
       if (!db.grid[secId]) db.grid = Object.assign(emptyGrid(), db.grid);
       if (!db.grid[secId][d]) db.grid[secId][d] = Array(db.settings.periods).fill(null);
@@ -17348,6 +17370,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
             + '<select onchange="changeMemberRole(\'' + acc + '\', this.value)" style="height:28px;border:1px solid #bfdbfe;border-radius:8px;background:#f8fbff;color:#163858;font-weight:800;font-size:.72rem;padding:0 6px">'
             + '<option value="assistant"' + (isViewer ? "" : " selected") + '>معاون — تعديل</option>'
             + '<option value="viewer"' + (isViewer ? " selected" : "") + '>مساعد — عرض فقط</option></select>'
+            + '<button type="button" onclick="openEditMember(\'' + acc + '\')" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700">تعديل</button>'
             + '<button type="button" onclick="removeMember(\'' + acc + '\')" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700">إزالة</button></span>')
           : '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">' + (isViewer ? "مساعد — عرض فقط" : "معاون — تعديل") + ' · انضم ' + joined + '</span>';
         return '<div style="padding:4px 0;border-bottom:1px dashed #d3e1ee;display:flex;gap:8px;align-items:center">'
@@ -19430,7 +19453,53 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }, 500);
     };
 
+    window.openEditMember = function (memberAcc) {
+      var members = window._schoolMembers || [];
+      var m = members.find(function (x) { return x && x.account === memberAcc; });
+      if (!m) return;
+      var isV = m.role === "viewer";
+      var html = '<div id="memEditPop" style="position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id===\'memEditPop\')this.remove()">'
+        + '<div style="background:#fff;border-radius:16px;max-width:420px;width:100%;padding:16px;direction:rtl">'
+        + '<div style="font-weight:900;color:#163858;margin-bottom:10px">تعديل بيانات العضو</div>'
+        + '<label style="display:block;font-size:.8rem;font-weight:800;color:#176ab0;margin-bottom:4px">الاسم</label>'
+        + '<input id="memEditName" value="' + String(m.name || "").replace(/"/g, "") + '" style="width:100%;height:38px;border:1px solid #d3e1ee;border-radius:8px;margin-bottom:8px;padding:0 10px">'
+        + '<label style="display:block;font-size:.8rem;font-weight:800;color:#176ab0;margin-bottom:4px">رقم الهاتف (لا يُغيّر)</label>'
+        + '<input value="' + String(m.account || "") + '" disabled style="width:100%;height:38px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:8px;padding:0 10px;background:#f8fafc">'
+        + '<label style="display:block;font-size:.8rem;font-weight:800;color:#176ab0;margin-bottom:4px">رمز دخول جديد (اختياري)</label>'
+        + '<input id="memEditPin" type="password" placeholder="اتركه فارغ إذا ما تريد تغييره" style="width:100%;height:38px;border:1px solid #d3e1ee;border-radius:8px;margin-bottom:8px;padding:0 10px">'
+        + '<label style="display:block;font-size:.8rem;font-weight:800;color:#176ab0;margin-bottom:4px">الصلاحية</label>'
+        + '<select id="memEditRole" style="width:100%;height:38px;border:1px solid #d3e1ee;border-radius:8px;margin-bottom:12px">'
+        + '<option value="assistant"' + (isV ? "" : " selected") + '>معاون — تعديل الجدول والبيانات</option>'
+        + '<option value="viewer"' + (isV ? " selected" : "") + '>مساعد — عرض وطباعة فقط</option></select>'
+        + '<div style="font-size:.75rem;color:#64748b;line-height:1.5;margin-bottom:10px">المساعد يشوف ويطبّع الجدول وقوائم أسماء الطلاب وسجل الدرجات فقط، بدون تعديل.</div>'
+        + '<div style="display:flex;gap:8px;justify-content:flex-end">'
+        + '<button type="button" class="btn w" onclick="document.getElementById(\'memEditPop\').remove()">إلغاء</button>'
+        + '<button type="button" class="btn g" onclick="saveEditMember(\'' + memberAcc + '\')">حفظ</button>'
+        + '</div></div></div>';
+      document.body.insertAdjacentHTML("beforeend", html);
+    };
+    window.saveEditMember = function (memberAcc) {
+      var name = ((document.getElementById("memEditName") || {}).value || "").trim();
+      var pin = ((document.getElementById("memEditPin") || {}).value || "").trim();
+      var role = ((document.getElementById("memEditRole") || {}).value) || "assistant";
+      if (pin && pin.length < 4) { note("رمز الدخول ٤ أرقام على الأقل"); return; }
+      var body = { owner_acc: window._acc, member_acc: memberAcc, role: role, perms: defaultClientPerms(role), name: name };
+      if (pin) body.pin = pin;
+      fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/update_member", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (res && res.ok) {
+          window._schoolMembers = res.members || window._schoolMembers;
+          renderMembersUI(window._schoolMembers, true, null);
+          var pop = document.getElementById("memEditPop");
+          if (pop) pop.remove();
+          okNote("تم حفظ بيانات العضو");
+        } else note((res && res.message) || "تعذر الحفظ");
+      }).catch(function () { note("تعذر الاتصال"); });
+    };
     window.changeMemberRole = function (memberAcc, role) {
+
       role = role || "assistant";
       var perms = defaultClientPerms(role);
       fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/update_member", {
@@ -19519,7 +19588,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           phone: phone,
           name: name,
           pin: pin,
-          role: role
+          role: role,
+          perms: collectAssistPerms()
         })
       })
         .then(function (r) { return r.json(); })
@@ -20996,6 +21066,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
 
     function openStudent() {
+      if (typeof isViewOnly === "function" && isViewOnly()) { note("المساعد يشوف ويطبّع فقط"); return; }
       try {
         const box = $("studBox");
         if (box) {
@@ -22032,6 +22103,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       });
     }
     function saveGradesSilent() {
+      if (typeof isViewOnly === "function" && isViewOnly()) return false;
       const box = $("grades");
       if (box && box.hidden) return false;
       if (window._grdAllMode) return false;
@@ -22401,6 +22473,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
 
     function saveGrades() {
+      if (typeof isViewOnly === "function" && isViewOnly()) { note("المساعد يشوف ويطبّع فقط"); return false; }
+
       const subj = $("grdSubject") ? String($("grdSubject").value || "").trim() : "";
       const secId = $("grdSecPick") ? $("grdSecPick").value : "";
       if (!secId || !subj) { alert("اختر الشعبة والمادة أولاً."); return false; }
