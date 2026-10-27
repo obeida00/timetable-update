@@ -7855,32 +7855,7 @@
           </div>
 
           <div id="loginMainForm">
-            <!-- 🌟 الدخول الرسمي الأساسي بواسطة Google (إلزامي لإنشاء الحساب وتوثيقه) -->
-            <div
-              style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:12px;margin-bottom:14px;text-align:center">
-              <div style="font-size:0.82rem;font-weight:800;color:#166534;margin-bottom:8px">
-                ✨ إنشاء حساب جديد أو تسجيل الدخول
-              </div>
-              <button type="button" class="emis-google-btn" onclick="loginWithGoogleMain()"
-                style="border:1.5px solid #4285F4;background:#fff;box-shadow:0 3px 10px rgba(66,133,244,0.15)">
-                <svg width="20" height="20" viewBox="0 0 48 48">
-                  <path fill="#EA4335"
-                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                  <path fill="#4285F4"
-                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                  <path fill="#FBBC05"
-                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                  <path fill="#34A853"
-                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-                </svg>
-                <span style="font-weight:900;color:#1e293b;font-size:0.92rem">المتابعة باستخدام Google</span>
-              </button>
-              <div style="font-size:0.72rem;color:#475569;margin-top:6px;line-height:1.4">
-                🔒 للمستخدمين الجدد: سجل بحساب Google أولاً ثم عيّن رقم هاتفك ورمز الدخول من إعدادات الحساب.
-              </div>
-            </div>
-
-            <div class="emis-divider" style="margin:14px 0 12px 0">أو الدخول برقم الهاتف (للحسابات المربوطة)</div>
+            <div class="emis-divider" style="margin:0 0 12px 0">دخول المدير أو المعاون بالرقم والرمز</div>
 
             <div class="emis-q-field">
               <label>رقم الهاتف المعتمد</label>
@@ -7912,10 +7887,24 @@
             </div>
 
             <button type="button" class="emis-btn-submit" onclick="doLogin()">
-              <span>تسجيل الدخول بالهاتف</span>
+              <span>تسجيل الدخول</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
+            </button>
+            <button type="button" class="btn w" onclick="regStart()"
+              style="width:100%;margin-top:10px;height:42px;font-weight:800;border-radius:12px">
+              إنشاء حساب مدير لمدرسة جديدة
+            </button>
+            <button type="button" class="emis-google-btn" onclick="loginWithGoogleMain()"
+              style="width:100%;margin-top:8px;border:1px solid #e2e8f0;background:#fff;justify-content:center">
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+              </svg>
+              <span style="font-weight:800;color:#475569;font-size:0.84rem">استرجاع الحساب بـ Google (اختياري)</span>
             </button>
           </div>
 
@@ -10663,7 +10652,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.66";
+    const APP_VERSION = "1.67";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -16338,38 +16327,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         return;
       }
 
-      // 🛡️ فحص صارم للأمان: التحقق مما إذا كان الحساب مرتبطاً بحساب Google محلياً
-      const isDevAcc = (acc === "07813332882");
-      const savedGoogleLink = localStorage.getItem("tt_google_linked_email") || "";
-      const isGoogleLinkedLocal = isDevAcc || (savedGoogleLink && (savedGoogleLink.includes(acc) || savedGoogleLink.includes("@")));
-
-      // 1. محاولة تسجيل الدخول محلياً فقط إذا كان الحساب موثقاً بـ Google مسبقاً
-      if (isGoogleLinkedLocal) {
-        const rLocal = localLogin(acc, pw);
-        if (rLocal && rLocal.ok) {
-          okNote("تم الدخول بنجاح");
-          afterAccount(rLocal);
-          return;
-        }
-      }
-
-      // 2. إذا كان يعمل بتطبيق سطح المكتب ولديه واجهة محلية
-      if (api && api.login_account && isGoogleLinkedLocal) {
-        api.login_account(acc, pw).then(function (r) {
-          if (r && r.ok) {
-            okNote("تم الدخول");
-            afterAccount(r);
-          } else {
-            checkCloudLogin(acc, pw, r);
-          }
-        }).catch(function () { checkCloudLogin(acc, pw, null); });
-        return;
-      }
       checkCloudLogin(acc, pw, null);
     }
 
     function checkCloudLogin(acc, pw, fallbackLocal) {
-      loginMsg('جاري التحقق من ربط الحساب سحابياً ☁️...');
+      loginMsg('جاري التحقق من الحساب...');
       fetch('https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -16378,9 +16340,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         .then(function (cloudRes) {
           if (cloudRes && cloudRes.ok) {
             onCloudLoginSuccess(acc, pw, cloudRes);
-          } else if (cloudRes && (cloudRes.reason === 'not_google_linked' || cloudRes.reason === 'nouser')) {
-            // 🔒 منع قاطع لأي شخص يحاول الدخول برقم هاتف غير مرتبط بـ Google
-            loginMsg(cloudRes.message || '⚠️ هذا الرقم غير مرتبط بحساب Google. يجب تسجيل الدخول عبر Google أولاً!');
+          } else if (cloudRes && (cloudRes.reason === 'not_google_linked' || cloudRes.reason === 'nouser' || cloudRes.reason === 'no_pin')) {
+            loginMsg(cloudRes.message || 'هذا الرقم غير مسجل. أنشئ حساب مدير أو اطلب من المدير إضافتك كمعاون.');
           } else if (cloudRes && cloudRes.reason === 'pass') {
             loginMsg('رمز الدخول غير صحيح');
           } else if (cloudRes && (cloudRes.reason === 'trial_expired' || cloudRes.reason === 'deleted' || cloudRes.reason === 'expired')) {
@@ -16443,14 +16404,20 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
                   }
                   onCloudLoginSuccess(acc, pw, loginData);
                 } else {
-                  loginMsg("⚠️ هذا الرقم غير مرتبط بحساب Google. يرجى تسجيل الدخول عبر Google أولاً.");
+                  loginMsg("هذا الرقم غير مسجل. أنشئ حساب مدير أو اطلب من المدير إضافتك كمعاون.");
                 }
               }).catch(function () {
-                loginMsg("⚠️ هذا الرقم غير مرتبط بحساب Google. يرجى تسجيل الدخول عبر Google أولاً.");
+                loginMsg("هذا الرقم غير مسجل. أنشئ حساب مدير أو اطلب من المدير إضافتك كمعاون.");
               });
           }
         }).catch(function () {
-          loginMsg("⚠️ تعذر الاتصال بالسحابة للتحقق من ربط الحساب بحساب Google");
+          const rLocal = localLogin(acc, pw);
+          if (rLocal && rLocal.ok) {
+            okNote("تم الدخول بدون إنترنت");
+            afterAccount(rLocal);
+            return;
+          }
+          loginMsg("تعذر الاتصال بالسحابة — تحقق من الإنترنت");
         });
     }
 
@@ -17835,8 +17802,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     window.addEventListener("pywebviewready", function () {
       kickoff();
     });
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", kickoff);
-    else kickoff();
+    setTimeout(function () {
+      if (window.pywebview) return;
+      kickoff();
+    }, 400);
     window.addEventListener("beforeunload", function () { try { clearTimeout(_saveT); flushSave(); } catch (e) { } });
     document.addEventListener("visibilitychange", function () { if (document.hidden) { try { clearTimeout(_saveT); flushSave(); } catch (e) { } } });
     setInterval(function () { try { flushSave(); } catch (e) { } }, 8000);
@@ -18829,7 +18798,35 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const err = (s) => { if (m) m.textContent = s; return false; };
 
       if (schoolName.length < 3) return err("اكتب اسم المدرسة (3 أحرف على الأقل)");
+      if (!window._regTemp || !window._regTemp.phone) return err("ارجع وأكمل بيانات الحساب أولاً");
 
+      err("جاري التحقق هل المدرسة مسجلة...");
+      fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/check_school", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ school: schoolName, directorate: directorate, phone: window._regTemp.phone })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (j && j.exists && j.same_owner) {
+          if (!confirm("هذه المدرسة مسجلة في النظام. هل تريد استرجاع بيانات مدرستك؟")) {
+            err("تم إلغاء الاسترجاع");
+            return;
+          }
+          finishSchoolRegister(schoolName, directorate, manager, managerTitle, schoolCode, year, j);
+          return;
+        }
+        if (j && j.exists && !j.same_owner) {
+          err((j && j.message) || "هذه المدرسة مسجلة مسبقاً. إذا كنت مديرها سجّل دخول برقمك الأصلي لاسترجاعها.");
+          return;
+        }
+        finishSchoolRegister(schoolName, directorate, manager, managerTitle, schoolCode, year, null);
+      }).catch(function () {
+        finishSchoolRegister(schoolName, directorate, manager, managerTitle, schoolCode, year, null);
+      });
+    };
+
+    function finishSchoolRegister(schoolName, directorate, manager, managerTitle, schoolCode, year, restoreInfo) {
+      const m = document.getElementById("regMsg2");
+      const err = (s) => { if (m) m.textContent = s; return false; };
       err("");
       const r = localRegister(window._regTemp.phone, window._regTemp.pw);
       if (!r || !r.ok) {
@@ -18839,6 +18836,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
       window._acc = r.account;
       db = blankDb();
+      if (restoreInfo && restoreInfo.data) {
+        try { db = parseDb(restoreInfo.data) || db; } catch (eRs) { }
+      }
       db.settings.schoolName = schoolName;
       db.settings.userName = window._regTemp.name;
       db.settings.schoolManager = manager;
@@ -18864,7 +18864,21 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       try { syncToCloudNow(false); } catch (e) { }
 
       try { localStorage.setItem("tt_user_name_" + r.account, window._regTemp.name); } catch (e) { }
-      try { okNote("✅ تم إنشاء حسابك ومدرستك — أهلاً " + window._regTemp.name); } catch (e) { }
+      try {
+        okNote((restoreInfo && restoreInfo.data)
+          ? ("تم استرجاع مدرسة «" + schoolName + "»")
+          : ("تم إنشاء حسابك ومدرستك — أهلاً " + window._regTemp.name));
+      } catch (e) { }
+      try {
+        fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            acc: r.account, pw: window._regTemp.pw, name: window._regTemp.name,
+            school: schoolName, directorate: directorate
+          })
+        }).catch(function () { });
+      } catch (eReg) { }
 
       ["regStep1", "regStep2", "loginMain", "otpStep"].forEach(function (id) {
         const el = document.getElementById(id);
@@ -19406,7 +19420,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         `📱 رقم حسابك: ${phone}\n` +
         `🔑 رمز الدخول المبدئي (PIN): ${pin}\n` +
         `🏫 رمز المدرسة: ${schoolCode}\n\n` +
-        `رابط فتح وتنزيل النظام:\nhttps://obeida00.github.io/timetable-update/`;
+        `رابط فتح النظام:\nhttps://schol-table-bot.iq-school-timetable.workers.dev/app`;
 
       const cleanPhone = phone.replace(/\D/g, "");
       let targetPhone = cleanPhone;
