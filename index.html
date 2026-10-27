@@ -10635,7 +10635,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.62";
+    const APP_VERSION = "1.63";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -17358,13 +17358,22 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         try { applyGate(localStatus()); } catch (e) { }
       }
       if (r.is_owner) {
-        // المالك: هل عدّل أحد الأعضاء سجل المدرسة بعد آخر تعديل محلي؟
-        if (r.own_ts && r.own_ts > _ownTsApplied && r.own_ts > _editTs) {
+        // فحص إذا كانت السحابة تحتوي طلاباً وبيانات أفضل غير موجودة محلياً، فاسترجعها فوراً
+        var localStudCount = (typeof db !== "undefined" && db && db.students && Array.isArray(db.students)) ? db.students.length : 0;
+        var needsPull = (r.own_ts && r.own_ts > _ownTsApplied && r.own_ts > _editTs) || (localStudCount === 0);
+        if (needsPull) {
           (function (ts) {
             cloudFetchData(window._acc || "").then(function (d) {
-              _ownTsApplied = ts;
-              mergeSharedIfNewer(d, ts);
-              _sharedTsApplied = ts;
+              if (d) {
+                var cDb = parseDb(d);
+                var cStuds = (cDb && Array.isArray(cDb.students)) ? cDb.students.length : 0;
+                if (cStuds > localStudCount || (ts && ts > _ownTsApplied)) {
+                  _ownTsApplied = ts || Date.now();
+                  mergeDisk(d, true);
+                  _sharedTsApplied = _ownTsApplied;
+                  try { renderStudents(); } catch (eSt) { }
+                }
+              }
             });
           })(r.own_ts);
         }
