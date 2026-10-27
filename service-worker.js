@@ -1,5 +1,6 @@
-const CACHE_NAME = 'madrasati-cache-v2';
+const CACHE_NAME = 'madrasati-cache-v3';
 const urlsToCache = [
+  '/',
   '/app',
   '/manifest.json',
   '/logo.png',
@@ -38,15 +39,26 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Cache-First strategy with Network fallback for static and app resources
   event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
-        if (networkResponse && networkResponse.status === 200) {
-          const respClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, respClone));
-        }
-        return networkResponse;
-      })
-      .catch(() => caches.match(event.request).then(cached => cached || caches.match('/app')))
+    caches.match(event.request).then(cachedResponse => {
+      const fetchPromise = fetch(event.request)
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            const respClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, respClone));
+          }
+          return networkResponse;
+        })
+        .catch(err => {
+          // If offline, try serving fallback cached /app or /
+          if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+            return caches.match('/app').then(appCached => appCached || caches.match('/'));
+          }
+          return null;
+        });
+
+      return cachedResponse || fetchPromise;
+    })
   );
 });
