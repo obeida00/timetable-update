@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.60",
-    "notes": "حل نهائي لمشكلة تكرار تسجيل الدخول وحفظ الجلسة الدائمة على الهاتف والحاسوب بدون إنترنت"
+    "version": "1.61",
+    "notes": "حفظ تسجيل الدخول بشكل دائم على القرص الصلب حتى عند إغلاق التطبيق كلياً"
 }
