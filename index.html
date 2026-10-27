@@ -22838,6 +22838,67 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
   </script>
 
   <!-- بنر تثبيت التطبيق على شاشة الهاتف (PWA Install Prompt) -->
+  
+  <!-- نافذة إرشاد التثبيت المرئية للهاتف (Install Guide Modal) -->
+  <div id="pwaInstallModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.7);backdrop-filter:blur(6px);z-index:9999999;align-items:center;justify-content:center;padding:16px;animation:pwaFadeIn 0.25s ease-out">
+    <div style="background:#ffffff;width:100%;max-width:440px;border-radius:24px;box-shadow:0 25px 60px -15px rgba(0,0,0,0.3);overflow:hidden;border:1px solid #e2e8f0;font-family:inherit;text-align:center">
+      <div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:22px 20px 18px;color:#fff;position:relative">
+        <button type="button" onclick="closePwaModal()" style="position:absolute;top:14px;left:14px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center">✕</button>
+        <img src="/logo.png" onerror="this.src='logo.png'" alt="بوابة مدرستي" style="width:58px;height:58px;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,0.2);margin-bottom:8px;background:#fff">
+        <h3 style="margin:0;font-size:1.15rem;font-weight:800">تثبيت تطبيق بوابة مدرستي</h3>
+        <p style="margin:4px 0 0;font-size:0.8rem;opacity:0.9">يعمل التطبيق بدون متصفح ويدعم العمل بدون إنترنت</p>
+      </div>
+      
+      <!-- محتوى آيفون iOS -->
+      <div id="pwaIosGuide" style="display:none;padding:20px;text-align:right">
+        <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:14px;padding:12px;margin-bottom:14px;font-size:0.85rem;color:#0369a1;font-weight:700;display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.5rem">🍎</span>
+          <span>خطوات التثبيت على الآيفون (Safari):</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+          <span style="background:#e0f2fe;color:#0284c7;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">1</span>
+          <div style="font-size:0.88rem;color:#334155">اضغط على <b>زر المشاركة</b> أسفل شاشة المتصفح <span style="display:inline-block;background:#f1f5f9;padding:2px 8px;border-radius:6px;font-weight:bold;color:#0284c7;border:1px solid #cbd5e1">⎋ (المربع فيه سهم لأعلى)</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+          <span style="background:#e0f2fe;color:#0284c7;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">2</span>
+          <div style="font-size:0.88rem;color:#334155">مرّر لأسفل واضغط على <b>«إضافة إلى الشاشة الرئيسية»</b> <span style="font-weight:bold;color:#059669">(Add to Home Screen ➕)</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
+          <span style="background:#e0f2fe;color:#0284c7;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">3</span>
+          <div style="font-size:0.88rem;color:#334155">اضغط <b>«إضافة» (Add)</b> في أعلى الشاشة وستجد أيقونة مدرستي على هاتفك فوراً!</div>
+        </div>
+        <button type="button" onclick="closePwaModal()" style="width:100%;background:#0284c7;color:#fff;border:none;border-radius:12px;padding:11px;font-size:0.95rem;font-weight:800;cursor:pointer;font-family:inherit">فهمت ذلك ✓</button>
+      </div>
+
+      <!-- محتوى أندرويد Android -->
+      <div id="pwaAndroidGuide" style="display:none;padding:20px;text-align:right">
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:12px;margin-bottom:14px;font-size:0.85rem;color:#15803d;font-weight:700;display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.5rem">🤖</span>
+          <span>تثبيت التطبيق على هاتف الأندرويد:</span>
+        </div>
+        <div id="pwaDirectInstallBox" style="display:none;margin-bottom:14px;text-align:center">
+          <p style="font-size:0.88rem;color:#334155;margin-bottom:12px">المتصفح جاهز لتثبيت التطبيق بضغطة زر واحدة:</p>
+          <button type="button" id="pwaModalDirectBtn" onclick="confirmDeferredInstall()" style="width:100%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:14px;padding:13px;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 6px 16px rgba(16,185,129,0.35);font-family:inherit">📲 اضغط هنا للتثبيت الآن</button>
+        </div>
+        <div id="pwaManualAndroidBox" style="display:block">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+            <span style="background:#dcfce7;color:#16a34a;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">1</span>
+            <div style="font-size:0.88rem;color:#334155">اضغط على <b>قائمة المتصفح</b> في الزاوية <span style="display:inline-block;background:#f1f5f9;padding:2px 8px;border-radius:6px;font-weight:bold;color:#0f172a;border:1px solid #cbd5e1">⋮ (النقاط الثلاث)</span></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
+            <span style="background:#dcfce7;color:#16a34a;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">2</span>
+            <div style="font-size:0.88rem;color:#334155">اختر <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b>.</div>
+          </div>
+          <button type="button" onclick="closePwaModal()" style="width:100%;background:#0284c7;color:#fff;border:none;border-radius:12px;padding:11px;font-size:0.95rem;font-weight:800;cursor:pointer;font-family:inherit">تم الشرح ✓</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <style>
+    @keyframes pwaFadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  </style>
+
   <div id="pwaInstallBanner" style="display:none;position:fixed;top:12px;left:12px;right:12px;z-index:999999;background:linear-gradient(135deg,#ffffff,#f0f7ff);border:1.5px solid #38bdf8;border-radius:18px;padding:12px 14px;box-shadow:0 12px 36px rgba(2,132,199,0.22);align-items:center;justify-content:space-between;gap:10px;animation:slideDownPwa 0.35s ease-out">
     <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
       <img src="/logo.png" alt="بوابة مدرستي" style="width:42px;height:42px;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,0.1);flex-shrink:0">
@@ -23055,19 +23116,62 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       b.style.display = 'flex';
     }
 
-    function triggerPwaInstall() {
+    function openPwaModal() {
+      var modal = document.getElementById('pwaInstallModal');
+      var iosBox = document.getElementById('pwaIosGuide');
+      var androidBox = document.getElementById('pwaAndroidGuide');
+      var directBox = document.getElementById('pwaDirectInstallBox');
+      var manualBox = document.getElementById('pwaManualAndroidBox');
+      if (!modal) return;
+      modal.style.display = 'flex';
+      if (isIos) {
+        if (iosBox) iosBox.style.display = 'block';
+        if (androidBox) androidBox.style.display = 'none';
+      } else {
+        if (iosBox) iosBox.style.display = 'none';
+        if (androidBox) androidBox.style.display = 'block';
+        if (deferredInstallPrompt) {
+          if (directBox) directBox.style.display = 'block';
+          if (manualBox) manualBox.style.display = 'none';
+        } else {
+          if (directBox) directBox.style.display = 'none';
+          if (manualBox) manualBox.style.display = 'block';
+        }
+      }
+    }
+
+    function closePwaModal() {
+      var modal = document.getElementById('pwaInstallModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function confirmDeferredInstall() {
       if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
-        deferredInstallPrompt.userChoice.then((choice) => {
-          if (choice.outcome === 'accepted') {
+        deferredInstallPrompt.userChoice.then(function(choice) {
+          if (choice && choice.outcome === 'accepted') {
             dismissPwaBanner();
+            closePwaModal();
           }
           deferredInstallPrompt = null;
         });
-      } else if (isIos) {
-        alert('📲 لتثبيت التطبيق على الآيفون (iOS):\n\n1. اضغط على زر المشاركة أسفل المتصفح (مربع فيه سهم لأعلى ⎋)\n2. اختر «إضافة إلى الشاشة الرئيسية» (Add to Home Screen ➕)\n3. اضغط «إضافة» وستجد التطبيق على شاشتك كأنه تطبيق أصلي!');
       } else {
-        alert('📲 لتثبيت التطبيق على هاتفك:\n\nاضغط على قائمة المتصفح (نقاط القائمة ⋮) ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».');
+        closePwaModal();
+      }
+    }
+
+    function triggerPwaInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function(choice) {
+          if (choice && choice.outcome === 'accepted') {
+            dismissPwaBanner();
+            closePwaModal();
+          }
+          deferredInstallPrompt = null;
+        });
+      } else {
+        openPwaModal();
       }
     }
 
