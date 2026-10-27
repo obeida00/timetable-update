@@ -5359,7 +5359,6 @@
           radial-gradient(circle at 88% 82%, #1f6fb514, #0000 30%),
           linear-gradient(-145deg, #f5f9fe 0%, #ffffff 48%, #f1f7fd 100%) !important;
         backdrop-filter: blur(8px);
-        display: flex !important;
         align-items: center;
         justify-content: center;
         z-index: 99999 !important;
@@ -6284,6 +6283,14 @@
                 <line x1="1" y1="10" x2="23" y2="10" />
               </svg>
               <span>تفاصيل الاشتراك والتفعيل</span>
+            </button>
+            <button type="button" class="user-dropdown-item" id="menuInstallAppBtn" onclick="hideUserDropdown();triggerPwaInstall()" style="color:#0284c7;font-weight:700">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="5" y="2" width="14" height="20" rx="3" ry="3" />
+                <line x1="12" y1="18" x2="12.01" y2="18" />
+                <path d="M12 7v6m-3-3l3 3 3-3" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>📲 تثبيت التطبيق (Install App)</span>
             </button>
             <div class="user-dropdown-divider"></div>
             <button type="button" class="user-dropdown-item" id="menuLoginItem"
@@ -7791,7 +7798,7 @@
       </div>
     </section>
 
-    <div id="loginBox" class="modal no-print" onclick="event.stopPropagation()">
+    <div id="loginBox" class="modal no-print is-hidden" hidden onclick="event.stopPropagation()">
       <div class="emis-login-shell">
 
         <!-- Left Decorative & Branding Panel (Clean EMIS Style) -->
@@ -10581,7 +10588,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.58";
+    const APP_VERSION = "1.59";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -16109,6 +16116,21 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const acc = (r && r.account) || "";
       if ($("accIn") && acc) $("accIn").value = acc;
       if ($("loginBox")) $("loginBox").hidden = true;
+      if (acc) {
+        try {
+          const a = loadAuth();
+          if (a.session !== acc) {
+            a.session = acc;
+            if (!a.users) a.users = {};
+            if (!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
+            saveAuth(a);
+          }
+        } catch (e) { }
+        const api = pyApi();
+        if (api && api.login_account) {
+          try { api.login_account(acc, "").catch(function () { }); } catch (e) { }
+        }
+      }
       function done(hasData) {
         checkLicenseGate();
         if (fresh && !hasData) {
@@ -17544,15 +17566,35 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function checkLicenseGate() {
       const api = window.pywebview && window.pywebview.api;
       const ls = localStatus();
-      if (!ls || !ls.account) {
-        applyGate({ ok: false, account: "" });
+      if (api && api.license_status) {
+        api.license_status().then(function (s) {
+          if (s && s.account) {
+            const acc = normAcc(s.account);
+            const a = loadAuth();
+            if (a.session !== acc) {
+              a.session = acc;
+              if (!a.users) a.users = {};
+              if (!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
+              if (s.code) a.users[acc].code = s.code;
+              if (s.until) { a.users[acc].paidUntil = s.until; a.users[acc].cloudUntil = s.until; }
+              saveAuth(a);
+            }
+            applyGate(s);
+            return;
+          }
+          if (ls && ls.account) applyGate(ls);
+          else applyGate({ ok: false, account: "" });
+        }).catch(function () {
+          if (ls && ls.account) applyGate(ls);
+          else applyGate({ ok: false, account: "" });
+        });
         return;
       }
-      if (!api || !api.license_status) { applyGate(ls); return; }
-      api.license_status().then(function (s) {
-        if (s && s.account === ls.account) applyGate(s);
-        else applyGate(ls);
-      }).catch(function () { applyGate(ls); });
+      if (ls && ls.account) {
+        applyGate(ls);
+      } else {
+        applyGate({ ok: false, account: "" });
+      }
     }
     function boot(fileRaw) {
       try {
@@ -17605,20 +17647,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     window.addEventListener("pywebviewready", function () {
       kickoff();
-      const api = pyApi();
-      const ls = localStatus();
-      if (api && api.license_status) {
-        api.license_status().then(function (s) {
-          if (ls && ls.account) {
-            if (s && s.account === ls.account) applyGate(s);
-            else applyGate(ls);
-          } else {
-            applyGate({ ok: false, account: "" });
-          }
-        }).catch(function () { applyGate({ ok: false, account: "" }); });
-      } else if (!ls || !ls.account) {
-        applyGate({ ok: false, account: "" });
-      }
+      checkLicenseGate();
     });
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", kickoff);
     else kickoff();
@@ -22888,10 +22917,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       try { sessionStorage.setItem('pwa_dismissed', '1'); } catch(e) {}
     }
 
-    // إظهار البنر للآيفون عند فتح الموقع إن لم يكن مثبتاً بعد
+    // إظهار بنر التثبيت على الهاتف (آيفون وأندرويد) عند فتح الموقع إن لم يكن مثبتاً بعد
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
-        if (!isStandalone && isIos && !sessionStorage.getItem('pwa_dismissed')) {
+        if (!isStandalone && !sessionStorage.getItem('pwa_dismissed')) {
           showPwaBanner();
         }
       }, 1500);
