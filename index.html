@@ -10635,7 +10635,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.60";
+    const APP_VERSION = "1.61";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15970,6 +15970,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           if (typeof window.setPersistentAccount === "function") window.setPersistentAccount(a.session);
           else localStorage.setItem("tt_persistent_account", a.session);
         }
+        const api = pyApi();
+        if (api && api.save_auth_state) {
+          try { api.save_auth_state(JSON.stringify(a)); } catch (e2) { }
+        }
+        if (a && a.session && api && api.login_account) {
+          try { api.login_account(a.session, ""); } catch (e3) { }
+        }
       } catch (e) { }
     }
     function pwHash(acc, pw) { return "h:" + normAcc(acc) + "|" + String(pw || ""); }
@@ -17644,47 +17651,74 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const api = window.pywebview && window.pywebview.api;
       const ls = localStatus();
       const pAcc = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : "";
-      if (api && api.license_status) {
-        api.license_status().then(function (s) {
-          if (s && s.account) {
-            const acc = normAcc(s.account);
-            window.setPersistentAccount(acc);
-            const a = loadAuth();
-            if (a.session !== acc) {
-              a.session = acc;
-              if (!a.users) a.users = {};
-              if (!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
-              if (s.code) a.users[acc].code = s.code;
-              if (s.until) { a.users[acc].paidUntil = s.until; a.users[acc].cloudUntil = s.until; }
-              saveAuth(a);
+      
+      // If pywebview api has load_auth_state, try restoring disk auth immediately
+      if (api && api.load_auth_state && !ls.account && !pAcc) {
+        try {
+          Promise.resolve(api.load_auth_state()).then(function (raw) {
+            if (raw) {
+              try {
+                const diskA = JSON.parse(raw);
+                if (diskA && diskA.session) {
+                  localStorage.setItem(AUTH_KEY, raw);
+                  window.setPersistentAccount(diskA.session);
+                  applyGate(localStatus());
+                  return;
+                }
+              } catch (ex) { }
             }
-            applyGate(s);
-            return;
-          }
-          if (ls && ls.account) {
-            applyGate(ls);
-          } else if (pAcc) {
-            applyGate({ ok: true, account: pAcc, mode: "trial", days: 7 });
-          } else {
-            applyGate({ ok: false, account: "" });
-          }
-        }).catch(function () {
-          if (ls && ls.account) {
-            applyGate(ls);
-          } else if (pAcc) {
-            applyGate({ ok: true, account: pAcc, mode: "trial", days: 7 });
-          } else {
-            applyGate({ ok: false, account: "" });
-          }
-        });
-        return;
+            checkLicenseGateCont();
+          }).catch(function () { checkLicenseGateCont(); });
+          return;
+        } catch (eDisk) { }
       }
-      if (ls && ls.account) {
-        applyGate(ls);
-      } else if (pAcc) {
-        applyGate({ ok: true, account: pAcc, mode: "trial", days: 7 });
-      } else {
-        applyGate({ ok: false, account: "" });
+      checkLicenseGateCont();
+
+      function checkLicenseGateCont() {
+        const curLs = localStatus();
+        const curP = (typeof window.getPersistentAccount === "function") ? window.getPersistentAccount() : "";
+        if (api && api.license_status) {
+          api.license_status().then(function (s) {
+            if (s && s.account) {
+              const acc = normAcc(s.account);
+              window.setPersistentAccount(acc);
+              const a = loadAuth();
+              if (a.session !== acc) {
+                a.session = acc;
+                if (!a.users) a.users = {};
+                if (!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
+                if (s.code) a.users[acc].code = s.code;
+                if (s.until) { a.users[acc].paidUntil = s.until; a.users[acc].cloudUntil = s.until; }
+                saveAuth(a);
+              }
+              applyGate(s);
+              return;
+            }
+            if (curLs && curLs.account) {
+              applyGate(curLs);
+            } else if (curP) {
+              applyGate({ ok: true, account: curP, mode: "trial", days: 7 });
+            } else {
+              applyGate({ ok: false, account: "" });
+            }
+          }).catch(function () {
+            if (curLs && curLs.account) {
+              applyGate(curLs);
+            } else if (curP) {
+              applyGate({ ok: true, account: curP, mode: "trial", days: 7 });
+            } else {
+              applyGate({ ok: false, account: "" });
+            }
+          });
+          return;
+        }
+        if (curLs && curLs.account) {
+          applyGate(curLs);
+        } else if (curP) {
+          applyGate({ ok: true, account: curP, mode: "trial", days: 7 });
+        } else {
+          applyGate({ ok: false, account: "" });
+        }
       }
     }
     function boot(fileRaw) {
@@ -17728,7 +17762,26 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function kickoff() {
       if (!started) startApp("");
       _diskReady = true;
-      checkLicenseGate();
+      const api = pyApi();
+      if (api && api.load_auth_state) {
+        try {
+          Promise.resolve(api.load_auth_state()).then(function (raw) {
+            if (raw) {
+              try {
+                const diskA = JSON.parse(raw);
+                if (diskA && diskA.session) {
+                  localStorage.setItem(AUTH_KEY, raw);
+                  window.setPersistentAccount(diskA.session);
+                  window._acc = diskA.session;
+                }
+              } catch (ex) { }
+            }
+            checkLicenseGate();
+          }).catch(function () { checkLicenseGate(); });
+        } catch (e) { checkLicenseGate(); }
+      } else {
+        checkLicenseGate();
+      }
       setTimeout(function () {
         if (window._acc) {
           syncToCloudNow(false);
@@ -17738,7 +17791,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     window.addEventListener("pywebviewready", function () {
       kickoff();
-      checkLicenseGate();
     });
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", kickoff);
     else kickoff();
