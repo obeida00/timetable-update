@@ -1,4 +1,4 @@
-const CACHE_NAME = 'madrasati-cache-v7';
+const CACHE_NAME = 'madrasati-cache-v8';
 const urlsToCache = [
   '/',
   '/app',
