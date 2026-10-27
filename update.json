@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.66",
-    "notes": "Enter لتسجيل الدخول، بقاء الجلسة بعد إغلاق النافذة، وعدم رجوع أسماء الطلاب المحذوفة"
+    "version": "1.67",
+    "notes": "حساب المدير والمعاون بالرقم والرمز، واسترجاع المدرسة إذا كانت مسجلة"
 }
