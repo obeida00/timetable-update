@@ -8495,23 +8495,12 @@
                   <input id="newAssistPin" type="password" placeholder="٤ أرقام (مثال: 1234)">
                 </div>
                 <div class="modern-field">
-                  <label>صلاحية المعاون في المدرسة:</label>
-                  <select id="newAssistRole" onchange="fillAssistPermsFromRole()">
-                    <option value="assistant">معاون مدرسة (تعديل حسب الصلاحيات أدناه)</option>
-                    <option value="viewer">مساعد / مراقب (عرض وطباعة فقط)</option>
+                  <label>الصلاحية:</label>
+                  <select id="newAssistRole">
+                    <option value="assistant">معاون — تعديل الجدول والبيانات</option>
+                    <option value="viewer">مساعد — عرض وطباعة فقط</option>
                   </select>
                 </div>
-              </div>
-              <div id="assistPermBox" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px;padding:10px;border:1px dashed #d3e1ee;border-radius:10px;background:#f8fbff;font-size:0.8rem;font-weight:700;color:#163858">
-                <label><input type="checkbox" data-perm="timetable" checked> إنشاء وتعديل الجدول</label>
-                <label><input type="checkbox" data-perm="absences" checked> الغيابات والاحتياط</label>
-                <label><input type="checkbox" data-perm="teachers" checked> المعلمون</label>
-                <label><input type="checkbox" data-perm="subjects" checked> المواد والنصاب</label>
-                <label><input type="checkbox" data-perm="students" checked> الطلاب</label>
-                <label><input type="checkbox" data-perm="classes" checked> الصفوف والشعب</label>
-                <label><input type="checkbox" data-perm="notices" checked> التبليغات</label>
-                <label><input type="checkbox" data-perm="views" checked> عرض وطباعة الجدول</label>
-                <label><input type="checkbox" data-perm="settings"> إعدادات المدرسة</label>
               </div>
 
               <div
@@ -10671,7 +10660,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.69";
+    const APP_VERSION = "1.70";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10798,26 +10787,11 @@
       if (k === "print") return p.print !== false || p.views !== false;
       return p[k] !== false;
     }
-    function collectAssistPerms(boxId) {
-      var box = document.getElementById(boxId || "assistPermBox");
-      var out = defaultClientPerms(((document.getElementById("newAssistRole") || {}).value) || "assistant");
-      if (!box) return out;
-      box.querySelectorAll("input[data-perm]").forEach(function (inp) {
-        out[inp.getAttribute("data-perm")] = !!inp.checked;
-      });
-      out.print = !!out.views;
-      return out;
-    }
-    window.fillAssistPermsFromRole = function () {
+    function collectAssistPerms() {
       var role = ((document.getElementById("newAssistRole") || {}).value) || "assistant";
-      var p = defaultClientPerms(role);
-      var box = document.getElementById("assistPermBox");
-      if (!box) return;
-      box.querySelectorAll("input[data-perm]").forEach(function (inp) {
-        var k = inp.getAttribute("data-perm");
-        inp.checked = p[k] !== false;
-      });
-    };
+      return defaultClientPerms(role);
+    }
+    window.fillAssistPermsFromRole = function () { };
     function applyPermNav() {
       var map = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", views: "views", notices: "notices" };
       document.querySelectorAll("nav.tabs button[data-tab]").forEach(function (b) {
@@ -10832,6 +10806,15 @@
           if (card) card.style.display = (!isLinkedAssistant() || canPerm("settings")) ? "" : "none";
         }
       } catch (e) { }
+      try {
+        var onBtn = document.querySelector("nav.tabs button.on");
+        var t = onBtn && onBtn.getAttribute("data-tab");
+        var need = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", notices: "notices" };
+        if (t && need[t] && !canPerm(need[t])) {
+          var v = document.querySelector('nav.tabs button[data-tab="views"]');
+          if (v) tab(v);
+        }
+      } catch (e2) { }
     }
     function restoreAssistantProfile() {
 
@@ -10845,7 +10828,7 @@
       var ownerAcc = String(db.settings.linkedSchool || window._schoolOwner || "");
       var ownerDigits = ownerAcc.replace(/\D/g, "");
       var curPhone = String(db.settings.userPhone || "").replace(/\D/g, "");
-      db.settings.userRole = "assistant";
+      if (db.settings.userRole !== "viewer") db.settings.userRole = "assistant";
       if (ownerDigits && curPhone && curPhone === ownerDigits) {
         db.settings.userPhone = myPhone || "";
         db.settings.userPin = myPin || "";
@@ -10859,7 +10842,7 @@
       else db.settings.userName = myName || "معاون المدرسة";
       try {
         var rs = document.getElementById("userRoleSelect");
-        if (rs) { rs.value = "assistant"; rs.disabled = true; }
+        if (rs) { rs.value = db.settings.userRole || "assistant"; rs.disabled = true; }
       } catch (e) { }
     }
     function adoptAccount(acc, raw, force) {
@@ -17359,13 +17342,14 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         var name = m.name ? (' (' + m.name + ')') : '';
         var masked = acc.length > 6 ? acc.slice(0, 3) + '****' + acc.slice(-3) : acc;
         var joined = m.joined || '-';
-        var roleLab = (m.role === "viewer") ? "مساعد" : "معاون";
+        var isViewer = (m.role === "viewer");
         var delBtn = isOwner
-          ? ('<span style="display:flex;gap:6px;margin-right:auto">'
-            + '<span style="font-size:.7rem;color:#176ab0;font-weight:800">' + roleLab + '</span>'
-            + '<button type="button" onclick="openMemberPerms(\'' + acc + '\')" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700">صلاحيات</button>'
+          ? ('<span style="display:flex;gap:6px;align-items:center;margin-right:auto;flex-wrap:wrap">'
+            + '<select onchange="changeMemberRole(\'' + acc + '\', this.value)" style="height:28px;border:1px solid #bfdbfe;border-radius:8px;background:#f8fbff;color:#163858;font-weight:800;font-size:.72rem;padding:0 6px">'
+            + '<option value="assistant"' + (isViewer ? "" : " selected") + '>معاون — تعديل</option>'
+            + '<option value="viewer"' + (isViewer ? " selected" : "") + '>مساعد — عرض فقط</option></select>'
             + '<button type="button" onclick="removeMember(\'' + acc + '\')" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:2px 8px;font-size:.7rem;cursor:pointer;font-weight:700">إزالة</button></span>')
-          : '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">' + roleLab + ' · انضم ' + joined + '</span>';
+          : '<span style="color:#9ca3af;font-size:.72rem;margin-right:auto">' + (isViewer ? "مساعد — عرض فقط" : "معاون — تعديل") + ' · انضم ' + joined + '</span>';
         return '<div style="padding:4px 0;border-bottom:1px dashed #d3e1ee;display:flex;gap:8px;align-items:center">'
           + '<span>👤</span>'
           + '<span style="font-weight:700;color:#145d9b;direction:rtl">' + masked + name + '</span>'
@@ -19446,45 +19430,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }, 500);
     };
 
-    window.openMemberPerms = function (memberAcc) {
-      var members = window._schoolMembers || [];
-      var m = members.find(function (x) { return x && x.account === memberAcc; });
-      if (!m) return;
-      var p = defaultClientPerms(m.role || "assistant");
-      if (m.perms) Object.keys(p).forEach(function (k) { if (typeof m.perms[k] === "boolean") p[k] = m.perms[k]; });
-      var keys = [
-        ["timetable", "إنشاء وتعديل الجدول"],
-        ["absences", "الغيابات والاحتياط"],
-        ["teachers", "المعلمون"],
-        ["subjects", "المواد والنصاب"],
-        ["students", "الطلاب"],
-        ["classes", "الصفوف والشعب"],
-        ["notices", "التبليغات"],
-        ["views", "عرض وطباعة الجدول"],
-        ["settings", "إعدادات المدرسة"]
-      ];
-      var html = '<div id="permPop" style="position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id===\'permPop\')this.remove()">'
-        + '<div style="background:#fff;border-radius:16px;max-width:420px;width:100%;padding:16px;direction:rtl">'
-        + '<div style="font-weight:900;color:#163858;margin-bottom:8px">صلاحيات ' + (m.name || memberAcc) + '</div>'
-        + '<select id="permRoleSel" style="width:100%;margin-bottom:10px;height:38px;border-radius:8px;border:1px solid #d3e1ee">'
-        + '<option value="assistant"' + (m.role !== "viewer" ? " selected" : "") + '>معاون</option>'
-        + '<option value="viewer"' + (m.role === "viewer" ? " selected" : "") + '>مساعد / مراقب</option></select>'
-        + keys.map(function (kv) {
-          return '<label style="display:flex;gap:8px;align-items:center;padding:4px 0;font-weight:700;font-size:.86rem"><input type="checkbox" data-edit-perm="' + kv[0] + '"' + (p[kv[0]] !== false ? " checked" : "") + '> ' + kv[1] + '</label>';
-        }).join("")
-        + '<div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">'
-        + '<button type="button" class="btn w" onclick="document.getElementById(\'permPop\').remove()">إلغاء</button>'
-        + '<button type="button" class="btn g" onclick="saveMemberPerms(\'' + memberAcc + '\')">حفظ الصلاحيات</button>'
-        + '</div></div></div>';
-      document.body.insertAdjacentHTML("beforeend", html);
-    };
-    window.saveMemberPerms = function (memberAcc) {
-      var role = ((document.getElementById("permRoleSel") || {}).value) || "assistant";
+    window.changeMemberRole = function (memberAcc, role) {
+      role = role || "assistant";
       var perms = defaultClientPerms(role);
-      document.querySelectorAll("#permPop input[data-edit-perm]").forEach(function (inp) {
-        perms[inp.getAttribute("data-edit-perm")] = !!inp.checked;
-      });
-      perms.print = !!perms.views;
       fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/update_member", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ owner_acc: window._acc, member_acc: memberAcc, role: role, perms: perms })
@@ -19492,14 +19440,14 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (res && res.ok) {
           window._schoolMembers = res.members || window._schoolMembers;
           renderMembersUI(window._schoolMembers, true, null);
-          var pop = document.getElementById("permPop");
-          if (pop) pop.remove();
-          okNote("تم حفظ صلاحيات المعاون");
+          okNote(role === "viewer" ? "صار مساعد: عرض فقط" : "صار معاون: يقدر يعدّل");
         } else {
-          note((res && res.message) || "تعذر حفظ الصلاحيات");
+          note((res && res.message) || "تعذر حفظ الصلاحية");
         }
       }).catch(function () { note("تعذر الاتصال"); });
     };
+    window.openMemberPerms = function (memberAcc) { };
+    window.saveMemberPerms = function (memberAcc) { };
     window.deleteOrLeaveMyAccount = function () {
       var acc = window._acc || "";
       if (!acc) return;
