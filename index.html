@@ -1864,6 +1864,11 @@
     #subBox .sub-left {
       text-align: center
     }
+    body.view-only .drop:has(button),
+    body.view-only button.danger { }
+    body.view-only #generate .btn,
+    body.view-only #genBox button { pointer-events: none; opacity: .45; }
+
 
     #subBox .sub-x {
       position: absolute;
@@ -10660,7 +10665,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.76";
+    const APP_VERSION = "1.77";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10781,7 +10786,7 @@
     }
     function canPerm(k) {
       if (!isLinkedAssistant()) return true;
-      if (isViewOnly()) return k === "views" || k === "print" || k === "students";
+      if (isViewOnly()) return k === "views" || k === "print" || k === "students" || k === "teachers" || k === "classes" || k === "subjects";
       var p = window._myPerms;
       if (!p) {
         var role = (db && db.settings && db.settings.userRole) || "assistant";
@@ -10795,6 +10800,13 @@
       return defaultClientPerms(role);
     }
     window.fillAssistPermsFromRole = function () { };
+    function blockViewerEdit() {
+      if (typeof isViewOnly === "function" && isViewOnly()) {
+        try { note("المساعد يشوف ويطبّع ويصدّر فقط"); } catch (e) { }
+        return true;
+      }
+      return false;
+    }
     function applyViewOnlyUI() {
       var vo = isViewOnly();
       document.body.classList.toggle("view-only", !!vo);
@@ -10811,6 +10823,13 @@
       });
       var colBar = document.getElementById("grdColBar");
       if (colBar) colBar.style.display = vo ? "none" : "";
+      var needles = ["delTeacher(", "delStudent(", "delClass(", "delSubject(", "generate(", "clearAllStudents(", "openClassDel(", "saveTeacher(", "saveStudent("];
+      document.querySelectorAll("button[onclick], a[onclick]").forEach(function (b) {
+        var oc = b.getAttribute("onclick") || "";
+        var hit = needles.some(function (n) { return oc.indexOf(n) >= 0; });
+        if (!hit) return;
+        b.style.display = vo ? "none" : "";
+      });
     }
     function applyPermNav() {
       var map = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", views: "views", notices: "notices" };
@@ -11981,6 +12000,7 @@
       $("tBox").hidden = false;
     }
     function saveTeacher(e) {
+      if (blockViewerEdit()) return false;
       e.preventDefault();
       assembleTeacherFullName();
       const tid = $("tId").value || uid();
@@ -12032,7 +12052,7 @@
       switchTeacherTab(1);
       $("tBox").hidden = false;
     }
-    function delTeacher(id) { ask("حذف المعلم؟").then(ok => { if (!ok) return; if (window._tSel === id) window._tSel = null; db.teachers = db.teachers.filter(t => t.id !== id); save(); renderTeachers(); try { renderLoads(); } catch (e) { } fillTeacherSelect(); }); }
+    function delTeacher(id) { if (blockViewerEdit()) return; ask("حذف المعلم؟").then(ok => { if (!ok) return; if (window._tSel === id) window._tSel = null; db.teachers = db.teachers.filter(t => t.id !== id); save(); renderTeachers(); try { renderLoads(); } catch (e) { } fillTeacherSelect(); }); }
     function clearTeachers() {
       ask("حذف كل المعلمين وموادهم من التوزيع؟").then(ok => {
         if (!ok) return; db.teachers = []; db.subjects = []; db.grid = null; save(); renderTeachers(); renderSubjects(); fillTeacherSelect();
@@ -12741,6 +12761,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
 
     function openClass() { $("cName").value = ""; $("cBox").hidden = false; $("cName").focus(); }
     function addClass(e) {
+      if (blockViewerEdit()) return false;
       e.preventDefault();
       const name = $("cName").value.trim(); if (!name) return false;
       db.classes.push({ id: uid(), name }); $("cName").value = ""; save(); renderClasses(); fillClassSelect(); $("cBox").hidden = true; return false;
@@ -12754,7 +12775,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       if (all) all.onclick = function () { ask("حذف صف " + c.name + " وكل شعبه؟").then(ok => { if (!ok) return; _delClass(id); $("clsDelBox").hidden = true; }); };
       if ($("clsDelBox")) $("clsDelBox").hidden = false;
     }
-    function delClass(id) { openClassDel(id); }
+    function delClass(id) { if (blockViewerEdit()) return; openClassDel(id); }
     function delOneSec(sid, cid) {
       ask("حذف شعبة " + secName(sid) + " فقط؟").then(ok => { if (!ok) return; _delSec(sid); openClassDel(cid); });
     }
@@ -13034,6 +13055,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       $("sBox").hidden = false;
     }
     function delSubject(id) {
+      if (blockViewerEdit()) return;
       ask("حذف هذا السطر فقط؟").then(ok => { if (!ok) return; _delSub(id); }); return;
     }
     function _delSub(id) {
@@ -13431,6 +13453,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
     }
 
     function generate() {
+      if (blockViewerEdit()) return;
       const msg = $("genMsg");
       if (!msg) return;
       const days = db.settings.days || [];
@@ -13443,6 +13466,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       setTimeout(function () { try { generateNow(msg, days, P); } catch (e) { msg.innerHTML = '<div class="msg err">تعذر الإنشاء</div>'; } window._genBusy = false; }, 40);
     }
     function generateNow(msg, days, P) {
+      if (blockViewerEdit()) return;
 
       db.subjects.forEach(s => {
         if (s.sectionId && db.sections.some(x => x.id === s.sectionId)) return;
@@ -17484,7 +17508,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       try { restoreAssistantProfile(); } catch (eAs2) { }
       try { renderSettings(); } catch (e) { }
       try { if (typeof renderViews === "function") renderViews(); } catch (e) { }
-      okNote("🔄 تم تحديث جدول وبيانات المدرسة تلقائياً");
     }
     function applySchoolInfo(r) {
       if (!r) return;
@@ -21250,6 +21273,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     window.openStudent = openStudent;
 
     function saveStudent(e) {
+      if (blockViewerEdit()) return false;
       e.preventDefault();
       assembleStudentFullName();
       const id = $("studId").value || uid();
@@ -21314,6 +21338,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
 
     function delStudent(id) {
+      if (blockViewerEdit()) return;
       const st = (db.students || []).find(s => s.id === id);
       if (!st) return;
       if (!confirm("هل أنت متأكد من حذف الطالب: " + st.name + "؟")) return;
@@ -21324,6 +21349,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
 
     function clearAllStudents() {
+      if (blockViewerEdit()) return;
       if (!db.students || !db.students.length) { alert("لا يوجد طلاب لحذفهم."); return; }
       if (!confirm("تحذير: هل أنت متأكد من مسح جميع أسماء الطلاب في كافة الصفوف؟ لا يمكن التراجع!")) return;
       db.students = [];
