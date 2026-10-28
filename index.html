@@ -8032,7 +8032,7 @@
             </div>
           </div>
 
-          <p class="hint" style="margin:6px 0 0;font-size:.74rem">ادفع 50,000 د.ع عبر سوبر كي (الباركود يساراً) ثم أرسل
+          <p id="subPayHint" class="hint" style="margin:6px 0 0;font-size:.74rem">ادفع 50,000 د.ع عبر سوبر كي (الباركود يساراً) ثم أرسل
             رقم حسابك للمطور ليصلك كود التفعيل — والكود يعمل على حسابك أنت فقط، والمدة تبدأ من يوم التفعيل.</p>
           <p id="licMsg" class="hint" style="margin:6px 0 0"></p>
           <div class="form-actions" style="margin-top:8px">
@@ -10660,7 +10660,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.72";
+    const APP_VERSION = "1.73";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15598,7 +15598,24 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if ($('subInfoCodeRow')) $('subInfoCodeRow').hidden = !code;
       if (code && $('subInfoCode')) $('subInfoCode').textContent = code;
       if ($('accIn') && !$('accIn').value && s && s.account) $('accIn').value = s.account;
-      setSubAct(!paidish);
+      var linkedAssist = (s && s.mode === "shared") || (typeof isLinkedAssistant === "function" && isLinkedAssistant());
+      if (linkedAssist) {
+        if ($('subInfoTitle') && paidish) $('subInfoTitle').textContent = "اشتراك المدرسة مفعّل ✓";
+        if ($('subInfoDesc')) {
+          if (paidish) $('subInfoDesc').textContent = "حسابك معاون/مساعد — الاشتراك من المدير، باقي " + ((s.days || 0)) + " يوم" + (s.until ? " حتى " + s.until : "") + ".";
+          else $('subInfoDesc').textContent = "اشتراك المدرسة منتهٍ — راجع المدير. ما تحتاج تدفع من حسابك.";
+        }
+        if ($('subInfoMode')) $('subInfoMode').textContent = paidish ? "من حساب المدير" : "منتهٍ لدى المدير";
+        setSubAct(false);
+        var tg = $('subToggle'); if (tg) tg.style.display = "none";
+        var hint = $('subPayHint'); if (hint) hint.style.display = "none";
+        var side = document.querySelector("#subBox .sub-left"); if (side) side.style.display = "none";
+      } else {
+        var tg2 = $('subToggle'); if (tg2) tg2.style.display = "";
+        var hint2 = $('subPayHint'); if (hint2) hint2.style.display = "";
+        var side2 = document.querySelector("#subBox .sub-left"); if (side2) side2.style.display = "";
+        setSubAct(!paidish);
+      }
       if ($('subBox')) $('subBox').hidden = false;
     }
 
@@ -16132,8 +16149,14 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (paidUntil) { var pD = new Date(paidUntil + "T00:00:00"); if (!isNaN(pD.getTime())) { var tdMs2 = new Date(); tdMs2.setHours(0, 0, 0, 0); paidDays = Math.ceil((pD.getTime() - tdMs2.getTime()) / 86400000); if (paidDays < 0) paidDays = 0; } }
         return { ok: true, mode: "paid", account: acc, days: paidDays, until: paidUntil, code: u.code, price: 50000 };
       }
-      // إذا كان الحساب عضواً في مدرسة والمالك لديه اشتراك — يرث الاشتراك
-      if (window._linkedOwner && window._linkedOwner.acc && window._linkedOwner.paid && window._linkedOwner.until) {
+      // معاون/مساعد يرث مدة المدرسة (اشتراك المدير أو تجربته) — ما نطلب منه دفع
+      try {
+        if (!window._linkedOwner || !window._linkedOwner.acc) {
+          var rawLo = localStorage.getItem("tt_linked_owner_" + acc);
+          if (rawLo) window._linkedOwner = JSON.parse(rawLo) || window._linkedOwner;
+        }
+      } catch (eLo) { }
+      if (window._linkedOwner && window._linkedOwner.acc && window._linkedOwner.until) {
         var ownerUntil = window._linkedOwner.until;
         var pD2 = new Date(ownerUntil + "T00:00:00");
         if (!isNaN(pD2.getTime())) {
@@ -16464,15 +16487,18 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           } else if (cloudRes && cloudRes.reason === 'pass') {
             loginMsg('رمز الدخول غير صحيح');
           } else if (cloudRes && (cloudRes.reason === 'trial_expired' || cloudRes.reason === 'deleted' || cloudRes.reason === 'expired')) {
-            // تجربة منتهية / حساب محذوف / اشتراك منتهٍ: منع الدخول مع عرض نافذة الاشتراك
-            const msgMap = {
-              trial_expired: "انتهت التجربة المجانية — فعّل اشتراكك للمتابعة (وبعد ٣ أيام من الانتهاء يُحذف الحساب)",
-              deleted: "انتهت التجربة المجانية وأُغلق الحساب — تواصل مع المطور 07813332882",
-              expired: "انتهى الاشتراك — جدّد للمتابعة"
-            };
-            loginMsg(msgMap[cloudRes.reason] || "انتهى الاشتراك");
-            if ($('accIn')) $('accIn').value = acc;
-            try { openSubInfoOrPayment(); } catch (e) { }
+            if (cloudRes.school) {
+              loginMsg(cloudRes.message || "اشتراك المدرسة منتهٍ — راجع المدير. ما تحتاج تدفع من حسابك.");
+            } else {
+              const msgMap = {
+                trial_expired: "انتهت التجربة المجانية — فعّل اشتراكك للمتابعة (وبعد ٣ أيام من الانتهاء يُحذف الحساب)",
+                deleted: "انتهت التجربة المجانية وأُغلق الحساب — تواصل مع المطور 07813332882",
+                expired: "انتهى الاشتراك — جدّد للمتابعة"
+              };
+              loginMsg(msgMap[cloudRes.reason] || "انتهى الاشتراك");
+              if ($('accIn')) $('accIn').value = acc;
+              try { openSubInfoOrPayment(); } catch (e) { }
+            }
           } else {
             verifyViaCloudSync(acc, pw, fallbackLocal);
           }
@@ -16593,6 +16619,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           window._schoolOwner = cloudRes.owner_acc;
           window._isOwner = false;
           localStorage.setItem("tt_linked_school_" + acc, cloudRes.owner_acc);
+          var lo2 = { acc: cloudRes.owner_acc, paid: !!cloudRes.paid, until: cloudRes.until || "" };
+          window._linkedOwner = lo2;
+          try { localStorage.setItem("tt_linked_owner_" + normAcc(acc), JSON.stringify(lo2)); } catch (eLo2) { }
         }
       } catch (eOwn) { }
       // إذا كان الحساب منضماً لمدرسة ولديه بيانات مشتركة
@@ -17478,11 +17507,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         }
       } catch (e) { }
       // الاشتراك يُورّث من أي حساب مفعّل داخل الفريق (المالك أو أي عضو منضم)
-      if (r.owner_paid && r.owner_until) {
+      if (r.owner_until || r.owner_paid) {
         var lo = window._linkedOwner || {};
         var subAcc = r.sub_from || r.owner_acc || "";
-        if (lo.acc !== subAcc || lo.paid !== r.owner_paid || lo.until !== r.owner_until) {
-          window._linkedOwner = { acc: subAcc, paid: r.owner_paid, until: r.owner_until };
+        var nextLo = { acc: subAcc, paid: !!r.owner_paid, until: r.owner_until || "" };
+        if (lo.acc !== nextLo.acc || lo.paid !== nextLo.paid || lo.until !== nextLo.until) {
+          window._linkedOwner = nextLo;
+          try { localStorage.setItem("tt_linked_owner_" + normAcc(window._acc || ""), JSON.stringify(nextLo)); } catch (eSv) { }
           applyGate(localStatus());
         }
       } else if (window._linkedOwner && window._linkedOwner.acc) {
