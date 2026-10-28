@@ -6431,7 +6431,7 @@
         <!-- 4 Metrics Stats Strip matching Screenshot -->
         <div class="emis-stats-strip">
           <!-- 1. عدد الطلاب -->
-          <div class="emis-stat-card" onclick="showTab('students')" title="عرض سجل الطلاب">
+          <div class="emis-stat-card" data-home-perm="students" onclick="showTab('students')" title="عرض سجل الطلاب">
             <div class="emis-stat-info">
               <span class="emis-stat-label">عدد الطلاب</span>
               <strong class="emis-stat-num blue" id="statStudCount">0</strong>
@@ -6448,7 +6448,7 @@
           </div>
 
           <!-- 2. عدد المعلمون -->
-          <div class="emis-stat-card" onclick="showTab('teachers')" title="عرض سجل المعلمين">
+          <div class="emis-stat-card" data-home-perm="teachers" onclick="showTab('teachers')" title="عرض سجل المعلمين">
             <div class="emis-stat-info">
               <span class="emis-stat-label">عدد المعلمون</span>
               <strong class="emis-stat-num navy" id="statTeachCount">0</strong>
@@ -6501,7 +6501,7 @@
         <div class="emis-home-grid">
 
           <!-- 1. الطلاب -->
-          <div class="emis-grid-card" onclick="showTab('students')">
+          <div class="emis-grid-card" data-home-perm="students" onclick="showTab('students')">
             <div class="emis-grid-card-icon">
               <!-- Illustration of Boy and Girl Students -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6532,7 +6532,7 @@
           </div>
 
           <!-- 2. المعلمون -->
-          <div class="emis-grid-card" onclick="showTab('teachers')">
+          <div class="emis-grid-card" data-home-perm="teachers" onclick="showTab('teachers')">
             <div class="emis-grid-card-icon">
               <!-- Illustration of Male & Female Teachers -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6562,7 +6562,7 @@
           </div>
 
           <!-- 3. الصفوف والشعب -->
-          <div class="emis-grid-card" onclick="showTab('classes')">
+          <div class="emis-grid-card" data-home-perm="classes" onclick="showTab('classes')">
             <div class="emis-grid-card-icon">
               <!-- Illustration of Classroom Teacher at Blackboard and Students -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6594,7 +6594,7 @@
           </div>
 
           <!-- 4. المواد والنصاب -->
-          <div class="emis-grid-card" onclick="showTab('subjects')">
+          <div class="emis-grid-card" data-home-perm="subjects" onclick="showTab('subjects')">
             <div class="emis-grid-card-icon">
               <!-- Illustration of Subjects hand picking balloons (ع, ENG, Math, Chemistry) -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6628,7 +6628,7 @@
           </div>
 
           <!-- 5. إنشاء جدول -->
-          <div class="emis-grid-card" onclick="showTab('generate')">
+          <div class="emis-grid-card" data-home-perm="timetable" onclick="showTab('generate')">
             <div class="emis-grid-card-icon">
               <!-- Smart Schedule Generation Wizard / AI Calendar Grid with Lightning -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6656,7 +6656,7 @@
           </div>
 
           <!-- 6. عرض وتصدير -->
-          <div class="emis-grid-card" onclick="showTab('views')">
+          <div class="emis-grid-card" data-home-perm="views" onclick="showTab('views')">
             <div class="emis-grid-card-icon">
               <!-- Print, Excel, PDF Schedule Reports Illustration -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6680,7 +6680,7 @@
           </div>
 
           <!-- 7. الغيابات والإجازات -->
-          <div class="emis-grid-card" onclick="openQuickAttendance()">
+          <div class="emis-grid-card" data-home-perm="absences" onclick="openQuickAttendance()">
             <div class="emis-grid-card-icon">
               <!-- Calendar with check marks and cross -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6714,7 +6714,7 @@
           </div>
 
           <!-- 8. درجات الطلاب وسجل التقويم -->
-          <div class="emis-grid-card" onclick="openGradeEntry()">
+          <div class="emis-grid-card" data-home-perm="students" onclick="openGradeEntry()">
             <div class="emis-grid-card-icon">
               <!-- Grade Sheet with A+ badge -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6739,7 +6739,7 @@
           </div>
 
           <!-- 9. الأنصبة والأوف والمجاز -->
-          <div class="emis-grid-card" onclick="showTab('loads')">
+          <div class="emis-grid-card" data-home-perm="teachers" onclick="showTab('loads')">
             <div class="emis-grid-card-icon">
               <!-- Meeting / Two Teachers Consulting Illustration -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6792,7 +6792,7 @@
           </div>
 
           <!-- 11. تبليغ رسمي لأولياء الأمور -->
-          <div class="emis-grid-card" onclick="showTab('notices')">
+          <div class="emis-grid-card" data-home-perm="notices" onclick="showTab('notices')">
             <div class="emis-grid-card-icon">
               <!-- Megaphone Announcement Illustration -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
@@ -6810,7 +6810,7 @@
             <div class="emis-grid-card-title">تبليغ أولياء الأمور</div>
           </div>
 
-          <div class="emis-grid-card" onclick="showTab('waBot')">
+          <div class="emis-grid-card" data-home-perm="settings" onclick="showTab('waBot')">
             <div class="emis-grid-card-icon">
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
                 <circle cx="32" cy="32" r="22" fill="#25D366" />
@@ -10660,7 +10660,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.71";
+    const APP_VERSION = "1.72";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10810,6 +10810,8 @@
       document.querySelectorAll('button[onclick="openSubstiModal()"]').forEach(function (b) {
         b.style.display = vo ? "none" : "";
       });
+      var colBar = document.getElementById("grdColBar");
+      if (colBar) colBar.style.display = vo ? "none" : "";
     }
     function applyPermNav() {
       var map = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", views: "views", notices: "notices" };
@@ -10825,6 +10827,13 @@
           if (card) card.style.display = (!isLinkedAssistant() || canPerm("settings")) ? "" : "none";
         }
       } catch (e) { }
+      try {
+        document.querySelectorAll("[data-home-perm]").forEach(function (card) {
+          var k = card.getAttribute("data-home-perm");
+          if (!k || k === "settings") { card.style.display = ""; return; }
+          card.style.display = canPerm(k) ? "" : "none";
+        });
+      } catch (eH) { }
       try { applyViewOnlyUI(); } catch (eVo) { }
       try {
         var onBtn = document.querySelector("nav.tabs button.on");
@@ -10859,7 +10868,7 @@
       }
       var mgr = String(db.settings.schoolManager || "").trim();
       if (myName && myName !== mgr) db.settings.userName = myName;
-      else db.settings.userName = myName || "معاون المدرسة";
+      else db.settings.userName = myName || ((db.settings.userRole === "viewer") ? "مساعد المدرسة" : "معاون المدرسة");
       try {
         var rs = document.getElementById("userRoleSelect");
         if (rs) { rs.value = db.settings.userRole || "assistant"; rs.disabled = true; }
@@ -11135,6 +11144,10 @@
       } catch (e) { }
     }
     function syncToCloudNow(showToast) {
+      if (typeof isViewOnly === "function" && isViewOnly()) {
+        if (showToast) note("المساعد يشوف ويطبّع فقط");
+        return;
+      }
       ensureEditTs();
       const acc = window._acc || "";
       if (!acc || acc.length < 8) {
@@ -11539,6 +11552,12 @@
     }
     function showTab(tabId, skipPush) {
       var _to = (tabId === "home") ? "homeSection" : tabId;
+      var need = { classes: "classes", teachers: "teachers", students: "students", subjects: "subjects", generate: "timetable", views: "views", notices: "notices", attendance: "absences", loads: "teachers", waBot: "settings", grades: "students" };
+      var req = need[_to];
+      if (req && typeof canPerm === "function" && !canPerm(req)) {
+        try { note("ما عندك صلاحية على هذا القسم — راجع المدير"); } catch (eP) { }
+        return;
+      }
       if (_to !== "grades" && $("grades") && !$("grades").hidden) {
         try { saveGradesSilent(); } catch (e) { }
       }
@@ -17217,7 +17236,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/remove_member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ owner_acc: ownerAcc, member_acc: memberAcc })
+        body: JSON.stringify({ owner_acc: ownerAcc, member_acc: memberAcc, tok: sessTok(ownerAcc) })
       }).then(function (res) { return res.json(); })
         .then(function (r) {
           if (r && r.ok) {
@@ -19382,8 +19401,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           google_email: linkedEmail,
           pw: pin,
           user_name: name,
-          role: role,
-          perms: collectAssistPerms()
+          role: role
         })
       }).then(function (r) { return r.json(); }).then(function (res) {
         if (res && res.ok && res.account) {
@@ -19483,7 +19501,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var pin = ((document.getElementById("memEditPin") || {}).value || "").trim();
       var role = ((document.getElementById("memEditRole") || {}).value) || "assistant";
       if (pin && pin.length < 4) { note("رمز الدخول ٤ أرقام على الأقل"); return; }
-      var body = { owner_acc: window._acc, member_acc: memberAcc, role: role, perms: defaultClientPerms(role), name: name };
+      var body = { owner_acc: window._acc, member_acc: memberAcc, role: role, perms: defaultClientPerms(role), name: name, tok: sessTok(window._acc) };
       if (pin) body.pin = pin;
       fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/update_member", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -19504,7 +19522,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var perms = defaultClientPerms(role);
       fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/update_member", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ owner_acc: window._acc, member_acc: memberAcc, role: role, perms: perms })
+        body: JSON.stringify({ owner_acc: window._acc, member_acc: memberAcc, role: role, perms: perms, tok: sessTok(window._acc) })
       }).then(function (r) { return r.json(); }).then(function (res) {
         if (res && res.ok) {
           window._schoolMembers = res.members || window._schoolMembers;
@@ -19525,7 +19543,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (!confirm("تأكيد مغادرة المدرسة وحذف حساب المعاون من هذا الجهاز؟")) return;
         fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/leave_school", {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ acc: acc })
+          body: JSON.stringify({ acc: acc, tok: sessTok(acc) })
         }).then(function (r) { return r.json(); }).then(function (res) {
           if (res && res.ok) {
             try { handleRemovedFromSchool(); } catch (e) { }
@@ -19541,7 +19559,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (w !== "حذف") { note("تم إلغاء الحذف"); return; }
       fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/delete_account", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ acc: acc, confirm: "حذف" })
+        body: JSON.stringify({ acc: acc, confirm: "حذف", tok: sessTok(acc) })
       }).then(function (r) { return r.json(); }).then(function (res) {
         if (res && res.ok) {
           try { db = blankDb(); save(true); } catch (e) { }
@@ -19589,7 +19607,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           name: name,
           pin: pin,
           role: role,
-          perms: collectAssistPerms()
+          perms: collectAssistPerms(),
+          tok: sessTok(ownerAcc)
         })
       })
         .then(function (r) { return r.json(); })
@@ -22340,7 +22359,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var cols = getGradeCols();
       var h = '<th style="width:40px">#</th><th>اسم الطالب</th>';
       cols.forEach(function (c) {
-        h += '<th data-col="' + esc(c.id) + '" contenteditable="true" onblur="saveGradeHeadFromDom()" title="اضغط لتغيير الاسم" style="min-width:88px;cursor:text">' + esc(c.label) + "</th>";
+        var editH = (typeof isViewOnly === "function" && isViewOnly()) ? "" : ' contenteditable="true" onblur="saveGradeHeadFromDom()" title="اضغط لتغيير الاسم"';
+        h += '<th data-col="' + esc(c.id) + '"' + editH + ' style="min-width:88px;cursor:' + (editH ? "text" : "default") + '">' + esc(c.label) + "</th>";
       });
       h += '<th style="min-width:88px;background:#0ea5e9">المجموع</th>';
       tr.innerHTML = h;
@@ -22444,8 +22464,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         const g = rec[st.id] || {};
         const cells = cols.map(function (c) {
           const isNote = c.id === "note" || /ملاحظ/.test(c.label);
+          var ro = (typeof isViewOnly === "function" && isViewOnly()) ? " readonly disabled" : "";
           return '<td><input class="grd-in" data-k="' + esc(c.id) + '" value="' + esc(g[c.id] || "") + '"'
             + (isNote ? "" : ' inputmode="decimal" oninput="refreshGradeRowSum(this)"')
+            + ro
             + ' style="width:100%;height:32px;text-align:center;font-weight:700;font-size:.85rem"></td>';
         }).join("");
         const sum = gradeNumericSum(g, cols);
@@ -22590,6 +22612,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
 
     function openQuickAttendance() {
+      if (typeof canPerm === "function" && !canPerm("absences")) { note("ما عندك صلاحية على الغيابات"); return; }
       if (!db.sections || !db.sections.length) {
         alert("يرجى إضافة صفوف وشعب أولاً.");
         return;
@@ -22613,6 +22636,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       loadAttendanceList();
     }
     function saveAttendanceSilent() {
+      if (typeof isViewOnly === "function" && isViewOnly()) return false;
       const box = $("attendance");
       if (box && box.hidden) return false;
       const key = window._attLastKey || "";
