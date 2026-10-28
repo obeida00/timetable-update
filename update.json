@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.71",
-    "notes": "تعديل بيانات المعاون والمساعد، والمساعد يشوف ويطبّع الجدول وقوائم الطلاب وسجل الدرجات فقط"
+    "version": "1.72",
+    "notes": "قفل صلاحيات المساعد من الرئيسية ومنع الكتابة على الجدول"
 }
