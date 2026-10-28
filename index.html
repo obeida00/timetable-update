@@ -10660,7 +10660,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.74";
+    const APP_VERSION = "1.75";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10757,17 +10757,22 @@
     }
     function isLinkedAssistant() {
       try {
-        if (window._isOwner === true) return false;
         var acc0 = window._acc || "";
         var linked = "";
         try { linked = String((db && db.settings && db.settings.linkedSchool) || ""); } catch (e0) { }
         if (!linked && acc0) {
           try { linked = localStorage.getItem("tt_linked_school_" + acc0) || ""; } catch (e1) { }
         }
-        if (linked && acc0 && sameLoginAcc(linked, acc0)) return false;
-        if (window._schoolOwner && acc0 && sameLoginAcc(window._schoolOwner, acc0)) return false;
-        if (window._isOwner === false) return true;
         if (linked && acc0 && !sameLoginAcc(linked, acc0)) return true;
+        if (window._schoolOwner && acc0 && !sameLoginAcc(window._schoolOwner, acc0)) return true;
+        var role = "";
+        try { role = String((db && db.settings && db.settings.userRole) || ""); } catch (eR) { }
+        if (!role && acc0) {
+          try { role = localStorage.getItem("tt_user_role_" + acc0) || ""; } catch (eR2) { }
+        }
+        if (role === "assistant" || role === "viewer") return true;
+        if (window._isOwner === true) return false;
+        if (window._isOwner === false) return true;
       } catch (e) { }
       return false;
     }
@@ -17487,9 +17492,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           renderMembersUI([], false, window._pendingJoin.code || "");
           return;
         }
+        if (r.my_role === "assistant" || r.my_role === "viewer") r.is_owner = false;
         if (r.is_owner && db.settings.linkedSchool && !sameLoginAcc(db.settings.linkedSchool, r.owner_acc || window._acc || "")) {
           r.is_owner = false;
         }
+        if (r.is_owner && isLinkedAssistant()) r.is_owner = false;
         if (r.is_owner) {
           window._isOwner = true;
           db.settings.userRole = "owner";
