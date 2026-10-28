@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.75",
-    "notes": "فصل دور المعاون عن المدير — المعاون ما ينقلب مدير"
+    "version": "1.76",
+    "notes": "حساب المدير يبقى مدير — الدور ما ينخلط مع المعاون"
 }
