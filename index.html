@@ -8563,7 +8563,7 @@
                     onclick="refreshTeamMembers()">🔄 تحديث القائمة</button>
                 </div>
                 <div id="teamMembersList" style="font-size:0.82rem; color:#163858; line-height:1.8">
-                  <span style="color:#6b7280">جاري تحميل قائمة المنضمين...</span>
+                  <span style="color:#9ca3af">لم ينضم أحد بعد. شارك رمز المدرسة لأعضاء الفريق.</span>
                 </div>
               </div>
 
@@ -10665,7 +10665,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.77";
+    const APP_VERSION = "1.78";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -17407,7 +17407,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
     function renderMembersUI(members, isOwner, schoolCode) {
       window._schoolMembers = members || [];
-      window._isOwner = !!isOwner;
+      if (typeof isOwner !== "boolean") isOwner = !!window._isOwner;
+      else if (window._isOwner === false) isOwner = false;
       try { if (!db.settings) db.settings = {}; db.settings.teamMembers = members; } catch (e) { }
       try { updateEMISHomeStats(); } catch (e) { }
       if (schoolCode && $("mySchoolCode")) $("mySchoolCode").textContent = schoolCode;
@@ -17677,6 +17678,17 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const myAcc = window._acc || "";
       if (!myAcc) return;
       if (window._isRemovedAccount) return;
+      try {
+        var cached = window._schoolMembers || (db && db.settings && db.settings.teamMembers) || [];
+        var sc0 = (db && db.settings && db.settings.schoolCode) || "";
+        if (cached && cached.length) renderMembersUI(cached, !!window._isOwner, sc0);
+        else {
+          var list0 = document.getElementById("teamMembersList");
+          if (list0 && (!list0.getAttribute("data-ready"))) {
+            list0.innerHTML = '<span style="color:#9ca3af">لم ينضم أحد بعد. شارك رمز المدرسة لأعضاء الفريق.</span>';
+          }
+        }
+      } catch (eC) { }
       var savedSchool = (db.settings && db.settings.linkedSchool) || localStorage.getItem("tt_linked_school_" + myAcc) || "";
       // الاستعلام السحابي المباشر دائماً لضمان وصول أحدث جدول واشتراك المالك
       cloudGetSchoolInfo(myAcc).then(function (r) {
