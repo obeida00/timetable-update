@@ -10660,7 +10660,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.73";
+    const APP_VERSION = "1.74";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -16301,7 +16301,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       showLicRemain(s);
       window._licCanClose = !!(s && s.ok);
       if ($("subClose")) $("subClose").hidden = !window._licCanClose; if ($("subBack")) $("subBack").hidden = !window._licCanClose;
+      var assistGate = (s && s.mode === "shared") || (typeof isLinkedAssistant === "function" && isLinkedAssistant());
       if (s && s.ok) { if ($("subBox")) $("subBox").hidden = true; }
+      else if (assistGate) { if ($("subBox")) $("subBox").hidden = true; }
       else { if ($("subBox")) $("subBox").hidden = false; }
       const DEV_ACC = "07813332882";
       const isDev = acc && (acc.replace(/\D/g, "").endsWith("7813332882") || acc.indexOf("7813332882") !== -1);
@@ -16489,10 +16491,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           } else if (cloudRes && (cloudRes.reason === 'trial_expired' || cloudRes.reason === 'deleted' || cloudRes.reason === 'expired')) {
             if (cloudRes.school) {
               loginMsg(cloudRes.message || "اشتراك المدرسة منتهٍ — راجع المدير. ما تحتاج تدفع من حسابك.");
+            } else if (cloudRes.reason === "deleted") {
+              loginMsg("هذا الحساب محذوف — إذا انضميت كمعاون/مساعد اطلب من المدير يضيفك مرة ثانية");
             } else {
               const msgMap = {
                 trial_expired: "انتهت التجربة المجانية — فعّل اشتراكك للمتابعة (وبعد ٣ أيام من الانتهاء يُحذف الحساب)",
-                deleted: "انتهت التجربة المجانية وأُغلق الحساب — تواصل مع المطور 07813332882",
                 expired: "انتهى الاشتراك — جدّد للمتابعة"
               };
               loginMsg(msgMap[cloudRes.reason] || "انتهى الاشتراك");
