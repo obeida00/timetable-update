@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.81",
-    "notes": "الزبون يفعّل اشتراكه بنفسه بعد الدفع عبر سوبر كي"
+    "version": "1.82",
+    "notes": "باقات الاشتراك قائمة منسدلة — إصلاح رسالة إزالة الحساب للمدير"
 }
