@@ -694,6 +694,11 @@
       max-width: 210px;
       min-width: 132px;
     }
+    #grdBar.toolbar label.sort.gap-lab {
+      flex: 0 0 auto;
+      min-width: auto;
+      max-width: none;
+    }
     #grdColRow.toolbar {
       align-items: center;
     }
@@ -7634,6 +7639,9 @@
             <option value="نهاية السنة — الدور الثاني">نهاية السنة — الدور الثاني</option>
           </select>
         </label>
+        <label class="sort gap-lab">المسافة
+          <input id="grdPrintGap" type="number" min="16" max="56" step="1" value="26" onchange="saveGradePrintGap()" title="ارتفاع صفوف الطباعة بالبكسل — زِد الرقم إذا ضيقة">
+        </label>
       </div>
       <div class="toolbar no-print" id="grdColRow" style="margin-top:-4px">
         <button class="btn" type="button" onclick="addGradeCol()">
@@ -10875,7 +10883,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.88";
+    const APP_VERSION = "1.89";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -22720,6 +22728,25 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (sel && sel.value) return sel.value;
       return (db.settings && db.settings.gradePeriod) || "نهاية السنة — الدور الأول";
     }
+    function gradePrintRowH() {
+      var n = Number((db && db.settings && db.settings.gradePrintRowH) || 26);
+      if (!isFinite(n)) n = 26;
+      return Math.max(16, Math.min(56, Math.round(n)));
+    }
+    function saveGradePrintGap() {
+      if (!db.settings) db.settings = {};
+      var el = $("grdPrintGap");
+      var n = el ? Number(el.value) : 26;
+      if (!isFinite(n)) n = 26;
+      n = Math.max(16, Math.min(56, Math.round(n)));
+      db.settings.gradePrintRowH = n;
+      if (el) el.value = String(n);
+      try { save(); } catch (eG) {}
+    }
+    function loadGradePrintGap() {
+      var el = $("grdPrintGap");
+      if (el) el.value = String(gradePrintRowH());
+    }
     function saveGradePeriod() {
       if (!db.settings) db.settings = {};
       if ($("grdPeriod")) db.settings.gradePeriod = $("grdPeriod").value;
@@ -22912,6 +22939,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       window._grdAllMode = false;
       if ($("grdAllBtn")) $("grdAllBtn").textContent = "كل المواد";
       if ($("grdPeriod")) $("grdPeriod").value = (db.settings && db.settings.gradePeriod) || "نهاية السنة — الدور الأول";
+      if (typeof loadGradePrintGap === "function") loadGradePrintGap();
       showTab("grades");
     }
 
@@ -23047,16 +23075,17 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     function printHtmlAsPdf(html, css, fileName, orient) {
       orient = orient || "portrait";
+      var rowH = (typeof gradePrintRowH === "function") ? gradePrintRowH() : 26;
       var extra = "@page{size:A4 " + orient + ";margin:10mm}"
-        + "html,body{direction:rtl;unicode-bidi:isolate;font-family:Cairo,Tahoma,Arial,sans-serif;margin:0;background:#fff}"
-        + " .page{width:100%;background:#fff;box-sizing:border-box;padding:4mm;color:#000}"
+        + "html,body{direction:rtl;unicode-bidi:isolate;font-family:Cairo,Tahoma,Arial,sans-serif;margin:0;background:#fff;font-size:14px}"
+        + " .page{width:100%;background:#fff;box-sizing:border-box;padding:5mm 6mm;color:#000}"
         + " .meta,.signbox,.statbox{width:100%;border-collapse:collapse;table-layout:fixed;margin:0 0 8px}"
-        + " .meta td,.signbox td,.statbox td{border:none !important;background:transparent !important;color:#000;font-weight:800;height:auto;padding:3px 4px;unicode-bidi:isolate}"
+        + " .meta td,.signbox td,.statbox td{border:none !important;background:transparent !important;color:#000;font-weight:800;height:auto;padding:4px 5px;font-size:13px;unicode-bidi:isolate}"
         + " table.sheet{width:100%;border-collapse:collapse;table-layout:auto}"
         + " table.sheet.hand{table-layout:fixed}"
-        + " table.sheet th,table.sheet td{border:1.5px solid #000;padding:3px 4px;text-align:center;height:22px;unicode-bidi:plaintext}"
-        + " table.sheet th:first-child,table.sheet td:first-child{width:28px}"
-        + " table.sheet td.name,table.sheet th.name{text-align:right;padding-right:6px;font-weight:700;white-space:nowrap;width:34%;unicode-bidi:isolate}"
+        + " table.sheet th,table.sheet td{border:1.5px solid #000;padding:4px 5px;text-align:center;height:" + rowH + "px;font-size:13px;unicode-bidi:plaintext}"
+        + " table.sheet th:first-child,table.sheet td:first-child{width:32px}"
+        + " table.sheet td.name,table.sheet th.name{text-align:right;padding-right:8px;font-weight:700;white-space:nowrap;width:34%;font-size:14px;unicode-bidi:isolate}"
         + " table.sheet.hand td{height:38px}"
         + " table.sheet th{background:#e2e8f0;color:#000;font-weight:800;unicode-bidi:plaintext;white-space:nowrap}"
         + " table.sheet th.mix-lab{white-space:normal;word-spacing:40rem;line-height:1.15;max-width:2.8em;min-width:24px;vertical-align:middle}";
@@ -23121,7 +23150,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
               return;
             }
             window.html2canvas(list[i], {
-              scale: 2,
+              scale: 3,
               useCORS: true,
               backgroundColor: "#ffffff",
               logging: false,
@@ -23130,12 +23159,24 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
                 try { doc.documentElement.setAttribute("dir", "rtl"); if (doc.body) doc.body.setAttribute("dir", "rtl"); } catch (eC) {}
               }
             }).then(function (canvas) {
-              var img = canvas.toDataURL("image/jpeg", 0.93);
-              if (i > 0) pdf.addPage();
-              var imgW = pw;
-              var imgH = (canvas.height * pw) / canvas.width;
-              if (imgH > ph) { var s = ph / imgH; imgH = ph; imgW = pw * s; }
-              pdf.addImage(img, "JPEG", (pw - imgW) / 2, 0, imgW, imgH);
+              var pagePx = Math.max(1, Math.round(canvas.width * ph / pw));
+              var y = 0;
+              var first = true;
+              while (y < canvas.height) {
+                var sliceH = Math.min(pagePx, canvas.height - y);
+                var slice = document.createElement("canvas");
+                slice.width = canvas.width;
+                slice.height = sliceH;
+                var ctx = slice.getContext("2d");
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+                var img = slice.toDataURL("image/png");
+                if (!(i === 0 && first)) pdf.addPage();
+                var hmm = sliceH * pw / canvas.width;
+                pdf.addImage(img, "PNG", 0, 0, pw, hmm);
+                y += sliceH;
+                first = false;
+              }
               i += 1;
               next();
             }).catch(fail);
@@ -23254,7 +23295,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           + "<th colspan='2'>الدرجة</th></tr><tr><th>رقما</th><th>كتابة</th></tr></thead><tbody>" + (rows || "<tr><td colspan='" + (4 + numCols.length) + "'>لا يوجد طلاب</td></tr>") + "</tbody></table>";
         return "<div class='page'>" + header + body + foot + "</div>";
       }
-      var css = "body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;color:#000;font-size:11px}";
+      var css = "body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;color:#000;font-size:14px}";
       printHtmlAsPdf(jobs.map(pageFor).join(""), css, "قوائم_فردية.pdf", "portrait");
     }
 
@@ -23298,8 +23339,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         + "<td>الراسبون ( &nbsp;&nbsp; )</td><td>الغائبون ( &nbsp;&nbsp; )</td><td>النسبة ( &nbsp;&nbsp; )</td></tr></table>"
         + "<table class='signbox'><tr><td>لجنة " + esc(subj || "المادة") + "<br>" + esc(teacher) + "</td><td>رئيس اللجنة الامتحانية<br>" + esc(comm) + "</td><td>" + esc(mgrTitle) + "<br>" + esc(mgr) + "</td></tr></table>";
       var css = "@page{size:A4 portrait;margin:12mm}" + "@page{@top-left{content:none}@top-center{content:none}@top-right{content:none}@bottom-left{content:none}@bottom-center{content:none}@bottom-right{content:none}}"
-        + "body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;padding:8px 12px;font-size:11px;color:#000}"
-        + "table{width:100%;border-collapse:collapse}th,td{border:1.5px solid #000;padding:3px 4px;text-align:center;height:22px}"
+        + "body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;padding:8px 12px;font-size:14px;color:#000}"
+        + "table{width:100%;border-collapse:collapse}th,td{border:1.5px solid #000;padding:4px 5px;text-align:center;height:26px}"
         + "th{background:#e2e8f0;font-weight:800}.name{text-align:right;padding-right:6px;font-weight:700}"
         + ".head3{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:800;font-size:13px}"
         + ".stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-weight:800}"
