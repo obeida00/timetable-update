@@ -1960,10 +1960,15 @@
 
     /* الاشتراك: نافذة موحّدة مختصرة (الحالة + التفعيل + الدفع) */
     #subBox .modal-card {
-      grid-template-columns: 150px 1fr;
+      grid-template-columns: 150px minmax(0, 1fr);
       gap: 12px;
       padding: 14px 14px 12px
     }
+    #subBox.no-qr .modal-card {
+      grid-template-columns: 1fr !important;
+      width: min(440px, 96vw) !important;
+    }
+    #subBox.no-qr .sub-left { display: none !important; }
     #subBox .sub-grid { display: none !important; }
     #subBox h2 { font-size: 1.05rem; margin: 0 0 6px; }
 
@@ -2002,7 +2007,8 @@
     .sub-stat .sub-txt b {
       display: block;
       font-size: .94rem;
-      color: #111827
+      color: #111827;
+      white-space: nowrap
     }
 
     .sub-stat .sub-txt span {
@@ -10857,7 +10863,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.85";
+    const APP_VERSION = "1.86";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15860,10 +15866,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         var tg = $('subToggle'); if (tg) tg.style.display = "none";
         var hint = $('subPayHint'); if (hint) hint.style.display = "none";
         var side = document.querySelector("#subBox .sub-left"); if (side) side.style.display = "none";
+        if ($("subBox")) $("subBox").classList.add("no-qr");
       } else {
         var tg2 = $('subToggle'); if (tg2) tg2.style.display = "";
         var hint2 = $('subPayHint'); if (hint2) hint2.style.display = "";
         var side2 = document.querySelector("#subBox .sub-left"); if (side2) side2.style.display = "";
+        if ($("subBox")) $("subBox").classList.remove("no-qr");
         setSubAct(false);
       }
       if ($('subBox')) $('subBox').hidden = false;
@@ -23028,9 +23036,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function printHtmlAsPdf(html, css, fileName, orient) {
       orient = orient || "portrait";
       var extra = "@page{size:A4 " + orient + ";margin:10mm}"
-        + "html,body{direction:rtl;unicode-bidi:isolate;font-family:Cairo,Tahoma,Arial,sans-serif}"
-        + " .page{width:100%;background:#fff;box-sizing:border-box;padding:4mm;color:#000;page-break-after:always}"
-        + " .page:last-child{page-break-after:auto}"
+        + "html,body{direction:rtl;unicode-bidi:isolate;font-family:Cairo,Tahoma,Arial,sans-serif;margin:0;background:#fff}"
+        + " .page{width:100%;background:#fff;box-sizing:border-box;padding:4mm;color:#000}"
         + " .meta,.signbox,.statbox{width:100%;border-collapse:collapse;table-layout:fixed;margin:0 0 8px}"
         + " .meta td,.signbox td,.statbox td{border:none !important;background:transparent !important;color:#000;font-weight:800;height:auto;padding:3px 4px;unicode-bidi:isolate}"
         + " table.sheet{width:100%;border-collapse:collapse;table-layout:auto}"
@@ -23039,9 +23046,84 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         + " table.sheet th:first-child,table.sheet td:first-child{width:28px}"
         + " table.sheet td.name,table.sheet th.name{text-align:right;padding-right:6px;font-weight:700;white-space:nowrap;width:34%;unicode-bidi:isolate}"
         + " table.sheet.hand td{height:38px}"
-        + " table.sheet th{background:#e2e8f0;color:#000;font-weight:800;unicode-bidi:plaintext;white-space:nowrap}"        + " table.sheet th.mix-lab{white-space:normal;word-spacing:40rem;line-height:1.15;max-width:2.8em;min-width:24px;vertical-align:middle}"
-        + " @media print{.no-print{display:none}body{padding:0}}";
-      fallbackPrintWindow(html, (css || "") + extra);
+        + " table.sheet th{background:#e2e8f0;color:#000;font-weight:800;unicode-bidi:plaintext;white-space:nowrap}"
+        + " table.sheet th.mix-lab{white-space:normal;word-spacing:40rem;line-height:1.15;max-width:2.8em;min-width:24px;vertical-align:middle}";
+      var allCss = (css || "") + extra;
+      function openPdf(pdf) {
+        var name = fileName || "طباعة.pdf";
+        try {
+          var blob = pdf.output("blob");
+          var url = URL.createObjectURL(blob);
+          var w = null;
+          try { w = window.open(url, "_blank"); } catch (e1) { w = null; }
+          if (!w) {
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          }
+        } catch (e2) {
+          try { pdf.save(name); } catch (e3) { fallbackPrintWindow(html, allCss); }
+        }
+      }
+      function capture() {
+        var JsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+        if (!window.html2canvas || !JsPDF) { fallbackPrintWindow(html, allCss); return; }
+        var old = document.getElementById("_pdfFrame");
+        if (old) old.remove();
+        var ifr = document.createElement("iframe");
+        ifr.id = "_pdfFrame";
+        var pxW = orient === "landscape" ? 1123 : 794;
+        ifr.style.cssText = "position:fixed;left:-14000px;top:0;width:" + pxW + "px;height:1400px;border:0;background:#fff;";
+        document.body.appendChild(ifr);
+        var d = ifr.contentDocument;
+        d.open();
+        d.write("<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='utf-8'><title></title><style>" + allCss + "html,body{width:" + pxW + "px}</style></head><body dir='rtl'>" + html + "</body></html>");
+        d.close();
+        setTimeout(function () {
+          var pages = d.querySelectorAll(".page");
+          var list = pages.length ? Array.prototype.slice.call(pages) : [d.body];
+          var pdf = new JsPDF({ orientation: orient === "landscape" ? "landscape" : "portrait", unit: "mm", format: "a4" });
+          var pw = pdf.internal.pageSize.getWidth();
+          var ph = pdf.internal.pageSize.getHeight();
+          var i = 0;
+          function fail() {
+            try { ifr.remove(); } catch (eF) {}
+            fallbackPrintWindow(html, allCss);
+          }
+          function next() {
+            if (i >= list.length) {
+              try { ifr.remove(); } catch (eR) {}
+              openPdf(pdf);
+              return;
+            }
+            window.html2canvas(list[i], {
+              scale: 2,
+              useCORS: true,
+              backgroundColor: "#ffffff",
+              logging: false,
+              windowWidth: pxW,
+              onclone: function (doc) {
+                try { doc.documentElement.setAttribute("dir", "rtl"); if (doc.body) doc.body.setAttribute("dir", "rtl"); } catch (eC) {}
+              }
+            }).then(function (canvas) {
+              var img = canvas.toDataURL("image/jpeg", 0.93);
+              if (i > 0) pdf.addPage();
+              var imgW = pw;
+              var imgH = (canvas.height * pw) / canvas.width;
+              if (imgH > ph) { var s = ph / imgH; imgH = ph; imgW = pw * s; }
+              pdf.addImage(img, "JPEG", (pw - imgW) / 2, 0, imgW, imgH);
+              i += 1;
+              next();
+            }).catch(fail);
+          }
+          try { if (typeof okNote === "function") okNote("جارٍ تجهيز ملف PDF..."); } catch (eN) {}
+          next();
+        }, 450);
+      }
+      ensurePrintLibs().then(capture).catch(function () { fallbackPrintWindow(html, allCss); });
     }
 
     function printAllSubjectsGrades() {
