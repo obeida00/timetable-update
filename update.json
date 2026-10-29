@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.84",
-    "notes": "إصلاح نوافذ الموبايل فوق الشريط السفلي"
+    "version": "1.85",
+    "notes": "سجل الدرجات: طباعة جامعة لكل المواد، قوائم فردية دفعة واحدة، تثبيت اسم الطالب، حقول يدوية فارغة، أعمدة النص مع الرقم عامودية"
 }
