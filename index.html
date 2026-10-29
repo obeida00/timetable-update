@@ -10863,7 +10863,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.86";
+    const APP_VERSION = "1.87";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -23051,22 +23051,31 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var allCss = (css || "") + extra;
       function openPdf(pdf) {
         var name = fileName || "طباعة.pdf";
-        try {
-          var blob = pdf.output("blob");
-          var url = URL.createObjectURL(blob);
-          var w = null;
-          try { w = window.open(url, "_blank"); } catch (e1) { w = null; }
-          if (!w) {
-            var a = document.createElement("a");
-            a.href = url;
-            a.download = name;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-          }
-        } catch (e2) {
-          try { pdf.save(name); } catch (e3) { fallbackPrintWindow(html, allCss); }
+        var dataUrl = "";
+        try { dataUrl = pdf.output("datauristring"); } catch (e0) {}
+        var api = (typeof pyApi === "function") ? pyApi() : (window.pywebview && window.pywebview.api);
+        if (api && api.save_pdf && dataUrl) {
+          Promise.resolve(api.save_pdf(dataUrl, name)).then(function (p) {
+            if (p) { try { if (typeof okNote === "function") okNote("تم حفظ الملف"); } catch (eN) {} }
+            else { fallbackPrintWindow(html, allCss); }
+          }).catch(function () { fallbackPrintWindow(html, allCss); });
+          return;
         }
+        if (window.showSaveFilePicker) {
+          window.showSaveFilePicker({
+            suggestedName: name,
+            types: [{ description: "PDF", accept: { "application/pdf": [".pdf"] } }]
+          }).then(function (handle) { return handle.createWritable(); }).then(function (w) {
+            return w.write(pdf.output("blob")).then(function () { return w.close(); });
+          }).then(function () {
+            try { if (typeof okNote === "function") okNote("تم حفظ الملف"); } catch (eN2) {}
+          }).catch(function (err) {
+            if (err && err.name === "AbortError") return;
+            try { pdf.save(name); } catch (eS) { fallbackPrintWindow(html, allCss); }
+          });
+          return;
+        }
+        try { pdf.save(name); } catch (e3) { fallbackPrintWindow(html, allCss); }
       }
       function capture() {
         var JsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
@@ -23216,8 +23225,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           + "<td style='text-align:left;width:28%'>الصف: " + esc(clsTitle) + "<br>الشعبة: " + esc(sec.name || "") + "<br>المادة: " + esc(subj) + "</td>"
           + "</tr></table>";
         var foot = "<table class='statbox'><tr>"
-          + "<td>العدد الكلي ( " + list.length + " )</td><td>المشتركون ( " + filled + " )</td><td>الناجحون ( " + passed + " )</td>"
-          + "<td>الراسبون ( " + failed + " )</td><td>الغائبون ( " + empty + " )</td><td>النسبة ( " + (pct === "" ? "" : pct + "%") + " )</td>"
+          + "<td>العدد الكلي ( " + list.length + " )</td><td>المشتركون ( &nbsp;&nbsp; )</td><td>الناجحون ( &nbsp;&nbsp; )</td>"
+          + "<td>الراسبون ( &nbsp;&nbsp; )</td><td>الغائبون ( &nbsp;&nbsp; )</td><td>النسبة ( &nbsp;&nbsp; )</td>"
           + "</tr></table>"
           + "<table class='signbox'><tr><td>لجنة " + esc(subj) + "<br>" + esc(teacher) + "</td><td>رئيس اللجنة الامتحانية<br>" + esc(comm) + "</td><td>" + esc(mgrTitle) + "<br>" + esc(mgr) + "</td></tr></table>";
         var rows = "";
@@ -23273,8 +23282,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         + "<td style='text-align:center;width:44%'>القوائم الفرعية للامتحانات<br>" + esc(period) + "<br>العام الدراسي ( " + esc(yr) + " )</td>"
         + "<td style='text-align:left;width:28%'>الصف: " + esc(clsTitle) + "<br>الشعبة: " + esc(secTitle) + "<br>المادة: " + esc(subj) + "</td></tr></table>";
       var foot = "<table class='statbox'><tr>"
-        + "<td>العدد الكلي ( " + list.length + " )</td><td>المشتركون ( " + filled + " )</td><td>الناجحون ( " + passed + " )</td>"
-        + "<td>الراسبون ( " + failed + " )</td><td>الغائبون ( " + empty + " )</td><td>النسبة ( " + (pct === "" ? "" : pct + "%") + " )</td></tr></table>"
+        + "<td>العدد الكلي ( " + list.length + " )</td><td>المشتركون ( &nbsp;&nbsp; )</td><td>الناجحون ( &nbsp;&nbsp; )</td>"
+        + "<td>الراسبون ( &nbsp;&nbsp; )</td><td>الغائبون ( &nbsp;&nbsp; )</td><td>النسبة ( &nbsp;&nbsp; )</td></tr></table>"
         + "<table class='signbox'><tr><td>لجنة " + esc(subj || "المادة") + "<br>" + esc(teacher) + "</td><td>رئيس اللجنة الامتحانية<br>" + esc(comm) + "</td><td>" + esc(mgrTitle) + "<br>" + esc(mgr) + "</td></tr></table>";
       var css = "@page{size:A4 portrait;margin:12mm}" + "@page{@top-left{content:none}@top-center{content:none}@top-right{content:none}@bottom-left{content:none}@bottom-center{content:none}@bottom-right{content:none}}"
         + "body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;padding:8px 12px;font-size:11px;color:#000}"
