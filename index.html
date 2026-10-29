@@ -2076,11 +2076,29 @@
       font-weight: 900
     }
 
+    .sub-plan-label {
+      display: block;
+      margin: 10px 0 8px;
+      font-size: .82rem;
+      font-weight: 800;
+      color: #163858;
+      text-align: right
+    }
+    .sub-plan-label select {
+      width: 100%;
+      margin-top: 6px;
+      height: 44px;
+      border: 1.5px solid #d3e1ee;
+      border-radius: 12px;
+      background: #fff;
+      color: #145d9b;
+      font-weight: 800;
+      font-size: .92rem;
+      padding: 0 12px;
+      font-family: inherit
+    }
     .sub-plans {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin: 10px 0 8px
+      display: none
     }
     .sub-plan {
       border: 1.5px solid #d3e1ee;
@@ -8062,12 +8080,14 @@
             </div>
           </div>
 
-          <div id="subPlans" class="sub-plans">
-            <button type="button" class="sub-plan" data-plan="1" onclick="selectSubPlan(1)"><span>شهر</span><b>25,000</b><small>د.ع</small></button>
-            <button type="button" class="sub-plan" data-plan="3" onclick="selectSubPlan(3)"><span>3 أشهر</span><b>60,000</b><small>د.ع</small><em>وفّر 15 ألف</em></button>
-            <button type="button" class="sub-plan" data-plan="6" onclick="selectSubPlan(6)"><span>6 أشهر</span><b>100,000</b><small>د.ع</small><em>وفّر 50 ألف</em></button>
-            <button type="button" class="sub-plan on" data-plan="12" onclick="selectSubPlan(12)"><span>سنة</span><b>150,000</b><small>د.ع</small><em>وفّر 150 ألف</em></button>
-          </div>
+          <label class="sub-plan-label">مدة الاشتراك
+            <select id="subPlanSelect" onchange="selectSubPlan(Number(this.value))">
+              <option value="1">شهر — 25,000 د.ع</option>
+              <option value="3">3 أشهر — 60,000 د.ع (وفّر 15 ألف)</option>
+              <option value="6">6 أشهر — 100,000 د.ع (وفّر 50 ألف)</option>
+              <option value="12" selected>سنة — 150,000 د.ع (وفّر 150 ألف)</option>
+            </select>
+          </label>
           <p id="subPayHint" class="hint" style="margin:6px 0 0;font-size:.74rem">اختر الباقة وادفع عبر سوبر كي (الباركود يساراً) ثم اضغط «تفعيل اشتراكي». إذا اشتراكك ساري، المدة تنضاف عليه.</p>
           <button type="button" class="btn g" id="selfActivateBtn" onclick="selfActivatePlan()" style="width:100%;margin-top:8px">دفعت عبر سوبر كي — تفعيل اشتراكي</button>
           <button type="button" class="btn g" id="devActivateBtn" hidden onclick="activatePlanInApp()" style="width:100%;margin-top:8px">تفعيل باقة لزبون (المطور)</button>
@@ -10697,7 +10717,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.81";
+    const APP_VERSION = "1.82";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -17556,7 +17576,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     function applySchoolInfo(r) {
       if (!r) return;
-      if (r.removed) { handleRemovedFromSchool(); return; }
+      if (r.removed && r.is_owner !== true && r.ok !== true) { handleRemovedFromSchool(); return; }
       if (!r.ok) return;
       if (r.limited) {
         // لا نوقف الانضمام بسبب التوكن — نكمل بالمتاح
@@ -17736,7 +17756,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var savedSchool = (db.settings && db.settings.linkedSchool) || localStorage.getItem("tt_linked_school_" + myAcc) || "";
       // الاستعلام السحابي المباشر دائماً لضمان وصول أحدث جدول واشتراك المالك
       cloudGetSchoolInfo(myAcc).then(function (r) {
-        if (r && r.removed) { handleRemovedFromSchool(); return; }
+        if (r && r.removed && r.is_owner !== true && r.ok !== true) { handleRemovedFromSchool(); return; }
         if (r && r.ok) {
           applySchoolInfo(r);
         }
@@ -17890,15 +17910,14 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function selectSubPlan(id) {
       window._subPlan = id;
       try {
-        document.querySelectorAll(".sub-plan").forEach(function (b) {
-          b.classList.toggle("on", String(b.getAttribute("data-plan")) === String(id));
-        });
+        var sel = $("subPlanSelect");
+        if (sel && String(sel.value) !== String(id)) sel.value = String(id);
       } catch (e) { }
       var p = SUB_PLANS.filter(function (x) { return x.id === id; })[0];
       var txt = (p.price).toLocaleString("en-US") + " د.ع";
       try { if ($("subQiPrice")) $("subQiPrice").textContent = txt; } catch (e2) { }
       try {
-        if ($("subPayHint")) $("subPayHint").textContent = "ادفع " + txt + " باقة «" + p.name + "» عبر سوبر كي ثم أرسل رقم حسابك للمطور ليصلك كود التفعيل. إذا اشتراكك ساري، المدة تنضاف عليه.";
+        if ($("subPayHint")) $("subPayHint").textContent = "ادفع " + txt + " باقة «" + p.name + "» عبر سوبر كي ثم اضغط «تفعيل اشتراكي».";
       } catch (e3) { }
     }
     function isDevSubAcc() {
