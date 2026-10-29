@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.86",
-    "notes": "إصلاح نافذة الاشتراك، وطباعة PDF بدون ترويسة المتصفح مع حفظ الملف"
+    "version": "1.87",
+    "notes": "سجل الامتحانات: العدد الكلي فقط، وباقي الإحصاء فارغ للكتابة اليدوية"
 }
