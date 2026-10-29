@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.88",
-    "notes": "باقات الاشتراك صارت بطاقة في لوحة الإعدادات حتى الزبون يلقاها بسهولة"
+    "version": "1.89",
+    "notes": "تتحكم بمسافة صفوف طباعة القوائم، والطباعة أوضح على ورق A4"
 }
