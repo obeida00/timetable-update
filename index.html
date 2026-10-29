@@ -1855,7 +1855,7 @@
     #subBox {
       overflow: hidden;
       padding: 12px;
-      z-index: 200000 !important
+      z-index: 400000 !important
     }
 
     #subBox .modal-card {
@@ -2155,6 +2155,67 @@
         grid-template-columns: 1fr;
         gap: 10px
       }
+    }
+
+    @media (max-width:800px) {
+      #subBox, #mobMoreSheet {
+        z-index: 400000 !important;
+        padding: 0 0 calc(72px + env(safe-area-inset-bottom, 0px)) 0 !important;
+        place-items: end center !important;
+      }
+      #subBox .modal-card,
+      #mobMoreSheet .modal-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - 88px - env(safe-area-inset-bottom, 0px)) !important;
+        overflow: auto !important;
+        grid-template-columns: 1fr !important;
+        border-radius: 18px 18px 0 0 !important;
+        margin: 0 !important;
+        padding: 16px 14px 18px !important;
+      }
+      #subBox .sub-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 auto 8px;
+      }
+      #subBox .qi-qr { width: 110px; padding: 4px 4px 22px; }
+      #subBox .qi-qr img { width: 102px; height: 102px; }
+      #subBox .form-actions,
+      #mobMoreSheet .form-actions {
+        display: none !important;
+      }
+      #subBox .sub-x {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    html.is-phone-app #subBox,
+    html.is-phone-app #mobMoreSheet {
+      z-index: 400000 !important;
+      padding: 0 0 calc(72px + env(safe-area-inset-bottom, 0px)) 0 !important;
+      place-items: end center !important;
+    }
+    html.is-phone-app #subBox .modal-card,
+    html.is-phone-app #mobMoreSheet .modal-card {
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: calc(100dvh - 88px - env(safe-area-inset-bottom, 0px)) !important;
+      overflow: auto !important;
+      grid-template-columns: 1fr !important;
+      border-radius: 18px 18px 0 0 !important;
+      margin: 0 !important;
+    }
+    html.is-phone-app #subBox .form-actions,
+    html.is-phone-app #mobMoreSheet .form-actions {
+      display: none !important;
+    }
+    html.is-phone-app #subBox .sub-x {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
     }
 
     .qi-qr {
@@ -9074,7 +9135,8 @@
       </button>
     </nav>
     <div id="mobMoreSheet" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
-      <div class="modal-card" onclick="event.stopPropagation()" style="max-width:420px;padding:16px">
+      <div class="modal-card" onclick="event.stopPropagation()" style="max-width:420px;padding:16px;position:relative">
+        <button type="button" class="sub-x" title="إغلاق" onclick="$('mobMoreSheet').hidden=true">×</button>
         <h2 style="margin:0 0 10px;border:0;padding:0">المزيد</h2>
         <div class="mob-more-grid">
           <button type="button" class="btn w" onclick="switchMobileTab('teachers')">المعلمون</button>
@@ -10740,7 +10802,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.83";
+    const APP_VERSION = "1.84";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -11777,9 +11839,9 @@
     window.switchMobileTab = function(tabId) {
       var more = document.getElementById('mobMoreSheet');
       if (tabId === 'more') {
-        if (more) more.hidden = false;
+        if (more) more.hidden = !more.hidden;
         document.querySelectorAll('.mob-nav-btn').forEach(function(b) {
-          b.classList.toggle('active', b.getAttribute('data-mob-tab') === 'more');
+          b.classList.toggle('active', b.getAttribute('data-mob-tab') === 'more' && more && !more.hidden);
         });
         return;
       }
@@ -15716,7 +15778,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const uRow = $('subInfoUntilRow'); if (uRow) uRow.hidden = !(s && s.until);
       if ($('subInfoUntil')) $('subInfoUntil').textContent = (s && s.until) || "—";
       const code = (s && s.code) || (((loadAuth().users || {})[(s && s.account) || ""]) || {}).code || "";
-      if ($('subInfoCodeRow')) $('subInfoCodeRow').hidden = !code;
+      if ($('subInfoCodeRow')) $('subInfoCodeRow').hidden = !code || /CLOUD-ACTIVE/i.test(String(code));
       if (code && $('subInfoCode')) $('subInfoCode').textContent = code;
       if ($('accIn') && !$('accIn').value && s && s.account) $('accIn').value = s.account;
       try {
@@ -16433,7 +16495,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if ($("accIn") && !$("accIn").value) $("accIn").value = acc;
       showLicRemain(s);
       window._licCanClose = !!(s && s.ok);
-      if ($("subClose")) $("subClose").hidden = !window._licCanClose; if ($("subBack")) $("subBack").hidden = !window._licCanClose;
+      if ($("subClose")) $("subClose").hidden = false; if ($("subBack")) $("subBack").hidden = true;
       var assistGate = (s && s.mode === "shared") || (typeof isLinkedAssistant === "function" && isLinkedAssistant());
       if (s && s.ok) { if ($("subBox")) $("subBox").hidden = true; }
       else if (assistGate) { if ($("subBox")) $("subBox").hidden = true; }
@@ -19986,9 +20048,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     window.switchMobileTab = function(tabId) {
       var more = document.getElementById('mobMoreSheet');
       if (tabId === 'more') {
-        if (more) more.hidden = false;
+        if (more) more.hidden = !more.hidden;
         document.querySelectorAll('.mob-nav-btn').forEach(function(b) {
-          b.classList.toggle('active', b.getAttribute('data-mob-tab') === 'more');
+          b.classList.toggle('active', b.getAttribute('data-mob-tab') === 'more' && more && !more.hidden);
         });
         return;
       }
