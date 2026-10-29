@@ -8068,8 +8068,9 @@
             <button type="button" class="sub-plan" data-plan="6" onclick="selectSubPlan(6)"><span>6 أشهر</span><b>100,000</b><small>د.ع</small><em>وفّر 50 ألف</em></button>
             <button type="button" class="sub-plan on" data-plan="12" onclick="selectSubPlan(12)"><span>سنة</span><b>150,000</b><small>د.ع</small><em>وفّر 150 ألف</em></button>
           </div>
-          <p id="subPayHint" class="hint" style="margin:6px 0 0;font-size:.74rem">اختر الباقة ثم ادفع عبر سوبر كي (الباركود يساراً) وأرسل رقم حسابك للمطور ليصلك كود التفعيل — الكود لحسابك فقط، وإذا عندك اشتراك ساري المدة تنضاف عليه.</p>
-          <button type="button" class="btn g" id="devActivateBtn" hidden onclick="activatePlanInApp()" style="width:100%;margin-top:8px">تفعيل الباقة من التطبيق</button>
+          <p id="subPayHint" class="hint" style="margin:6px 0 0;font-size:.74rem">اختر الباقة وادفع عبر سوبر كي (الباركود يساراً) ثم اضغط «تفعيل اشتراكي». إذا اشتراكك ساري، المدة تنضاف عليه.</p>
+          <button type="button" class="btn g" id="selfActivateBtn" onclick="selfActivatePlan()" style="width:100%;margin-top:8px">دفعت عبر سوبر كي — تفعيل اشتراكي</button>
+          <button type="button" class="btn g" id="devActivateBtn" hidden onclick="activatePlanInApp()" style="width:100%;margin-top:8px">تفعيل باقة لزبون (المطور)</button>
           <p id="licMsg" class="hint" style="margin:6px 0 0"></p>
           <div class="form-actions" style="margin-top:8px">
             <button class="btn w ghost" type="button" onclick="$('subBox').hidden=true">إغلاق</button>
@@ -10696,7 +10697,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.80";
+    const APP_VERSION = "1.81";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15668,12 +15669,15 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if ($('accIn') && !$('accIn').value && s && s.account) $('accIn').value = s.account;
       try {
         var devBtn = $("devActivateBtn");
+        var selfBtn = $("selfActivateBtn");
         var me = String(window._acc || "");
         var isDev = (me === "07813332882" || me.endsWith("7813332882"));
+        var assist = (typeof isLinkedAssistant === "function" && isLinkedAssistant());
         if (devBtn) {
           devBtn.hidden = !isDev;
-          if (isDev) devBtn.textContent = "تفعيل الباقة من التطبيق على الرقم أعلاه";
+          if (isDev) devBtn.textContent = "تفعيل باقة لزبون (المطور)";
         }
+        if (selfBtn) selfBtn.hidden = !!assist;
       } catch (eDev) { }
       var linkedAssist = (s && s.mode === "shared") || (typeof isLinkedAssistant === "function" && isLinkedAssistant());
       if (linkedAssist) {
@@ -16218,7 +16222,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const acc = normAcc(a.session || "");
       if (!acc) return { ok: false, mode: "login", account: "", days: 0, until: "", price: (typeof currentSubPrice === 'function' ? currentSubPrice() : 150000) };
       const u = (a.users && a.users[acc]) || {};
-      if (u.code) {
+      if (u.code && (u.paidUntil || u.cloudUntil)) {
         // حساب أيام الاشتراك المدفوع — والأخذ بتاريخ السحابة (يبدأ من يوم التفعيل) إن كان أبعد
         var paidUntil = u.paidUntil || "";
         if (u.cloudUntil && (!paidUntil || String(u.cloudUntil) > String(paidUntil))) paidUntil = u.cloudUntil;
@@ -17901,6 +17905,43 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var me = String(window._acc || "");
       return me === "07813332882" || me.endsWith("7813332882");
     }
+    function selfActivatePlan() {
+      if (typeof isLinkedAssistant === "function" && isLinkedAssistant()) {
+        note("اشتراكك من المدير — ما تحتاج تدفع");
+        return;
+      }
+      var months = window._subPlan || 12;
+      var acc = String(window._acc || "").replace(/\D/g, "");
+      if (!acc || acc.length < 8) { if ($("licMsg")) $("licMsg").textContent = "سجّل دخول بحسابك أولاً"; return; }
+      var p = SUB_PLANS.filter(function (x) { return x.id === months; })[0];
+      var label = p ? (p.name + " — " + p.price.toLocaleString("en-US") + " د.ع") : (months + " شهر");
+      if (!confirm("تأكيد: دفعت " + label + " عبر سوبر كي وتريد تفعيل اشتراك حساب " + acc + "؟")) return;
+      if ($("licMsg")) $("licMsg").textContent = "جاري تفعيل اشتراكك...";
+      fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/self_activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acc: acc, months: months, tok: sessTok(acc) })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.ok) {
+          if ($("licMsg")) $("licMsg").textContent = (d && d.message) || "فشل التفعيل — أعد تسجيل الدخول";
+          return;
+        }
+        var a = loadAuth();
+        if (!a.users) a.users = {};
+        var n = normAcc(d.acc || acc);
+        if (!a.users[n]) a.users[n] = { first: ymd(new Date()) };
+        a.users[n].code = d.code || "SELF";
+        a.users[n].paidUntil = d.until;
+        a.users[n].cloudUntil = d.until;
+        saveAuth(a);
+        okNote("تم تفعيل اشتراكك حتى " + d.until);
+        if ($("licMsg")) $("licMsg").textContent = "اشتراكك مفعّل حتى " + d.until + " — باقي " + (d.days || 0) + " يوم";
+        try { checkLicenseGate(); } catch (eG) { }
+        try { openSubInfoOrPayment(); } catch (eO) { }
+      }).catch(function () {
+        if ($("licMsg")) $("licMsg").textContent = "تعذّر الاتصال";
+      });
+    }
     function activatePlanInApp() {
       if (!isDevSubAcc()) { note("تفعيل الباقة من التطبيق للمطور فقط"); return; }
       var months = window._subPlan || 12;
@@ -18018,8 +18059,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
                 a.session = acc;
                 if (!a.users) a.users = {};
                 if (!a.users[acc]) a.users[acc] = { first: ymd(new Date()) };
-                if (s.code) a.users[acc].code = s.code;
-                if (s.until) { a.users[acc].paidUntil = s.until; a.users[acc].cloudUntil = s.until; }
+                if (s.paid && s.code) a.users[acc].code = s.code;
+                if (s.paid && s.until) { a.users[acc].paidUntil = s.until; a.users[acc].cloudUntil = s.until; }
                 saveAuth(a);
               }
               applyGate(s);
