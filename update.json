@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.91",
-    "notes": "إصلاح: حساب المعاون يظهر دوره الصحيح، ومنع المعاون من إضافة معاونين."
+    "version": "1.92",
+    "notes": "إصلاح جذري: منع تداخل صلاحيات المعاونين وضمان ظهور الدور الصحيح."
 }

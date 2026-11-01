@@ -16920,6 +16920,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }, 300);
 
       try {
+        // حماية أمنية قوية: إذا كان الحساب مرتبطاً بمدرسة أخرى، فهو معاون إجباراً
+        if (cloudRes.owner_acc && !sameLoginAcc(cloudRes.owner_acc, acc)) {
+          cloudRes.is_owner = false;
+        }
+
         if (cloudRes.owner_acc && !cloudRes.is_owner) {
           if (!db.settings) db.settings = {};
           db.settings.linkedSchool = cloudRes.owner_acc;
