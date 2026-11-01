@@ -10883,7 +10883,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.89";
+    const APP_VERSION = "1.90";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -10982,6 +10982,11 @@
       try {
         var acc0 = window._acc || "";
         if (window._isOwner === true) return false;
+        // حماية المدير: إذا في السحابة هو مالك مدرسته فلا ينزل لمعاون أبداً
+        if (acc0 && window._cloudOwnerAcc && sameLoginAcc(window._cloudOwnerAcc, acc0)) {
+          window._isOwner = true;
+          return false;
+        }
         var linked = "";
         try { linked = String((db && db.settings && db.settings.linkedSchool) || ""); } catch (e0) { }
         if (!linked && acc0) {
@@ -11102,9 +11107,12 @@
         if (myPin) db.settings.userPin = myPin;
         else db.settings.userPin = "";
       }
-      var mgr = String(db.settings.schoolManager || "").trim();
-      if (myName && myName !== mgr) db.settings.userName = myName;
-      else db.settings.userName = myName || ((db.settings.userRole === "viewer") ? "مساعد المدرسة" : "معاون المدرسة");
+      // اسم المعاون لا يرث اسم مدير المدرسة من النسخة المشتركة المشتركة
+      // (النسخة المشتركة تحتوي userName الخاص بالمالك، فلا نستخدمه لاسم المعاون)
+      if (!myName) { try { myName = String(window._myMemberName || ""); } catch (eMn) { myName = ""; } }
+      if (myName) db.settings.userName = myName;
+      else db.settings.userName = (db.settings.userRole === "viewer") ? "مساعد المدرسة" : "معاون المدرسة";
+      try { localStorage.setItem("tt_user_name_" + normAcc(acc), db.settings.userName || ""); } catch (eUn) { }
       try {
         var rs = document.getElementById("userRoleSelect");
         if (rs) { rs.value = db.settings.userRole || "assistant"; rs.disabled = true; }
@@ -13485,6 +13493,11 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       let curRole = (db.settings && db.settings.userRole) || localStorage.getItem("tt_user_role_" + (window._acc || "")) || "owner";
       if (isLinkedAssistant()) curRole = (curRole === "viewer") ? "viewer" : "assistant";
       else curRole = "owner";
+      // المدير يبقى "مدير المدرسة" حتى لو تلوّثت بياناته المحلية من نسخة معاون
+      if (!isLinkedAssistant() && db.settings && db.settings.userRole !== "owner") {
+        db.settings.userRole = "owner";
+        try { localStorage.setItem("tt_user_role_" + (window._acc || ""), "owner"); } catch (eRo) { }
+      }
       if (document.getElementById("userRoleSelect")) {
         document.getElementById("userRoleSelect").value = curRole;
         document.getElementById("userRoleSelect").disabled = true;
@@ -16875,10 +16888,21 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       // حفظ الاسم والإيميل بشكل صحيح
       const finalEmail = cloudRes.email || "";
       const finalName = cloudRes.user_name || "";
-      if (finalName) {
+      // المعاون لا يرث اسم المدير: نأخذ الاسم المحفوظ لجهازه فقط
+      const isMemberAcc = !!(cloudRes.owner_acc && !cloudRes.is_owner);
+      let myOwnName = finalName;
+      if (isMemberAcc) {
+        try { myOwnName = localStorage.getItem("tt_user_name_" + normAcc(acc)) || ""; } catch (eOn) { }
+        if (!myOwnName) {
+          const memList = (db && db.settings && db.settings.teamMembers) || [];
+          const meM = memList.find(function (m) { return m && sameLoginAcc(m.account, acc); });
+          myOwnName = (meM && meM.name) || "";
+        }
+      }
+      if (myOwnName) {
         if (!db.settings) db.settings = {};
-        db.settings.userName = finalName;
-        try { localStorage.setItem("tt_user_name_" + acc, finalName); } catch (e) { }
+        db.settings.userName = myOwnName;
+        try { localStorage.setItem("tt_user_name_" + normAcc(acc), myOwnName); } catch (e) { }
       }
       if (finalEmail) {
         try { localStorage.setItem("tt_google_linked_email", finalEmail + "|" + acc); } catch (e) { }
@@ -17778,6 +17802,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       try { restoreAssistantProfile(); } catch (eAs2) { }
       try { renderSettings(); } catch (e) { }
       try { if (typeof renderViews === "function") renderViews(); } catch (e) { }
+      try { applyPermNav(); } catch (ePn2) { }
     }
     function applySchoolInfo(r) {
       if (!r) return;
@@ -17793,6 +17818,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           renderMembersUI([], false, window._pendingJoin.code || "");
           return;
         }
+        if (r.owner_acc) window._cloudOwnerAcc = r.owner_acc;
         if (r.is_owner) {
           window._isOwner = true;
           db.settings.userRole = "owner";
@@ -17809,12 +17835,23 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (r.school_code) db.settings.schoolCode = r.school_code;
         if (r.school_name && !r.is_owner) db.settings.schoolName = r.school_name;
         if (r.owner_acc && !r.is_owner) {
-          db.settings.linkedSchool = r.owner_acc;
-          window._isOwner = false;
-          db.settings.userRole = (r.my_role === "viewer") ? "viewer" : "assistant";
-          window._myPerms = r.my_perms || defaultClientPerms(db.settings.userRole);
-          try { localStorage.setItem("tt_linked_school_" + (window._acc || ""), r.owner_acc); } catch (eL) { }
-          try { restoreAssistantProfile(); } catch (eAs3) { }
+          // لا نسمح بنزول مالك المدرسة لدور معاون (بيانات ملتصقة من نسخة قديمة)
+          if (sameLoginAcc(r.owner_acc, window._acc || "")) {
+            window._isOwner = true;
+            db.settings.userRole = "owner";
+            window._myPerms = null;
+            try { delete db.settings.linkedSchool; } catch (eLs3) { }
+            try { localStorage.removeItem("tt_linked_school_" + (window._acc || "")); } catch (eLs4) { }
+            try { localStorage.setItem("tt_user_role_" + (window._acc || ""), "owner"); } catch (eLs5) { }
+          } else {
+            if (r.my_name) window._myMemberName = String(r.my_name).trim();
+            db.settings.linkedSchool = r.owner_acc;
+            window._isOwner = false;
+            db.settings.userRole = (r.my_role === "viewer") ? "viewer" : "assistant";
+            window._myPerms = r.my_perms || defaultClientPerms(db.settings.userRole);
+            try { localStorage.setItem("tt_linked_school_" + (window._acc || ""), r.owner_acc); } catch (eL) { }
+            try { restoreAssistantProfile(); } catch (eAs3) { }
+          }
           try { applyPermNav(); } catch (ePn) { }
         }
       } catch (e) { }
