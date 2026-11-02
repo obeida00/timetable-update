@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.93",
-    "notes": "فرض تحديث الصلاحيات فورياً من السيرفر عند كل مزامنة."
+    "version": "1.94",
+    "notes": "تحديث إجباري: إصلاح نهائي لصلاحيات المعاونين وضمان المزامنة الفورية."
 }
