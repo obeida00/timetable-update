@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.92",
-    "notes": "إصلاح جذري: منع تداخل صلاحيات المعاونين وضمان ظهور الدور الصحيح."
+    "version": "1.93",
+    "notes": "فرض تحديث الصلاحيات فورياً من السيرفر عند كل مزامنة."
 }

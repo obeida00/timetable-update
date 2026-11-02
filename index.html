@@ -17856,7 +17856,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
             if (r.my_name) window._myMemberName = String(r.my_name).trim();
             db.settings.linkedSchool = r.owner_acc;
             window._isOwner = false;
-            db.settings.userRole = (r.my_role === "viewer") ? "viewer" : "assistant";
+            var forcedRole = (r.my_role === "viewer") ? "viewer" : "assistant";
+            db.settings.userRole = forcedRole;
+            window._myPerms = r.my_perms || defaultClientPerms(forcedRole);
+            try { localStorage.setItem("tt_user_role_" + (window._acc || ""), forcedRole); } catch (eR) { }
             window._myPerms = r.my_perms || defaultClientPerms(db.settings.userRole);
             try { localStorage.setItem("tt_linked_school_" + (window._acc || ""), r.owner_acc); } catch (eL) { }
             try { restoreAssistantProfile(); } catch (eAs3) { }
