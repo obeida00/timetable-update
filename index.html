@@ -10883,7 +10883,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.90";
+    const APP_VERSION = "1.91";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -14198,9 +14198,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
         h += `<tr><td>${esc(r.kind)}</td><td>${esc(secName(r.secId))}</td><td>${esc(dayName(r.d))}</td><td>${r.p + 1}</td><td>${esc(r.orig)}</td><td>${esc(r.lesson)}</td><td>${esc(teacherName(r.sub) || "—")}</td></tr>`;
       });
       h += `</tbody></table></body></html>`;
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([h], { type: "application/msword" }));
-      a.download = "vacancies.doc"; a.click();
+      downloadBlob("الشواغر_والمجاز.doc", "application/msword", h);
     }
     function fillVacancies() { openVacModal(); }
 
@@ -15064,15 +15062,76 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
     }
     function viewHTML() { return $("viewOut").innerHTML || ""; }
     function isIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent || "") || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
+    function blobToDataUrl(blob) {
+      return new Promise(function (res, rej) {
+        var r = new FileReader();
+        r.onload = function () { res(String(r.result || "")); };
+        r.onerror = function () { rej(r.error); };
+        r.readAsDataURL(blob);
+      });
+    }
+    function extOfName(name) {
+      var m = String(name || "").match(/\.[A-Za-z0-9]{1,8}$/);
+      return m ? m[0].toLowerCase() : "";
+    }
+    function mimeTypeFor(ext) {
+      return ({ ".pdf": "application/pdf", ".xls": "application/vnd.ms-excel", ".doc": "application/msword",
+        ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg" })[ext] || "application/octet-stream";
+    }
+    // حفظ الملف في المكان الذي يختاره المستخدم (سطح المكتب: نافذة حفظ / الويب: نافذة النظام)
+    function saveFileAs(name, mime, data) {
+      var bt = (typeof pyApi === "function" && pyApi()) || (window.pywebview && window.pywebview.api) || null;
+      var ext = extOfName(name);
+      if (bt && data instanceof Blob) {
+        return blobToDataUrl(data).then(function (dataUrl) {
+          return bt.save_export(dataUrl, name);
+        }).then(function (p) {
+          if (p) return { saved: true, path: p };
+          return { saved: false, path: "" };
+        }).catch(function () { return { saved: false, path: "" }; });
+      }
+      // سطح المكتب مع نص/HTML (DataURL غير متاح في save_export)
+      if (bt && !(data instanceof Blob) && bt.save_export) {
+        try {
+          var txt = typeof data === "string" ? data : String(data);
+          var b64 = btoa(unescape(encodeURIComponent(txt)));
+          return bt.save_export("data:" + mime + ";base64," + b64, name).then(function (p) {
+            return { saved: !!p, path: p || "" };
+          }).catch(function () { return { saved: false, path: "" }; });
+        } catch (e) { }
+      }
+      return Promise.resolve({ saved: false, path: "" });
+    }
     function downloadBlob(name, mime, data) {
-      const blob = new Blob([data], { type: mime });
-      const url = URL.createObjectURL(blob);
-      if (isIOS()) { window.open(url, "_blank"); return; }
-      const a = document.createElement("a");
-      a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function () {
-        try { note("💾 تم تنزيل الملف: " + name + "\n📂 تجده في مجلد «التنزيلات (Downloads)» على جهازك"); } catch (e) { }
-      }, 400);
+      const blob = (data instanceof Blob) ? data : new Blob([data], { type: mime });
+      function browserSave() {
+        const url = URL.createObjectURL(blob);
+        if (isIOS()) { window.open(url, "_blank"); return; }
+        const a = document.createElement("a");
+        a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () {
+          try { note("💾 تم تنزيل الملف: " + name + "\n📂 تجده في مجلد «التنزيلات (Downloads)» على جهازك"); } catch (e) { }
+        }, 400);
+      }
+      if (window.showSaveFilePicker) {
+        const ext = extOfName(name) || ".dat";
+        window.showSaveFilePicker({
+          suggestedName: name,
+          types: [{ description: ext.toUpperCase().replace(".", ""), accept: { [mime || mimeTypeFor(ext)]: [ext] } }]
+        }).then(function (h) { return h.createWritable(); }).then(function (w) {
+          return w.write(blob).then(function () { return w.close(); });
+        }).then(function () {
+          try { okNote("تم حفظ الملف: " + name); } catch (e) { }
+        }).catch(function (err) {
+          if (err && err.name === "AbortError") return;
+          browserSave();
+        });
+        return;
+      }
+      saveFileAs(name, mime, blob).then(function (r) {
+        if (r && r.saved) { try { okNote("تم حفظ الملف في: " + r.path); } catch (e) { } return; }
+        browserSave();
+      });
     }
     function exportDataTable(bodyId, title, fmt) {
       const tb = $(bodyId); if (!tb) { alert("لا جدول"); return; }
@@ -15729,7 +15788,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function saveViaApp(dataUrl, name, okMsg) {
       const api = window.pywebview && window.pywebview.api;
       if (api && api.save_export) {
-        api.save_export(dataUrl, name).then(function (p) { okNote(okMsg + (p ? (" — " + p) : "")); }).catch(function () { okNote(okMsg); });
+        api.save_export(dataUrl, name).then(function (p) {
+          okNote(p ? (okMsg + " — تم الحفظ في: " + p) : "تم إلغاء الحفظ");
+        }).catch(function () { okNote(okMsg); });
         return true;
       }
       return false;
@@ -15739,7 +15800,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         // استخدام أعلى جودة PNG خالية من أي ضغط أو بكسلة لحفظ كامل وضوح الخطوط عند التكبير
         const data = cv.toDataURL("image/png");
         if (!saveViaApp(data, "جدول_الدروس.png", "تم تصدير الصورة بجودة فائقة (PNG)")) {
-          const a = document.createElement("a"); a.href = data; a.download = "جدول_الدروس.png"; a.click(); okNote("تم تصدير الصورة بجودة فائقة بنجاح");
+          downloadBlob("جدول_الدروس.png", "image/png", data);
         }
       });
     }
@@ -16286,7 +16347,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const data = JSON.stringify(db, null, 2);
       const api = window.pywebview && window.pywebview.api;
       if (api && api.save_backup) {
-        api.save_backup(data, name).then(function (p) { okNote("تم حفظ النسخة في نفس مجلد الحفظ التلقائي" + (p ? (" — " + p) : "")); }).catch(function () { okNote("تعذر حفظ النسخة"); });
+        api.save_backup(data, name).then(function (p) { okNote(p ? ("تم حفظ النسخة الاحتياطية في: " + p) : "تم إلغاء الحفظ"); }).catch(function () { okNote("تعذر حفظ النسخة"); });
         return;
       }
       downloadBlob(name, "application/json", data);
@@ -16920,11 +16981,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }, 300);
 
       try {
-        // حماية أمنية قوية: إذا كان الحساب مرتبطاً بمدرسة أخرى، فهو معاون إجباراً
-        if (cloudRes.owner_acc && !sameLoginAcc(cloudRes.owner_acc, acc)) {
-          cloudRes.is_owner = false;
-        }
-
         if (cloudRes.owner_acc && !cloudRes.is_owner) {
           if (!db.settings) db.settings = {};
           db.settings.linkedSchool = cloudRes.owner_acc;
@@ -17856,10 +17912,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
             if (r.my_name) window._myMemberName = String(r.my_name).trim();
             db.settings.linkedSchool = r.owner_acc;
             window._isOwner = false;
-            var forcedRole = (r.my_role === "viewer") ? "viewer" : "assistant";
-            db.settings.userRole = forcedRole;
-            window._myPerms = r.my_perms || defaultClientPerms(forcedRole);
-            try { localStorage.setItem("tt_user_role_" + (window._acc || ""), forcedRole); } catch (eR) { }
+            db.settings.userRole = (r.my_role === "viewer") ? "viewer" : "assistant";
             window._myPerms = r.my_perms || defaultClientPerms(db.settings.userRole);
             try { localStorage.setItem("tt_linked_school_" + (window._acc || ""), r.owner_acc); } catch (eL) { }
             try { restoreAssistantProfile(); } catch (eAs3) { }
@@ -23150,8 +23203,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         var api = (typeof pyApi === "function") ? pyApi() : (window.pywebview && window.pywebview.api);
         if (api && api.save_pdf && dataUrl) {
           Promise.resolve(api.save_pdf(dataUrl, name)).then(function (p) {
-            if (p) { try { if (typeof okNote === "function") okNote("تم حفظ الملف"); } catch (eN) {} }
-            else { fallbackPrintWindow(html, allCss); }
+            if (p) { try { if (typeof okNote === "function") okNote("تم حفظ الملف في: " + p); } catch (eN) {} }
+            else { try { if (typeof okNote === "function") okNote("تم إلغاء الحفظ"); } catch (eN1) {} }
           }).catch(function () { fallbackPrintWindow(html, allCss); });
           return;
         }
