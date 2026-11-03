@@ -10981,25 +10981,27 @@
     function isLinkedAssistant() {
       try {
         var acc0 = window._acc || "";
-        if (window._isOwner === true) return false;
-        // حماية المدير: إذا في السحابة هو مالك مدرسته فلا ينزل لمعاون أبداً
-        if (acc0 && window._cloudOwnerAcc && sameLoginAcc(window._cloudOwnerAcc, acc0)) {
-          window._isOwner = true;
-          return false;
-        }
+        if (!acc0) return false;
+
+        // 1. التحقق القاطع إذا كان الحساب مسجلاً صراحة كمعاون أو مراقب في أي مكان محلياً أو سحابياً
         var savedRole = "";
         try { savedRole = localStorage.getItem("tt_user_role_" + acc0) || ""; } catch (eSr) { }
         if (savedRole === "assistant" || savedRole === "viewer") return true;
         if (window._myRole === "assistant" || window._myRole === "viewer") return true;
+        if (db && db.settings && (db.settings.userRole === "assistant" || db.settings.userRole === "viewer")) return true;
 
+        // 2. التحقق من الربط بمدرسة شخص آخر
         var linked = "";
         try { linked = String((db && db.settings && db.settings.linkedSchool) || ""); } catch (e0) { }
-        if (!linked && acc0) {
+        if (!linked) {
           try { linked = localStorage.getItem("tt_linked_school_" + acc0) || ""; } catch (e1) { }
         }
-        if (linked && acc0 && !sameLoginAcc(linked, acc0)) return true;
-        if (window._schoolOwner && acc0 && !sameLoginAcc(window._schoolOwner, acc0)) return true;
+        if (linked && !sameLoginAcc(linked, acc0)) return true;
+        if (window._schoolOwner && !sameLoginAcc(window._schoolOwner, acc0)) return true;
+        if (window._cloudOwnerAcc && !sameLoginAcc(window._cloudOwnerAcc, acc0)) return true;
+
         if (window._isOwner === false) return true;
+        if (window._isOwner === true) return false;
       } catch (e) { }
       return false;
     }
@@ -16888,6 +16890,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
                   loginData.school_code = scInfo.school_code || "";
                   loginData.owner_acc = scInfo.owner_acc || "";
                   loginData.is_owner = scInfo.is_owner;
+                  loginData.my_role = scInfo.my_role || (!scInfo.is_owner ? "assistant" : "owner");
+                  loginData.my_perms = scInfo.my_perms || null;
+                  loginData.user_name = scInfo.my_name || scInfo.user_name || "";
                   // إذا كان عضواً - جلب بيانات المدرسة المشتركة أيضاً
                   if (!scInfo.is_owner && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0) {
                     loginData.shared_data = scInfo.shared_data;
@@ -16909,6 +16914,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
                   if (scInfo.school_code) loginData.school_code = scInfo.school_code;
                   if (scInfo.owner_acc) loginData.owner_acc = scInfo.owner_acc;
                   loginData.is_owner = !!scInfo.is_owner;
+                  loginData.my_role = scInfo.my_role || (!scInfo.is_owner ? "assistant" : "owner");
+                  loginData.my_perms = scInfo.my_perms || null;
+                  loginData.user_name = scInfo.my_name || scInfo.user_name || "";
                   // إذا كان عضواً - جلب بيانات المدرسة المشتركة
                   if (!scInfo.is_owner && scInfo.shared_data && dbScore(parseDb(scInfo.shared_data)) > 0) {
                     loginData.shared_data = scInfo.shared_data;
@@ -16980,13 +16988,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         try { localStorage.setItem("tt_google_linked_email", finalEmail + "|" + acc); } catch (e) { }
       }
 
-      setTimeout(function () {
-        try {
-          if (typeof renderSettings === "function") renderSettings();
-          if (typeof updateGoogleLinkUI === "function") updateGoogleLinkUI();
-        } catch (e) { }
-      }, 300);
-
       try {
         if (cloudRes.owner_acc && !cloudRes.is_owner) {
           if (!db.settings) db.settings = {};
@@ -17017,6 +17018,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           try { localStorage.setItem("tt_user_role_" + acc, "owner"); } catch(eOw){}
         }
       } catch (eOwn) { }
+
+      try {
+        if (typeof renderSettings === "function") renderSettings();
+        if (typeof updateGoogleLinkUI === "function") updateGoogleLinkUI();
+      } catch (e) { }
       // إذا كان الحساب منضماً لمدرسة ولديه بيانات مشتركة
       const activeData = cloudRes.data || cloudRes.shared_data || "";
       okBeep();
