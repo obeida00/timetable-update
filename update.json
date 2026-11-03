@@ -1,5 +1,5 @@
 {
     "index": "https://raw.githubusercontent.com/obeida00/timetable-update/main/index.html",
-    "version": "1.93",
-    "notes": "اختيار مكان حفظ التصدير والطباعة والنسخة الاحتياطية، وإصلاح اسم ودور حساب المعاون"
+    "version": "1.94",
+    "notes": "تحسين إدارة أدوار المعاون والمساعد، وتحديث شامل للنظام وحزمة التثبيت"
 }
