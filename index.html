@@ -11165,6 +11165,12 @@
       }
       // قائمة الطلاب من النسخة المختارة فقط — لا نُرجع أسماء محذوفة من نسخة قديمة
       _diskReady = !!next;
+      if (isLinkedAssistant()) {
+        var forcedRole = (window._myRole === "viewer" || (localStorage.getItem("tt_user_role_" + next) === "viewer")) ? "viewer" : "assistant";
+        if (!db.settings) db.settings = {};
+        db.settings.userRole = forcedRole;
+        window._isOwner = false;
+      }
       try { restoreAssistantProfile(); } catch (eAs) { }
       _adopting = true;
       try { save(true); } finally { _adopting = false; }
@@ -16989,10 +16995,26 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           if (cloudRes.school_code) db.settings.schoolCode = cloudRes.school_code;
           window._schoolOwner = cloudRes.owner_acc;
           window._isOwner = false;
+          var effectiveRole = (cloudRes.my_role === "viewer") ? "viewer" : "assistant";
+          window._myRole = effectiveRole;
+          db.settings.userRole = effectiveRole;
+          if (cloudRes.my_perms) window._myPerms = cloudRes.my_perms;
+          if (cloudRes.user_name) {
+            window._myMemberName = cloudRes.user_name;
+            db.settings.userName = cloudRes.user_name;
+            try { localStorage.setItem("tt_user_name_" + acc, cloudRes.user_name); } catch(eUn){}
+          }
+          localStorage.setItem("tt_user_role_" + acc, effectiveRole);
           localStorage.setItem("tt_linked_school_" + acc, cloudRes.owner_acc);
           var lo2 = { acc: cloudRes.owner_acc, paid: !!cloudRes.paid, until: cloudRes.until || "" };
           window._linkedOwner = lo2;
           try { localStorage.setItem("tt_linked_owner_" + normAcc(acc), JSON.stringify(lo2)); } catch (eLo2) { }
+        } else if (cloudRes.is_owner) {
+          window._isOwner = true;
+          window._myRole = "owner";
+          if (!db.settings) db.settings = {};
+          db.settings.userRole = "owner";
+          try { localStorage.setItem("tt_user_role_" + acc, "owner"); } catch(eOw){}
         }
       } catch (eOwn) { }
       // إذا كان الحساب منضماً لمدرسة ولديه بيانات مشتركة
