@@ -21,14 +21,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    (function () {
-      var isPhone = !window.pywebview && !/electron/i.test(navigator.userAgent) && (window.innerWidth <= 800 || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || !!window.Capacitor);
-      if (isPhone) {
-        document.documentElement.classList.add('is-phone-app');
-      }
-    })();
-  </script>
   <style>
     :root {
       --q-primary: #4d9bd6;
@@ -506,6 +498,8 @@
       min-height: 48px;
       font-weight: 800;
     }
+    .mobile-bottom-nav,
+    #mobileBottomNav,
     #pwaInstallBanner {
       display: none !important;
     }
@@ -8342,7 +8336,7 @@
           </button>
           <h2 style="margin:0"><span>لوحة الإعدادات</span></h2>
         </div>
-        <span class="ver-chip" id="settingsVerChip">الإصدار 1.95</span>
+        <span class="ver-chip" id="settingsVerChip">الإصدار 1.49</span>
       </div>
       <p class="hint">إدارة حسابك، خصائص المدرسة، أوقات الدوام، والنسخ الاحتياطي للنظام بكل سهولة.</p>
       <div class="set-tiles no-print">
@@ -12224,10 +12218,6 @@
     }
     function resetTeacher() {
       $("tId").value = ""; $("tName").value = ""; $("tSpec").value = ""; $("tLoad").value = 0;
-      if ($("tNamePart1")) $("tNamePart1").value = "";
-      if ($("tNamePart2")) $("tNamePart2").value = "";
-      if ($("tNamePart3")) $("tNamePart3").value = "";
-      if ($("tNamePart4")) $("tNamePart4").value = "";
       [["tStatus", ""], ["tBasic", ""], ["tGender", ""], ["tBirth", ""], ["tJob", ""], ["tCert", ""], ["tColl", ""], ["tHire1", ""], ["tHire2", ""], ["tAddr", ""], ["tPhone", ""], ["tSpec2", ""]].forEach(function (x) { if ($(x[0])) $(x[0]).value = x[1]; });
       if ($("tLeave")) $("tLeave").checked = false;
       if ($("tSubWrap")) $("tSubWrap").hidden = true;
@@ -12237,18 +12227,8 @@
     }
 
     function splitNameIntoParts(fullStr) {
-      const raw = (fullStr || "").trim().split(/\s+/).filter(Boolean);
-      if (!raw.length) return { p1: "", p2: "", p3: "", p4: "" };
-      const compounds = ["عبد", "أبو", "ابو", "أم", "ام", "ابن", "بنت", "ذو", "ذا", "ذي", "آل"];
-      const parts = [];
-      for (let i = 0; i < raw.length; i++) {
-        if (compounds.includes(raw[i]) && i + 1 < raw.length) {
-          parts.push(raw[i] + " " + raw[i + 1]);
-          i++;
-        } else {
-          parts.push(raw[i]);
-        }
-      }
+      const parts = (fullStr || "").trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return { p1: "", p2: "", p3: "", p4: "" };
       if (parts.length === 1) return { p1: parts[0], p2: "", p3: "", p4: "" };
       if (parts.length === 2) return { p1: parts[0], p2: parts[1], p3: "", p4: "" };
       if (parts.length === 3) return { p1: parts[0], p2: parts[1], p3: parts[2], p4: "" };
@@ -12342,13 +12322,12 @@
     }
     function editTeacher(id) {
       const t = db.teachers.find(x => x.id === id); if (!t) return;
-      resetTeacher();
       $("tId").value = t.id; $("tName").value = t.name; $("tSpec").value = t.specialty; $("tLoad").value = t.weekly;
       const parts = splitNameIntoParts(t.name);
-      if ($("tNamePart1")) $("tNamePart1").value = parts.p1 || "";
-      if ($("tNamePart2")) $("tNamePart2").value = parts.p2 || "";
-      if ($("tNamePart3")) $("tNamePart3").value = parts.p3 || "";
-      if ($("tNamePart4")) $("tNamePart4").value = parts.p4 || "";
+      if ($("tNamePart1")) $("tNamePart1").value = parts.p1;
+      if ($("tNamePart2")) $("tNamePart2").value = parts.p2;
+      if ($("tNamePart3")) $("tNamePart3").value = parts.p3;
+      if ($("tNamePart4")) $("tNamePart4").value = parts.p4;
 
       [["tStatus", "status"], ["tBasic", "basic"], ["tGender", "gender"], ["tBirth", "birth"], ["tJob", "job"], ["tCert", "cert"], ["tColl", "college"], ["tHire1", "hire1"], ["tHire2", "hire2"], ["tAddr", "addr"], ["tPhone", "phone"], ["tSpec2", "spec2"]].forEach(function (x) { if ($(x[0])) $(x[0]).value = (t[x[1]] || ""); });
       fillDaySelects(teacherOffDays(t));
@@ -24220,42 +24199,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
     }
     try { markPhoneApp(); } catch (eM) { }
-
-    // حماية واجهة الهاتف: إخفاء القائمة السفلية فوراً عند فتح أي نافذة منبثقة
-    (function initModalNavGuard() {
-      function checkOpenModals() {
-        try {
-          var anyOpen = false;
-          var modals = document.querySelectorAll('.modal, .emis-edit-modal');
-          for (var i = 0; i < modals.length; i++) {
-            var m = modals[i];
-            if (m.id === 'mobMoreSheet' || m.id === 'pwaInstallBanner') continue;
-            var isVis = !m.hidden && m.style.display !== 'none' && !m.classList.contains('hidden') && m.getAttribute('hidden') == null;
-            if (isVis) { anyOpen = true; break; }
-          }
-          if (document.body) {
-            if (anyOpen) document.body.classList.add('has-modal-open');
-            else document.body.classList.remove('has-modal-open');
-          }
-          var bNav = document.getElementById('mobileBottomNav');
-          var fHome = document.getElementById('mobFloatingHome');
-          if (bNav) {
-            if (anyOpen) bNav.style.setProperty('display', 'none', 'important');
-            else bNav.style.removeProperty('display');
-          }
-          if (fHome) {
-            if (anyOpen) fHome.style.setProperty('display', 'none', 'important');
-            else fHome.style.removeProperty('display');
-          }
-        } catch (eG) { }
-      }
-      if (window.MutationObserver) {
-        var obs = new MutationObserver(checkOpenModals);
-        obs.observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ['hidden', 'style', 'class'] });
-      }
-      window.addEventListener('resize', checkOpenModals);
-      document.addEventListener('DOMContentLoaded', checkOpenModals);
-    })();
     function purgeMobileOnlyOnDesktop() {
       try { markPhoneApp(); } catch (eM2) { }
       if (document.documentElement.classList.contains('is-phone-app')) return;
