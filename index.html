@@ -2440,6 +2440,32 @@
       word-break: break-word
     }
 
+    /* تنسيق أعمدة جدول الأنصبة (#loads) لمنع تكسر اسم المعلم وضبط عمود الدروس */
+    #loads table.slim th:nth-child(1),
+    #loads table.slim td:nth-child(1) {
+      width: 38px !important;
+      text-align: center !important;
+      padding: 8px 4px !important;
+    }
+
+    #loads table.slim th:nth-child(2),
+    #loads table.slim td:nth-child(2) {
+      min-width: 145px !important;
+      white-space: nowrap !important;
+      font-weight: 700 !important;
+      text-align: right !important;
+    }
+
+    #loads table.slim th:nth-child(3),
+    #loads table.slim td:nth-child(3) {
+      width: 78px !important;
+      max-width: 88px !important;
+      text-align: center !important;
+      white-space: normal !important;
+      line-height: 1.25 !important;
+      padding: 8px 4px !important;
+    }
+
 
     #students table.slim tbody tr.stud-sec-head,
     #students table.slim tbody tr.stud-sec-head:hover {
@@ -7298,12 +7324,12 @@
         <table class="slim">
           <thead>
             <tr>
-              <th>#</th>
-              <th>المعلم</th>
-              <th>مجموع الدروس الأسبوعية</th>
+              <th style="width:38px;text-align:center">#</th>
+              <th style="min-width:145px;white-space:nowrap">المعلم</th>
+              <th style="width:78px;max-width:88px;text-align:center;line-height:1.25" title="مجموع الدروس الأسبوعية">الدروس<br>الأسبوعية</th>
               <th>المواد ودروسها</th>
               <th>الشعب (دروس)</th>
-              <th>الأوف</th>
+              <th style="white-space:nowrap">الأوف</th>
               <th>مجاز / بديل</th>
               <th class="no-print">إجراءات</th>
             </tr>
@@ -12888,12 +12914,12 @@
         db.subjects.filter(s => s.teacherId === t.id && (s.role || "main") !== "assist").forEach(s => { mat[s.name] = (mat[s.name] || 0) + (+s.weekly || 0); });
         const matTxt = Object.keys(mat).map(n => esc(n) + " (" + mat[n] + ")").join("، ") || "—";
         return `<tr>
-      <td data-l="#">${i + 1}</td>
-      <td data-l="المعلم">${esc(t.name)}</td>
-      <td data-l="مجموع الدروس الأسبوعية"><strong>${r.total}</strong>${r.asst ? `<span class="muted"> +${r.asst} مساعدة</span>` : ""}</td>
+      <td data-l="#" style="text-align:center">${i + 1}</td>
+      <td data-l="المعلم" style="white-space:nowrap;font-weight:700">${esc(t.name)}</td>
+      <td data-l="الدروس الأسبوعية" style="text-align:center"><strong>${r.total}</strong>${r.asst ? `<span class="muted"><br>+${r.asst} مساعدة</span>` : ""}</td>
       <td data-l="المواد">${matTxt}</td>
       <td data-l="الشعب">${esc(teacherSecHours(t.id))}</td>
-      <td data-l="الأوف">${teacherOffDays(t).map(dayName).join("، ") || "—"}</td>
+      <td data-l="الأوف" style="white-space:nowrap">${teacherOffDays(t).map(dayName).join("، ") || "—"}</td>
       <td data-l="مجاز / بديل">${t.leave ? ("مجاز — بديل: " + esc(teacherName(t.subId))) : "—"}</td>
       <td class="no-print act"><button class="btn w s" onclick="openLoadsEdit('${t.id}')">تعديل</button></td></tr>`;
       }).join("") || `<tr><td colspan="8" class="muted">لا يوجد معلمون بعد</td></tr>`;
