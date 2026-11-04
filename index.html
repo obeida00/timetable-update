@@ -20159,6 +20159,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }).then(function (r) { return r.json(); }).then(function (res) {
         if (res && res.ok) {
           window._schoolMembers = res.members || window._schoolMembers;
+          if (typeof db !== 'undefined' && db && db.settings) { db.settings.teamMembers = window._schoolMembers; try { save(true); } catch (eSv) { } }
           renderMembersUI(window._schoolMembers, true, null);
           var pop = document.getElementById("memEditPop");
           if (pop) pop.remove();
@@ -20176,6 +20177,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }).then(function (r) { return r.json(); }).then(function (res) {
         if (res && res.ok) {
           window._schoolMembers = res.members || window._schoolMembers;
+          if (typeof db !== 'undefined' && db && db.settings) { db.settings.teamMembers = window._schoolMembers; try { save(true); } catch (eSv) { } }
           renderMembersUI(window._schoolMembers, true, null);
           okNote(role === "viewer" ? "صار مساعد: عرض فقط" : "صار معاون: يقدر يعدّل");
         } else {
