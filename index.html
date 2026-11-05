@@ -10170,6 +10170,23 @@
                 <span>لا يُكلَّف بمراقبة الساحة (متفرغ من المراقبة)</span>
               </label>
             </div>
+            <div class="emis-form-row">
+              <label class="emis-field-lbl">تفضيل الحصص (اختياري)</label>
+              <select class="emis-field-input" id="tPrefSlot">
+                <option value="">لا يهم — توزيع عادي</option>
+                <option value="early">يفضّل الحصص الأولى من الدوام</option>
+                <option value="late">يفضّل الحصص الأخيرة من الدوام</option>
+                <option value="middle">يفضّل وسط الدوام</option>
+              </select>
+              <div style="font-size:.72rem;color:#b45309;margin-top:4px;line-height:1.6">⏸ غير مفعّل حاليًا — يُحفظ الاختيار ولا يؤثر على توليد الجدول.</div>
+            </div>
+            <div class="emis-form-row">
+              <label class="emis-field-lbl">حصص متتالية</label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700">
+                <input type="checkbox" id="tSeqOk">
+                <span>يُسمح بحصتين متتاليتين لنفس المعلم/ة</span>
+              </label>
+            </div>
             <div id="tAssign" hidden></div><span id="tAssignTotal" hidden>0</span>
           </div>
         </div>
@@ -10947,7 +10964,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.98";
+    const APP_VERSION = "1.99";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -12236,6 +12253,8 @@
     }
     function resetTeacher() {
       if ($("tNoDuty")) $("tNoDuty").checked = false;
+      if ($("tPrefSlot")) $("tPrefSlot").value = "";
+      if ($("tSeqOk")) $("tSeqOk").checked = false;
       $("tId").value = ""; $("tName").value = ""; $("tSpec").value = ""; $("tLoad").value = 0;
       if ($("tNamePart1")) $("tNamePart1").value = "";
       if ($("tNamePart2")) $("tNamePart2").value = "";
@@ -12341,8 +12360,11 @@
       if (!spec) spec = [...new Set(own.map(s => s.name))].join(" + ");
       const gv = function (id) { return ($(id) && $(id).value || "").trim(); };
       const noDuty = !!($("tNoDuty") && $("tNoDuty").checked);
+      const prefSlot = gv("tPrefSlot");
+      const seqOk = !!($("tSeqOk") && $("tSeqOk").checked);
       const rec = {
         id: tid, name: $("tName").value.trim(), specialty: spec, weekly: +$("tLoad").value || 0, sections: secs, offDays, leave, subId, noDuty,
+        prefSlot, seqOk,
         status: gv("tStatus"), basic: gv("tBasic"), gender: gv("tGender"), birth: gv("tBirth"), job: gv("tJob"), cert: gv("tCert"),
         college: gv("tColl"), hire1: gv("tHire1"), hire2: gv("tHire2"), addr: gv("tAddr"), phone: gv("tPhone"), spec2: gv("tSpec2")
       };
@@ -12368,6 +12390,8 @@
       fillDaySelects(teacherOffDays(t));
       if ($("tLeave")) $("tLeave").checked = !!t.leave;
       if ($("tNoDuty")) $("tNoDuty").checked = !!t.noDuty;
+      if ($("tPrefSlot")) $("tPrefSlot").value = t.prefSlot || "";
+      if ($("tSeqOk")) $("tSeqOk").checked = !!t.seqOk;
       toggleLeave();
       fillTSub();
       if (t.subId && $("tSub")) $("tSub").value = t.subId;
