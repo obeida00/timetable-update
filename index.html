@@ -10964,7 +10964,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.02";
+    const APP_VERSION = "2.03";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15154,7 +15154,7 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
       const f = document.createElement("iframe");
       f.id = "_printFrameX";
       f.setAttribute("aria-hidden", "true");
-      f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none";
+      f.style.cssText = "position:fixed;right:0;bottom:0;width:1123px;height:794px;border:0;opacity:0;pointer-events:none;z-index:-1";
       document.body.appendChild(f);
       const d = f.contentDocument || f.contentWindow.document;
       d.open();
@@ -15200,17 +15200,23 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
       const pageHtml = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8">
   <title>جدول مراقبة الساحة - ${esc(school)}</title>
   <style>
-    @page{size:A4 landscape;margin:10mm}
-    body{font-family:'Cairo','Tahoma',Arial;margin:16px;direction:rtl;color:#111}
-    .head{background:#145d9b;color:#fff;padding:10px 18px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .head h2{margin:0;font-size:15pt}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    th,td{border:1.5px solid #145d9b;padding:6px;text-align:center;font-size:9.5pt;vertical-align:top}
+    @page{size:A4 landscape;margin:0}
+    html,body{margin:0;padding:0}
+    body{font-family:'Cairo','Tahoma',Arial;direction:rtl;color:#111;
+         padding:8mm 8mm 4mm 8mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .head{background:#145d9b;color:#fff;padding:7px 14px;border-radius:8px;
+          display:flex;justify-content:space-between;align-items:center;margin:0 0 6px 0}
+    .head h2{margin:0;font-size:13pt}
+    .head span{font-size:9.5pt}
+    table{width:100%;border-collapse:collapse;page-break-inside:auto}
+    th,td{border:1px solid #145d9b;padding:3px 5px;text-align:center;font-size:8.2pt;
+          vertical-align:top;line-height:1.35;page-break-inside:avoid}
     th{background:#145d9b;color:#fff}
-    th.locCol{background:#e2e8f0;color:#163858;font-weight:800;width:26%;vertical-align:middle}
+    th.locCol{background:#e2e8f0;color:#163858;font-weight:800;width:15%;vertical-align:middle}
     th.dayCol{vertical-align:middle}
-    tr:nth-child(even){background:#faf8ff}
-    .foot{display:flex;justify-content:space-between;margin-top:20px;font-weight:bold;font-size:11pt}
+    td div{padding:0 !important}
+    tr{page-break-inside:avoid}
+    .foot{display:flex;justify-content:space-between;margin-top:6px;font-weight:700;font-size:9.5pt}
     @media print{button{display:none}}
   </style></head><body>
   <div class="head">
@@ -15222,10 +15228,7 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
     <thead>${headHtml}</thead>
     <tbody>${rowsHtml}</tbody>
   </table>
-  <div class="foot">
-    <span>التاريخ: ${getExportDateStr()}</span>
-    <span>${esc(mgrTitle)}: ${esc(mgr)}</span>
-  </div>
+  ${(mgr && mgr !== "") ? `<div class="foot"><span></span><span>${esc(mgrTitle)}: ${esc(mgr)}</span></div>` : ""}
   </body></html>`;
       printHtmlFrame(pageHtml);
     }
