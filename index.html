@@ -10947,7 +10947,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.97";
+    const APP_VERSION = "1.98";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -24458,6 +24458,21 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           .then(reg => {
             console.log('PWA ServiceWorker registered successfully!', reg.scope);
             try { reg.update(); } catch(e) {}
+            // حماية من بقاء نسخة قديمة على الهاتف: إذا تغيّر رقم الإصدار نجبر إعادة التحميل مرة واحدة
+            try {
+              const KEY = "uiVerLoaded";
+              const seen = localStorage.getItem(KEY);
+              if (seen && seen !== APP_VERSION) {
+                localStorage.setItem(KEY, APP_VERSION);
+                if (!sessionStorage.getItem("didHardReload")) {
+                  sessionStorage.setItem("didHardReload", "1");
+                  caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k)))).catch(() => { })
+                    .then(() => location.reload());
+                }
+              } else if (!seen) {
+                localStorage.setItem(KEY, APP_VERSION);
+              }
+            } catch (e) { }
           })
           .catch(err => console.warn('PWA SW registration failed:', err));
       });
