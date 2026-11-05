@@ -10964,7 +10964,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.00";
+    const APP_VERSION = "2.01";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -15176,29 +15176,39 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
       const mgr = (db.settings && db.settings.schoolManager) || "";
       const mgrTitle = (db.settings && db.settings.schoolManagerTitle) || "مدير المدرسة";
 
+      function namesAt(d, locName) {
+        const tids = (sched[d] && sched[d][locName]) || [];
+        const list = Array.isArray(tids) ? tids : (tids ? [tids] : []);
+        return list.map(tid => {
+          const t = db.teachers.find(x => x.id === tid);
+          return t ? `<div style="padding:1px 0">${esc(t.name)}</div>` : "";
+        }).filter(Boolean).join("");
+      }
+      // الرأس: اليوم أولاً من اليمين ثم أماكن المراقبة
+      const headHtml = `<tr><th class="dayCol">اليوم</th>` +
+        locations.map(loc => `<th>${esc(loc.name)} (${loc.count || 1})</th>`).join("") + `</tr>`;
+      // الصفوف: كل مكان صفّ مستقل، والخلايا تمر بالترتيب من اليمين لليسار
       let rowsHtml = "";
-      days.forEach(d => {
-        const cells = locations.map(loc => {
-          const tids = (sched[d] && sched[d][loc.name]) || [];
-          const list = Array.isArray(tids) ? tids : (tids ? [tids] : []);
-          const names = list.map(tid => {
-            const t = db.teachers.find(x => x.id === tid);
-            return t ? `<div style="padding:1px 0">${esc(t.name)}</div>` : "";
-          }).filter(Boolean).join("");
+      locations.forEach(loc => {
+        const cells = days.map(d => {
+          const names = namesAt(d, loc.name);
           return `<td style="vertical-align:top;padding:6px">${names || "—"}</td>`;
         }).join("");
-        rowsHtml += `<tr><th style="background:#e2e8f0;color:#163858;vertical-align:middle">${esc(dayName(d))}</th>${cells}</tr>`;
+        rowsHtml += `<tr><th class="locCol">${esc(loc.name)} (${loc.count || 1})</th>${cells}</tr>`;
       });
 
       const pageHtml = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8">
   <title>جدول مراقبة الساحة - ${esc(school)}</title>
   <style>
-    body{font-family:'Cairo','Tahoma',Arial;margin:24px;direction:rtl;color:#111}
-    .head{background:#145d9b;color:#fff;padding:12px 20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-    .head h2{margin:0;font-size:16pt}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{border:1.5px solid #145d9b;padding:8px;text-align:center;font-size:10.5pt}
+    @page{size:A4 landscape;margin:10mm}
+    body{font-family:'Cairo','Tahoma',Arial;margin:16px;direction:rtl;color:#111}
+    .head{background:#145d9b;color:#fff;padding:10px 18px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .head h2{margin:0;font-size:15pt}
+    table{width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed}
+    th,td{border:1.5px solid #145d9b;padding:6px;text-align:center;font-size:9.5pt;vertical-align:top}
     th{background:#145d9b;color:#fff}
+    th.locCol{background:#e2e8f0;color:#163858;font-weight:800;width:22%;vertical-align:middle}
+    th.dayCol{width:22%;vertical-align:middle}
     tr:nth-child(even){background:#faf8ff}
     .foot{display:flex;justify-content:space-between;margin-top:20px;font-weight:bold;font-size:11pt}
     @media print{button{display:none}}
@@ -15209,7 +15219,7 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
     <span>الأسبوع الدراسي</span>
   </div>
   <table>
-    <thead><tr><th>اليوم</th>${locations.map(loc => `<th>${esc(loc.name)} (${loc.count || 1})</th>`).join("")}</tr></thead>
+    <thead>${headHtml}</thead>
     <tbody>${rowsHtml}</tbody>
   </table>
   <div class="foot">
