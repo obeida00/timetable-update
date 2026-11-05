@@ -10964,7 +10964,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.99";
+    const APP_VERSION = "2.00";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -13142,23 +13142,20 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       const school = db.settings.schoolName || "بوابة مدرستي";
       const tbl = document.getElementById("secOverTable");
       if (!tbl) { return; }
-      const w = window.open("", "_blank");
-      if (!w) { alert("يرجى السماح بالنوافذ المنبثقة للطباعة"); return; }
-      w.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>ملخص الشعب - ${esc(school)}</title>
+      const pageHtml = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>ملخص الشعب - ${esc(school)}</title>
   <style>
+    @page{size:A4 landscape;margin:10mm}
     body{font-family:'Cairo','Tahoma',Arial;margin:20px;direction:rtl;color:#111}
     h2{text-align:center;margin-bottom:14px;color:#163858}
     table{width:100%;border-collapse:collapse;margin-top:10px}
-    th,td{border:1px solid #2487d0;padding:7px 10px;text-align:center;font-size:11pt}
+    th,td{border:1px solid #2487d0;padding:7px 10px;text-align:center;font-size:10pt;vertical-align:middle}
     th{background:#145d9b;color:#fff}
     tr:nth-child(even){background:#faf8ff}
-    @media print{button{display:none}}
   </style></head><body>
   <h2>${esc(school)} — ملخص وتوزيع الشعب</h2>
   <table>${tbl.innerHTML}</table>
-  <script>window.onload=function(){window.print();};<\/script>
-  </body></html>`);
-      w.document.close();
+  </body></html>`;
+      printHtmlFrame(pageHtml);
     }
 
     function openClass() { $("cName").value = ""; $("cBox").hidden = false; $("cName").focus(); }
@@ -15150,6 +15147,26 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
       okNote("تم تصدير جدول المراقبين إلى Excel بنجاح");
     }
 
+    // طباعة أي HTML داخل إطار مخفي — لا تحتاج إذن النوافذ المنبثقة
+    function printHtmlFrame(html) {
+      const old = document.getElementById("_printFrameX");
+      if (old) old.remove();
+      const f = document.createElement("iframe");
+      f.id = "_printFrameX";
+      f.setAttribute("aria-hidden", "true");
+      f.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none";
+      document.body.appendChild(f);
+      const d = f.contentDocument || f.contentWindow.document;
+      d.open();
+      d.write(String(html).replace(/<script>[\s\S]*?<\/script>/gi, ""));
+      d.close();
+      setTimeout(function () {
+        try { f.contentWindow.focus(); f.contentWindow.print(); }
+        catch (e) { note("تعذّرت الطباعة — جرّب من المتصفح"); }
+        setTimeout(function () { try { f.remove(); } catch (e) { } }, 60000);
+      }, 500);
+    }
+
     function printDutySchedule() {
       const school = db.settings.schoolName || "بوابة مدرستي";
       const ds = getDutySettings();
@@ -15173,9 +15190,7 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
         rowsHtml += `<tr><th style="background:#e2e8f0;color:#163858;vertical-align:middle">${esc(dayName(d))}</th>${cells}</tr>`;
       });
 
-      const w = window.open("", "_blank");
-      if (!w) { alert("يرجى السماح بالنوافذ المنبثقة"); return; }
-      w.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8">
+      const pageHtml = `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="utf-8">
   <title>جدول مراقبة الساحة - ${esc(school)}</title>
   <style>
     body{font-family:'Cairo','Tahoma',Arial;margin:24px;direction:rtl;color:#111}
@@ -15201,9 +15216,8 @@ th{background:#145d9b;color:#ffffff;font-weight:bold}
     <span>التاريخ: ${getExportDateStr()}</span>
     <span>${esc(mgrTitle)}: ${esc(mgr)}</span>
   </div>
-  <script>window.onload=function(){window.print();};<\/script>
-  </body></html>`);
-      w.document.close();
+  </body></html>`;
+      printHtmlFrame(pageHtml);
     }
 
     function setExSaveVis(on) {
@@ -21194,13 +21208,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function printTeacherSingleCard() {
       const area = document.getElementById("tCardPrintArea");
       if (!area) return;
-      const win = window.open("", "_blank");
-      win.document.write(`
+      const pageHtml = `
     <html dir="rtl" lang="ar">
     <head>
       <title>بطاقة المعلم - ${document.getElementById("tCardName") ? document.getElementById("tCardName").textContent : ""}</title>
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
       <style>
+        @page{size:A4 portrait;margin:10mm}
         body{font-family:'Cairo',sans-serif;margin:20px;padding:0;background:#fff;color:#163858}
         table{width:100%;border-collapse:collapse;margin-top:10px;text-align:center}
         th,td{border:1.5px solid #163858;padding:6px 4px;font-size:11px}
@@ -21209,11 +21223,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     </head>
     <body>
       ${area.innerHTML}
-      <script>window.onload=function(){window.print();};<\/script>
     </body>
     </html>
-  `);
-      win.document.close();
+  `;
+      printHtmlFrame(pageHtml);
     }
 
     // ========================================================
@@ -21383,8 +21396,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       const schoolName = (db.settings && db.settings.schoolName) || "إدارة المدرسة";
       const dayNameStr = document.getElementById("substiDayNameShow") ? document.getElementById("substiDayNameShow").textContent : "";
 
-      const win = window.open("", "_blank");
-      win.document.write(`
+      printHtmlFrame(`
     <html dir="rtl" lang="ar">
     <head>
       <title>جدول الاحتياط اليومي - ${dayNameStr}</title>
@@ -21414,7 +21426,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     </body>
     </html>
   `);
-      win.document.close();
     }
 
     // تشغيل فحص الإعلانات عند الإقلاع
@@ -21961,12 +21972,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function printStudentCard() {
       var area = document.getElementById("studCardPrintArea");
       if (!area) return;
-      var w = window.open("", "_blank");
-      if (!w) return;
-      w.document.write("<!DOCTYPE html><html dir='rtl' lang='ar'><head><meta charset='utf-8'><title>بطاقة طالب</title><style>body{font-family:Cairo,Tahoma,sans-serif;padding:18px}</style></head><body>" + area.innerHTML + "</body></html>");
-      w.document.close();
-      w.focus();
-      w.print();
+      printHtmlFrame("<!DOCTYPE html><html dir='rtl' lang='ar'><head><meta charset='utf-8'><title>بطاقة طالب</title><style>body{font-family:Cairo,Tahoma,sans-serif;padding:18px}</style></head><body>" + area.innerHTML + "</body></html>");
     }
 
     window.openStudent = openStudent;
@@ -22344,8 +22350,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       </tr>`;
         }
 
-        const w = window.open("", "_blank");
-        w.document.write(`<!DOCTYPE html>
+        printHtmlFrame(`<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -22409,7 +22414,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
   </div>
 </body>
 </html>`);
-        w.document.close();
       } else if (type === "grades") {
         // طباعة شيت سجل درجات بحسب النموذج المختار
         const tpl = $("studGradeTemplate") ? $("studGradeTemplate").value : "standard";
@@ -22417,8 +22421,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         const gradesTableHtml = buildGradesTableHtml(list, tpl, customColsStr);
 
         const subjectName = ($("studExpSubject") ? $("studExpSubject").value.trim() : "") || "__________________";
-        const w = window.open("", "_blank");
-        w.document.write(`<!DOCTYPE html>
+        printHtmlFrame(`<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -22473,7 +22476,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
   </div>
 </body>
 </html>`);
-        w.document.close();
       } else if (type === "cards") {
         // بطاقات تعريفية للطلاب
         let cardsHtml = "";
@@ -22495,8 +22497,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       </div>`;
         });
 
-        const w = window.open("", "_blank");
-        w.document.write(`<!DOCTYPE html>
+        printHtmlFrame(`<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -22518,7 +22519,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
   <div class="grid">${cardsHtml}</div>
 </body>
 </html>`);
-        w.document.close();
       }
     }
 
@@ -23850,15 +23850,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var rows = list.map(function (x, i) {
         return "<tr><td>" + (i + 1) + "</td><td style='text-align:right'>" + esc(x.st.name) + "</td><td>" + esc(secName(x.st.sectionId)) + "</td><td><b>" + x.absent + "</b></td><td>" + x.excused + "</td><td>" + esc(x.w.label) + "</td><td>" + esc(x.st.phone || "") + "</td></tr>";
       }).join("");
-      var win = window.open("", "_blank");
-      if (!win) { alert("يرجى السماح بالنوافذ المنبثقة للطباعة"); return; }
-      win.document.write("<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='utf-8'><title>كشف الإنذارات</title><style>@page{size:A4 portrait;margin:12mm}body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;padding:12px;font-size:13px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:6px;text-align:center}th{background:#f1f5f9}@media print{.no-print{display:none}body{padding:0}}</style></head><body>"
-        + '<div class="no-print" style="text-align:center;margin-bottom:10px"><button onclick="window.print()" style="padding:8px 20px;font-weight:800;background:#2487d0;color:#fff;border:0;border-radius:8px;cursor:pointer">طباعة</button></div>'
+      var pageHtml = "<!DOCTYPE html><html lang='ar' dir='rtl'><head><meta charset='utf-8'><title>كشف الإنذارات</title><style>@page{size:A4 portrait;margin:12mm}body{font-family:Cairo,Tahoma,Arial,sans-serif;direction:rtl;padding:12px;font-size:13px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:6px;text-align:center}th{background:#f1f5f9}</style></head><body>"
         + "<h2 style='text-align:center;margin:0 0 6px'>" + esc(schName) + "</h2><h3 style='text-align:center;margin:0 0 10px'>كشف الغياب والإنذارات" + (secId ? " — " + esc(secName(secId)) : "") + "</h3>"
         + "<p style='text-align:center'>العام الدراسي: " + esc(yr) + " — 7 إنذار أولي / 14 إنذار ثاني / 21 إنذار نهائي / 26 فصل لما تبقى من السنة</p>"
         + "<table><thead><tr><th>ت</th><th>اسم الطالب</th><th>الشعبة</th><th>أيام الغياب</th><th>إجازة بعذر</th><th>الإنذار</th><th>الهاتف</th></tr></thead><tbody>"
-        + (rows || "<tr><td colspan='7'>لا يوجد طلاب</td></tr>") + "</tbody></table></body></html>");
-      win.document.close();
+        + (rows || "<tr><td colspan='7'>لا يوجد طلاب</td></tr>") + "</tbody></table></body></html>";
+      printHtmlFrame(pageHtml);
     }
     function loadAttendanceList() {
       const secId = $("attSecPick") ? $("attSecPick").value : "";
@@ -23971,8 +23968,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         else { present++; }
       });
 
-      const w = window.open("", "_blank");
-      w.document.write(`<!DOCTYPE html>
+      printHtmlFrame(`<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -24012,7 +24008,6 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
   </div>
 </body>
 </html>`);
-      w.document.close();
     }
 
     // ========================================================
