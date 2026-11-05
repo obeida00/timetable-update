@@ -8065,6 +8065,22 @@
           <button class="btn o" type="button" onclick="testWaOneTeacher()">تجربة الرسالة على معلم لديه رقم</button>
         </div>
         <div id="waBotMsg" class="hint"></div>
+
+        <!-- ===== روابط المعلمين + إشعارات الجوال ===== -->
+        <div class="settings-luxury-card" style="padding:16px">
+          <strong style="display:block;margin-bottom:6px;color:#163858">📱 روابط المعلمين الجاهزة</strong>
+          <p class="hint" style="margin:0 0 10px">
+            لكل معلم رابط خاص يفتح جدوله فقط، ويثبّته كتطبيق على جواله، ويستلم تنبيهًا تلقائيًا قبل كل درس بخمس دقائق.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            <button class="btn g" type="button" onclick="genTeacherLinks()">تجهيز روابط المعلمين</button>
+            <button class="btn" type="button" onclick="refreshTeacherLinks()">تحديث الحالة</button>
+            <button class="btn w" type="button" onclick="copyAllTeacherLinks()">نسخ كل الروابط</button>
+          </div>
+          <div id="tLinkSummary" class="hint" style="margin-bottom:8px"></div>
+          <div id="tLinkList" style="max-height:420px;overflow:auto"></div>
+        </div>
+
         <div class="settings-luxury-card" style="padding:16px">
           <strong style="display:block;margin-bottom:8px;color:#163858">رسالة اعتذار من الكروب</strong>
           <textarea id="waLeaveText" rows="4" placeholder="الصق رسالة المعلم من الكروب، مثل: اعتذر عن عدم الحضور اليوم — مروة مهدي"></textarea>
@@ -10964,7 +10980,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.03";
+    const APP_VERSION = "2.04";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -21049,6 +21065,166 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (_waQueue.length === 1) sendNextWaQueue();
       else renderWaQueue();
     }
+    /* ================= روابط المعلمين + إشعارات الجوال ================= */
+    var TEACHER_BASE = "https://schol-table-bot.iq-school-timetable.workers.dev";
+
+    // رمز عشوائي آمن (32 حرف)
+    function makeLinkToken() {
+      var chars = "abcdefghijkmnpqrstuvwxyz23456789";
+      var a = new Uint8Array(20);
+      (window.crypto || window.msCrypto).getRandomValues(a);
+      var s = "";
+      for (var i = 0; i < a.length; i++) s += chars[a[i] % chars.length];
+      return s;
+    }
+
+    function getTeacherLinks() {
+      db.settings = db.settings || {};
+      if (!db.settings.teacherLinks) db.settings.teacherLinks = {};
+      return db.settings.teacherLinks;
+    }
+
+    function teacherLinkUrl(tid) {
+      var links = getTeacherLinks();
+      var rec = links[tid];
+      return rec && rec.token ? (TEACHER_BASE + "/t/" + rec.token) : "";
+    }
+
+    function currentOwnerAcc() {
+      return (window._acc || (db.settings && db.settings.ownerAcc) || "").toString();
+    }
+
+    function genTeacherLinks() {
+      if (!db || !db.teachers || !db.teachers.length) {
+        if ($("tLinkSummary")) $("tLinkSummary").textContent = "لا يوجد معلمون.";
+        return;
+      }
+      var owner = currentOwnerAcc();
+      if (!owner) {
+        if ($("tLinkSummary")) $("tLinkSummary").textContent = "سجّل الدخول بحساب المدرسة أولاً حتى تُحفظ الروابط في السحابة.";
+        return;
+      }
+      var links = getTeacherLinks();
+      var made = 0;
+      db.teachers.forEach(function (t) {
+        if (!links[t.id] || !links[t.id].token) {
+          links[t.id] = { token: makeLinkToken(), teacherName: t.name, at: new Date().toISOString() };
+          made++;
+        } else {
+          links[t.id].teacherName = t.name;
+        }
+      });
+      // ارفع القائمة للسحابة ليعرف السيرفر أي معلم يخص أي حساب
+      var payload = db.teachers.map(function (t) {
+        var r = links[t.id] || {};
+        return { teacherId: t.id, token: r.token, teacherName: t.name };
+      }).filter(function (x) { return x.token; });
+
+      fetch(TEACHER_BASE + "/api/dev/save_teacher_links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acc: owner, links: payload, secret: owner })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (!j || !j.ok) {
+          if ($("tLinkSummary")) $("tLinkSummary").textContent =
+            "تم توليد الروابط محليًا. تعذّر رفعها للسحابة: " + ((j && j.error) || "غير معروف");
+        }
+      }).catch(function () { });
+
+      save();
+      renderTeacherLinks();
+    }
+
+    function renderTeacherLinks() {
+      var box = $("tLinkList"), sum = $("tLinkSummary");
+      if (!box) return;
+      var links = getTeacherLinks();
+      var list = (db.teachers || []).slice();
+      if (!list.length) { box.innerHTML = ""; if (sum) sum.textContent = "لا يوجد معلمون."; return; }
+
+      var ready = 0;
+      box.innerHTML = list.map(function (t) {
+        var rec = links[t.id] || {};
+        var url = rec.token ? (TEACHER_BASE + "/t/" + rec.token) : "";
+        var st = rec.pushOn ? ["#dcfce7", "#166534", "مفعّل الإشعارات"] :
+                 (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط فقط"] :
+                   (rec.token ? ["#e2e8f0", "#475569", "لم يفتح بعد"] : ["#fee2e2", "#991b1b", "لا يوجد رابط"]));
+        if (rec.pushOn) ready++;
+        return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #eef2f7">' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-weight:800;font-size:.86rem;color:#163858;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(t.name) + '</div>' +
+            '<div style="font-size:.7rem;color:#94a3b8;direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (url ? esc(url.replace("https://", "")) : "—") + '</div>' +
+          '</div>' +
+          '<span style="flex:none;font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:999px;background:' + st[0] + ';color:' + st[1] + '">' + st[2] + '</span>' +
+          '<button class="btn" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="copyTeacherLink(' + JSON.stringify(t.id) + ')">نسخ</button>' +
+          (url ? '<button class="btn g" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="sendTeacherLinkWa(' + JSON.stringify(t.id) + ')">واتساب</button>' : '') +
+          '</div>';
+      }).join("");
+
+      if (sum) {
+        sum.innerHTML = 'المجموع: <b>' + list.length + '</b> معلم · مفعّل الإشعارات: <b style="color:#16a34a">' + ready + '</b>' +
+          (list.length ? ' · المتبقي: <b style="color:#dc2626">' + (list.length - ready) + '</b>' : '');
+      }
+    }
+
+    function copyTeacherLink(tid) {
+      var url = teacherLinkUrl(tid);
+      if (!url) { note("ولّد الروابط أولاً."); return; }
+      try {
+        navigator.clipboard.writeText(url);
+        note("تم نسخ رابط المعلم.");
+      } catch (e) {
+        prompt("انسخ الرابط:", url);
+      }
+    }
+
+    function sendTeacherLinkWa(tid) {
+      var t = (db.teachers || []).find(function (x) { return x.id === tid; });
+      var url = teacherLinkUrl(tid);
+      if (!url || !t) { note("لا يوجد رابط."); return; }
+      var text = "السلام عليكم " + waTitle(t) + " " + t.name + "\n\n" +
+        "هذا رابط جدولك الخاص:\n" + url + "\n\n" +
+        "افتحه من جوالك ثم ثبّته على الشاشة الرئيسية، وفعّل التنبيهات — ليصلك تنبيه قبل كل درس بخمس دقائق.\n" +
+        "الرابط خاص بك، لا تشاركه.";
+      waOpen(t.phone || "", text);
+    }
+
+    function copyAllTeacherLinks() {
+      var lines = (db.teachers || []).map(function (t) {
+        var u = teacherLinkUrl(t.id);
+        return u ? (t.name + ": " + u) : "";
+      }).filter(Boolean);
+      if (!lines.length) { note("ولّد الروابط أولاً."); return; }
+      var txt = lines.join("\n");
+      try { navigator.clipboard.writeText(txt); note("تم نسخ " + lines.length + " رابط."); }
+      catch (e) { prompt("انسخ الروابط:", txt); }
+    }
+
+    // تحديث حالة كل معلم من السيرفر
+    function refreshTeacherLinks() {
+      if ($("tLinkSummary")) $("tLinkSummary").textContent = "جارٍ التحديث...";
+      var links = getTeacherLinks();
+      var ids = Object.keys(links).filter(function (k) { return links[k] && links[k].token; });
+      if (!ids.length) { renderTeacherLinks(); return; }
+      var done = 0;
+      ids.forEach(function (tid) {
+        fetch(TEACHER_BASE + "/api/push/teacher_status?token=" + encodeURIComponent(links[tid].token))
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (j && j.ok) {
+              links[tid].pushOn = !!j.subscribed;
+              links[tid].visited = !!j.visited;
+            }
+          })
+          .catch(function () { })
+          .then(function () {
+            done++;
+            if (done === ids.length) { save(); renderTeacherLinks(); }
+          });
+      });
+    }
+    /* =============== نهاية روابط المعلمين =============== */
+
     function startWaBotWatch() {
       try { fillWaBotForm(); } catch (e) { }
       if (window._waTick) return;
