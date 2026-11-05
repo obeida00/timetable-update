@@ -10980,7 +10980,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.04";
+    const APP_VERSION = "2.05";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -21167,15 +21167,76 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
     }
 
+    // نسخ نص بطريقة تعمل في كل البيئات (https / file:// / داخل iframe)
+    function copyTextReliable(text) {
+      return new Promise(function (resolve) {
+        var done = false;
+        function finish(ok) { if (!done) { done = true; resolve(ok); } }
+
+        // الطبقة 1: Clipboard API الحديثة
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { finish(true); },
+            function () { legacy(); });
+        } else {
+          legacy();
+        }
+
+        // الطبقة 2: execCommand عبر textarea مؤقت
+        function legacy() {
+          try {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.cssText = "position:fixed;top:-1000px;left:-1000px;opacity:0;font-size:16px";
+            document.body.appendChild(ta);
+            ta.select();
+            ta.setSelectionRange(0, text.length);
+            var ok = false;
+            try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+            document.body.removeChild(ta);
+            if (ok) return finish(true);
+            // الطبقة 3: اختيار النص وطلب Ctrl+C
+            openCopyFallback(text);
+            finish(false);
+          } catch (e) {
+            openCopyFallback(text);
+            finish(false);
+          }
+        }
+      });
+    }
+
+    // نافذة بديلة: النص محدد جاهز للنسخ اليدوي
+    function openCopyFallback(text) {
+      try {
+        if ($("copyFallbackBox")) $("copyFallbackBox").remove();
+        var box = document.createElement("div");
+        box.id = "copyFallbackBox";
+        box.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99999;" +
+          "display:flex;align-items:center;justify-content:center;padding:20px";
+        box.innerHTML = '<div style="background:#fff;border-radius:16px;padding:18px;max-width:520px;width:100%">' +
+          '<div style="font-weight:800;color:#163858;margin-bottom:8px">انسخ الرابط يدويًا</div>' +
+          '<div style="font-size:.78rem;color:#64748b;margin-bottom:8px">المتصفح منع النسخ التلقائي. النص محدد — اضغط Ctrl+C (أو ⌘+C).</div>' +
+          '<textarea readonly style="width:100%;height:80px;font-size:.8rem;direction:ltr;padding:8px;' +
+          'border:1.5px solid #cbd5e1;border-radius:10px;resize:none"></textarea>' +
+          '<button type="button" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;border:none;' +
+          'background:#145d9b;color:#fff;font-weight:800;font-family:inherit;cursor:pointer">إغلاق</button></div>';
+        document.body.appendChild(box);
+        var ta = box.querySelector("textarea");
+        ta.value = text;
+        ta.focus();
+        ta.select();
+        box.querySelector("button").onclick = function () { box.remove(); };
+        box.onclick = function (e) { if (e.target === box) box.remove(); };
+      } catch (e) { }
+    }
+
     function copyTeacherLink(tid) {
       var url = teacherLinkUrl(tid);
       if (!url) { note("ولّد الروابط أولاً."); return; }
-      try {
-        navigator.clipboard.writeText(url);
-        note("تم نسخ رابط المعلم.");
-      } catch (e) {
-        prompt("انسخ الرابط:", url);
-      }
+      copyTextReliable(url).then(function (ok) {
+        if (ok) note("تم نسخ رابط المعلم.");
+      });
     }
 
     function sendTeacherLinkWa(tid) {
@@ -21196,8 +21257,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }).filter(Boolean);
       if (!lines.length) { note("ولّد الروابط أولاً."); return; }
       var txt = lines.join("\n");
-      try { navigator.clipboard.writeText(txt); note("تم نسخ " + lines.length + " رابط."); }
-      catch (e) { prompt("انسخ الروابط:", txt); }
+      copyTextReliable(txt).then(function (ok) {
+        if (ok) note("تم نسخ " + lines.length + " رابط.");
+      });
     }
 
     // تحديث حالة كل معلم من السيرفر
