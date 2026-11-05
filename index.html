@@ -12844,7 +12844,6 @@
       const tid = window._ldTid;
       const t = db.teachers.find(function (x) { return x.id === tid; }); if (!t) return;
       const rows = [...document.querySelectorAll("#ldBody .ld-row")];
-      if (!rows.length) { alert("لا توجد مواد — أضف مادة واحدة على الأقل أو أغلق النافذة."); return false; }
       const data = [], bad = [];
       rows.forEach(function (r) {
         const cur = r.dataset.sid ? db.subjects.find(function (x) { return x.id === r.dataset.sid; }) : null;
@@ -12879,7 +12878,7 @@
       t.sections = [...new Set(db.subjects.filter(function (x) { return x.teacherId === tid; }).map(function (x) { return x.sectionId; }).concat(t.sections || []))];
       save(); renderLoads(); renderTeachers(); try { renderSubjects(); } catch (e) { }
       $("ldBox").hidden = true;
-      okNote("تم تحديث أنصبة: " + t.name);
+      okNote(data.length ? ("تم تحديث أنصبة: " + t.name) : ("تم الحفظ بدون أنصبة — " + t.name + " (متفرغ)"));
       showQuotaNotes(data.map(function (x) { return x.secId; }), t.name);
       return false;
     }
