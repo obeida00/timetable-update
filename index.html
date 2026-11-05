@@ -10947,7 +10947,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.96";
+    const APP_VERSION = "1.97";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -13028,7 +13028,56 @@ td{background:#ffffff;color:#163858;font-size:10pt}
     function toggleSecOverExport() {
       const m = $("secOverExpMenu"); if (m) m.hidden = !m.hidden;
     }
-    function secOverPdf() { try { reportChoice("sections", "secRep"); } catch (e) { note("تعذر إنشاء PDF"); } }
+    function secOverPdf() {
+      const msg = $("secRepMsg");
+      if (msg) msg.textContent = "⏳ جارٍ إنشاء ملف PDF مطابق للعرض...";
+      secOverPdfMatch().then(function (r) {
+        if (!r) { if (msg) msg.textContent = "⚠️ تعذر إنشاء PDF — جرّب زر الطباعة من المتصفح"; }
+        else if (msg) msg.innerHTML = "✅ تم إنشاء الملف: <b>" + esc(r) + "</b><br>📂 تجده في مجلد «التنزيلات (Downloads)»";
+      });
+    }
+    // تصدير PDF يطابق ما يظهر في نافذة «ملخص كل شعبة» بالحرف
+    function secOverPdfMatch() {
+      const tbl = $("secOverTable"); if (!tbl) return Promise.resolve("");
+      const school = (db.settings && db.settings.schoolName) || "بوابة مدرستي";
+      const today = ymd(new Date());
+      const wrap = document.createElement("div");
+      wrap.style.cssText = "position:fixed;left:-14000px;top:0;width:1500px;background:#fff;padding:28px;direction:rtl";
+      wrap.innerHTML = '<div style="text-align:center;font-weight:800;color:#163858;font-size:30px;margin-bottom:4px">' + esc(school) + '</div>'
+        + '<div style="text-align:center;font-weight:800;color:#145d9b;font-size:24px;margin-bottom:14px">ملخص كل شعبة</div>';
+      const clone = tbl.cloneNode(true);
+      clone.querySelectorAll(".no-print").forEach(function (n) { n.remove(); });
+      clone.style.cssText = "width:100%;border-collapse:collapse;font-size:17px;font-family:Tahoma,Arial,sans-serif";
+      clone.querySelectorAll("th").forEach(function (h) {
+        h.style.cssText = "background:#145d9b;color:#fff;padding:12px 8px;border:1px solid #0f4f85;font-weight:800;text-align:center";
+      });
+      clone.querySelectorAll("td").forEach(function (c) {
+        c.style.cssText = "padding:12px 8px;border:1px solid #cfe0ee;color:#163858;text-align:center;vertical-align:middle;line-height:1.7";
+        c.removeAttribute("data-l");
+      });
+      clone.querySelectorAll("tr").forEach(function (r, i) {
+        if (i % 2 === 0) r.querySelectorAll("td").forEach(function (c) { c.style.background = "#f6fafd"; });
+      });
+      wrap.appendChild(clone);
+      document.body.appendChild(wrap);
+      return ensurePrintLibs().then(function () {
+        return window.html2canvas(wrap, { scale: 2, backgroundColor: "#ffffff", useCORS: true, logging: false });
+      }).then(function (cv) {
+        const JsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+        const pdf = new JsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+        const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight(), mg = 8;
+        const src = cv.toDataURL("image/jpeg", 0.95), ratio = cv.height / cv.width;
+        const iw = pw - mg * 2, ih = iw * ratio;
+        if (ih <= ph - mg * 2) pdf.addImage(src, "JPEG", mg, mg, iw, ih);
+        else {
+          const sw = (ph - mg * 2) / ratio;
+          pdf.addImage(src, "JPEG", mg, mg, sw, ph - mg * 2);
+        }
+        const nm = ("ملخص_الشعب_" + school).replace(/[\\/:*?"<>|\s]+/g, "_") + "_" + today + ".pdf";
+        pdf.save(nm);
+        return nm;
+      }).catch(function () { return ""; }).then(function (r) { wrap.remove(); return r; });
+    }
     function secOverRowsHtml() {
       const days = (db.settings.days || []).length || 5, P = db.settings.periods || 6, cap = days * P;
       let rowsHtml = "";
