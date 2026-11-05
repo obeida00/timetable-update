@@ -8076,6 +8076,7 @@
             <button class="btn g" type="button" onclick="genTeacherLinks()">تجهيز روابط المعلمين</button>
             <button class="btn" type="button" onclick="refreshTeacherLinks()">تحديث الحالة</button>
             <button class="btn w" type="button" onclick="copyAllTeacherLinks()">نسخ كل الروابط</button>
+            <button class="btn o" type="button" onclick="regenTeacherLinks()">توليد روابط جديدة</button>
           </div>
           <div id="tLinkSummary" class="hint" style="margin-bottom:8px"></div>
           <div id="tLinkList" style="max-height:420px;overflow:auto"></div>
@@ -10980,7 +10981,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.05";
+    const APP_VERSION = "2.06";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -21067,11 +21068,12 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     /* ================= روابط المعلمين + إشعارات الجوال ================= */
     var TEACHER_BASE = "https://schol-table-bot.iq-school-timetable.workers.dev";
+    var TEACHER_SHORT = TEACHER_BASE + "/s/";
 
-    // رمز عشوائي آمن (32 حرف)
+    // رمز عشوائي آمن قصير (10 أحرف)
     function makeLinkToken() {
       var chars = "abcdefghijkmnpqrstuvwxyz23456789";
-      var a = new Uint8Array(20);
+      var a = new Uint8Array(10);
       (window.crypto || window.msCrypto).getRandomValues(a);
       var s = "";
       for (var i = 0; i < a.length; i++) s += chars[a[i] % chars.length];
@@ -21087,7 +21089,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function teacherLinkUrl(tid) {
       var links = getTeacherLinks();
       var rec = links[tid];
-      return rec && rec.token ? (TEACHER_BASE + "/t/" + rec.token) : "";
+      return rec && rec.token ? (TEACHER_SHORT + rec.token) : "";
     }
 
     function currentOwnerAcc() {
@@ -21135,6 +21137,34 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       renderTeacherLinks();
     }
 
+    // يولّد روابط جديدة قصيرة ويلغي القديمة
+    function regenTeacherLinks() {
+      if (!db || !db.teachers || !db.teachers.length) { note("لا يوجد معلمون."); return; }
+      ask("سيتم إلغاء جميع الروابط الحالية وتوليد روابط جديدة.\n\nالمعلمون الذين ثبّتوا التطبيق سيحتاجون الرابط الجديد ويتفعّلون الإشعارات مرة أخرى.\n\nمتابعة؟").then(function (yes) {
+        if (!yes) return;
+        var owner = currentOwnerAcc();
+        var fresh = {};
+        db.teachers.forEach(function (t) {
+          fresh[t.id] = { token: makeLinkToken(), teacherName: t.name, at: new Date().toISOString() };
+        });
+        db.settings.teacherLinks = fresh;
+        save();
+        if (!owner) { renderTeacherLinks(); note("تم توليد روابط جديدة محليًا."); return; }
+
+        var payload = db.teachers.map(function (t) {
+          return { teacherId: t.id, token: fresh[t.id].token, teacherName: t.name };
+        });
+        fetch(TEACHER_BASE + "/api/dev/save_teacher_links", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ acc: owner, links: payload, rotate: true, secret: owner })
+        }).then(function (r) { return r.json(); }).then(function (j) {
+          renderTeacherLinks();
+          note((j && j.ok) ? "تم توليد " + payload.length + " رابط جديد وإلغاء القديم." : "تم محليًا فقط.");
+        }).catch(function () { renderTeacherLinks(); });
+      });
+    }
+
     function renderTeacherLinks() {
       var box = $("tLinkList"), sum = $("tLinkSummary");
       if (!box) return;
@@ -21145,7 +21175,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var ready = 0;
       box.innerHTML = list.map(function (t) {
         var rec = links[t.id] || {};
-        var url = rec.token ? (TEACHER_BASE + "/t/" + rec.token) : "";
+        var url = rec.token ? (TEACHER_SHORT + rec.token) : "";
         var st = rec.pushOn ? ["#dcfce7", "#166534", "مفعّل الإشعارات"] :
                  (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط فقط"] :
                    (rec.token ? ["#e2e8f0", "#475569", "لم يفتح بعد"] : ["#fee2e2", "#991b1b", "لا يوجد رابط"]));
@@ -21158,6 +21188,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           '<span style="flex:none;font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:999px;background:' + st[0] + ';color:' + st[1] + '">' + st[2] + '</span>' +
           '<button class="btn" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="copyTeacherLink(' + JSON.stringify(t.id) + ')">نسخ</button>' +
           (url ? '<button class="btn g" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="sendTeacherLinkWa(' + JSON.stringify(t.id) + ')">واتساب</button>' : '') +
+          (url ? '<button class="btn o" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="testTeacherPush(' + JSON.stringify(t.id) + ')" title="إرسال إشعار تجريبي">تجربة</button>' : '') +
           '</div>';
       }).join("");
 
@@ -21229,6 +21260,33 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         box.querySelector("button").onclick = function () { box.remove(); };
         box.onclick = function (e) { if (e.target === box) box.remove(); };
       } catch (e) { }
+    }
+
+    // إرسال إشعار تجريبي لمعلم واحد
+    function testTeacherPush(tid) {
+      var links = getTeacherLinks();
+      var rec = links[tid] || {};
+      var t = (db.teachers || []).find(function (x) { return x.id === tid; });
+      var name = (t && t.name) || rec.teacherName || "المعلم";
+      if (!rec.token) { note("ولّد الروابط أولاً."); return; }
+      if (!rec.pushOn) {
+        note("لم يفعّل " + name + " الإشعارات بعد.\nأرسل له الرابط ليضغط «تفعيل التنبيهات» أولاً.");
+        return;
+      }
+      note("جارٍ إرسال إشعار تجريبي إلى " + name + "...");
+      fetch(TEACHER_BASE + "/api/push/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: rec.token })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (j && j.ok) {
+          note("تم إرسال " + j.sent + " إشعار إلى " + name + ".");
+        } else if (j && j.error === "not_subscribed") {
+          note(name + " لم يفعّل الإشعارات بعد.");
+        } else {
+          note("تعذّر الإرسال: " + ((j && j.error) || "غير معروف"));
+        }
+      }).catch(function (e) { note("خطأ: " + e); });
     }
 
     function copyTeacherLink(tid) {
