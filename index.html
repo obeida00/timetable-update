@@ -10981,7 +10981,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.06";
+    const APP_VERSION = "2.07";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -21068,7 +21068,8 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     /* ================= روابط المعلمين + إشعارات الجوال ================= */
     var TEACHER_BASE = "https://schol-table-bot.iq-school-timetable.workers.dev";
-    var TEACHER_SHORT = TEACHER_BASE + "/s/";
+    // دومين قصير للروابط (يوجّه تلقائياً للأساسي)
+    var TEACHER_SHORT = "https://t.iq-school-timetable.workers.dev/s/";
 
     // رمز عشوائي آمن قصير (10 أحرف)
     function makeLinkToken() {
@@ -21089,7 +21090,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function teacherLinkUrl(tid) {
       var links = getTeacherLinks();
       var rec = links[tid];
-      return rec && rec.token ? (TEACHER_SHORT + rec.token) : "";
+      if (!rec || !rec.token) return "";
+      var base = (typeof TEACHER_SHORT === "string" && TEACHER_SHORT) ? TEACHER_SHORT : (TEACHER_BASE + "/s/");
+      return base + rec.token;
     }
 
     function currentOwnerAcc() {
@@ -21175,7 +21178,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var ready = 0;
       box.innerHTML = list.map(function (t) {
         var rec = links[t.id] || {};
-        var url = rec.token ? (TEACHER_SHORT + rec.token) : "";
+        var url = rec.token ? teacherLinkUrl(t.id) : "";
         var st = rec.pushOn ? ["#dcfce7", "#166534", "مفعّل الإشعارات"] :
                  (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط فقط"] :
                    (rec.token ? ["#e2e8f0", "#475569", "لم يفتح بعد"] : ["#fee2e2", "#991b1b", "لا يوجد رابط"]));
