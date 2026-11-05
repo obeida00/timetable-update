@@ -10947,7 +10947,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "1.95";
+    const APP_VERSION = "1.96";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -16152,14 +16152,16 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         return {
           title: "ملخص كل الشعب", school: school,
           head: ["#", "الشعبة", "الدروس", "السعة", "الحالة", "المعلمون ودروسهم", "المواد وتوزيعها"],
-          w: [0.035, 0.115, 0.06, 0.055, 0.085, 0.33, 0.32],
+          w: [0.03, 0.105, 0.055, 0.05, 0.08, 0.36, 0.32],
           rows: (db.sections || []).map((s, i) => {
             const list = (db.subjects || []).filter(x => x.sectionId === s.id);
             const mains = list.filter(x => (x.role || "main") !== "assist");
             const wk = mains.reduce((a, x) => a + (+x.weekly || 0), 0);
             const gap = cap - wk;
-            const tchs = []; list.forEach(function (x) { const n = teacherName(x.teacherId); if (n && tchs.indexOf(n) < 0) tchs.push(n); });
-            const mats = []; mains.forEach(function (x) { if (x.name && mats.indexOf(x.name) < 0) mats.push(x.name); });
+            const tmap = {}; list.forEach(function (x) { const n = teacherName(x.teacherId); if (!n) return; tmap[n] = (tmap[n] || 0) + (+x.weekly || 0); });
+            const tchs = Object.keys(tmap).map(function (n) { return n + " (" + tmap[n] + ")"; });
+            const mmap = {}; mains.forEach(function (x) { if (x.name) mmap[x.name] = (mmap[x.name] || 0) + (+x.weekly || 0); });
+            const mats = Object.keys(mmap).map(function (n) { return n + " (" + mmap[n] + ")"; });
             return [String(i + 1), secName(s.id) || "", String(wk), String(cap), gap > 0 ? ("ناقص " + gap) : (gap < 0 ? ("زيادة " + (-gap)) : "مكتمل"), tchs.join("، ") || "—", mats.join("، ") || "—"];
           })
         };
