@@ -10163,6 +10163,13 @@
               <label class="emis-field-lbl">المعلم البديل</label>
               <select class="emis-field-input" id="tSub"></select>
             </div>
+            <div class="emis-form-row">
+              <label class="emis-field-lbl">مراقبة الساحة</label>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700">
+                <input type="checkbox" id="tNoDuty">
+                <span>لا يُكلَّف بمراقبة الساحة (متفرغ من المراقبة)</span>
+              </label>
+            </div>
             <div id="tAssign" hidden></div><span id="tAssignTotal" hidden>0</span>
           </div>
         </div>
@@ -12228,6 +12235,7 @@
       box.appendChild(div); totalAssign();
     }
     function resetTeacher() {
+      if ($("tNoDuty")) $("tNoDuty").checked = false;
       $("tId").value = ""; $("tName").value = ""; $("tSpec").value = ""; $("tLoad").value = 0;
       if ($("tNamePart1")) $("tNamePart1").value = "";
       if ($("tNamePart2")) $("tNamePart2").value = "";
@@ -12332,8 +12340,9 @@
       let spec = $("tSpec").value.trim();
       if (!spec) spec = [...new Set(own.map(s => s.name))].join(" + ");
       const gv = function (id) { return ($(id) && $(id).value || "").trim(); };
+      const noDuty = !!($("tNoDuty") && $("tNoDuty").checked);
       const rec = {
-        id: tid, name: $("tName").value.trim(), specialty: spec, weekly: +$("tLoad").value || 0, sections: secs, offDays, leave, subId,
+        id: tid, name: $("tName").value.trim(), specialty: spec, weekly: +$("tLoad").value || 0, sections: secs, offDays, leave, subId, noDuty,
         status: gv("tStatus"), basic: gv("tBasic"), gender: gv("tGender"), birth: gv("tBirth"), job: gv("tJob"), cert: gv("tCert"),
         college: gv("tColl"), hire1: gv("tHire1"), hire2: gv("tHire2"), addr: gv("tAddr"), phone: gv("tPhone"), spec2: gv("tSpec2")
       };
@@ -12358,6 +12367,7 @@
       [["tStatus", "status"], ["tBasic", "basic"], ["tGender", "gender"], ["tBirth", "birth"], ["tJob", "job"], ["tCert", "cert"], ["tColl", "college"], ["tHire1", "hire1"], ["tHire2", "hire2"], ["tAddr", "addr"], ["tPhone", "phone"], ["tSpec2", "spec2"]].forEach(function (x) { if ($(x[0])) $(x[0]).value = (t[x[1]] || ""); });
       fillDaySelects(teacherOffDays(t));
       if ($("tLeave")) $("tLeave").checked = !!t.leave;
+      if ($("tNoDuty")) $("tNoDuty").checked = !!t.noDuty;
       toggleLeave();
       fillTSub();
       if (t.subId && $("tSub")) $("tSub").value = t.subId;
@@ -14794,8 +14804,11 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
     function updateDutyTeacherCount() {
       const allCount = (db.teachers || []).length;
       const activeCount = (db.teachers || []).filter(t => !t.leave).length;
+      const noDutyCount = (db.teachers || []).filter(t => t.noDuty).length;
       if ($("dutyTeacherCountVal")) {
-        $("dutyTeacherCountVal").textContent = allCount + (activeCount !== allCount ? " (" + activeCount + " غير مجاز)" : "");
+        $("dutyTeacherCountVal").textContent = allCount
+          + (activeCount !== allCount ? " (" + activeCount + " غير مجاز)" : "")
+          + (noDutyCount ? " — معفى من المراقبة: " + noDutyCount : "");
       }
     }
 
@@ -14899,7 +14912,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
           maxDays: maxDays,
           assignedDaysCount: 0
         };
-      }).filter(t => !t.isExempt && !t.teacher.leave);
+      }).filter(t => !t.isExempt && !t.teacher.leave && !t.teacher.noDuty);
 
       if (!teachersWithLoad.length) {
         alert("جميع المعلمين مستثنون أو مجازون!");
