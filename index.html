@@ -10981,7 +10981,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.07";
+    const APP_VERSION = "2.08";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -21323,28 +21323,42 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       });
     }
 
-    // تحديث حالة كل معلم من السيرفر
+    // تحديث حالة كل المعلمين بطلب واحد (بدل 60+ طلباً = سبب Error 1102)
     function refreshTeacherLinks() {
-      if ($("tLinkSummary")) $("tLinkSummary").textContent = "جارٍ التحديث...";
       var links = getTeacherLinks();
       var ids = Object.keys(links).filter(function (k) { return links[k] && links[k].token; });
-      if (!ids.length) { renderTeacherLinks(); return; }
-      var done = 0;
-      ids.forEach(function (tid) {
-        fetch(TEACHER_BASE + "/api/push/teacher_status?token=" + encodeURIComponent(links[tid].token))
-          .then(function (r) { return r.json(); })
-          .then(function (j) {
-            if (j && j.ok) {
-              links[tid].pushOn = !!j.subscribed;
-              links[tid].visited = !!j.visited;
-            }
-          })
-          .catch(function () { })
-          .then(function () {
-            done++;
-            if (done === ids.length) { save(); renderTeacherLinks(); }
+      if (!ids.length) { renderTeacherLinks(); note("لا توجد روابط — اضغط «تجهيز روابط المعلمين»."); return; }
+
+      var acc = currentOwnerAcc();
+      if (!acc) { note("سجّل الدخول أولاً لتحديث الحالة."); return; }
+
+      if ($("tLinkSummary")) $("tLinkSummary").textContent = "جارٍ التحديث...";
+
+      fetch(TEACHER_BASE + "/api/push/school_status?acc=" + encodeURIComponent(acc), { cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j || !j.ok) throw new Error((j && j.error) || "failed");
+          (j.links || []).forEach(function (x) {
+            var rec = links[x.teacherId];
+            if (!rec) return;
+            rec.token = x.token;
+            rec.pushOn = !!x.subscribed;
+            rec.visited = !!x.visited;
+            rec.devices = +x.devices || 0;
+            if (x.teacherName) rec.teacherName = x.teacherName;
           });
-      });
+          save();
+          renderTeacherLinks();
+          // رسالة بعدّاد
+          var ready = (j.links || []).filter(function (x) { return x.subscribed; }).length;
+          var opened = (j.links || []).filter(function (x) { return x.visited; }).length;
+          note("تم التحديث — مفعّل الإشعارات: " + ready + " · فتح الرابط: " + opened +
+               " · المجموع: " + (j.links || []).length);
+        })
+        .catch(function (e) {
+          renderTeacherLinks();
+          note("تعذّر تحديث الحالة: " + (e && e.message ? e.message : "خطأ شبكة"));
+        });
     }
     /* =============== نهاية روابط المعلمين =============== */
 
