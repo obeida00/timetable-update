@@ -21206,9 +21206,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
       var ready = 0;
       box.innerHTML = list.map(function (t) {
-        var rec = links[t.id] || {};
+        var rec = links[t.id] || links[t.name] || {};
         var url = rec.token ? teacherLinkUrl(t.id) : "";
-        var isReady = !!(rec.pushOn || rec.subscribed);
+        var isReady = !!(rec.subscribed && (rec.devices === undefined || rec.devices > 0));
         var st = isReady ? ["#dcfce7", "#166534", "مفعّل"] :
                  (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط"] :
                    (rec.token ? ["#e2e8f0", "#475569", "لم يفتح"] : ["#fee2e2", "#991b1b", "لا رابط"]));
@@ -21325,15 +21325,28 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         });
       })().then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.ok) {
+          rec.subscribed = true;
+          rec.pushOn = true;
+          rec.devices = j.sent || 1;
+          save();
+          renderTeacherLinks();
           okNote("تم إرسال الإشعار إلى " + name + " (" + j.sent + " جهاز). تحقق من شاشة القفل الآن.");
-        } else if (j && j.error === "not_subscribed") {
-          note(name + " لم يفعّل الإشعارات بعد. افتح رابطه على الجوال واضغط «تفعيل التنبيهات» ثم «إرسال إشعار تجريبي الآن» من نفس الصفحة.");
+        } else if (j && (j.error === "not_subscribed" || j.error === "expired")) {
+          rec.subscribed = false;
+          rec.pushOn = false;
+          rec.devices = 0;
+          save();
+          renderTeacherLinks();
+          note(name + " لم يفعّل الإشعارات بعد (أو تم حذف التطبيق).");
         } else if (j && j.error === "token_not_found") {
           note("الرابط غير موجود على السيرفر. اضغط «تحديث الحالة» ثم «تجهيز روابط المعلمين».");
-        } else if (j && (j.error === "expired" || (j.error && String(j.error).indexOf("410") >= 0))) {
-          note("اشتراك إشعارات «" + name + "» انتهى. افتح رابطه واضغط «تفعيل التنبيهات على هذا الجهاز» ثم أعد تجربة.");
         } else {
-          note("تعذّر الإرسال إلى " + name + ". افتح رابطه واضغط تفعيل التنبيهات ثم تجربة من نفس الصفحة.");
+          rec.subscribed = false;
+          rec.pushOn = false;
+          rec.devices = 0;
+          save();
+          renderTeacherLinks();
+          note("تعذّر الإرسال إلى " + name + " — المعلم غير مشترك بالتنبيهات.");
         }
       }).catch(function (e) { note("خطأ في الاتصال: " + e); });
     }
@@ -21420,21 +21433,33 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         .then(function (r) { return r.json(); })
         .then(function (j) {
           if (!j || !j.ok) throw new Error((j && j.error) || "failed");
-          (j.links || []).forEach(function (x) {
-            var tid = x.teacherId;
-            if (!links[tid]) {
-              var byName = (db.teachers || []).find(function (tt) {
-                return tt.id === x.teacherId || tt.name === x.teacherName || tt.name === x.teacherId;
-              });
-              if (byName) tid = byName.id;
+          (db.teachers || []).forEach(function (t) {
+            var rec = links[t.id];
+            if (!rec) {
+              rec = links[t.name];
+              if (rec) links[t.id] = rec;
             }
-            if (!links[tid]) links[tid] = { token: x.token, teacherName: x.teacherName || tid, at: new Date().toISOString() };
-            var rec = links[tid];
-            rec.token = x.token;
-            rec.pushOn = !!x.subscribed;
-            rec.visited = !!x.visited;
-            rec.devices = +x.devices || 0;
-            if (x.teacherName) rec.teacherName = x.teacherName;
+            if (!rec) {
+              rec = { token: "", teacherName: t.name, at: new Date().toISOString() };
+              links[t.id] = rec;
+            }
+            var x = (j.links || []).find(function (item) {
+              return String(item.teacherId) === String(t.id) ||
+                     String(item.teacherId).trim() === String(t.name).trim() ||
+                     (item.teacherName && String(item.teacherName).trim() === String(t.name).trim()) ||
+                     (rec.token && item.token === rec.token);
+            });
+            if (x) {
+              rec.token = x.token || rec.token;
+              rec.subscribed = !!x.subscribed;
+              rec.pushOn = !!x.subscribed;
+              rec.visited = !!x.visited;
+              rec.devices = +x.devices || 0;
+            } else {
+              rec.subscribed = false;
+              rec.pushOn = false;
+              rec.devices = 0;
+            }
           });
           save();
           renderTeacherLinks();
