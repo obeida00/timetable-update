@@ -7060,12 +7060,25 @@
 
           <div class="emis-grid-card" data-home-perm="settings" onclick="showTab('waBot')">
             <div class="emis-grid-card-icon">
+              <!-- Modern Teacher Mobile App & Notifications Icon -->
               <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <circle cx="32" cy="32" r="22" fill="#25D366" />
-                <path d="M22 42l2.2-7.6A12 12 0 1 1 42 40.5L42 42l-7.4-1.9A12 12 0 0 1 22 42z" fill="#fff" />
+                <!-- Phone Frame -->
+                <rect x="18" y="8" width="28" height="48" rx="6" fill="#eff6ff" stroke="#0284c7" stroke-width="2.5" />
+                <rect x="23" y="15" width="18" height="30" rx="3" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
+                <line x1="28" y1="11" x2="36" y2="11" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" />
+                <circle cx="32" cy="50" r="2" fill="#0284c7" />
+                <!-- Screen schedule lines -->
+                <rect x="25" y="19" width="14" height="3" rx="1" fill="#0284c7" />
+                <rect x="25" y="24" width="10" height="2.5" rx="1" fill="#93c5fd" />
+                <rect x="25" y="28.5" width="12" height="2.5" rx="1" fill="#93c5fd" />
+                <rect x="25" y="33" width="8" height="2.5" rx="1" fill="#93c5fd" />
+                <!-- Notification Bell Badge -->
+                <circle cx="45" cy="17" r="10" fill="#f59e0b" stroke="#ffffff" stroke-width="2" />
+                <path d="M45 12c-2 0-3.2 1.3-3.2 3v2l-1 1.2h8.4l-1-1.2v-2c0-1.7-1.2-3-3.2-3z" fill="#ffffff" />
+                <circle cx="45" cy="19.2" r="1" fill="#ffffff" />
               </svg>
             </div>
-            <div class="emis-grid-card-title">بوت واتساب</div>
+            <div class="emis-grid-card-title">روابط وتطبيق المعلمين</div>
           </div>
 
         </div>
@@ -8021,105 +8034,31 @@
           <button class="btn w" type="button" onclick="showTab('home')">
             <span>الرجوع</span>
           </button>
-          <h2 style="margin:0"><span>بوت واتساب للكادر</span></h2>
+          <h2 style="margin:0"><span>📱 روابط وتطبيق المعلمين</span></h2>
         </div>
         <span class="ver-chip" style="background:#dcfce7;color:#166534;font-weight:800">صلاحية المدير</span>
       </div>
-      <p class="hint">المدير يحدد: نشر الجدول في الكروب فقط، أو تنبيه المعلمين على الخاص قبل الدرس بخمس دقائق.
-        وإذا كتب معلم في الكروب أنه يعتذر عن الحضور، يُختار البديل ويُنشر الجدول المحدَّث.</p>
-      <div class="emis-nav-tabs-line" style="justify-content:flex-start;gap:18px;margin-top:12px">
-        <button type="button" class="emis-line-tab wa-bot-tab-btn active" data-tab="waTabMain"
-          onclick="return switchWaBotTab('waTabMain', this)">إعدادات الواتساب</button>
-        <button type="button" class="emis-line-tab wa-bot-tab-btn" data-tab="waTabLinks"
-          onclick="return switchWaBotTab('waTabLinks', this)">📱 روابط المعلمين</button>
-      </div>
-      <div id="waTabMain" class="wa-bot-pane" style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
-        <div class="settings-luxury-card" style="padding:16px">
-          <strong style="display:block;margin-bottom:10px;color:#163858">قرارات المدير</strong>
-          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
-            <input type="checkbox" id="waGroupOn" onchange="saveWaBot()">
-            <span>نشر الجدول في كروب الواتساب</span>
-          </label>
-          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
-            <input type="checkbox" id="waLeaveOn" onchange="saveWaBot()">
-            <span>عند اعتذار معلم في الكروب: تعيين بديل وتحديث الجدول</span>
-          </label>
+      <p class="hint">لكل معلم رابط خاص يفتح جدوله فقط، ويثبّته كتطبيق ذكي على جواله، ويستلم تنبيهات الحصص تلقائياً قبل بدء الدرس بخمس دقائق (أونلاين وأوفلاين).</p>
 
-          <!-- صلاحية المدير لطريقة عرض روابط المعلمين -->
-          <div class="modern-field" style="margin:14px 0 10px;background:#f0f7ff;border:1.5px solid #bae0ff;border-radius:12px;padding:14px">
-            <label style="font-weight:800;color:#003a8c;display:flex;align-items:center;gap:6px;font-size:14px">
-              <span>🎛️ صلاحية المدير: طريقة عرض الرابط للمعلمين</span>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+        <!-- روابط المعلمين + إشعارات الجوال -->
+        <div class="settings-luxury-card" style="padding:16px">
+          <strong style="display:block;margin-bottom:6px;color:#163858;font-size:1.05rem">📱 روابط وتطبيقات المعلمين الجاهزة</strong>
+          <p class="hint" style="margin:0 0 12px">
+            يمكنك إرسال الرابط لكل معلم عبر واتساب أو نسخه، أو تجربة إرسال إشعار فوري للتأكد من وصول التنبيهات إلى هاتف المعلم.
+          </p>
+
+          <div style="background:#f0f7ff;border:1.5px solid #bae0ff;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+            <label style="font-weight:800;color:#003a8c;display:flex;align-items:center;gap:6px;margin:0;font-size:14px">
+              <span>🎛️ صلاحية العرض في روابط المعلمين:</span>
             </label>
-            <select id="teacherViewModeSelect" style="width:100%;margin-top:8px;padding:10px 12px;font-weight:700;border:1.5px solid #1890ff;border-radius:8px;background:#fff;color:#0f172a;font-size:14px" onchange="changeTeacherViewMode(this.value)">
+            <select id="tLinksViewModeSelect" style="min-width:270px;flex:1;max-width:380px;padding:9px 12px;font-weight:700;border:1.5px solid #1890ff;border-radius:8px;background:#fff;color:#0f172a;font-size:13.5px" onchange="changeTeacherViewMode(this.value)">
               <option value="full">📅 عرض جدول الحصص كاملاً (الجدول الأسبوعي الكامل مع الإشعار)</option>
               <option value="next_only">🔔 إشعار والدرس الحالي/القادم فقط (بدون إظهار الجدول الكامل)</option>
             </select>
-            <p class="hint" style="margin:8px 0 0;color:#0050b3;font-size:12.5px;line-height:1.6">
-              💡 <b>ملاحظة ذكية:</b> تم إيقاف تنبيهات الواتساب الخاصة المباشرة لتجنب حظر رقم المدرسة، وأصبحت التنبيهات تصل فوراً لجوال المعلم كتطبيق ذكي يعمل مع الجدول.
-            </p>
           </div>
 
-          <div class="modern-field" style="margin-top:10px">
-            <label>رابط كروب الواتساب (للنشر)</label>
-            <input id="waGroupLink" dir="ltr" placeholder="https://chat.whatsapp.com/...." onchange="saveWaBot()">
-          </div>
-          <p class="hint" style="margin:8px 0 0">لا تحتاج برنامج واتساب على الجهاز. شغّل واتساب ويب مرة واحدة وامسح الرمز من جوالك. بعدها التجربة تفتح محادثة المعلم في نفس النافذة.</p>
-        </div>
-        <div class="settings-luxury-card" style="padding:0;overflow:hidden">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;background:#111b21;color:#fff">
-            <strong>متصفح واتساب داخل البرنامج</strong>
-            <button class="btn g" type="button" onclick="loadWaWebHome()">تشغيل واتساب ويب</button>
-          </div>
-          <div style="padding:16px;background:#0b141a;color:#e2e8f0;text-align:center">
-            <p style="margin:0 0 8px;font-weight:800">امسح رمز واتساب من جوالك مرة واحدة</p>
-            <p style="margin:0 0 12px;opacity:.9;line-height:1.6">واتساب يمنع عرضه داخل الصفحة نفسها. لذلك تُفتح نافذة واحدة تابعة لبوابة مدرستي (مو تبويب كروم جديد كل مرة). ابقَ مسجّلاً فيها.</p>
-            <button class="btn g" type="button" onclick="loadWaWebHome()">فتح نافذة واتساب ويب الآن</button>
-          </div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px">
-          <button class="btn g" type="button" onclick="publishWaTimetable()">نشر جدول اليوم في الكروب</button>
-          <button class="btn" type="button" onclick="previewWaReminders()">عرض دروس الدقائق الخمس القادمة</button>
-          <button class="btn o" type="button" onclick="testWaOneTeacher()">تجربة الرسالة على معلم لديه رقم</button>
-        </div>
-        <div id="waBotMsg" class="hint"></div>
-
-        <div class="settings-luxury-card" style="padding:16px">
-          <strong style="display:block;margin-bottom:8px;color:#163858">رسالة اعتذار من الكروب</strong>
-          <textarea id="waLeaveText" rows="4" placeholder="الصق رسالة المعلم من الكروب، مثل: اعتذر عن عدم الحضور اليوم — مروة مهدي"></textarea>
-          <select id="waLeaveTeacher" style="margin-top:8px;width:100%">
-            <option value="">— أو اختر المعلم إذا لم يُذكر الاسم —</option>
-          </select>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-            <button class="btn" type="button" onclick="processWaLeave()">تنفيذ الاعتذار وتعيين البديل</button>
-            <button class="btn g" type="button" onclick="publishWaLeaveUpdate()">نشر الجدول المحدَّث</button>
-          </div>
-          <div id="waLeaveOut" class="hint" style="margin-top:8px;white-space:pre-wrap"></div>
-        </div>
-        <div id="waQueueBox" class="settings-luxury-card" style="padding:16px" hidden>
-          <strong style="display:block;margin-bottom:8px">رسائل جاهزة للإرسال</strong>
-          <div id="waQueueList"></div>
-          <button class="btn g" type="button" style="margin-top:8px" onclick="sendNextWaQueue()">إرسال التالي على واتساب</button>
-        </div>
-      </div>
-      <div id="waTabLinks" class="wa-bot-pane" hidden style="display:none;flex-direction:column;gap:14px;margin-top:14px">
-        <!-- ===== روابط المعلمين + إشعارات الجوال ===== -->
-        <div class="settings-luxury-card" style="padding:16px">
-          <strong style="display:block;margin-bottom:6px;color:#163858">📱 روابط المعلمين الجاهزة</strong>
-          <p class="hint" style="margin:0 0 10px">
-            لكل معلم رابط خاص يفتح جدوله فقط، ويثبّته كتطبيق على جواله، ويستلم تنبيهًا تلقائيًا قبل كل درس بخمس دقائق.
-          </p>
-
-          <div style="background:#f0f7ff;border:1px solid #bae0ff;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
-            <label style="font-weight:800;color:#003a8c;display:flex;align-items:center;gap:6px;margin:0">
-              <span>🎛️ صلاحية العرض في روابط المعلمين:</span>
-            </label>
-            <select id="tLinksViewModeSelect" style="min-width:260px;flex:1;max-width:380px;padding:8px 12px;font-weight:700;border:1.5px solid #1890ff;border-radius:8px;background:#fff;color:#0f172a;font-size:13px" onchange="changeTeacherViewMode(this.value)">
-              <option value="full">📅 عرض جدول الحصص كاملاً</option>
-              <option value="next_only">🔔 إشعار والدرس الحالي/القادم فقط</option>
-            </select>
-          </div>
-
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
             <button class="btn g" type="button" onclick="genTeacherLinks()">تجهيز روابط المعلمين</button>
             <button class="btn" type="button" onclick="refreshTeacherLinks()">تحديث الحالة</button>
             <button class="btn w" type="button" onclick="copyAllTeacherLinks()">نسخ كل الروابط</button>
@@ -12030,7 +11969,7 @@
         try { if (tabId === "settings") renderSettings(); } catch (e) { }
         try { if (tabId === "loads") renderLoads(); } catch (e) { }
         try { if (tabId === "notices") initNoticesSection(); } catch (e) { }
-        try { if (tabId === "waBot") fillWaBotForm(); } catch (e) { }
+        try { if (tabId === "waBot") { renderTeacherLinks(); try { refreshTeacherLinks(); } catch(eR){} } } catch (e) { }
         try { if (tabId === "grades") { fillStudentSections(); fillGradeSubjects(); renderGradeHead(); loadGradeList(); } } catch (e) { }
         try { if (tabId === "attendance") { fillStudentSections(); if ($("attDate") && !$("attDate").value) $("attDate").value = new Date().toISOString().slice(0, 10); loadAttendanceList(); } } catch (e) { }
       }
@@ -12074,7 +12013,7 @@
       try { if (btn.dataset.tab === "settings") renderSettings(); } catch (e) { }
       try { if (btn.dataset.tab === "loads") renderLoads(); } catch (e) { }
       try { if (btn.dataset.tab === "notices") initNoticesSection(); } catch (e) { }
-      try { if (btn.dataset.tab === "waBot") fillWaBotForm(); } catch (e) { }
+      try { if (btn.dataset.tab === "waBot") { renderTeacherLinks(); try { refreshTeacherLinks(); } catch(eR){} } } catch (e) { }
       try {
         const curTab = btn.dataset.tab;
         document.querySelectorAll(".mob-nav-btn").forEach(mb => {
