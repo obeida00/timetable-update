@@ -12391,6 +12391,14 @@
       applyLeaveCover(rec);
       save(); renderTeachers(); renderSubjects(); try { renderLoads(); } catch (e2) { } resetTeacher(); fillTeacherSelect(); $("tBox").hidden = true;
       if (isNew) {
+        try {
+          var lks = getTeacherLinks();
+          if (!lks[rec.id] || !lks[rec.id].token) {
+            lks[rec.id] = { token: makeTeacherSlug(rec.name), teacherName: rec.name, at: new Date().toISOString() };
+            save();
+            syncTeacherLinksToCloud();
+          }
+        } catch(eLk) {}
         okNote("✅ تمت إضافة المعلم (" + rec.name + ") بنجاح");
       }
       return false;
@@ -21103,17 +21111,90 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     }
     /* ================= روابط المعلمين + إشعارات الجوال ================= */
     var TEACHER_BASE = "https://bmdiq.vercel.app";
-    // دومين قصير للروابط (يوجّه تلقائياً للأساسي)
+    // دومين قصير للروابط (يوجه تلقائياً للأساسي)
     var TEACHER_SHORT = "https://bmdiq.vercel.app/s/";
 
-    // رمز عشوائي آمن قصير (10 أحرف)
-    function makeLinkToken() {
-      var chars = "abcdefghijkmnpqrstuvwxyz23456789";
-      var a = new Uint8Array(10);
-      (window.crypto || window.msCrypto).getRandomValues(a);
-      var s = "";
-      for (var i = 0; i < a.length; i++) s += chars[a[i] % chars.length];
-      return s;
+    // قاموس تحويل الأسماء العربية الشائعة إلى يوزر نيم إنجليزي فخم وثابت
+    var AR_NAME_MAP = {
+      "محمد": "mohammed", "أحمد": "ahmed", "احمد": "ahmed", "محمود": "mahmoud", "علي": "ali",
+      "حسين": "hussein", "حسن": "hassan", "مهدي": "mahdi", "مروة": "marwa", "مروه": "marwa",
+      "فرح": "farah", "سعد": "saad", "الدين": "aldeen", "رواء": "rwaa", "حامد": "hamed",
+      "غيداء": "ghaidaa", "صباح": "sabah", "فاطمة": "fatima", "فاطمه": "fatima", "زهراء": "zahraa",
+      "زينب": "zainab", "نور": "noor", "الهدى": "alhuda", "هدى": "huda", "سارة": "sara",
+      "مريم": "maryam", "عمر": "omar", "عثمان": "othman", "خالد": "khaled", "يوسف": "youssef",
+      "إبراهيم": "ibrahim", "ابراهيم": "ibrahim", "ياسين": "yaseen", "طه": "taha", "مصطفى": "mustafa",
+      "حيدر": "haider", "كرار": "karrar", "جعفر": "jaafar", "صادق": "sadiq", "كاظم": "kadhim",
+      "باسم": "basim", "وسام": "wissam", "عمار": "ammar", "عقيل": "aqeel", "سامر": "samer",
+      "ماجد": "majid", "عادل": "adel", "وليد": "waleed", "رائد": "raed", "طارق": "tariq",
+      "أيمن": "ayman", "ايمن": "ayman", "أمجد": "amjad", "امجد": "amjad", "براء": "baraa",
+      "علاء": "alaa", "ضياء": "dhiaa", "بهاء": "bahaa", "صفاء": "safaa", "وفاء": "wafaa",
+      "سناء": "sanaa", "هناء": "hanaa", "رجاء": "rajaa", "دعاء": "duaa", "شيماء": "shaymaa",
+      "أسماء": "asmaa", "اسماء": "asmaa", "إسراء": "israa", "اسراء": "israa", "رشا": "rasha",
+      "ريام": "riyam", "رنا": "rana", "منى": "muna", "سهى": "suha", "علا": "ola",
+      "آية": "aya", "اية": "aya", "تبارك": "tabarak", "بنين": "baneen", "رسل": "rusul",
+      "سحر": "sahar", "سمر": "samar", "سماح": "samah", "نجلاء": "najlaa", "أمل": "amal",
+      "إيمان": "iman", "ايمان": "iman", "إيناس": "inas", "ايناس": "inas", "إلهام": "ilham",
+      "شهد": "shahad", "داليا": "dalia", "دينا": "dina", "رند": "rand", "ريحانة": "rayhana",
+      "سدرة": "sidra", "يقين": "yaqeen", "ضحى": "dhuha", "سندس": "sundus", "أصيل": "aseel",
+      "جمال": "jamal", "كمال": "kamal", "جلال": "jalal", "بلال": "bilal", "فاضل": "fadhil",
+      "كريم": "kareem", "رحيم": "raheem", "جواد": "jawad", "باقر": "baqir", "عباس": "abbas",
+      "حمزة": "hamza", "حمزه": "hamza", "قاسم": "qasim", "عدنان": "adnan", "سلمان": "salman"
+    };
+
+    var AR_CHAR_MAP = {
+      "ا": "a", "أ": "a", "إ": "e", "آ": "aa", "ء": "", "ى": "a", "ئ": "e", "ؤ": "o",
+      "ب": "b", "ت": "t", "ث": "th", "ج": "j", "ح": "h", "خ": "kh", "د": "d", "ذ": "th",
+      "ر": "r", "ز": "z", "س": "s", "ش": "sh", "ص": "s", "ض": "d", "ط": "t", "ظ": "dh",
+      "ع": "a", "غ": "gh", "ف": "f", "ق": "q", "ك": "k", "ل": "l", "م": "m", "ن": "n",
+      "ه": "h", "ة": "a", "و": "w", "ي": "y"
+    };
+
+    // توليد يوزر نيم ثابت ونظيف خاص بكل معلم مثل: marwa-mahdi
+    function teacherNameToUsername(name) {
+      if (!name) return "teacher";
+      var n = String(name).trim();
+      var clean = n
+        .replace(/[\u064B-\u065F\u0670]/g, "")
+        .replace(/^(الاستاذ|الأستاذ|المعلم|المعلمة|الست|ست|دكتور|دكتورة|د\.|أ\.|م\.)\s+/i, "");
+
+      var parts = clean.split(/\s+/);
+      var res = [];
+      function translitWord(w) {
+        var s = "";
+        for (var j = 0; j < w.length; j++) {
+          var c = w[j];
+          if (AR_CHAR_MAP[c] !== undefined) s += AR_CHAR_MAP[c];
+          else if (/[a-zA-Z0-9]/.test(c)) s += c.toLowerCase();
+        }
+        return s;
+      }
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        if (!p) continue;
+        if (p === "عبد" && i + 1 < parts.length) {
+          var next = parts[++i];
+          res.push("abd-" + (AR_NAME_MAP[next] || translitWord(next)));
+        } else if (AR_NAME_MAP[p]) {
+          res.push(AR_NAME_MAP[p]);
+        } else {
+          res.push(translitWord(p));
+        }
+      }
+      var slug = res.join("-").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      return slug || "teacher";
+    }
+
+    // ضمان أن كل يوزر نيم فريد وثابت داخل المدرسة
+    function makeTeacherSlug(name, takenMap) {
+      var base = teacherNameToUsername(name);
+      var candidate = base;
+      var counter = 2;
+      while (takenMap && takenMap[candidate]) {
+        candidate = base + "-" + counter;
+        counter++;
+      }
+      if (takenMap) takenMap[candidate] = true;
+      return candidate;
     }
 
     function getTeacherLinks() {
@@ -21134,7 +21215,24 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       return (window._acc || (db.settings && db.settings.ownerAcc) || "").toString();
     }
 
-    function genTeacherLinks() {
+    function syncTeacherLinksToCloud() {
+      var owner = currentOwnerAcc();
+      if (!owner || !db || !db.teachers) return Promise.resolve();
+      var links = getTeacherLinks();
+      var payload = db.teachers.map(function (t) {
+        var r = links[t.id] || {};
+        return { teacherId: t.id, token: r.token, teacherName: t.name };
+      }).filter(function (x) { return x.token; });
+
+      return fetch(TEACHER_BASE + "/api/dev/save_teacher_links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acc: owner, links: payload, secret: owner })
+      }).catch(function (e) { console.warn("Cloud sync error:", e); });
+    }
+
+    // تجهيز الروابط الثابتة باليوزر نيم لكل المعلمين وحفظها
+    function genTeacherLinks(forceRegen) {
       if (!db || !db.teachers || !db.teachers.length) {
         if ($("tLinkSummary")) $("tLinkSummary").textContent = "لا يوجد معلمون.";
         return;
@@ -21145,61 +21243,37 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         return;
       }
       var links = getTeacherLinks();
-      var made = 0;
+      var taken = {};
+
       db.teachers.forEach(function (t) {
-        if (!links[t.id] || !links[t.id].token) {
-          links[t.id] = { token: makeLinkToken(), teacherName: t.name, at: new Date().toISOString() };
-          made++;
+        var rec = links[t.id];
+        var isOldRandom = rec && rec.token && /^[a-z0-9]{10}$/.test(rec.token) && !rec.token.includes("-");
+        if (forceRegen || !rec || !rec.token || isOldRandom) {
+          var u = makeTeacherSlug(t.name, taken);
+          links[t.id] = Object.assign(rec || {}, {
+            token: u,
+            teacherName: t.name,
+            at: (rec && rec.at) || new Date().toISOString()
+          });
         } else {
-          links[t.id].teacherName = t.name;
+          taken[rec.token] = true;
+          rec.teacherName = t.name;
         }
       });
-      // ارفع القائمة للسحابة ليعرف السيرفر أي معلم يخص أي حساب
-      var payload = db.teachers.map(function (t) {
-        var r = links[t.id] || {};
-        return { teacherId: t.id, token: r.token, teacherName: t.name };
-      }).filter(function (x) { return x.token; });
-
-      fetch(TEACHER_BASE + "/api/dev/save_teacher_links", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ acc: owner, links: payload, secret: owner })
-      }).then(function (r) { return r.json(); }).then(function (j) {
-        if (!j || !j.ok) {
-          if ($("tLinkSummary")) $("tLinkSummary").textContent =
-            "تم توليد الروابط محليًا. تعذّر رفعها للسحابة: " + ((j && j.error) || "غير معروف");
-        }
-      }).catch(function () { });
 
       save();
       renderTeacherLinks();
+      syncTeacherLinksToCloud().then(function () {
+        if ($("tLinkSummary")) $("tLinkSummary").textContent = "تم تجهيز الروابط الثابتة وتحديثها بنجاح.";
+      });
     }
 
-    // يولّد روابط جديدة قصيرة ويلغي القديمة
+    // تحديث وتثبيت يوزرات الروابط الثابتة
     function regenTeacherLinks() {
       if (!db || !db.teachers || !db.teachers.length) { note("لا يوجد معلمون."); return; }
-      ask("سيتم إلغاء جميع الروابط الحالية وتوليد روابط جديدة.\n\nالمعلمون الذين ثبّتوا التطبيق سيحتاجون الرابط الجديد ويتفعّلون الإشعارات مرة أخرى.\n\nمتابعة؟").then(function (yes) {
+      ask("هل ترغب بتحديث روابط المعلمين إلى يوزرات ثابتة بأسماء المعلمين؟\n\nستكون الروابط دائمة ومخصصة باسم كل معلم.").then(function (yes) {
         if (!yes) return;
-        var owner = currentOwnerAcc();
-        var fresh = {};
-        db.teachers.forEach(function (t) {
-          fresh[t.id] = { token: makeLinkToken(), teacherName: t.name, at: new Date().toISOString() };
-        });
-        db.settings.teacherLinks = fresh;
-        save();
-        if (!owner) { renderTeacherLinks(); note("تم توليد روابط جديدة محليًا."); return; }
-
-        var payload = db.teachers.map(function (t) {
-          return { teacherId: t.id, token: fresh[t.id].token, teacherName: t.name };
-        });
-        fetch(TEACHER_BASE + "/api/dev/save_teacher_links", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ acc: owner, links: payload, rotate: true, secret: owner })
-        }).then(function (r) { return r.json(); }).then(function (j) {
-          renderTeacherLinks();
-          note((j && j.ok) ? "تم توليد " + payload.length + " رابط جديد وإلغاء القديم." : "تم محليًا فقط.");
-        }).catch(function () { renderTeacherLinks(); });
+        genTeacherLinks(true);
       });
     }
 
@@ -21213,6 +21287,29 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
       var links = getTeacherLinks();
       var list = (db.teachers || []).slice();
+
+      // الترقية التلقائية إلى يوزرات ثابتة بأسماء المعلمين إن كانت الروابط قديمة أو عشوائية
+      var takenSlugs = {};
+      var needsSave = false;
+      list.forEach(function (t) {
+        var rec = links[t.id];
+        var isRandom = rec && rec.token && /^[a-z0-9]{10}$/.test(rec.token) && !rec.token.includes("-");
+        if (!rec || !rec.token || isRandom) {
+          var slug = makeTeacherSlug(t.name, takenSlugs);
+          links[t.id] = Object.assign(rec || {}, {
+            token: slug,
+            teacherName: t.name,
+            at: (rec && rec.at) || new Date().toISOString()
+          });
+          needsSave = true;
+        } else {
+          takenSlugs[rec.token] = true;
+        }
+      });
+      if (needsSave) {
+        save();
+        syncTeacherLinksToCloud();
+      }
       if (!list.length) { box.innerHTML = ""; if (sum) sum.textContent = "لا يوجد معلمون."; return; }
 
       var ready = 0, installed = 0, opened = 0;
