@@ -4038,9 +4038,14 @@
       html,
       body {
         background: #f1f5f9 !important;
-        -webkit-user-select: none;
-        user-select: none;
+        -webkit-user-select: auto !important;
+        user-select: auto !important;
         overflow-x: hidden !important;
+      }
+
+      input, textarea, [contenteditable="true"], select, td, th, .selectable {
+        -webkit-user-select: text !important;
+        user-select: text !important;
       }
 
       .app {
@@ -11407,13 +11412,7 @@
       } catch (e) { }
     }
     function okBeep() {
-      try {
-        const Ctx = window.AudioContext || window.webkitAudioContext; if (!Ctx) return;
-        const c = new Ctx();
-        tone(c, "sine", 523, 523, 0, 0.12, 0.16);
-        tone(c, "sine", 659, 659, 0.12, 0.14, 0.16);
-        tone(c, "sine", 784, 784, 0.26, 0.2, 0.18);
-      } catch (e) { }
+      // تم إيقاف صوت التنبيه العادي بناءً على طلب المستخدم — يبقى صوت التنبيه فقط في الأخطاء (errBeep)
     }
     function isOkMsg(m) { return /^(تم|تمت|حُفظ|حفظ)/.test(String(m || "").trim()); }
     function note(msg) {
@@ -21274,32 +21273,158 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
     }
 
-    // نسخ نص: execCommand أولاً (نفس ضغطة الزر) ثم Clipboard API
+    // نسخ نص: دعم pywebview API أولاً ثم Clipboard API ثم execCommand
     function copyTextReliable(text) {
       return new Promise(function (resolve) {
-        var done = false;
-        function finish(ok) { if (!done) { done = true; resolve(!!ok); } }
-        try {
-          var ta = document.createElement("textarea");
-          ta.value = text;
-          ta.setAttribute("readonly", "");
-          ta.style.cssText = "position:fixed;top:0;left:0;width:2px;height:2px;opacity:0.01;font-size:16px;z-index:2147483647";
-          document.body.appendChild(ta);
-          ta.focus();
-          ta.select();
-          ta.setSelectionRange(0, text.length);
-          var ok = false;
-          try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
-          document.body.removeChild(ta);
-          if (ok) return finish(true);
-        } catch (e) { }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () { finish(true); }, function () { finish(false); });
-        } else {
-          finish(false);
+        var str = String(text || "");
+        function tryFallback() {
+          var done = false;
+          function finish(ok) { if (!done) { done = true; resolve(!!ok); } }
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(str).then(function () { finish(true); }).catch(function () { tryExec(); });
+              return;
+            }
+          } catch (e) { }
+          tryExec();
+          function tryExec() {
+            try {
+              var ta = document.createElement("textarea");
+              ta.value = str;
+              ta.style.cssText = "position:fixed;top:0;left:0;width:2px;height:2px;opacity:0.01;font-size:16px;z-index:2147483647";
+              document.body.appendChild(ta);
+              ta.focus();
+              ta.select();
+              ta.setSelectionRange(0, str.length);
+              var ok = false;
+              try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+              document.body.removeChild(ta);
+              finish(ok);
+            } catch (e) { finish(false); }
+          }
         }
+        if (window.pywebview && window.pywebview.api && typeof window.pywebview.api.copy_text === "function") {
+          try {
+            window.pywebview.api.copy_text(str).then(function(res) {
+              if (res) return resolve(true);
+              tryFallback();
+            }).catch(tryFallback);
+            return;
+          } catch (e) { tryFallback(); return; }
+        }
+        tryFallback();
       });
     }
+
+    // تفعيل وتسهيل عمليات النسخ واللصق على سطح المكتب والهاتف
+    (function initUniversalClipboard() {
+      window.addEventListener("keydown", function(e) {
+        if ((e.ctrlKey || e.metaKey) && ["c", "v", "x", "a"].indexOf(e.key.toLowerCase()) >= 0) {
+          return true;
+        }
+      }, true);
+
+      let _ctxBox = null;
+      function hideCtx() { if (_ctxBox) { _ctxBox.remove(); _ctxBox = null; } }
+      window.addEventListener("click", hideCtx);
+      window.addEventListener("scroll", hideCtx, true);
+
+      document.addEventListener("contextmenu", function(e) {
+        const target = e.target;
+        const isInput = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+        const sel = window.getSelection() ? window.getSelection().toString() : "";
+        if (!isInput && !sel) return;
+
+        hideCtx();
+        e.preventDefault();
+
+        _ctxBox = document.createElement("div");
+        _ctxBox.className = "custom-ctx-menu";
+        _ctxBox.style.cssText = "position:fixed;z-index:2147483647;background:#ffffff;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,0.18);padding:6px;min-width:140px;display:flex;flex-direction:column;gap:3px;font-family:'Cairo',Tahoma,sans-serif;font-size:13px;color:#1e293b";
+
+        const btnStyle = "padding:6px 12px;border-radius:6px;border:none;background:transparent;text-align:right;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:700;color:#1e293b;font-family:inherit;font-size:13px";
+
+        function makeItem(icon, text, action) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.style.cssText = btnStyle;
+          btn.innerHTML = `<span style="font-size:14px">${icon}</span><span>${text}</span>`;
+          btn.onmouseenter = function() { btn.style.background = "#f1f5f9"; btn.style.color = "#0284c7"; };
+          btn.onmouseleave = function() { btn.style.background = "transparent"; btn.style.color = "#1e293b"; };
+          btn.onclick = function(ev) {
+            ev.stopPropagation();
+            hideCtx();
+            action();
+          };
+          return btn;
+        }
+
+        if (sel || (isInput && target.value)) {
+          _ctxBox.appendChild(makeItem("📋", "نسخ", function() {
+            const toCopy = sel || (target ? target.value : "");
+            copyTextReliable(toCopy).then(function(ok) { if (ok) toast("تم النسخ"); });
+          }));
+        }
+
+        if (isInput && !target.readOnly) {
+          _ctxBox.appendChild(makeItem("✂️", "قص", function() {
+            const sStart = target.selectionStart, sEnd = target.selectionEnd;
+            const val = target.value || "";
+            const cutTxt = (sStart !== sEnd) ? val.slice(sStart, sEnd) : val;
+            copyTextReliable(cutTxt).then(function() {
+              if (sStart !== sEnd) {
+                target.value = val.slice(0, sStart) + val.slice(sEnd);
+                target.selectionStart = target.selectionEnd = sStart;
+              } else {
+                target.value = "";
+              }
+              target.dispatchEvent(new Event("input", { bubbles: true }));
+              toast("تم القص");
+            });
+          }));
+
+          _ctxBox.appendChild(makeItem("📄", "لصق", async function() {
+            let pText = "";
+            try {
+              if (window.pywebview && window.pywebview.api && typeof window.pywebview.api.paste_text === "function") {
+                pText = await window.pywebview.api.paste_text();
+              }
+            } catch (e) {}
+            if (!pText && navigator.clipboard && navigator.clipboard.readText) {
+              try { pText = await navigator.clipboard.readText(); } catch (e) {}
+            }
+            if (pText) {
+              target.focus();
+              const start = target.selectionStart ?? target.value.length;
+              const end = target.selectionEnd ?? target.value.length;
+              const cur = target.value || "";
+              target.value = cur.slice(0, start) + pText + cur.slice(end);
+              target.selectionStart = target.selectionEnd = start + pText.length;
+              target.dispatchEvent(new Event("input", { bubbles: true }));
+              toast("تم اللصق");
+            } else {
+              toast("لم يتم العثور على نص في الحافظة");
+            }
+          }));
+        }
+
+        if (isInput) {
+          _ctxBox.appendChild(makeItem("🔲", "تحديد الكل", function() {
+            target.focus();
+            if (typeof target.select === "function") target.select();
+          }));
+        }
+
+        document.body.appendChild(_ctxBox);
+        const rect = _ctxBox.getBoundingClientRect();
+        let posX = e.clientX;
+        let posY = e.clientY;
+        if (posX + rect.width > window.innerWidth) posX = window.innerWidth - rect.width - 10;
+        if (posY + rect.height > window.innerHeight) posY = window.innerHeight - rect.height - 10;
+        _ctxBox.style.left = Math.max(10, posX) + "px";
+        _ctxBox.style.top = Math.max(10, posY) + "px";
+      });
+    })();
 
     function showCopiedLink(text, copied) {
       try {
