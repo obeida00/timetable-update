@@ -7180,7 +7180,7 @@
             <path d="M13 10h5M13 14h5" />
           </svg>
         </button>
-        <button class="btn w" type="button" onclick="renderTeachers();note('تم تحديث قائمة المعلمين');"
+        <button class="btn w" type="button" onclick="renderTeachers();"
           title="تحديث وعرض أحدث البيانات">
           <span>تحديث</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
@@ -7311,7 +7311,7 @@
             <line x1="9" y1="21" x2="9" y2="9" />
           </svg>
         </button>
-        <button class="btn w" type="button" onclick="renderClasses();note('تم تحديث قائمة الصفوف');"
+        <button class="btn w" type="button" onclick="renderClasses();"
           title="تحديث وعرض أحدث البيانات">
           <span>تحديث</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
@@ -7409,7 +7409,7 @@
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
           </svg>
         </button>
-        <button class="btn w" type="button" onclick="renderSubjects();note('تم تحديث قائمة المواد');"
+        <button class="btn w" type="button" onclick="renderSubjects();"
           title="تحديث وعرض أحدث البيانات">
           <span>تحديث</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
@@ -12385,10 +12385,14 @@
       };
       if (!rec.name) { alert("اكتب اسم المعلم / ة"); return false; }
       const i = db.teachers.findIndex(t => t.id === rec.id);
+      const isNew = i < 0;
       if (i >= 0) db.teachers[i] = rec; else db.teachers.push(rec);
       db.subjects.forEach(s => { if (s.teacherId === rec.id) s.classId = (db.sections.find(x => x.id === s.sectionId) || {}).classId || s.classId || ""; });
       applyLeaveCover(rec);
       save(); renderTeachers(); renderSubjects(); try { renderLoads(); } catch (e2) { } resetTeacher(); fillTeacherSelect(); $("tBox").hidden = true;
+      if (isNew) {
+        okNote("✅ تمت إضافة المعلم (" + rec.name + ") بنجاح");
+      }
       return false;
     }
     function editTeacher(id) {
@@ -21617,15 +21621,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           });
           save();
           renderTeacherLinks();
-          // رسالة بعدّاد
-          var ready = (j.links || []).filter(function (x) { return x.subscribed; }).length;
-          var opened = (j.links || []).filter(function (x) { return x.visited; }).length;
-          note("تم التحديث — مفعّل الإشعارات: " + ready + " · فتح الرابط: " + opened +
-               " · المجموع: " + (j.links || []).length);
         })
         .catch(function (e) {
           renderTeacherLinks();
-          note("تعذّر تحديث الحالة: " + (e && e.message ? e.message : "خطأ شبكة"));
+          console.warn("Status refresh error:", e);
         });
     }
     /* =============== نهاية روابط المعلمين =============== */
@@ -22595,13 +22594,16 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       };
 
       const idx = db.students.findIndex(s => s.id === id);
+      const isNew = idx < 0;
       if (idx >= 0) db.students[idx] = rec;
       else db.students.push(rec);
 
       save();
       renderStudents();
       $("studBox").hidden = true;
-      note("تم حفظ بيانات الطالب بنجاح");
+      if (isNew) {
+        okNote("✅ تمت إضافة الطالب (" + name + ") بنجاح");
+      }
       return false;
     }
 
