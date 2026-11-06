@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/s/:path*",
+      "destination": "https://schol-table-bot.iq-school-timetable.workers.dev/s/:path*"
+    },
+    {
+      "source": "/t/:path*",
+      "destination": "https://schol-table-bot.iq-school-timetable.workers.dev/t/:path*"
+    },
+    {
+      "source": "/teacher-sw.js",
+      "destination": "https://schol-table-bot.iq-school-timetable.workers.dev/teacher-sw.js"
+    },
+    {
+      "source": "/t-manifest.json",
+      "destination": "https://schol-table-bot.iq-school-timetable.workers.dev/t-manifest.json"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://schol-table-bot.iq-school-timetable.workers.dev/api/:path*"
+    }
+  ]
+}
