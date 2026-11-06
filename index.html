@@ -11,7 +11,7 @@
   <meta name="application-name" content="بوابة مدرستي">
   <meta name="theme-color" content="#2487d0">
   <meta name="msapplication-navbutton-color" content="#2487d0">
-  <meta name="msapplication-starturl" content="/app">
+  <meta name="msapplication-starturl" content="/">
   <title>بوابة مدرستي</title>
   <link rel="icon" type="image/png" href="/logo.png">
   <link rel="manifest" href="/manifest.json">
@@ -8346,7 +8346,7 @@
           <div
             style="background:#fff;border:2px dashed #3b93d8;padding:12px;border-radius:14px;display:inline-block;margin:6px auto 14px;box-shadow:0 4px 12px rgba(59,147,216,0.12)">
             <img id="qrMobileImg"
-              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fobeida00.github.io%2Ftimetable-update%2F"
+              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fbmdiq.vercel.app%2F"
               alt="QR Code" style="width:190px;height:190px;display:block;border-radius:8px">
           </div>
           <p style="font-size:.82rem;color:#4b5563;line-height:1.5;margin-bottom:12px">
@@ -10989,7 +10989,8 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.10";
+    const APP_VERSION = "2.11";
+    const APP_PUBLIC_URL = "https://bmdiq.vercel.app/";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -16788,7 +16789,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       return { ok: false, mode: "locked", account: acc, until: "", days: 0, price: (typeof currentSubPrice === 'function' ? currentSubPrice() : 150000) };
     }
     function copyMobileUrl() {
-      const url = "https://obeida00.github.io/timetable-update/";
+      const url = APP_PUBLIC_URL;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(function () { okNote("تم نسخ رابط الهاتف"); }).catch(function () { });
       } else {
@@ -18922,7 +18923,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var t = Date.now();
       var urls = [
         "https://raw.githubusercontent.com/obeida00/timetable-update/main/update.json?t=" + t,
-        "https://obeida00.github.io/timetable-update/update.json?t=" + t
+        "https://bmdiq.vercel.app/update.json?t=" + t
       ];
       return new Promise(function (resolve, reject) {
         var left = urls.length, won = false;
@@ -20507,7 +20508,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         `📱 رقم حسابك: ${phone}\n` +
         `🔑 رمز الدخول المبدئي (PIN): ${pin}\n` +
         `🏫 رمز المدرسة: ${schoolCode}\n\n` +
-        `رابط فتح النظام:\nhttps://schol-table-bot.iq-school-timetable.workers.dev/app`;
+        `رابط فتح النظام:\n` + APP_PUBLIC_URL;
 
       const cleanPhone = phone.replace(/\D/g, "");
       let targetPhone = cleanPhone;
@@ -21098,7 +21099,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     /* ================= روابط المعلمين + إشعارات الجوال ================= */
     var TEACHER_BASE = "https://schol-table-bot.iq-school-timetable.workers.dev";
     // دومين قصير للروابط (يوجّه تلقائياً للأساسي)
-    var TEACHER_SHORT = "https://t.iq-school-timetable.workers.dev/s/";
+    var TEACHER_SHORT = "https://bmdiq.vercel.app/s/";
 
     // رمز عشوائي آمن قصير (10 أحرف)
     function makeLinkToken() {
