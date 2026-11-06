@@ -21204,15 +21204,21 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var list = (db.teachers || []).slice();
       if (!list.length) { box.innerHTML = ""; if (sum) sum.textContent = "لا يوجد معلمون."; return; }
 
-      var ready = 0;
+      var ready = 0, installed = 0, opened = 0;
       box.innerHTML = list.map(function (t) {
         var rec = links[t.id] || links[t.name] || {};
         var url = rec.token ? teacherLinkUrl(t.id) : "";
-        var isReady = !!(rec.subscribed && (rec.devices === undefined || rec.devices > 0));
-        var st = isReady ? ["#dcfce7", "#166534", "مفعّل"] :
-                 (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط"] :
-                   (rec.token ? ["#e2e8f0", "#475569", "لم يفتح"] : ["#fee2e2", "#991b1b", "لا رابط"]));
+        var isReady = !!(rec.subscribed || (rec.devices && rec.devices > 0));
+        var isInstalled = !isReady && !!rec.installed;
+        var isVisited = !isReady && !isInstalled && !!rec.visited;
+
+        var st = isReady ? ["#dcfce7", "#166534", "مفعّل ✓"] :
+                 (isInstalled ? ["#e0f2fe", "#0369a1", "مثبّت 📱"] :
+                   (isVisited ? ["#fef3c7", "#92400e", "فتح الرابط 👁️"] :
+                     (rec.token ? ["#e2e8f0", "#475569", "لم يفتح ⏳"] : ["#fee2e2", "#991b1b", "لا رابط"])));
         if (isReady) ready++;
+        if (isInstalled) installed++;
+        if (isVisited) opened++;
         var tid = esc(t.id);
         return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #eef2f7">' +
           '<div style="flex:1;min-width:0">' +
@@ -21242,8 +21248,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
 
       if (sum) {
-        sum.innerHTML = 'المجموع: <b>' + list.length + '</b> معلم · مفعّل الإشعارات: <b style="color:#16a34a">' + ready + '</b>' +
-          (list.length ? ' · المتبقي: <b style="color:#dc2626">' + (list.length - ready) + '</b>' : '');
+        sum.innerHTML = 'المجموع: <b>' + list.length + '</b> معلم · ' +
+          'مفعّل الإشعارات: <b style="color:#16a34a">' + ready + '</b> · ' +
+          'مثبّت التطبيق: <b style="color:#0284c7">' + installed + '</b> · ' +
+          'فتح الرابط: <b style="color:#d97706">' + opened + '</b> · ' +
+          'المتبقي: <b style="color:#dc2626">' + (list.length - ready) + '</b>';
       }
     }
 
@@ -21453,11 +21462,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
               rec.token = x.token || rec.token;
               rec.subscribed = !!x.subscribed;
               rec.pushOn = !!x.subscribed;
+              rec.installed = !!x.installed;
               rec.visited = !!x.visited;
               rec.devices = +x.devices || 0;
             } else {
               rec.subscribed = false;
               rec.pushOn = false;
+              rec.installed = false;
               rec.devices = 0;
             }
           });
