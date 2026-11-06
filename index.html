@@ -8027,7 +8027,13 @@
       </div>
       <p class="hint">المدير يحدد: نشر الجدول في الكروب فقط، أو تنبيه المعلمين على الخاص قبل الدرس بخمس دقائق.
         وإذا كتب معلم في الكروب أنه يعتذر عن الحضور، يُختار البديل ويُنشر الجدول المحدَّث.</p>
-      <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+      <div class="emis-nav-tabs-line" style="justify-content:flex-start;gap:18px;margin-top:12px">
+        <button type="button" class="emis-line-tab wa-bot-tab-btn active" data-tab="waTabMain"
+          onclick="return switchWaBotTab('waTabMain', this)">إعدادات الواتساب</button>
+        <button type="button" class="emis-line-tab wa-bot-tab-btn" data-tab="waTabLinks"
+          onclick="return switchWaBotTab('waTabLinks', this)">📱 روابط المعلمين</button>
+      </div>
+      <div id="waTabMain" class="wa-bot-pane" style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
         <div class="settings-luxury-card" style="padding:16px">
           <strong style="display:block;margin-bottom:10px;color:#163858">قرارات المدير</strong>
           <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
@@ -8066,22 +8072,6 @@
         </div>
         <div id="waBotMsg" class="hint"></div>
 
-        <!-- ===== روابط المعلمين + إشعارات الجوال ===== -->
-        <div class="settings-luxury-card" style="padding:16px">
-          <strong style="display:block;margin-bottom:6px;color:#163858">📱 روابط المعلمين الجاهزة</strong>
-          <p class="hint" style="margin:0 0 10px">
-            لكل معلم رابط خاص يفتح جدوله فقط، ويثبّته كتطبيق على جواله، ويستلم تنبيهًا تلقائيًا قبل كل درس بخمس دقائق.
-          </p>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-            <button class="btn g" type="button" onclick="genTeacherLinks()">تجهيز روابط المعلمين</button>
-            <button class="btn" type="button" onclick="refreshTeacherLinks()">تحديث الحالة</button>
-            <button class="btn w" type="button" onclick="copyAllTeacherLinks()">نسخ كل الروابط</button>
-            <button class="btn o" type="button" onclick="regenTeacherLinks()">توليد روابط جديدة</button>
-          </div>
-          <div id="tLinkSummary" class="hint" style="margin-bottom:8px"></div>
-          <div id="tLinkList" style="max-height:420px;overflow:auto"></div>
-        </div>
-
         <div class="settings-luxury-card" style="padding:16px">
           <strong style="display:block;margin-bottom:8px;color:#163858">رسالة اعتذار من الكروب</strong>
           <textarea id="waLeaveText" rows="4" placeholder="الصق رسالة المعلم من الكروب، مثل: اعتذر عن عدم الحضور اليوم — مروة مهدي"></textarea>
@@ -8098,6 +8088,24 @@
           <strong style="display:block;margin-bottom:8px">رسائل جاهزة للإرسال</strong>
           <div id="waQueueList"></div>
           <button class="btn g" type="button" style="margin-top:8px" onclick="sendNextWaQueue()">إرسال التالي على واتساب</button>
+        </div>
+      </div>
+      <div id="waTabLinks" class="wa-bot-pane" hidden style="display:none;flex-direction:column;gap:14px;margin-top:14px">
+        <!-- ===== روابط المعلمين + إشعارات الجوال ===== -->
+        <div class="settings-luxury-card" style="padding:16px">
+          <strong style="display:block;margin-bottom:6px;color:#163858">📱 روابط المعلمين الجاهزة</strong>
+          <p class="hint" style="margin:0 0 10px">
+            لكل معلم رابط خاص يفتح جدوله فقط، ويثبّته كتطبيق على جواله، ويستلم تنبيهًا تلقائيًا قبل كل درس بخمس دقائق.
+          </p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            <button class="btn g" type="button" onclick="genTeacherLinks()">تجهيز روابط المعلمين</button>
+            <button class="btn" type="button" onclick="refreshTeacherLinks()">تحديث الحالة</button>
+            <button class="btn w" type="button" onclick="copyAllTeacherLinks()">نسخ كل الروابط</button>
+            <button class="btn o" type="button" onclick="testPushNowAll()">تجربة إشعار الآن</button>
+            <button class="btn o" type="button" onclick="regenTeacherLinks()">توليد روابط جديدة</button>
+          </div>
+          <div id="tLinkSummary" class="hint" style="margin-bottom:8px"></div>
+          <div id="tLinkList" style="max-height:min(70vh,640px);overflow:auto"></div>
         </div>
       </div>
     </section>
@@ -10981,7 +10989,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.09";
+    const APP_VERSION = "2.10";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -11011,6 +11019,27 @@
       return false;
     }
     window.switchUserTab = switchUserTab;
+
+    function switchWaBotTab(tabId, btn) {
+      var panes = document.querySelectorAll("#waBot .wa-bot-pane");
+      for (var i = 0; i < panes.length; i++) {
+        var on = panes[i].id === tabId;
+        panes[i].hidden = !on;
+        panes[i].style.display = on ? "flex" : "none";
+      }
+      var btns = document.querySelectorAll("#waBot .wa-bot-tab-btn");
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove("active");
+      if (btn) btn.classList.add("active");
+      else {
+        var mb = document.querySelector('#waBot .wa-bot-tab-btn[data-tab="' + tabId + '"]');
+        if (mb) mb.classList.add("active");
+      }
+      if (tabId === "waTabLinks") {
+        try { refreshTeacherLinks(); } catch (e) { try { renderTeacherLinks(); } catch (e2) { } }
+      }
+      return false;
+    }
+    window.switchWaBotTab = switchWaBotTab;
 
 
 
@@ -21179,21 +21208,37 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       box.innerHTML = list.map(function (t) {
         var rec = links[t.id] || {};
         var url = rec.token ? teacherLinkUrl(t.id) : "";
-        var st = rec.pushOn ? ["#dcfce7", "#166534", "مفعّل الإشعارات"] :
-                 (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط فقط"] :
-                   (rec.token ? ["#e2e8f0", "#475569", "لم يفتح بعد"] : ["#fee2e2", "#991b1b", "لا يوجد رابط"]));
+        var st = rec.pushOn ? ["#dcfce7", "#166534", "مفعّل"] :
+                 (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط"] :
+                   (rec.token ? ["#e2e8f0", "#475569", "لم يفتح"] : ["#fee2e2", "#991b1b", "لا رابط"]));
         if (rec.pushOn) ready++;
+        var tid = esc(t.id);
         return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #eef2f7">' +
           '<div style="flex:1;min-width:0">' +
             '<div style="font-weight:800;font-size:.86rem;color:#163858;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(t.name) + '</div>' +
-            '<div style="font-size:.7rem;color:#94a3b8;direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (url ? esc(url.replace("https://", "")) : "—") + '</div>' +
+            '<div style="font-size:.7rem;color:#64748b;direction:ltr;text-align:left;user-select:all;-webkit-user-select:all;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (url ? esc(url) : "—") + '</div>' +
           '</div>' +
           '<span style="flex:none;font-size:.68rem;font-weight:800;padding:3px 8px;border-radius:999px;background:' + st[0] + ';color:' + st[1] + '">' + st[2] + '</span>' +
-          '<button class="btn" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="copyTeacherLink(' + JSON.stringify(t.id) + ')">نسخ</button>' +
-          (url ? '<button class="btn g" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="sendTeacherLinkWa(' + JSON.stringify(t.id) + ')">واتساب</button>' : '') +
-          (url ? '<button class="btn o" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" onclick="testTeacherPush(' + JSON.stringify(t.id) + ')" title="إرسال إشعار تجريبي">تجربة</button>' : '') +
+          '<button class="btn" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" data-act="copy" data-tid="' + tid + '">نسخ</button>' +
+          '<button class="btn g" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" data-act="wa" data-tid="' + tid + '">واتساب</button>' +
+          '<button class="btn o" type="button" style="width:auto;padding:5px 10px;margin:0;font-size:.72rem" data-act="test" data-tid="' + tid + '">تجربة</button>' +
           '</div>';
       }).join("");
+
+      if (!box._tLinkBound) {
+        box._tLinkBound = true;
+        box.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-act]");
+          if (!b || !box.contains(b)) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var tid = b.getAttribute("data-tid") || "";
+          var act = b.getAttribute("data-act");
+          if (act === "copy") copyTeacherLink(tid);
+          else if (act === "wa") sendTeacherLinkWa(tid);
+          else if (act === "test") testTeacherPush(tid);
+        });
+      }
 
       if (sum) {
         sum.innerHTML = 'المجموع: <b>' + list.length + '</b> معلم · مفعّل الإشعارات: <b style="color:#16a34a">' + ready + '</b>' +
@@ -21201,102 +21246,127 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       }
     }
 
-    // نسخ نص بطريقة تعمل في كل البيئات (https / file:// / داخل iframe)
+    // نسخ نص: execCommand أولاً (نفس ضغطة الزر) ثم Clipboard API
     function copyTextReliable(text) {
       return new Promise(function (resolve) {
         var done = false;
-        function finish(ok) { if (!done) { done = true; resolve(ok); } }
-
-        // الطبقة 1: Clipboard API الحديثة
+        function finish(ok) { if (!done) { done = true; resolve(!!ok); } }
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          ta.setAttribute("readonly", "");
+          ta.style.cssText = "position:fixed;top:0;left:0;width:2px;height:2px;opacity:0.01;font-size:16px;z-index:2147483647";
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          ta.setSelectionRange(0, text.length);
+          var ok = false;
+          try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+          document.body.removeChild(ta);
+          if (ok) return finish(true);
+        } catch (e) { }
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(function () { finish(true); },
-            function () { legacy(); });
+          navigator.clipboard.writeText(text).then(function () { finish(true); }, function () { finish(false); });
         } else {
-          legacy();
-        }
-
-        // الطبقة 2: execCommand عبر textarea مؤقت
-        function legacy() {
-          try {
-            var ta = document.createElement("textarea");
-            ta.value = text;
-            ta.setAttribute("readonly", "");
-            ta.style.cssText = "position:fixed;top:-1000px;left:-1000px;opacity:0;font-size:16px";
-            document.body.appendChild(ta);
-            ta.select();
-            ta.setSelectionRange(0, text.length);
-            var ok = false;
-            try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
-            document.body.removeChild(ta);
-            if (ok) return finish(true);
-            // الطبقة 3: اختيار النص وطلب Ctrl+C
-            openCopyFallback(text);
-            finish(false);
-          } catch (e) {
-            openCopyFallback(text);
-            finish(false);
-          }
+          finish(false);
         }
       });
     }
 
-    // نافذة بديلة: النص محدد جاهز للنسخ اليدوي
-    function openCopyFallback(text) {
+    function showCopiedLink(text, copied) {
       try {
         if ($("copyFallbackBox")) $("copyFallbackBox").remove();
         var box = document.createElement("div");
         box.id = "copyFallbackBox";
-        box.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99999;" +
+        box.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:2147483646;" +
           "display:flex;align-items:center;justify-content:center;padding:20px";
-        box.innerHTML = '<div style="background:#fff;border-radius:16px;padding:18px;max-width:520px;width:100%">' +
-          '<div style="font-weight:800;color:#163858;margin-bottom:8px">انسخ الرابط يدويًا</div>' +
-          '<div style="font-size:.78rem;color:#64748b;margin-bottom:8px">المتصفح منع النسخ التلقائي. النص محدد — اضغط Ctrl+C (أو ⌘+C).</div>' +
-          '<textarea readonly style="width:100%;height:80px;font-size:.8rem;direction:ltr;padding:8px;' +
-          'border:1.5px solid #cbd5e1;border-radius:10px;resize:none"></textarea>' +
+        box.innerHTML = '<div style="background:#fff;border-radius:16px;padding:18px;max-width:560px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)">' +
+          '<div style="font-weight:800;color:#163858;margin-bottom:6px;font-size:1.05rem">' + (copied ? "تم نسخ الرابط" : "انسخ الرابط يدويًا") + '</div>' +
+          '<div style="font-size:.8rem;color:#64748b;margin-bottom:8px">' +
+            (copied ? "الرابط في الحافظة. إن لم يُلصق، حدّد النص واضغط Ctrl+C." : "حدّد النص ثم Ctrl+C (أو اضغط مطولاً على الموبايل).") +
+          '</div>' +
+          '<textarea readonly style="width:100%;height:88px;font-size:.82rem;direction:ltr;text-align:left;padding:8px;' +
+          'border:1.5px solid #cbd5e1;border-radius:10px;resize:none;font-family:inherit"></textarea>' +
           '<button type="button" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;border:none;' +
           'background:#145d9b;color:#fff;font-weight:800;font-family:inherit;cursor:pointer">إغلاق</button></div>';
         document.body.appendChild(box);
         var ta = box.querySelector("textarea");
         ta.value = text;
-        ta.focus();
-        ta.select();
+        setTimeout(function () { try { ta.focus(); ta.select(); } catch (e) { } }, 30);
         box.querySelector("button").onclick = function () { box.remove(); };
         box.onclick = function (e) { if (e.target === box) box.remove(); };
       } catch (e) { }
     }
+    function openCopyFallback(text) { showCopiedLink(text, false); }
 
     // إرسال إشعار تجريبي لمعلم واحد
     function testTeacherPush(tid) {
       var links = getTeacherLinks();
       var rec = links[tid] || {};
-      var t = (db.teachers || []).find(function (x) { return x.id === tid; });
-      var name = (t && t.name) || rec.teacherName || "المعلم";
-      if (!rec.token) { note("ولّد الروابط أولاً."); return; }
+      var tch = (db.teachers || []).find(function (x) { return x.id === tid; });
+      var name = (tch && tch.name) || rec.teacherName || "المعلم";
+      if (!rec.token) { note("لا يوجد رابط لهذا المعلم. اضغط «تحديث الحالة» أولاً."); return; }
       var acc = currentOwnerAcc();
       if (!acc) { note("سجّل الدخول أولاً."); return; }
-      note("جارٍ إرسال إشعار تجريبي إلى " + name + "...");
+      toast("جارٍ إرسال إشعار تجريبي إلى " + name + "...");
       fetch(TEACHER_BASE + "/api/push/force_now", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ acc: acc, token: rec.token })
       }).then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.ok) {
-          note("✅ وصل الإشعار إلى " + name + " على " + j.sent + " جهاز.\nتحقق من جواله الآن.");
+          okNote("تم إرسال الإشعار إلى " + name + " (" + j.sent + " جهاز). تحقق من شاشة القفل الآن.");
         } else if (j && j.error === "not_subscribed") {
-          note(name + " لم يفعّل الإشعارات بعد.\nأرسل له الرابط ليضغط «تفعيل التنبيهات».");
+          note(name + " لم يفعّل الإشعارات بعد. افتح رابطه على الجوال واضغط «تفعيل التنبيهات» ثم «إرسال إشعار تجريبي الآن» من نفس الصفحة.");
         } else if (j && j.error === "token_not_found") {
-          note("الرابط غير موجود على السيرفر. اضغط «تجهيز روابط المعلمين» ثم «تحديث الحالة».");
+          note("الرابط غير موجود على السيرفر. اضغط «تحديث الحالة» ثم «تجهيز روابط المعلمين».");
+        } else if (j && (j.error === "expired" || (j.error && String(j.error).indexOf("410") >= 0))) {
+          note("اشتراك إشعارات «" + name + "» انتهى. افتح رابطه واضغط «تفعيل التنبيهات على هذا الجهاز» ثم أعد تجربة.");
         } else {
-          note("تعذّر الإرسال: " + ((j && j.error) || "غير معروف"));
+          note("تعذّر الإرسال إلى " + name + ". افتح رابطه واضغط تفعيل التنبيهات ثم تجربة من نفس الصفحة.");
         }
       }).catch(function (e) { note("خطأ في الاتصال: " + e); });
     }
 
+    function testPushNowAll() {
+      var links = getTeacherLinks();
+      var acc = currentOwnerAcc();
+      if (!acc) { note("سجّل الدخول أولاً."); return; }
+      var targets = (db.teachers || []).filter(function (t) {
+        var r = links[t.id];
+        return r && r.token && r.pushOn;
+      });
+      if (!targets.length) {
+        note("لا يوجد معلم مفعّل الإشعارات بعد. فعّل الرابط على جوال المعلم ثم اضغط «تحديث الحالة».");
+        return;
+      }
+      toast("جارٍ إرسال إشعار تجريبي إلى " + targets.length + " معلم...");
+      var okN = 0, failN = 0, i = 0;
+      function next() {
+        if (i >= targets.length) {
+          okNote("تم إرسال " + okN + " إشعار تجريبي" + (failN ? " · فشل: " + failN : "") + ".");
+          return;
+        }
+        var tch = targets[i++];
+        var rec = links[tch.id];
+        fetch(TEACHER_BASE + "/api/push/force_now", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ acc: acc, token: rec.token })
+        }).then(function (r) { return r.json(); }).then(function (j) {
+          if (j && j.ok) okN++; else failN++;
+          next();
+        }).catch(function () { failN++; next(); });
+      }
+      next();
+    }
+
     function copyTeacherLink(tid) {
       var url = teacherLinkUrl(tid);
-      if (!url) { note("ولّد الروابط أولاً."); return; }
+      if (!url) { note("لا يوجد رابط. اضغط «تحديث الحالة» أو «تجهيز روابط المعلمين»."); return; }
       copyTextReliable(url).then(function (ok) {
-        if (ok) note("تم نسخ رابط المعلم.");
+        showCopiedLink(url, ok);
+        if (ok) toast("تم نسخ رابط المعلم.");
       });
     }
 
@@ -21319,18 +21389,16 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (!lines.length) { note("ولّد الروابط أولاً."); return; }
       var txt = lines.join("\n");
       copyTextReliable(txt).then(function (ok) {
-        if (ok) note("تم نسخ " + lines.length + " رابط.");
+        showCopiedLink(txt, ok);
+        if (ok) toast("تم نسخ " + lines.length + " رابط.");
       });
     }
 
     // تحديث حالة كل المعلمين بطلب واحد (بدل 60+ طلباً = سبب Error 1102)
     function refreshTeacherLinks() {
       var links = getTeacherLinks();
-      var ids = Object.keys(links).filter(function (k) { return links[k] && links[k].token; });
-      if (!ids.length) { renderTeacherLinks(); note("لا توجد روابط — اضغط «تجهيز روابط المعلمين»."); return; }
-
       var acc = currentOwnerAcc();
-      if (!acc) { note("سجّل الدخول أولاً لتحديث الحالة."); return; }
+      if (!acc) { renderTeacherLinks(); note("سجّل الدخول أولاً لتحديث الحالة."); return; }
 
       if ($("tLinkSummary")) $("tLinkSummary").textContent = "جارٍ التحديث...";
 
@@ -21339,8 +21407,15 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         .then(function (j) {
           if (!j || !j.ok) throw new Error((j && j.error) || "failed");
           (j.links || []).forEach(function (x) {
-            var rec = links[x.teacherId];
-            if (!rec) return;
+            var tid = x.teacherId;
+            if (!links[tid]) {
+              var byName = (db.teachers || []).find(function (tt) {
+                return tt.id === x.teacherId || tt.name === x.teacherName || tt.name === x.teacherId;
+              });
+              if (byName) tid = byName.id;
+            }
+            if (!links[tid]) links[tid] = { token: x.token, teacherName: x.teacherName || tid, at: new Date().toISOString() };
+            var rec = links[tid];
             rec.token = x.token;
             rec.pushOn = !!x.subscribed;
             rec.visited = !!x.visited;
