@@ -14997,32 +14997,44 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       if (!locations.length) { alert("يرجى إضافة مكان مراقبة واحد على الأقل."); return; }
       if (!db.teachers || !db.teachers.length) { alert("لا يوجد معلمين لتوزيع المراقبة."); return; }
 
-      // قائمة المعلمين مع حساب نصاب كل معلم
-      const teachersWithLoad = db.teachers.map(t => {
+      // حساب إجمالي أماكن المراقبة المطلوبة أسبوعياً
+      let totalWeeklySlots = 0;
+      locations.forEach(loc => {
+        totalWeeklySlots += days.length * Math.max(1, loc.count || 1);
+      });
+
+      // قائمة المعلمين المؤهلين للمراقبة
+      const eligibleTeachers = db.teachers.map(t => {
         const load = teacherHours(t.id);
         const isHigh = load >= ds.highLoadThreshold;
-        const isExempt = isHigh && ds.highLoadRule === "exempt";
+        const isExempt = (isHigh && ds.highLoadRule === "exempt") || !!t.leave || !!t.noDuty;
         const maxDays = (isHigh && ds.highLoadRule === "max1") ? 1 : 99;
         return {
           teacher: t,
           load: load,
+          isHigh: isHigh,
           isExempt: isExempt,
           maxDays: maxDays,
           assignedDaysCount: 0
         };
-      }).filter(t => !t.isExempt && !t.teacher.leave && !t.teacher.noDuty);
+      }).filter(t => !t.isExempt);
 
-      if (!teachersWithLoad.length) {
+      if (!eligibleTeachers.length) {
         alert("جميع المعلمين مستثنون أو مجازون!");
         return;
       }
+
+      // الحد الأقصى للمراقبة لكل معلم أسبوعياً (مثلاً 20 خانة لـ 61 معلماً = مراقبة يوم واحد كحد أقصى)
+      const maxAllowedPerTeacher = Math.max(1, Math.ceil(totalWeeklySlots / eligibleTeachers.length));
+
+      // خلط عشوائي نقي لجميع المعلمين في بداية التوزيع لضمان التدوير العادل بين كافة الـ 61 معلماً
+      const pool = eligibleTeachers.slice().sort(() => Math.random() - 0.5);
 
       // جدول التوزيع: { [day]: { [locName]: [tid1, tid2, ...] } }
       const schedule = {};
       days.forEach(d => { schedule[d] = {}; });
 
       days.forEach(d => {
-        // تتبع من راقب في هذا اليوم حتى لا يتكرر المعلم في أكثر من مكان بنفس اليوم
         const teachersAssignedToday = new Set();
 
         locations.forEach(loc => {
@@ -15030,17 +15042,28 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
           const neededCount = Math.max(1, loc.count || 1);
 
           for (let slot = 0; slot < neededCount; slot++) {
-            // المرشحون المؤهلون:
-            const candidates = teachersWithLoad.filter(item => {
-              if (isOff(item.teacher, d)) return false; // يوم أوف
+            // المرشحون المؤهلون لهذا اليوم تحت الحد العادل
+            let candidates = pool.filter(item => {
+              if (isOff(item.teacher, d)) return false; // يوم أوف للمعلم
               if (teachersAssignedToday.has(item.teacher.id)) return false; // راقب بالفعل اليوم
-              if (item.assignedDaysCount >= item.maxDays) return false; // تجاوز الحد الأسبوعي
+              if (item.assignedDaysCount >= item.maxDays) return false; // تجاوز حده الأسبوعي
+              if (item.assignedDaysCount >= maxAllowedPerTeacher) return false; // تجاوز الحد العادل
               return true;
             });
 
+            // لو نفذ المرشحون، نسمح بالمرشحين الذين لم يتجاوزوا maxDays
+            if (!candidates.length) {
+              candidates = pool.filter(item => {
+                if (isOff(item.teacher, d)) return false;
+                if (teachersAssignedToday.has(item.teacher.id)) return false;
+                if (item.assignedDaysCount >= item.maxDays) return false;
+                return true;
+              });
+            }
+
             if (candidates.length > 0) {
-              // أولوية التوزيع: الأقل مراقبة طيلة الأسبوع، ثم الأقل نصاب حصص
-              candidates.sort((a, b) => (a.assignedDaysCount - b.assignedDaysCount) || (a.load - b.load) || (Math.random() - 0.5));
+              // الأولوية: الأقل مراقبة طيلة الأسبوع أولاً، ثم قرعة عشوائية نقية بين المتساوين
+              candidates.sort((a, b) => (a.assignedDaysCount - b.assignedDaysCount) || (Math.random() - 0.5));
               const chosen = candidates[0];
               schedule[d][loc.name].push(chosen.teacher.id);
               teachersAssignedToday.add(chosen.teacher.id);
@@ -15054,7 +15077,7 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       save();
       renderDutyPreview();
       if ($("viewType") && $("viewType").value === "duty") renderViews();
-      okNote("تم إنشاء وتوزيع جدول المراقبين حسب الأعداد المحددة لكل مكان وعدالة النصاب بنجاح!");
+      okNote("تم إنشاء وتوزيع جدول المراقبين بعدالة وتدوير كامل لكافة المعلمين بنجاح!");
     }
 
     function renderDutyPreview() {
