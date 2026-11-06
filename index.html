@@ -10981,7 +10981,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.08";
+    const APP_VERSION = "2.09";
 
     const GUIDE_STEPS = [];
     function openGuide() { }
@@ -21272,24 +21272,24 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var t = (db.teachers || []).find(function (x) { return x.id === tid; });
       var name = (t && t.name) || rec.teacherName || "المعلم";
       if (!rec.token) { note("ولّد الروابط أولاً."); return; }
-      if (!rec.pushOn) {
-        note("لم يفعّل " + name + " الإشعارات بعد.\nأرسل له الرابط ليضغط «تفعيل التنبيهات» أولاً.");
-        return;
-      }
+      var acc = currentOwnerAcc();
+      if (!acc) { note("سجّل الدخول أولاً."); return; }
       note("جارٍ إرسال إشعار تجريبي إلى " + name + "...");
-      fetch(TEACHER_BASE + "/api/push/test", {
+      fetch(TEACHER_BASE + "/api/push/force_now", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: rec.token })
+        body: JSON.stringify({ acc: acc, token: rec.token })
       }).then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.ok) {
-          note("تم إرسال " + j.sent + " إشعار إلى " + name + ".");
+          note("✅ وصل الإشعار إلى " + name + " على " + j.sent + " جهاز.\nتحقق من جواله الآن.");
         } else if (j && j.error === "not_subscribed") {
-          note(name + " لم يفعّل الإشعارات بعد.");
+          note(name + " لم يفعّل الإشعارات بعد.\nأرسل له الرابط ليضغط «تفعيل التنبيهات».");
+        } else if (j && j.error === "token_not_found") {
+          note("الرابط غير موجود على السيرفر. اضغط «تجهيز روابط المعلمين» ثم «تحديث الحالة».");
         } else {
           note("تعذّر الإرسال: " + ((j && j.error) || "غير معروف"));
         }
-      }).catch(function (e) { note("خطأ: " + e); });
+      }).catch(function (e) { note("خطأ في الاتصال: " + e); });
     }
 
     function copyTeacherLink(tid) {
