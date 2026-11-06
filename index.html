@@ -7874,6 +7874,7 @@
               <select id="noticeTypePick" onchange="applyNoticeTemplate()"
                 style="width:100%;box-sizing:border-box;font-size:0.9rem;font-weight:700;padding:9px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#fff">
                 <option value="general">تبليغ عام / إشعار</option>
+                <option value="summon">استدعاء ولي أمر</option>
                 <option value="attendance">إشعار متابعة دوام وغياب</option>
                 <option value="exam">جدول ومواعيد الامتحانات</option>
                 <option value="meeting">دعوة اجتماع مجلس أولياء الأمور</option>
@@ -23416,6 +23417,16 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function getNoticeTemplateText(type) {
       const schName = (db.settings && db.settings.schoolName) || "إدارة المدرسة";
       switch (type) {
+        case "summon":
+          return `السلام عليكم ورحمة الله وبركاته،
+حضرة ولي أمر الطالب/ة: {اسم_الطالب}
+الصف والشعبة: {الصف_الشعبة}
+
+نرجو من حضرتكم الحضور إلى إدارة المدرسة يوم (...) في تمام الساعة (...) لمقابلة الإدارة لأمر هام يخص المستوى الدراسي والتربوي لابنكم/ابنتكم.
+حضوركم الكريم وحرصكم يسهم بشكل كبير في دعم مسيرة الطالب ومتابعة مستواه.
+
+شاكرين ومقدرين حسن تعاونكم الدائم معنا،
+إدارة ${schName} 🏫`;
         case "attendance":
           return `السلام عليكم ورحمة الله وبركاته،\nحضرة ولي أمر الطالب/ة: {اسم_الطالب}\nالصف والشعبة: {الصف_الشعبة}\n\nنود إعلامكم بضرورة متابعة دوام وانضباط الطالب، حيث يُعد الالتزام بالحضور اليومي ركيزة أساسية في مستواه الدراسي والتربوي.\nيرجى التواصل مع الإدارة في حال وجود أي عذر رسمي أو طارئ.\n\nمع وافر التقدير والتحية،\nإدارة ${schName} 🌹`;
         case "exam":
