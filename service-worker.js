@@ -85,3 +85,37 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
+self.addEventListener('push', event => {
+  let data = {};
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data = { title: 'بوابة مدرستي', body: event.data.text() };
+    }
+  }
+
+  const options = {
+    body: data.body || 'لديك إشعار جديد من بوابة مدرستي',
+    icon: '/icon.png',
+    badge: '/icon.png',
+    vibrate: [200, 100, 200, 100, 200], // نمط اهتزاز للتنبيه
+    priority: 'high', // أولوية عالية
+    requireInteraction: true, // إبقاء الإشعار حتى يتفاعل معه المستخدم
+    data: {
+      url: data.url || '/app'
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'بوابة مدرستي', options)
+  );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url)
+  );
+});
