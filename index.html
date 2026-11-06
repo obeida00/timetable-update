@@ -21097,7 +21097,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       else renderWaQueue();
     }
     /* ================= روابط المعلمين + إشعارات الجوال ================= */
-    var TEACHER_BASE = "https://schol-table-bot.iq-school-timetable.workers.dev";
+    var TEACHER_BASE = "https://bmdiq.vercel.app";
     // دومين قصير للروابط (يوجّه تلقائياً للأساسي)
     var TEACHER_SHORT = "https://bmdiq.vercel.app/s/";
 
@@ -21310,11 +21310,20 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var acc = currentOwnerAcc();
       if (!acc) { note("سجّل الدخول أولاً."); return; }
       toast("جارٍ إرسال إشعار تجريبي إلى " + name + "...");
-      fetch(TEACHER_BASE + "/api/push/force_now", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ acc: acc, token: rec.token })
-      }).then(function (r) { return r.json(); }).then(function (j) {
+      (function() {
+        var payload = JSON.stringify({ acc: acc, token: rec.token });
+        return fetch("https://bmdiq.vercel.app/api/push/force_now", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload
+        }).catch(function() {
+          return fetch("https://schol-table-bot.iq-school-timetable.workers.dev/api/push/force_now", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: payload
+          });
+        });
+      })().then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.ok) {
           okNote("تم إرسال الإشعار إلى " + name + " (" + j.sent + " جهاز). تحقق من شاشة القفل الآن.");
         } else if (j && j.error === "not_subscribed") {
@@ -21403,7 +21412,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
       if ($("tLinkSummary")) $("tLinkSummary").textContent = "جارٍ التحديث...";
 
-      fetch(TEACHER_BASE + "/api/push/school_status?acc=" + encodeURIComponent(acc), { cache: "no-store" })
+      (function() {
+        var u1 = "https://bmdiq.vercel.app/api/push/school_status?acc=" + encodeURIComponent(acc) + "&_t=" + Date.now();
+        var u2 = "https://schol-table-bot.iq-school-timetable.workers.dev/api/push/school_status?acc=" + encodeURIComponent(acc) + "&_t=" + Date.now();
+        return fetch(u1).catch(function() { return fetch(u2); });
+      })()
         .then(function (r) { return r.json(); })
         .then(function (j) {
           if (!j || !j.ok) throw new Error((j && j.error) || "failed");
