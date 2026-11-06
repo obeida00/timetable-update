@@ -8041,13 +8041,24 @@
             <span>نشر الجدول في كروب الواتساب</span>
           </label>
           <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
-            <input type="checkbox" id="waPrivateOn" onchange="saveWaBot()">
-            <span>تنبيه المعلم على الخاص قبل الدرس بـ 5 دقائق (استعدي للدرس)</span>
-          </label>
-          <label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-weight:700">
             <input type="checkbox" id="waLeaveOn" onchange="saveWaBot()">
             <span>عند اعتذار معلم في الكروب: تعيين بديل وتحديث الجدول</span>
           </label>
+
+          <!-- صلاحية المدير لطريقة عرض روابط المعلمين -->
+          <div class="modern-field" style="margin:14px 0 10px;background:#f0f7ff;border:1.5px solid #bae0ff;border-radius:12px;padding:14px">
+            <label style="font-weight:800;color:#003a8c;display:flex;align-items:center;gap:6px;font-size:14px">
+              <span>🎛️ صلاحية المدير: طريقة عرض الرابط للمعلمين</span>
+            </label>
+            <select id="teacherViewModeSelect" style="width:100%;margin-top:8px;padding:10px 12px;font-weight:700;border:1.5px solid #1890ff;border-radius:8px;background:#fff;color:#0f172a;font-size:14px" onchange="changeTeacherViewMode(this.value)">
+              <option value="full">📅 عرض جدول الحصص كاملاً (الجدول الأسبوعي الكامل مع الإشعار)</option>
+              <option value="next_only">🔔 إشعار والدرس الحالي/القادم فقط (بدون إظهار الجدول الكامل)</option>
+            </select>
+            <p class="hint" style="margin:8px 0 0;color:#0050b3;font-size:12.5px;line-height:1.6">
+              💡 <b>ملاحظة ذكية:</b> تم إيقاف تنبيهات الواتساب الخاصة المباشرة لتجنب حظر رقم المدرسة، وأصبحت التنبيهات تصل فوراً لجوال المعلم كتطبيق ذكي يعمل مع الجدول.
+            </p>
+          </div>
+
           <div class="modern-field" style="margin-top:10px">
             <label>رابط كروب الواتساب (للنشر)</label>
             <input id="waGroupLink" dir="ltr" placeholder="https://chat.whatsapp.com/...." onchange="saveWaBot()">
@@ -8097,6 +8108,17 @@
           <p class="hint" style="margin:0 0 10px">
             لكل معلم رابط خاص يفتح جدوله فقط، ويثبّته كتطبيق على جواله، ويستلم تنبيهًا تلقائيًا قبل كل درس بخمس دقائق.
           </p>
+
+          <div style="background:#f0f7ff;border:1px solid #bae0ff;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
+            <label style="font-weight:800;color:#003a8c;display:flex;align-items:center;gap:6px;margin:0">
+              <span>🎛️ صلاحية العرض في روابط المعلمين:</span>
+            </label>
+            <select id="tLinksViewModeSelect" style="min-width:260px;flex:1;max-width:380px;padding:8px 12px;font-weight:700;border:1.5px solid #1890ff;border-radius:8px;background:#fff;color:#0f172a;font-size:13px" onchange="changeTeacherViewMode(this.value)">
+              <option value="full">📅 عرض جدول الحصص كاملاً</option>
+              <option value="next_only">🔔 إشعار والدرس الحالي/القادم فقط</option>
+            </select>
+          </div>
+
           <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
             <button class="btn g" type="button" onclick="genTeacherLinks()">تجهيز روابط المعلمين</button>
             <button class="btn" type="button" onclick="refreshTeacherLinks()">تحديث الحالة</button>
@@ -20773,9 +20795,13 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function fillWaBotForm() {
       const w = getWaBot();
       if ($("waGroupOn")) $("waGroupOn").checked = !!w.groupOn;
-      if ($("waPrivateOn")) $("waPrivateOn").checked = !!w.privateOn;
       if ($("waLeaveOn")) $("waLeaveOn").checked = w.leaveOn !== false;
       if ($("waGroupLink")) $("waGroupLink").value = w.groupLink || "";
+
+      var vMode = (db.settings && db.settings.teacherViewMode) || "full";
+      if ($("teacherViewModeSelect")) $("teacherViewModeSelect").value = vMode;
+      if ($("tLinksViewModeSelect")) $("tLinksViewModeSelect").value = vMode;
+
       const sel = $("waLeaveTeacher");
       if (sel) {
         const cur = sel.value;
@@ -20784,10 +20810,39 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (cur) sel.value = cur;
       }
     }
+    function changeTeacherViewMode(mode) {
+      mode = (mode === "next_only") ? "next_only" : "full";
+      db.settings = db.settings || {};
+      db.settings.teacherViewMode = mode;
+      if ($("teacherViewModeSelect")) $("teacherViewModeSelect").value = mode;
+      if ($("tLinksViewModeSelect")) $("tLinksViewModeSelect").value = mode;
+      save();
+      var acc = (typeof currentOwnerAcc === "function") ? currentOwnerAcc() : "";
+      if (acc) {
+        var base = (window.location.hostname === "bmdiq.vercel.app")
+          ? "https://bmdiq.vercel.app"
+          : (typeof TEACHER_BASE !== "undefined" ? TEACHER_BASE : "https://schol-table-bot.iq-school-timetable.workers.dev");
+        fetch(base + "/api/dev/set_view_mode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ acc: acc, viewMode: mode, secret: acc })
+        }).then(function (r) { return r.json(); }).then(function (j) {
+          if (typeof note === "function") {
+            note(mode === "next_only"
+              ? "تم ضبط روابط المعلمين: يظهر الإشعار والدرس القادم فقط."
+              : "تم ضبط روابط المعلمين: يظهر جدول الحصص كاملاً.");
+          }
+        }).catch(function (e) {
+          console.warn("set_view_mode error", e);
+        });
+      }
+    }
+    window.changeTeacherViewMode = changeTeacherViewMode;
+
     function saveWaBot() {
       const w = getWaBot();
       w.groupOn = !!($("waGroupOn") && $("waGroupOn").checked);
-      w.privateOn = !!($("waPrivateOn") && $("waPrivateOn").checked);
+      w.privateOn = false;
       w.leaveOn = !!($("waLeaveOn") && $("waLeaveOn").checked);
       w.groupLink = ($("waGroupLink") && $("waGroupLink").value.trim()) || "";
       save();
@@ -21201,6 +21256,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     function renderTeacherLinks() {
       var box = $("tLinkList"), sum = $("tLinkSummary");
       if (!box) return;
+
+      var vMode = (db.settings && db.settings.teacherViewMode) || "full";
+      if ($("tLinksViewModeSelect")) $("tLinksViewModeSelect").value = vMode;
+      if ($("teacherViewModeSelect")) $("teacherViewModeSelect").value = vMode;
+
       var links = getTeacherLinks();
       var list = (db.teachers || []).slice();
       if (!list.length) { box.innerHTML = ""; if (sum) sum.textContent = "لا يوجد معلمون."; return; }
@@ -21209,10 +21269,11 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       box.innerHTML = list.map(function (t) {
         var rec = links[t.id] || {};
         var url = rec.token ? teacherLinkUrl(t.id) : "";
-        var st = rec.pushOn ? ["#dcfce7", "#166534", "مفعّل"] :
+        var isReady = !!(rec.pushOn || rec.subscribed);
+        var st = isReady ? ["#dcfce7", "#166534", "مفعّل"] :
                  (rec.visited ? ["#fef3c7", "#92400e", "فتح الرابط"] :
                    (rec.token ? ["#e2e8f0", "#475569", "لم يفتح"] : ["#fee2e2", "#991b1b", "لا رابط"]));
-        if (rec.pushOn) ready++;
+        if (isReady) ready++;
         var tid = esc(t.id);
         return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid #eef2f7">' +
           '<div style="flex:1;min-width:0">' +
@@ -21344,7 +21405,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       if (!acc) { note("سجّل الدخول أولاً."); return; }
       var targets = (db.teachers || []).filter(function (t) {
         var r = links[t.id];
-        return r && r.token && r.pushOn;
+        return r && r.token && (r.pushOn || r.subscribed);
       });
       if (!targets.length) {
         note("لا يوجد معلم مفعّل الإشعارات بعد. فعّل الرابط على جوال المعلم ثم اضغط «تحديث الحالة».");
