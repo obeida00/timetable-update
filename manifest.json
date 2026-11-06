@@ -2,7 +2,7 @@
   "name": "بوابة مدرستي - إدارة الجداول والكادر والطلاب",
   "short_name": "بوابة مدرستي",
   "description": "المنصة السحابية المدرسية لإدارة الجداول والطلاب والكادر التعليمي",
-  "start_url": "/app",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
