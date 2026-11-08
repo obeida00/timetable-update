@@ -150,7 +150,6 @@
     }
 
     nav.tabs {
-      display: none !important;
       display: flex;
       flex-wrap: nowrap;
       gap: 6px;
@@ -4589,14 +4588,7 @@
          مطابق لواجهات تطبيق جدول المدرسة المعتمد
          يطبق فقط على الهواتف دون المساس بشاشات سطح المكتب
          ========================================================== */
-      @media (min-width: 801px) {
-        .mobile-only-home,
-        .mobile-only-profile,
-        #mobileHomeShell,
-        #mobileProfileShell {
-          display: none !important;
-        }
-      }
+/* Unified Home & Profile are active on both desktop & mobile */
 
       @media (max-width: 800px), (pointer: coarse) and (max-width: 900px) {
         /* إخفاء واجهات سطح المكتب القديمة في الرئيسية والإعدادات */
@@ -6882,33 +6874,7 @@
         border-color: rgba(255, 255, 255, 0.45) !important;
       }
 
-      /* EMIS Tabs Navigation Bar */
-      nav.tabs {
-        background: #ffffff !important;
-        border: 1px solid #d3e1ee !important;
-        border-radius: 12px !important;
-        padding: 6px 8px !important;
-        box-shadow: 0 4px 16px rgba(22, 56, 88, 0.04) !important;
-      }
-
-      nav.tabs button {
-        background: transparent !important;
-        color: #4b637a !important;
-        border-radius: 8px !important;
-        font-weight: 700 !important;
-        transition: all .16s ease !important;
-      }
-
-      nav.tabs button:hover {
-        background: #f0f7fd !important;
-        color: #2487d0 !important;
-      }
-
-      nav.tabs button.on {
-        background: #2487d0 !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(36, 135, 208, 0.3) !important;
-      }
+/* EMIS Tabs block unified in modern CSS */
 
       /* ========================================================
    EMIS Full Official Login Shell Page
@@ -7807,7 +7773,265 @@
     }
     /* === END FIX MOBILE MODALS & BOTTOM BARS === */
 
-</style>
+
+
+      /* ==========================================================
+         التصميم الاحترافي الموحد للكمبيوتر والموبايل (Unified Modern UX)
+         متطابق ومتناسق 100% بين شاشات الكمبيوتر وهواتف أندرويد وآيفون
+         ========================================================== */
+      
+      /* خلفية التطبيق العامة */
+      body, html {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+      }
+
+      .app {
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        padding: 14px 16px !important;
+      }
+
+      /* الشريط العلوي للكمبيوتر */
+      .emis-header {
+        background: #ffffff !important;
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 20px !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03) !important;
+        padding: 10px 20px !important;
+        margin-bottom: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+
+      .emis-app-title {
+        color: #1e1b4b !important;
+        font-weight: 900 !important;
+        font-size: 1.35rem !important;
+      }
+
+      /* شريط التبويبات الموحد للكمبيوتر (5 تبويبات أنيقة) */
+      @media (min-width: 801px) {
+        nav.tabs {
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          gap: 10px !important;
+          background: #ffffff !important;
+          border: 1.5px solid #e2e8f0 !important;
+          border-radius: 18px !important;
+          padding: 6px !important;
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03) !important;
+          margin: 0 0 18px 0 !important;
+        }
+
+        nav.tabs button {
+          flex: 1 1 0 !important;
+          max-width: 220px !important;
+          height: 48px !important;
+          border-radius: 14px !important;
+          border: 1.5px solid #f1f5f9 !important;
+          background: #f8fafc !important;
+          color: #475569 !important;
+          font-size: 0.95rem !important;
+          font-weight: 800 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 8px !important;
+          cursor: pointer !important;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        nav.tabs button:hover {
+          background: #eff6ff !important;
+          color: #4f46e5 !important;
+          border-color: #dbeafe !important;
+          transform: translateY(-1px) !important;
+        }
+
+        nav.tabs button.on {
+          background: #4f46e5 !important;
+          color: #ffffff !important;
+          border-color: #4f46e5 !important;
+          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+        }
+
+        nav.tabs button.on svg {
+          stroke: #ffffff !important;
+        }
+
+        #mobileBottomNav {
+          display: none !important;
+        }
+
+        /* تنسيق لوحة إعداد الجدول للكمبيوتر (Unified Home on Desktop) */
+        .unified-home-shell {
+          display: block !important;
+          max-width: 1100px !important;
+          margin: 0 auto !important;
+        }
+
+        .mob-hero-card {
+          padding: 26px 30px !important;
+          border-radius: 24px !important;
+          margin-bottom: 20px !important;
+        }
+
+        .mob-user-name {
+          font-size: 1.75rem !important;
+        }
+
+        .mob-school-name {
+          font-size: 1.05rem !important;
+        }
+
+        .mob-action-pill {
+          padding: 8px 16px !important;
+          font-size: 0.88rem !important;
+        }
+
+        .mob-round-btn {
+          width: 36px !important;
+          height: 36px !important;
+        }
+
+        /* صف النسخة الحالية وشريط المراحل على الكمبيوتر جنب بعض */
+        .mob-version-card {
+          margin-bottom: 20px !important;
+        }
+
+        .mob-stepper-wrap {
+          margin-bottom: 22px !important;
+        }
+
+        .mob-stepper-track {
+          justify-content: center !important;
+          padding: 12px 24px !important;
+          gap: 14px !important;
+          border-radius: 18px !important;
+        }
+
+        .mob-step-chip {
+          font-size: 0.94rem !important;
+          padding: 4px 10px !important;
+        }
+
+        /* شبكة الكروت الأربعة الكبيرة الاحترافية على الكمبيوتر: 2x2 متناسقة */
+        .mob-big-cards-list {
+          display: grid !important;
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 20px !important;
+          margin-bottom: 30px !important;
+        }
+
+        .mob-big-card {
+          padding: 24px 22px !important;
+          border-radius: 22px !important;
+          min-height: 110px !important;
+        }
+
+        .mob-big-icon-wrap {
+          width: 56px !important;
+          height: 56px !important;
+          border-radius: 18px !important;
+        }
+
+        .mob-big-icon-wrap svg {
+          width: 28px !important;
+          height: 28px !important;
+        }
+
+        .mob-big-texts h3 {
+          font-size: 1.25rem !important;
+          margin-bottom: 4px !important;
+        }
+
+        .mob-big-texts p {
+          font-size: 0.88rem !important;
+        }
+
+        .mob-video-pill {
+          padding: 8px 14px !important;
+          font-size: 0.82rem !important;
+        }
+
+        /* شاشة الملف الشخصي على الكمبيوتر */
+        .unified-profile-shell {
+          display: block !important;
+          max-width: 800px !important;
+          margin: 0 auto !important;
+        }
+
+        .mob-royal-card {
+          padding: 32px 24px !important;
+          border-radius: 24px !important;
+          margin-bottom: 24px !important;
+        }
+
+        .mob-royal-title {
+          font-size: 1.7rem !important;
+        }
+
+        .mob-platforms-row {
+          max-width: 600px !important;
+          margin: 0 auto 24px auto !important;
+        }
+
+        .mob-platform-circle {
+          width: 64px !important;
+          height: 64px !important;
+        }
+
+        .mob-platform-circle svg {
+          width: 28px !important;
+          height: 28px !important;
+        }
+
+        .mob-sub-card {
+          padding: 20px !important;
+          border-radius: 22px !important;
+          margin-bottom: 24px !important;
+        }
+
+        .mob-profile-actions-list {
+          display: grid !important;
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 14px !important;
+          margin-bottom: 40px !important;
+        }
+      }
+
+      /* شاشات الهواتف المحمولة (Mobile View) */
+      @media (max-width: 800px), (pointer: coarse) and (max-width: 900px) {
+        nav.tabs {
+          display: none !important;
+        }
+
+        #mobileBottomNav {
+          display: flex !important;
+        }
+
+        .unified-home-shell,
+        .unified-profile-shell {
+          display: block !important;
+        }
+
+        .mob-big-cards-list {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 12px !important;
+        }
+
+        .mob-profile-actions-list {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+        }
+      }
+
+    </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
@@ -8015,7 +8239,7 @@
            الواجهة العصرية لتطبيق الهاتف (Mobile App Home View)
            مستوحاة من أحدث تصميم لتطبيقات الجداول المدرسية
            ========================================================= -->
-      <div id="mobileHomeShell" class="mobile-only-home no-print">
+      <div id="unifiedHomeShell" class="unified-home-shell no-print">
         <!-- 1. شريط الإشعار العلوي -->
         <div class="mob-top-notice" onclick="openSubInfoOrPayment()">
           <div class="mob-notice-tag">معتمد ✓</div>
@@ -8192,420 +8416,8 @@
       </div>
 
 
-      <div class="emis-home-shell">
-
-
-
-
-        <!-- 4 Metrics Stats Strip matching Screenshot -->
-        <div class="emis-stats-strip">
-          <!-- 1. عدد الطلاب -->
-          <div class="emis-stat-card" data-home-perm="students" onclick="showTab('students')" title="عرض سجل الطلاب">
-            <div class="emis-stat-info">
-              <span class="emis-stat-label">عدد الطلاب</span>
-              <strong class="emis-stat-num blue" id="statStudCount">0</strong>
-            </div>
-            <div class="emis-stat-icon blue-bg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
-          </div>
-
-          <!-- 2. عدد المعلمون -->
-          <div class="emis-stat-card" data-home-perm="teachers" onclick="showTab('teachers')" title="عرض سجل المعلمين">
-            <div class="emis-stat-info">
-              <span class="emis-stat-label">عدد المعلمون</span>
-              <strong class="emis-stat-num navy" id="statTeachCount">0</strong>
-            </div>
-            <div class="emis-stat-icon navy-bg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                <path d="M6 12v5c3 3 9 3 12 0v-5" />
-              </svg>
-            </div>
-          </div>
-
-          <!-- 3. عدد الموظفون -->
-          <div class="emis-stat-card" onclick="showTab('teachers')" title="حرفي، كاتب/ة، موظف/ة خدمة">
-            <div class="emis-stat-info">
-              <span class="emis-stat-label">عدد الموظفون</span>
-              <strong class="emis-stat-num sky" id="statStaffCount">0</strong>
-            </div>
-            <div class="emis-stat-icon sky-bg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="3" />
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                <circle cx="12" cy="12" r="2" />
-              </svg>
-            </div>
-          </div>
-
-          <!-- 4. الحصص المتبقية -->
-          <div class="emis-stat-card" onclick="completeRemaining()" title="عرض وتوزيع الحصص المتبقية">
-            <div class="emis-stat-info">
-              <span class="emis-stat-label">الحصص المتبقية</span>
-              <strong class="emis-stat-num amber" id="statRemainCount">0</strong>
-            </div>
-            <div class="emis-stat-icon amber-bg">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="3" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-                <circle cx="12" cy="15" r="2" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Main Grid Cards Matching Screenshot Design and Order -->
-        <div class="emis-home-grid">
-
-          <!-- 1. الطلاب -->
-          <div class="emis-grid-card" data-home-perm="students" onclick="showTab('students')">
-            <div class="emis-grid-card-icon">
-              <!-- Illustration of Boy and Girl Students -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Boy Student -->
-                <circle cx="24" cy="18" r="8" fill="#fda4af" />
-                <path d="M18 14c0-3 3-6 7-6s7 2 7 5c-3 0-5 2-6 4-2 0-5-1-8-3z" fill="#92400e" />
-                <rect x="16" y="27" width="16" height="22" rx="4" fill="#0284c7" />
-                <path d="M13 29h4v16h-4z" fill="#0369a1" />
-                <path d="M31 29h4v16h-4z" fill="#0369a1" />
-                <rect x="18" y="49" width="5" height="11" rx="2" fill="#1e293b" />
-                <rect x="25" y="49" width="5" height="11" rx="2" fill="#1e293b" />
-
-                <!-- Girl Student -->
-                <circle cx="44" cy="18" r="8" fill="#fecdd3" />
-                <path d="M38 14c0-3 3-6 7-6s7 2 7 5c-2 4-6 6-8 7-3 0-4-3-6-6z" fill="#b45309" />
-                <path d="M36 22c-2 3-3 7-3 9h2v-8z" fill="#b45309" />
-                <path d="M52 22c2 3 3 7 3 9h-2v-8z" fill="#b45309" />
-                <rect x="36" y="27" width="16" height="20" rx="4" fill="#f43f5e" />
-                <polygon points="38,47 50,47 54,54 34,54" fill="#e11d48" />
-                <rect x="39" y="53" width="4" height="7" rx="2" fill="#fda4af" />
-                <rect x="45" y="53" width="4" height="7" rx="2" fill="#fda4af" />
-                <!-- Backpack straps -->
-                <path d="M19 28v14M29 28v14" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" />
-                <path d="M39 28v14M49 28v14" stroke="#fb7185" stroke-width="2.2" stroke-linecap="round" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">الطلاب</div>
-          </div>
-
-          <!-- 2. المعلمون -->
-          <div class="emis-grid-card" data-home-perm="teachers" onclick="showTab('teachers')">
-            <div class="emis-grid-card-icon">
-              <!-- Illustration of Male & Female Teachers -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Male Teacher with briefcase -->
-                <circle cx="23" cy="17" r="7.5" fill="#fbcfe8" />
-                <path d="M18 13c1-3 4-5 7-5s6 2 6 5c-3 0-5 2-6 3-2 0-4-1-7-3z" fill="#1e293b" />
-                <rect x="15" y="26" width="16" height="23" rx="4" fill="#1e3a8a" />
-                <polygon points="23,26 21,34 23,38 25,34" fill="#ef4444" />
-                <rect x="17" y="49" width="5" height="11" rx="2" fill="#0f172a" />
-                <rect x="24" y="49" width="5" height="11" rx="2" fill="#0f172a" />
-                <!-- Briefcase -->
-                <rect x="10" y="38" width="6" height="10" rx="2" fill="#78350f" />
-                <path d="M12 38v-2a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v2" stroke="#78350f" stroke-width="1.5" />
-
-                <!-- Female Teacher with folder -->
-                <circle cx="43" cy="17" r="7.5" fill="#fde68a" />
-                <path d="M37 13c1-3 4-5 7-5s6 2 6 5c-2 4-5 6-7 7-3 0-4-3-6-7z" fill="#854d0e" />
-                <rect x="35" y="26" width="16" height="23" rx="4" fill="#0284c7" />
-                <polygon points="40,49 46,49 49,58 37,58" fill="#0369a1" />
-                <rect x="39" y="56" width="3.5" height="5" rx="1.5" fill="#1e293b" />
-                <rect x="44" y="56" width="3.5" height="5" rx="1.5" fill="#1e293b" />
-                <!-- Book/Folder -->
-                <rect x="47" y="32" width="9" height="12" rx="2" fill="#f59e0b" transform="rotate(10 47 32)" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">المعلمون</div>
-          </div>
-
-          <!-- 3. الصفوف والشعب -->
-          <div class="emis-grid-card" data-home-perm="classes" onclick="showTab('classes')">
-            <div class="emis-grid-card-icon">
-              <!-- Illustration of Classroom Teacher at Blackboard and Students -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Blackboard -->
-                <rect x="18" y="10" width="38" height="26" rx="4" fill="#047857" stroke="#065f46" stroke-width="2" />
-                <rect x="22" y="14" width="30" height="2" rx="1" fill="#6ee7b7" opacity="0.6" />
-                <rect x="22" y="19" width="22" height="2" rx="1" fill="#6ee7b7" opacity="0.6" />
-                <rect x="22" y="24" width="16" height="2" rx="1" fill="#6ee7b7" opacity="0.6" />
-
-                <!-- Teacher Standing -->
-                <circle cx="15" cy="16" r="6" fill="#fde68a" />
-                <rect x="10" y="23" width="10" height="18" rx="3" fill="#1e3a8a" />
-                <line x1="17" y1="26" x2="28" y2="20" stroke="#fde68a" stroke-width="3" stroke-linecap="round" />
-                <rect x="11" y="41" width="3.5" height="12" rx="1.5" fill="#0f172a" />
-                <rect x="16" y="41" width="3.5" height="12" rx="1.5" fill="#0f172a" />
-
-                <!-- Students sitting rows -->
-                <circle cx="28" cy="42" r="4.5" fill="#fda4af" />
-                <rect x="23" y="47" width="10" height="10" rx="3" fill="#0284c7" />
-
-                <circle cx="42" cy="42" r="4.5" fill="#fecdd3" />
-                <rect x="37" y="47" width="10" height="10" rx="3" fill="#ec4899" />
-
-                <circle cx="55" cy="42" r="4.5" fill="#fed7aa" />
-                <rect x="50" y="47" width="10" height="10" rx="3" fill="#10b981" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">الصفوف والشعب</div>
-          </div>
-
-          <!-- 4. المواد والنصاب -->
-          <div class="emis-grid-card" data-home-perm="subjects" onclick="showTab('subjects')">
-            <div class="emis-grid-card-icon">
-              <!-- Illustration of Subjects hand picking balloons (ع, ENG, Math, Chemistry) -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Center Palm / Hand -->
-                <rect x="27" y="36" width="11" height="20" rx="5" fill="#fde68a" />
-                <circle cx="32" cy="34" r="8" fill="#fde68a" />
-
-                <!-- Subject Bubbles -->
-                <!-- 1. Arabic (ع) -->
-                <circle cx="32" cy="15" r="9" fill="#ec4899" />
-                <text x="32" y="19" font-size="11" font-weight="900" fill="#fff" text-anchor="middle">ع</text>
-
-                <!-- 2. English (ENG) -->
-                <circle cx="15" cy="24" r="9" fill="#0284c7" />
-                <text x="15" y="27" font-size="7" font-weight="900" fill="#fff" text-anchor="middle">ENG</text>
-
-                <!-- 3. Chemistry Flask -->
-                <circle cx="49" cy="24" r="9" fill="#10b981" />
-                <circle cx="49" cy="25" r="4" fill="#a7f3d0" />
-
-                <!-- 4. Math / Golden Bubble -->
-                <circle cx="21" cy="40" r="7" fill="#f59e0b" />
-                <text x="21" y="43" font-size="9" font-weight="900" fill="#fff" text-anchor="middle">+</text>
-
-                <!-- 5. Blue Bubble -->
-                <circle cx="44" cy="40" r="7" fill="#6366f1" />
-                <text x="44" y="43" font-size="8" font-weight="900" fill="#fff" text-anchor="middle">÷</text>
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">المواد والنصاب</div>
-          </div>
-
-          <!-- 5. إنشاء جدول -->
-          <div class="emis-grid-card" data-home-perm="timetable" onclick="showTab('generate')">
-            <div class="emis-grid-card-icon">
-              <!-- Smart Schedule Generation Wizard / AI Calendar Grid with Lightning -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <rect x="10" y="12" width="44" height="42" rx="7" fill="#ffffff" stroke="#0284c7" stroke-width="2.5" />
-                <rect x="10" y="12" width="44" height="12" rx="6" fill="#0284c7" />
-                <circle cx="19" cy="18" r="2.5" fill="#fff" />
-                <circle cx="28" cy="18" r="2.5" fill="#fff" />
-                <circle cx="37" cy="18" r="2.5" fill="#fff" />
-                <circle cx="46" cy="18" r="2.5" fill="#fff" />
-
-                <!-- Table mini rows -->
-                <rect x="16" y="29" width="8" height="6" rx="2" fill="#e0f2fe" />
-                <rect x="28" y="29" width="8" height="6" rx="2" fill="#bae6fd" />
-                <rect x="40" y="29" width="8" height="6" rx="2" fill="#7dd3fc" />
-                <rect x="16" y="39" width="8" height="6" rx="2" fill="#7dd3fc" />
-                <rect x="28" y="39" width="8" height="6" rx="2" fill="#38bdf8" />
-                <rect x="40" y="39" width="8" height="6" rx="2" fill="#e0f2fe" />
-
-                <!-- Fast Lightning Generator Icon -->
-                <circle cx="46" cy="44" r="14" fill="#f59e0b" stroke="#ffffff" stroke-width="2.5" />
-                <polygon points="47,35 39,45 45,45 43,53 52,43 46,43" fill="#ffffff" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">إنشاء جدول</div>
-          </div>
-
-          <!-- 6. عرض وتصدير -->
-          <div class="emis-grid-card" data-home-perm="views" onclick="showTab('views')">
-            <div class="emis-grid-card-icon">
-              <!-- Print, Excel, PDF Schedule Reports Illustration -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Screen / Dashboard with chart -->
-                <rect x="8" y="14" width="42" height="30" rx="5" fill="#ffffff" stroke="#334155" stroke-width="2.5" />
-                <rect x="8" y="14" width="42" height="8" rx="4" fill="#f1f5f9" />
-                <line x1="8" y1="22" x2="50" y2="22" stroke="#cbd5e1" stroke-width="1.5" />
-                <!-- Bars -->
-                <rect x="14" y="29" width="5" height="11" rx="1.5" fill="#0284c7" />
-                <rect x="22" y="25" width="5" height="15" rx="1.5" fill="#10b981" />
-                <rect x="30" y="32" width="5" height="8" rx="1.5" fill="#f59e0b" />
-                <rect x="38" y="27" width="5" height="13" rx="1.5" fill="#ef4444" />
-                <!-- Stand -->
-                <path d="M23 44l-3 8h18l-3-8" fill="#64748b" />
-                <!-- Magnifier magnifying export -->
-                <circle cx="44" cy="38" r="11" fill="#38bdf8" fill-opacity="0.2" stroke="#0284c7" stroke-width="3" />
-                <line x1="52" y1="46" x2="60" y2="54" stroke="#0284c7" stroke-width="4" stroke-linecap="round" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">عرض وتصدير</div>
-          </div>
-
-          <!-- 7. الغيابات والإجازات -->
-          <div class="emis-grid-card" data-home-perm="absences" onclick="openQuickAttendance()">
-            <div class="emis-grid-card-icon">
-              <!-- Calendar with check marks and cross -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <rect x="12" y="14" width="40" height="40" rx="7" fill="#ffffff" stroke="#0f172a" stroke-width="2.5" />
-                <!-- Binder rings -->
-                <rect x="19" y="9" width="4" height="8" rx="2" fill="#0284c7" />
-                <rect x="41" y="9" width="4" height="8" rx="2" fill="#0284c7" />
-                <line x1="12" y1="24" x2="52" y2="24" stroke="#0f172a" stroke-width="2" />
-
-                <!-- Day boxes with check and cross -->
-                <rect x="17" y="29" width="8" height="8" rx="2" fill="#ecfdf5" />
-                <path d="M19 33l2 2 4-4" stroke="#16a34a" stroke-width="2" stroke-linecap="round" />
-
-                <rect x="28" y="29" width="8" height="8" rx="2" fill="#fef2f2" />
-                <path d="M30 31l4 4m0-4l-4 4" stroke="#dc2626" stroke-width="2" stroke-linecap="round" />
-
-                <rect x="39" y="29" width="8" height="8" rx="2" fill="#ecfdf5" />
-                <path d="M41 33l2 2 4-4" stroke="#16a34a" stroke-width="2" stroke-linecap="round" />
-
-                <rect x="17" y="40" width="8" height="8" rx="2" fill="#ecfdf5" />
-                <path d="M19 44l2 2 4-4" stroke="#16a34a" stroke-width="2" stroke-linecap="round" />
-
-                <rect x="28" y="40" width="8" height="8" rx="2" fill="#ecfdf5" />
-                <path d="M30 44l2 2 4-4" stroke="#16a34a" stroke-width="2" stroke-linecap="round" />
-
-                <rect x="39" y="40" width="8" height="8" rx="2" fill="#fffbeb" />
-                <circle cx="43" cy="44" r="2" fill="#d97706" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">الغيابات والإجازات</div>
-          </div>
-
-          <!-- 8. درجات الطلاب وسجل التقويم -->
-          <div class="emis-grid-card" data-home-perm="students" onclick="openGradeEntry()">
-            <div class="emis-grid-card-icon">
-              <!-- Grade Sheet with A+ badge -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Background pages stacked -->
-                <rect x="22" y="11" width="30" height="42" rx="4" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" />
-                <rect x="18" y="14" width="30" height="42" rx="4" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5" />
-                <!-- Front page -->
-                <rect x="14" y="17" width="30" height="42" rx="4" fill="#ffffff" stroke="#64748b" stroke-width="2" />
-                <!-- Lines -->
-                <line x1="19" y1="24" x2="31" y2="24" stroke="#0284c7" stroke-width="2" stroke-linecap="round" />
-                <line x1="19" y1="29" x2="39" y2="29" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
-                <line x1="19" y1="34" x2="39" y2="34" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
-                <line x1="19" y1="39" x2="36" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
-                <line x1="19" y1="44" x2="39" y2="44" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
-                <line x1="19" y1="49" x2="33" y2="49" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
-                <!-- A+ Badge -->
-                <circle cx="36" cy="23" r="6.5" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5" />
-                <text x="36" y="26" font-size="8" font-weight="900" fill="#dc2626" text-anchor="middle">A+</text>
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">درجات الطلاب</div>
-          </div>
-
-          <!-- 9. الأنصبة والأوف والمجاز -->
-          <div class="emis-grid-card" data-home-perm="teachers" onclick="showTab('loads')">
-            <div class="emis-grid-card-icon">
-              <!-- Meeting / Two Teachers Consulting Illustration -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Table -->
-                <rect x="22" y="36" width="20" height="15" rx="3" fill="#cbd5e1" />
-                <line x1="26" y1="51" x2="26" y2="58" stroke="#64748b" stroke-width="2" />
-                <line x1="38" y1="51" x2="38" y2="58" stroke="#64748b" stroke-width="2" />
-                <!-- Briefcase under table -->
-                <rect x="29" y="42" width="6" height="7" rx="1.5" fill="#78350f" />
-
-                <!-- Person 1 (Left) -->
-                <circle cx="16" cy="24" r="5.5" fill="#fda4af" />
-                <rect x="11" y="31" width="10" height="16" rx="3" fill="#0284c7" />
-
-                <!-- Person 2 (Right) -->
-                <circle cx="48" cy="24" r="5.5" fill="#fde68a" />
-                <rect x="43" y="31" width="10" height="16" rx="3" fill="#78350f" />
-
-                <!-- Laptop on table -->
-                <polygon points="27,33 37,33 39,36 25,36" fill="#475569" />
-                <rect x="28" y="27" width="8" height="6" rx="1" fill="#0f172a" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">الأنصبة والأوف</div>
-          </div>
-
-          <!-- 10. الإعدادات المدرسية -->
-          <div class="emis-grid-card" onclick="showTab('settings')">
-            <div class="emis-grid-card-icon">
-              <!-- Modern School Setup & System Settings Gear & Sliders -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <circle cx="32" cy="32" r="13" fill="#eff6ff" stroke="#0284c7" stroke-width="3" />
-                <circle cx="32" cy="32" r="5" fill="#0284c7" />
-                <!-- Cog teeth -->
-                <rect x="30" y="14" width="4" height="6" rx="1.5" fill="#0284c7" />
-                <rect x="30" y="44" width="4" height="6" rx="1.5" fill="#0284c7" />
-                <rect x="14" y="30" width="6" height="4" rx="1.5" fill="#0284c7" />
-                <rect x="44" y="30" width="6" height="4" rx="1.5" fill="#0284c7" />
-                <rect x="20" y="19" width="4" height="6" rx="1.5" fill="#0284c7" transform="rotate(45 20 19)" />
-                <rect x="41" y="40" width="4" height="6" rx="1.5" fill="#0284c7" transform="rotate(45 41 40)" />
-                <rect x="40" y="20" width="4" height="6" rx="1.5" fill="#0284c7" transform="rotate(-45 40 20)" />
-                <rect x="19" y="41" width="4" height="6" rx="1.5" fill="#0284c7" transform="rotate(-45 19 41)" />
-
-                <!-- Floating tools badge -->
-                <circle cx="47" cy="47" r="9" fill="#10b981" stroke="#fff" stroke-width="2" />
-                <path d="M44 47l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">الإعدادات المدرسية</div>
-          </div>
-
-          <!-- 11. تبليغ رسمي لأولياء الأمور -->
-          <div class="emis-grid-card" data-home-perm="notices" onclick="showTab('notices')">
-            <div class="emis-grid-card-icon">
-              <!-- Megaphone Announcement Illustration -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <polygon points="20,26 36,18 36,46 20,38" fill="#f59e0b" />
-                <rect x="13" y="28" width="8" height="8" rx="2" fill="#d97706" />
-                <!-- Handle -->
-                <path d="M22 38v8a3 3 0 0 0 3 3h2" stroke="#d97706" stroke-width="3" stroke-linecap="round" />
-                <!-- Speaker bell mouth -->
-                <ellipse cx="36" cy="32" rx="4" ry="14" fill="#fbbf24" stroke="#d97706" stroke-width="2" />
-                <!-- Sound waves -->
-                <path d="M44 24a10 10 0 0 1 0 16" stroke="#0284c7" stroke-width="3" stroke-linecap="round" />
-                <path d="M49 19a16 16 0 0 1 0 26" stroke="#0284c7" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">تبليغ أولياء الأمور</div>
-          </div>
-
-          <div class="emis-grid-card" data-home-perm="settings" onclick="showTab('waBot')">
-            <div class="emis-grid-card-icon">
-              <!-- Modern Teacher Mobile App & Notifications Icon -->
-              <svg width="68" height="68" viewBox="0 0 64 64" fill="none">
-                <!-- Phone Frame -->
-                <rect x="18" y="8" width="28" height="48" rx="6" fill="#eff6ff" stroke="#0284c7" stroke-width="2.5" />
-                <rect x="23" y="15" width="18" height="30" rx="3" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5" />
-                <line x1="28" y1="11" x2="36" y2="11" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" />
-                <circle cx="32" cy="50" r="2" fill="#0284c7" />
-                <!-- Screen schedule lines -->
-                <rect x="25" y="19" width="14" height="3" rx="1" fill="#0284c7" />
-                <rect x="25" y="24" width="10" height="2.5" rx="1" fill="#93c5fd" />
-                <rect x="25" y="28.5" width="12" height="2.5" rx="1" fill="#93c5fd" />
-                <rect x="25" y="33" width="8" height="2.5" rx="1" fill="#93c5fd" />
-                <!-- Notification Bell Badge -->
-                <circle cx="45" cy="17" r="10" fill="#f59e0b" stroke="#ffffff" stroke-width="2" />
-                <path d="M45 12c-2 0-3.2 1.3-3.2 3v2l-1 1.2h8.4l-1-1.2v-2c0-1.7-1.2-3-3.2-3z" fill="#ffffff" />
-                <circle cx="45" cy="19.2" r="1" fill="#ffffff" />
-              </svg>
-            </div>
-            <div class="emis-grid-card-title">روابط وتطبيق المعلمين</div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
+      <!-- Old cluttered emis-home-shell replaced by Unified Home Shell -->
+</section>
 
 
     <!-- شريط التبليغات والتعميمات المدرسية الداخلية (EMIS Announcement Bar) -->
@@ -9840,7 +9652,7 @@
            الواجهة العصرية للملف الشخصي بالهاتف (Mobile Profile Screen)
            مطابقة للصورة 3 في التطبيق المرجعي
            ========================================================= -->
-      <div id="mobileProfileShell" class="mobile-only-profile no-print">
+      <div id="unifiedProfileShell" class="unified-profile-shell no-print">
         <!-- 1. شريط الرأس والترحيب -->
         <div class="mob-hero-card mob-hero-profile">
           <div class="mob-hero-row">
@@ -12661,7 +12473,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.18";
+    const APP_VERSION = "2.19";
     const APP_PUBLIC_URL = "https://bmdiq.vercel.app/";
 
     const GUIDE_STEPS = [];
