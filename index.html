@@ -8710,7 +8710,7 @@
                 </div>
               </div>
 
-              <!-- توقيتات الحصص ومنبه الجرس المدرسي وفترات الاستراحة -->
+              <!-- توقيتات الحصص ومنبه الجرس المدرسي -->
               <div class="modern-field-group" style="margin-top:4px">
                 <div class="modern-field">
                   <label>⏱️ وقت بدء الدرس الأول:</label>
@@ -8719,35 +8719,9 @@
                 <div class="modern-field">
                   <label>مدة الحصة الدراسية (بالدقائق):</label>
                   <select id="lessonDuration" onchange="saveSettings(true)">
-                    <option value="35">٣٥ دقيقة</option>
                     <option value="40">٤٠ دقيقة (ابتدائي / مسائي)</option>
                     <option value="45" selected>٤٥ دقيقة (ثانوي / صباحي)</option>
                     <option value="50">٥٠ دقيقة</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="modern-field-group" style="margin-top:6px">
-                <div class="modern-field">
-                  <label>☕ نظام الفرصة (الاستراحة):</label>
-                  <select id="breakAfter" onchange="saveSettings(true)">
-                    <option value="0">بدون استراحة بين الدروس</option>
-                    <option value="2" selected>كل درسين (بعد الدرس 2، 4، ...)</option>
-                    <option value="3">كل 3 دروس (بعد الدرس 3، 6)</option>
-                    <option value="1">بعد كل درس</option>
-                    <option value="after2">فرصة واحدة فقط بعد الدرس الثاني</option>
-                    <option value="after3">فرصة واحدة فقط بعد الدرس الثالث</option>
-                  </select>
-                </div>
-                <div class="modern-field">
-                  <label>مدة الفرصة / الاستراحة (بالدقائق):</label>
-                  <select id="breakDuration" onchange="saveSettings(true)">
-                    <option value="5">٥ دقائق</option>
-                    <option value="10" selected>١٠ دقائق</option>
-                    <option value="15">١٥ دقيقة</option>
-                    <option value="20">٢٠ دقيقة</option>
-                    <option value="25">٢٥ دقيقة</option>
-                    <option value="30">٣٠ دقيقة</option>
                   </select>
                 </div>
               </div>
@@ -10990,7 +10964,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.22";
+    const APP_VERSION = "2.13";
     const APP_PUBLIC_URL = "https://bmdiq.vercel.app/";
 
     const GUIDE_STEPS = [];
@@ -13645,45 +13619,6 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       renderSettings();
       if ($("daysModal")) $("daysModal").hidden = false;
     }
-        // حساب توقيتات بدء وانتهاء كل حصة مع مراعاة نظام فترات الاستراحة (الفرصة)
-    function calcPeriodStarts(settings, P) {
-      const s = settings || (typeof db !== "undefined" && db.settings) || {};
-      const startStr = String(s.schoolStartTime || "08:00");
-      const dur = +s.lessonDuration || 45;
-      const totalP = +P || +s.periods || 6;
-      const bAfter = s.breakAfter !== undefined ? String(s.breakAfter) : "2";
-      const bDur = +s.breakDuration !== undefined ? +s.breakDuration : 10;
-
-      const pp = startStr.split(":");
-      let cur = (+pp[0] || 8) * 60 + (+pp[1] || 0);
-      const out = [];
-
-      for (let p = 0; p < totalP; p++) {
-        const pNum = p + 1;
-        const sMin = cur;
-        const eMin = cur + dur;
-        const sHhmm = String(Math.floor(sMin / 60)).padStart(2, "0") + ":" + String(sMin % 60).padStart(2, "0");
-        const eHhmm = String(Math.floor(eMin / 60)).padStart(2, "0") + ":" + String(eMin % 60).padStart(2, "0");
-        out.push({ p: p, pNum: pNum, minutes: sMin, startM: sMin, endM: eMin, hhmm: sHhmm, endHhmm: eHhmm });
-        cur = eMin;
-
-        // فحص إضافة استراحة بعد هذه الحصة
-        if (pNum < totalP && bDur > 0) {
-          let hasBreak = false;
-          if (bAfter === "2" && pNum % 2 === 0) hasBreak = true;
-          else if (bAfter === "3" && pNum % 3 === 0) hasBreak = true;
-          else if (bAfter === "1") hasBreak = true;
-          else if (bAfter === "after2" && pNum === 2) hasBreak = true;
-          else if (bAfter === "after3" && pNum === 3) hasBreak = true;
-
-          if (hasBreak) {
-            cur += bDur;
-          }
-        }
-      }
-      return out;
-    }
-
     function renderSettings() {
       const days = db.settings.days || [];
       if ($("daysBox")) $("daysBox").innerHTML = DAYS.map((d, i) => `<span><input type="checkbox" value="${i}" ${days.includes(i) ? "checked" : ""} onchange="saveSettings(true)"> ${d}</span>`).join("");
@@ -13691,8 +13626,6 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       if ($("periods")) $("periods").value = db.settings.periods;
       if ($("schoolStartTime")) $("schoolStartTime").value = db.settings.schoolStartTime || "08:00";
       if ($("lessonDuration")) $("lessonDuration").value = db.settings.lessonDuration || "45";
-      if ($("breakAfter")) $("breakAfter").value = (db.settings.breakAfter !== undefined ? String(db.settings.breakAfter) : "2");
-      if ($("breakDuration")) $("breakDuration").value = (db.settings.breakDuration !== undefined ? String(db.settings.breakDuration) : "10");
       if ($("schoolName")) $("schoolName").value = db.settings.schoolName || "";
       if ($("schoolManagerTitle")) $("schoolManagerTitle").value = db.settings.schoolManagerTitle || "مدير المدرسة";
       if ($("schoolManager")) $("schoolManager").value = db.settings.schoolManager || "";
@@ -13918,8 +13851,6 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
         schoolManager,
         schoolStartTime: (($("schoolStartTime") && $("schoolStartTime").value) || "08:00"),
         lessonDuration: +(($("lessonDuration") && $("lessonDuration").value) || 45),
-        breakAfter: (($("breakAfter") && $("breakAfter").value) !== undefined ? $("breakAfter").value : (db.settings.breakAfter || "2")),
-        breakDuration: +(($("breakDuration") && $("breakDuration").value) || (db.settings.breakDuration !== undefined ? db.settings.breakDuration : 10)),
         maxYard: (($("yardMax") && $("yardMax").value.trim()) ? Math.max(1, +$("yardMax").value) : (db.settings.maxYard || ""))
       });
       save();
@@ -15096,12 +15027,8 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
       // الحد الأقصى للمراقبة لكل معلم أسبوعياً (مثلاً 20 خانة لـ 61 معلماً = مراقبة يوم واحد كحد أقصى)
       const maxAllowedPerTeacher = Math.max(1, Math.ceil(totalWeeklySlots / eligibleTeachers.length));
 
-      // خلط عشوائي نقي ومثالي (Fisher-Yates) لجميع المعلمين لضمان التدوير العادل العشوائي بين كافة الـ 61 معلماً
-      const pool = eligibleTeachers.slice();
-      for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = pool[i]; pool[i] = pool[j]; pool[j] = temp;
-      }
+      // خلط عشوائي نقي لجميع المعلمين في بداية التوزيع لضمان التدوير العادل بين كافة الـ 61 معلماً
+      const pool = eligibleTeachers.slice().sort(() => Math.random() - 0.5);
 
       // جدول التوزيع: { [day]: { [locName]: [tid1, tid2, ...] } }
       const schedule = {};
@@ -15135,12 +15062,8 @@ th{background:#145d9b;color:#fff;font-weight:bold}</style></head><body>
             }
 
             if (candidates.length > 0) {
-              // قرعة عشوائية نقية بين المتساوين في أيام المراقبة
-              for (let i = candidates.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                const temp = candidates[i]; candidates[i] = candidates[j]; candidates[j] = temp;
-              }
-              candidates.sort((a, b) => a.assignedDaysCount - b.assignedDaysCount);
+              // الأولوية: الأقل مراقبة طيلة الأسبوع أولاً، ثم قرعة عشوائية نقية بين المتساوين
+              candidates.sort((a, b) => (a.assignedDaysCount - b.assignedDaysCount) || (Math.random() - 0.5));
               const chosen = candidates[0];
               schedule[d][loc.name].push(chosen.teacher.id);
               teachersAssignedToday.add(chosen.teacher.id);
@@ -20995,8 +20918,17 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       return days[0];
     }
     function waPeriodStarts() {
+      const start = (db.settings && db.settings.schoolStartTime) || "08:00";
+      const dur = +(db.settings && db.settings.lessonDuration) || 45;
       const P = (db.settings && db.settings.periods) || 6;
-      return calcPeriodStarts(db.settings, P);
+      const parts = String(start).split(":");
+      let m = (+parts[0] || 8) * 60 + (+parts[1] || 0);
+      const out = [];
+      for (let p = 0; p < P; p++) {
+        out.push({ p: p, minutes: m, hhmm: String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0") });
+        m += dur;
+      }
+      return out;
     }
     function waLessonsAt(day, p) {
       const rows = [];
@@ -21675,9 +21607,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           rec.devices = j.sent || 1;
           save();
           renderTeacherLinks();
-          okNote("تم إرسال إشعار الدرس الفعلي إلى " + name + " بنجاح (" + j.sent + " جهاز). تحقق من شاشة القفل الآن.");
-        } else if (j && j.error === "no_lessons") {
-          note("تنبيه: " + name + " ليس لديه حصص مجدولة في الجدول، لذلك لم يتم إرسال أي إشعار.");
+          okNote("تم إرسال الإشعار إلى " + name + " (" + j.sent + " جهاز). تحقق من شاشة القفل الآن.");
         } else if (j && (j.error === "not_subscribed" || j.error === "expired")) {
           rec.subscribed = false;
           rec.pushOn = false;
@@ -21711,10 +21641,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         return;
       }
       toast("جارٍ إرسال إشعار تجريبي إلى " + targets.length + " معلم...");
-      var okN = 0, failN = 0, noLessN = 0, i = 0;
+      var okN = 0, failN = 0, i = 0;
       function next() {
         if (i >= targets.length) {
-          okNote("تم إرسال " + okN + " إشعار تجريبي" + (noLessN ? " · تم تخطي " + noLessN + " (بدون حصص)" : "") + (failN ? " · فشل: " + failN : "") + ".");
+          okNote("تم إرسال " + okN + " إشعار تجريبي" + (failN ? " · فشل: " + failN : "") + ".");
           return;
         }
         var tch = targets[i++];
@@ -21724,7 +21654,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ acc: acc, token: rec.token })
         }).then(function (r) { return r.json(); }).then(function (j) {
-          if (j && j.ok) okN++; else if (j && j.error === "no_lessons") noLessN++; else failN++;
+          if (j && j.ok) okN++; else failN++;
           next();
         }).catch(function () { failN++; next(); });
       }
@@ -21744,7 +21674,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var t = (db.teachers || []).find(function (x) { return x.id === tid; });
       var url = teacherLinkUrl(tid);
       if (!url || !t) { note("لا يوجد رابط."); return; }
-      var text = "السلام عليكم " + t.name + "\n\n" +
+      var text = "السلام عليكم " + waTitle(t) + " " + t.name + "\n\n" +
         "هذا رابط جدولك الخاص:\n" + url + "\n\n" +
         "افتحه من جوالك ثم ثبّته على الشاشة الرئيسية، وفعّل التنبيهات — ليصلك تنبيه قبل كل درس بخمس دقائق.\n" +
         "الرابط خاص بك، لا تشاركه.";
