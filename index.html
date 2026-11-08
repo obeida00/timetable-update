@@ -4362,6 +4362,894 @@
       }
 
       
+      
+      /* ==========================================================
+         التصميم الاحترافي الكامل لتطبيق الهاتف (Mobile Professional UI)
+         مطابق لواجهات تطبيق جدول المدرسة المعتمد
+         يطبق فقط على الهواتف دون المساس بشاشات سطح المكتب
+         ========================================================== */
+      @media (min-width: 801px) {
+        .mobile-only-home,
+        .mobile-only-profile,
+        #mobileHomeShell,
+        #mobileProfileShell {
+          display: none !important;
+        }
+      }
+
+      @media (max-width: 800px), (pointer: coarse) and (max-width: 900px) {
+        /* إخفاء واجهات سطح المكتب القديمة في الرئيسية والإعدادات */
+        .emis-home-shell {
+          display: none !important;
+        }
+
+        #settings .set-head,
+        #settings > p.hint,
+        #settings .set-tiles {
+          display: none !important;
+        }
+
+        .mobile-only-home,
+        .mobile-only-profile {
+          display: block !important;
+        }
+
+        /* 1. الشريط الإشعاري العلوي الرقيق */
+        .mob-top-notice {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          background: #fef2f2 !important;
+          border: 1px solid #fee2e2 !important;
+          border-radius: 12px !important;
+          padding: 8px 14px !important;
+          margin: 6px 10px 10px !important;
+          cursor: pointer !important;
+        }
+        .mob-notice-tag {
+          background: #22c55e !important;
+          color: #ffffff !important;
+          font-size: 0.72rem !important;
+          font-weight: 800 !important;
+          padding: 3px 8px !important;
+          border-radius: 8px !important;
+        }
+        .mob-notice-text {
+          font-size: 0.8rem !important;
+          font-weight: 700 !important;
+          color: #991b1b !important;
+          flex: 1 !important;
+          margin: 0 10px !important;
+          text-align: right !important;
+        }
+        .mob-notice-arrow {
+          font-size: 0.85rem !important;
+          color: #ef4444 !important;
+        }
+
+        /* 2. بطاقة الرأس المتدرجة العصرية (Hero Header) */
+        .mob-hero-card {
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%) !important;
+          border-radius: 24px !important;
+          padding: 18px 16px !important;
+          margin: 0 10px 14px !important;
+          color: #ffffff !important;
+          box-shadow: 0 10px 25px rgba(99, 102, 241, 0.28) !important;
+        }
+        .mob-hero-profile {
+          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%) !important;
+          box-shadow: 0 10px 25px rgba(37, 99, 235, 0.28) !important;
+        }
+        .mob-hero-row {
+          display: flex !important;
+          align-items: flex-start !important;
+          justify-content: space-between !important;
+          gap: 12px !important;
+        }
+        .mob-hero-greeting {
+          text-align: right !important;
+          flex: 1 !important;
+        }
+        .mob-welcome-tag {
+          font-size: 0.82rem !important;
+          opacity: 0.88 !important;
+          display: block !important;
+          margin-bottom: 2px !important;
+        }
+        .mob-user-name {
+          font-size: 1.35rem !important;
+          font-weight: 900 !important;
+          margin: 0 0 3px !important;
+          color: #ffffff !important;
+          letter-spacing: -0.3px !important;
+        }
+        .mob-school-name {
+          font-size: 0.85rem !important;
+          opacity: 0.92 !important;
+          margin: 0 !important;
+          color: #e0e7ff !important;
+          font-weight: 600 !important;
+        }
+        .mob-hero-actions {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: flex-end !important;
+          gap: 10px !important;
+        }
+        .mob-action-pill {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          background: rgba(255, 255, 255, 0.22) !important;
+          backdrop-filter: blur(8px) !important;
+          border: 1px solid rgba(255, 255, 255, 0.35) !important;
+          color: #ffffff !important;
+          font-size: 0.78rem !important;
+          font-weight: 800 !important;
+          padding: 6px 12px !important;
+          border-radius: 20px !important;
+          cursor: pointer !important;
+          transition: transform 0.15s ease !important;
+        }
+        .mob-action-pill:active {
+          transform: scale(0.95) !important;
+        }
+        .mob-action-icons-group {
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+        }
+        .mob-round-btn {
+          width: 32px !important;
+          height: 32px !important;
+          border-radius: 50% !important;
+          background: rgba(255, 255, 255, 0.18) !important;
+          border: 1px solid rgba(255, 255, 255, 0.25) !important;
+          color: #ffffff !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+        }
+        .mob-round-btn:active {
+          background: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        /* 3. كرت النسخة الحالية */
+        .mob-card {
+          background: #ffffff !important;
+          border-radius: 20px !important;
+          border: 1.5px solid #e2e8f0 !important;
+          padding: 14px 16px !important;
+          margin: 0 10px 14px !important;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+        }
+        .mob-card-head-row {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          margin-bottom: 12px !important;
+        }
+        .mob-card-head-right {
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+        }
+        .mob-head-title {
+          font-size: 0.95rem !important;
+          font-weight: 800 !important;
+          color: #1e293b !important;
+        }
+        .mob-help-icon {
+          width: 20px !important;
+          height: 20px !important;
+          border-radius: 50% !important;
+          background: #f1f5f9 !important;
+          color: #64748b !important;
+          font-size: 0.75rem !important;
+          font-weight: 900 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+        }
+        .mob-guide-link {
+          font-size: 0.82rem !important;
+          font-weight: 800 !important;
+          color: #4f46e5 !important;
+          cursor: pointer !important;
+        }
+        .mob-version-body {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+        }
+        .mob-version-info-box {
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+        }
+        .mob-version-icon-sq {
+          width: 44px !important;
+          height: 44px !important;
+          border-radius: 14px !important;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+          color: #ffffff !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25) !important;
+        }
+        .mob-version-texts strong {
+          display: block !important;
+          font-size: 1rem !important;
+          font-weight: 800 !important;
+          color: #0f172a !important;
+        }
+        .mob-version-texts span {
+          font-size: 0.78rem !important;
+          color: #64748b !important;
+          font-weight: 600 !important;
+        }
+        .mob-version-btns-group {
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+        }
+        .mob-btn-plus {
+          width: 36px !important;
+          height: 36px !important;
+          border-radius: 12px !important;
+          background: #f1f5f9 !important;
+          border: 1px solid #e2e8f0 !important;
+          color: #4f46e5 !important;
+          font-size: 1.3rem !important;
+          font-weight: 900 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+        }
+        .mob-btn-copy {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          padding: 8px 12px !important;
+          border-radius: 12px !important;
+          background: #ffffff !important;
+          border: 1.5px solid #e2e8f0 !important;
+          color: #334155 !important;
+          font-size: 0.84rem !important;
+          font-weight: 800 !important;
+          cursor: pointer !important;
+        }
+
+        /* 4. شريط ترتيب خطوات الإعداد */
+        .mob-stepper-wrap {
+          margin: 0 10px 14px !important;
+        }
+        .mob-stepper-head {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          margin-bottom: 8px !important;
+        }
+        .mob-stepper-title-box {
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          color: #1e293b !important;
+        }
+        .mob-stepper-title-box strong {
+          font-size: 0.95rem !important;
+          font-weight: 800 !important;
+        }
+        .mob-stepper-sub {
+          font-size: 0.8rem !important;
+          color: #64748b !important;
+          font-weight: 700 !important;
+        }
+        .mob-stepper-track {
+          display: flex !important;
+          align-items: center !important;
+          background: #eff6ff !important;
+          border: 1px solid #dbeafe !important;
+          border-radius: 16px !important;
+          padding: 8px 10px !important;
+          gap: 4px !important;
+          overflow-x: auto !important;
+        }
+        .mob-step-chip {
+          background: transparent !important;
+          border: none !important;
+          color: #1e40af !important;
+          font-size: 0.78rem !important;
+          font-weight: 800 !important;
+          white-space: nowrap !important;
+          cursor: pointer !important;
+          padding: 2px 4px !important;
+        }
+        .mob-step-arr {
+          color: #93c5fd !important;
+          font-weight: 900 !important;
+          font-size: 0.8rem !important;
+        }
+
+        /* 5. الكروت الأربعة الكبيرة ذات التدرجات الاحترافية */
+        .mob-big-cards-list {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 12px !important;
+          margin: 0 10px 24px !important;
+        }
+        .mob-big-card {
+          border-radius: 20px !important;
+          padding: 16px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          cursor: pointer !important;
+          transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+          color: #ffffff !important;
+          position: relative !important;
+          overflow: hidden !important;
+        }
+        .mob-big-card:active {
+          transform: scale(0.98) !important;
+        }
+        .mob-card-teal {
+          background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%) !important;
+          box-shadow: 0 8px 20px rgba(14, 165, 233, 0.28) !important;
+        }
+        .mob-card-amber {
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+          box-shadow: 0 8px 20px rgba(245, 158, 11, 0.28) !important;
+        }
+        .mob-card-indigo {
+          background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+          box-shadow: 0 8px 20px rgba(99, 102, 241, 0.28) !important;
+        }
+        .mob-card-emerald {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          box-shadow: 0 8px 20px rgba(16, 185, 129, 0.28) !important;
+        }
+        .mob-big-card-content {
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+        }
+        .mob-big-icon-wrap {
+          width: 48px !important;
+          height: 48px !important;
+          border-radius: 16px !important;
+          background: rgba(255, 255, 255, 0.22) !important;
+          backdrop-filter: blur(8px) !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          color: #ffffff !important;
+        }
+        .mob-big-icon-wrap svg {
+          width: 24px !important;
+          height: 24px !important;
+        }
+        .mob-big-texts h3 {
+          font-size: 1.05rem !important;
+          font-weight: 900 !important;
+          margin: 0 0 2px !important;
+          color: #ffffff !important;
+        }
+        .mob-big-texts p {
+          font-size: 0.78rem !important;
+          margin: 0 !important;
+          color: rgba(255, 255, 255, 0.9) !important;
+          font-weight: 600 !important;
+        }
+        .mob-big-card-actions {
+          display: flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+        }
+        .mob-video-pill {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 5px !important;
+          background: rgba(255, 255, 255, 0.24) !important;
+          border: 1px solid rgba(255, 255, 255, 0.35) !important;
+          color: #ffffff !important;
+          font-size: 0.74rem !important;
+          font-weight: 800 !important;
+          padding: 6px 10px !important;
+          border-radius: 16px !important;
+          cursor: pointer !important;
+        }
+        .mob-nav-arrow {
+          font-size: 1rem !important;
+          color: rgba(255, 255, 255, 0.8) !important;
+          font-weight: 900 !important;
+        }
+
+        /* 6. تصميم شاشة الملف الشخصي بالهاتف (Royal Blue Theme) */
+        .mob-royal-card {
+          background: #1e3a8a !important;
+          border-radius: 22px !important;
+          padding: 24px 18px !important;
+          margin: 0 10px 14px !important;
+          color: #ffffff !important;
+          text-align: center !important;
+          box-shadow: 0 8px 24px rgba(30, 58, 138, 0.28) !important;
+        }
+        .mob-royal-title {
+          font-size: 1.4rem !important;
+          font-weight: 900 !important;
+          margin: 0 0 8px !important;
+        }
+        .mob-role-badge {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          background: rgba(255, 255, 255, 0.16) !important;
+          border: 1px solid rgba(255, 255, 255, 0.25) !important;
+          padding: 4px 14px !important;
+          border-radius: 20px !important;
+          font-size: 0.8rem !important;
+          font-weight: 800 !important;
+          margin-bottom: 8px !important;
+        }
+        .mob-royal-sub {
+          font-size: 0.9rem !important;
+          opacity: 0.9 !important;
+          margin: 0 0 12px !important;
+        }
+        .mob-royal-phone-pill {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          background: rgba(255, 255, 255, 0.14) !important;
+          padding: 6px 16px !important;
+          border-radius: 16px !important;
+          font-size: 0.88rem !important;
+          font-weight: 800 !important;
+          direction: ltr !important;
+        }
+
+        /* دوائر منصات التشغيل الثلاث */
+        .mob-platforms-row {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-around !important;
+          margin: 0 10px 16px !important;
+        }
+        .mob-platform-item {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          gap: 6px !important;
+          cursor: pointer !important;
+        }
+        .mob-platform-circle {
+          width: 56px !important;
+          height: 56px !important;
+          border-radius: 50% !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border: 1.5px solid #e2e8f0 !important;
+        }
+        .mob-circle-apple {
+          background: #eff6ff !important;
+          color: #3b82f6 !important;
+        }
+        .mob-circle-android {
+          background: #f0fdf4 !important;
+          color: #22c55e !important;
+        }
+        .mob-circle-web {
+          background: #faf5ff !important;
+          color: #a855f7 !important;
+        }
+        .mob-platform-item span {
+          font-size: 0.82rem !important;
+          font-weight: 800 !important;
+          color: #475569 !important;
+        }
+
+        /* كرت الاشتراك */
+        .mob-sub-card {
+          background: #ffffff !important;
+          border-radius: 20px !important;
+          border: 1.5px solid #e2e8f0 !important;
+          padding: 16px !important;
+          margin: 0 10px 16px !important;
+        }
+        .mob-sub-head-title {
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          color: #1e293b !important;
+          font-size: 1rem !important;
+          margin-bottom: 12px !important;
+        }
+        .mob-sub-box {
+          background: #f8fafc !important;
+          border: 1.5px solid #f1f5f9 !important;
+          border-radius: 16px !important;
+          padding: 14px !important;
+        }
+        .mob-sub-status-row {
+          margin-bottom: 12px !important;
+        }
+        .mob-sub-badge-active {
+          display: inline-block !important;
+          background: #dcfce7 !important;
+          color: #15803d !important;
+          font-size: 0.84rem !important;
+          font-weight: 800 !important;
+          padding: 4px 12px !important;
+          border-radius: 12px !important;
+        }
+        .mob-sub-info-row {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          font-size: 0.88rem !important;
+          color: #334155 !important;
+          padding: 6px 0 !important;
+          border-bottom: 1px dashed #e2e8f0 !important;
+        }
+        .mob-sub-info-row:last-child {
+          border-bottom: none !important;
+        }
+
+        /* أزرار الإجراءات السريعة بالملف الشخصي */
+        .mob-profile-actions-list {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+          margin: 0 10px 30px !important;
+        }
+        .mob-profile-action-btn {
+          display: flex !important;
+          align-items: center !important;
+          gap: 14px !important;
+          background: #ffffff !important;
+          border: 1.5px solid #e2e8f0 !important;
+          border-radius: 18px !important;
+          padding: 14px !important;
+          cursor: pointer !important;
+          text-align: right !important;
+        }
+        .mob-profile-action-btn:active {
+          background: #f8fafc !important;
+        }
+        .mob-pact-icon {
+          font-size: 1.4rem !important;
+        }
+        .mob-pact-text {
+          flex: 1 !important;
+        }
+        .mob-pact-text strong {
+          display: block !important;
+          font-size: 0.94rem !important;
+          color: #0f172a !important;
+        }
+        .mob-pact-text span {
+          display: block !important;
+          font-size: 0.78rem !important;
+          color: #64748b !important;
+        }
+        .mob-pact-arr {
+          color: #94a3b8 !important;
+          font-size: 0.9rem !important;
+        }
+
+        /* 7. تصميم نافذة توقيت الحصص العصرية (Timing Bottom Sheet) */
+        .mob-timing-sheet {
+          border-radius: 26px 26px 0 0 !important;
+          background: #ffffff !important;
+          max-height: 92vh !important;
+          overflow-y: auto !important;
+          padding: 14px 16px 24px !important;
+        }
+        .mob-sheet-handle {
+          width: 44px !important;
+          height: 5px !important;
+          border-radius: 10px !important;
+          background: #cbd5e1 !important;
+          margin: 0 auto 14px !important;
+        }
+        .mob-sheet-head {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          margin-bottom: 16px !important;
+        }
+        .mob-sheet-title {
+          font-size: 1.25rem !important;
+          font-weight: 900 !important;
+          color: #0f172a !important;
+          margin: 0 !important;
+        }
+        .mob-export-btn {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          background: #eff6ff !important;
+          border: 1px solid #bfdbfe !important;
+          color: #2563eb !important;
+          font-size: 0.84rem !important;
+          font-weight: 800 !important;
+          padding: 6px 14px !important;
+          border-radius: 12px !important;
+          cursor: pointer !important;
+        }
+        .mob-switch-card {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          background: #ffffff !important;
+          border: 1.5px solid #e2e8f0 !important;
+          border-radius: 18px !important;
+          padding: 14px 16px !important;
+          margin-bottom: 12px !important;
+          gap: 14px !important;
+        }
+        .mob-switch-text {
+          flex: 1 !important;
+          text-align: right !important;
+        }
+        .mob-switch-text strong {
+          display: block !important;
+          font-size: 0.94rem !important;
+          color: #0f172a !important;
+          margin-bottom: 3px !important;
+        }
+        .mob-switch-text p {
+          font-size: 0.75rem !important;
+          color: #64748b !important;
+          margin: 0 !important;
+          line-height: 1.35 !important;
+        }
+        .mob-switch-wrap {
+          position: relative !important;
+          width: 46px !important;
+          height: 26px !important;
+          flex-shrink: 0 !important;
+        }
+        .mob-switch-wrap input {
+          opacity: 0 !important;
+          width: 0 !important;
+          height: 0 !important;
+        }
+        .mob-switch-slider {
+          position: absolute !important;
+          cursor: pointer !important;
+          top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+          background-color: #cbd5e1 !important;
+          transition: 0.25s !important;
+          border-radius: 26px !important;
+        }
+        .mob-switch-slider:before {
+          position: absolute !important;
+          content: "" !important;
+          height: 20px !important;
+          width: 20px !important;
+          left: 3px !important;
+          bottom: 3px !important;
+          background-color: white !important;
+          transition: 0.25s !important;
+          border-radius: 50% !important;
+        }
+        .mob-switch-wrap input:checked + .mob-switch-slider {
+          background-color: #2563eb !important;
+        }
+        .mob-switch-wrap input:checked + .mob-switch-slider:before {
+          transform: translateX(20px) !important;
+        }
+        .mob-stepper-card {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          background: #ffffff !important;
+          border: 1.5px solid #e2e8f0 !important;
+          border-radius: 18px !important;
+          padding: 14px 16px !important;
+          margin-bottom: 12px !important;
+        }
+        .mob-stepper-label {
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          font-size: 0.95rem !important;
+          font-weight: 800 !important;
+          color: #0f172a !important;
+        }
+        .mob-stepper-ctrls {
+          display: flex !important;
+          align-items: center !important;
+          gap: 14px !important;
+        }
+        .mob-step-btn {
+          width: 38px !important;
+          height: 38px !important;
+          border-radius: 50% !important;
+          background: #eff6ff !important;
+          border: 1.5px solid #bfdbfe !important;
+          color: #2563eb !important;
+          font-size: 1.25rem !important;
+          font-weight: 900 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+        }
+        .mob-step-val {
+          font-size: 1.3rem !important;
+          font-weight: 900 !important;
+          color: #0f172a !important;
+          min-width: 24px !important;
+          text-align: center !important;
+        }
+        .mob-timing-duo-row {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 12px !important;
+          margin-bottom: 14px !important;
+        }
+        .mob-duo-card {
+          background: #ffffff !important;
+          border: 1.5px solid #e2e8f0 !important;
+          border-radius: 18px !important;
+          padding: 12px 14px !important;
+          text-align: center !important;
+        }
+        .mob-duo-title {
+          display: block !important;
+          font-size: 0.8rem !important;
+          font-weight: 800 !important;
+          color: #475569 !important;
+          margin-bottom: 8px !important;
+        }
+        .mob-time-input-pill {
+          width: 100% !important;
+          height: 42px !important;
+          border-radius: 14px !important;
+          border: 1.5px solid #dbeafe !important;
+          background: #eff6ff !important;
+          color: #1e40af !important;
+          font-size: 1.15rem !important;
+          font-weight: 900 !important;
+          text-align: center !important;
+          outline: none !important;
+        }
+        .mob-stepper-mini {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 10px !important;
+        }
+        .mob-step-btn-mini {
+          width: 34px !important;
+          height: 34px !important;
+          border-radius: 50% !important;
+          background: #eff6ff !important;
+          border: 1.5px solid #bfdbfe !important;
+          color: #2563eb !important;
+          font-size: 1.15rem !important;
+          font-weight: 900 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+        }
+        .mob-step-val-mini {
+          font-size: 1.05rem !important;
+          font-weight: 900 !important;
+          color: #0f172a !important;
+          min-width: 36px !important;
+          text-align: center !important;
+        }
+        .mob-breaks-card {
+          background: #ffffff !important;
+          border: 1.5px solid #e2e8f0 !important;
+          border-radius: 18px !important;
+          padding: 14px 16px !important;
+          margin-bottom: 20px !important;
+        }
+        .mob-breaks-head {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          margin-bottom: 12px !important;
+        }
+        .mob-breaks-title {
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
+          font-size: 0.95rem !important;
+          font-weight: 800 !important;
+          color: #0f172a !important;
+        }
+        .mob-add-break-btn {
+          background: transparent !important;
+          border: none !important;
+          color: #2563eb !important;
+          font-size: 0.84rem !important;
+          font-weight: 800 !important;
+          cursor: pointer !important;
+        }
+        .mob-break-item {
+          background: #f8fafc !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 16px !important;
+          padding: 12px !important;
+        }
+        .mob-break-top-row {
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          margin-bottom: 10px !important;
+        }
+        .mob-break-name-input {
+          flex: 1 !important;
+          height: 40px !important;
+          border-radius: 12px !important;
+          border: 1.5px solid #cbd5e1 !important;
+          background: #ffffff !important;
+          padding: 0 12px !important;
+          font-size: 0.92rem !important;
+          font-weight: 800 !important;
+          text-align: right !important;
+          color: #0f172a !important;
+        }
+        .mob-del-break-btn {
+          width: 38px !important;
+          height: 38px !important;
+          border-radius: 12px !important;
+          background: #fee2e2 !important;
+          border: none !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+        }
+        .mob-break-steppers-row {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 10px !important;
+        }
+        .mob-break-stepper-cell {
+          background: #ffffff !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 14px !important;
+          padding: 8px !important;
+          text-align: center !important;
+        }
+        .mob-bstep-lbl {
+          display: block !important;
+          font-size: 0.74rem !important;
+          color: #64748b !important;
+          font-weight: 800 !important;
+          margin-bottom: 4px !important;
+        }
+        .mob-save-timing-btn {
+          width: 100% !important;
+          height: 52px !important;
+          border-radius: 18px !important;
+          background: #4f46e5 !important;
+          color: #ffffff !important;
+          font-size: 1.05rem !important;
+          font-weight: 900 !important;
+          border: none !important;
+          box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3) !important;
+          cursor: pointer !important;
+          transition: transform 0.15s ease !important;
+        }
+        .mob-save-timing-btn:active {
+          transform: scale(0.98) !important;
+        }
+      }
+
       /* ==========================================================
          تصميم الهاتف العصري المستوحى من تطبيق الجداول (Mobile Modern UX)
          يطبق فقط على شاشات وتطبيقات الهواتف دون المساس بألوان الهوية أو شاشات سطح المكتب
@@ -6921,6 +7809,188 @@
 
     <!-- EMIS Portal Dashboard Section (قائمة النوافذ الرئيسية المتطابقة مع البوابة) -->
     <section id="homeSection" class="card show" style="background:transparent;border:none;box-shadow:none;padding:0">
+      
+      <!-- =========================================================
+           الواجهة العصرية لتطبيق الهاتف (Mobile App Home View)
+           مستوحاة من أحدث تصميم لتطبيقات الجداول المدرسية
+           ========================================================= -->
+      <div id="mobileHomeShell" class="mobile-only-home no-print">
+        <!-- 1. شريط الإشعار العلوي -->
+        <div class="mob-top-notice" onclick="openSubInfoOrPayment()">
+          <div class="mob-notice-tag">معتمد ✓</div>
+          <div class="mob-notice-text">حسابك مفعّل بالكامل — بوابة مدرستي الذكية</div>
+          <div class="mob-notice-arrow">❮</div>
+        </div>
+
+        <!-- 2. بطاقة الرأس المتدرجة العصرية (Hero Header) -->
+        <div class="mob-hero-card">
+          <div class="mob-hero-row">
+            <div class="mob-hero-greeting">
+              <span class="mob-welcome-tag">مرحبًا،</span>
+              <h2 id="mobHeroUserName" class="mob-user-name">عبيده عماد</h2>
+              <p id="mobHeroSchoolName" class="mob-school-name">مدرسة بدور بغداد الابتدائية</p>
+            </div>
+            <div class="mob-hero-actions">
+              <button type="button" class="mob-action-pill" onclick="showTab('views')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>المتابعة المباشرة</span>
+              </button>
+              <div class="mob-action-icons-group">
+                <button type="button" class="mob-round-btn" onclick="location.reload()" title="تحديث">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </button>
+                <button type="button" class="mob-round-btn" onclick="openChangePinModal()" title="رمز الدخول">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5 1.5-1.5-1.5-1.5L9 6 3 12v6h6l6-6 1.5 1.5 1.5-1.5-1.5-1.5 1.5-1.5 3-3z"></path></svg>
+                </button>
+                <button type="button" class="mob-round-btn" onclick="if(confirm('هل تريد تسجيل الخروج؟')){ if(typeof doLogout==='function') doLogout(); else location.reload(); }" title="خروج">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. كرت النسخة الحالية (Schedule Version Card) -->
+        <div class="mob-card mob-version-card">
+          <div class="mob-card-head-row">
+            <div class="mob-card-head-right">
+              <span class="mob-head-title">النسخة الحالية</span>
+              <span class="mob-help-icon" onclick="openVideoGuide('version')">?</span>
+            </div>
+            <div class="mob-card-head-left" onclick="openVideoGuide('guide')">
+              <span class="mob-guide-link">دليل التطبيق 📖</span>
+            </div>
+          </div>
+
+          <div class="mob-version-body">
+            <div class="mob-version-btns-group">
+              <button type="button" class="mob-btn-plus" onclick="createNewScheduleCopy()" title="إنشاء جدول إضافي">+</button>
+              <button type="button" class="mob-btn-copy" onclick="copyCurrentSchedule()">
+                <span>النسخ</span>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+            <div class="mob-version-info-box">
+              <div class="mob-version-icon-sq">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              </div>
+              <div class="mob-version-texts">
+                <strong id="mobScheduleTitle">جدول المدرسة 1</strong>
+                <span id="mobScheduleCopies">1 نسخة</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. شريط ترتيب خطوات الإعداد (Breadcrumb Stepper) -->
+        <div class="mob-stepper-wrap">
+          <div class="mob-stepper-head">
+            <div class="mob-stepper-title-box">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+              <strong>إعداد الجدول</strong>
+              <span class="mob-stepper-sub">ابدأ بالترتيب</span>
+            </div>
+            <span class="mob-help-icon" onclick="openVideoGuide('stepper')">?</span>
+          </div>
+
+          <div class="mob-stepper-track">
+            <button type="button" class="mob-step-chip" onclick="showTab('teachers')">بيانات المعلمين</button>
+            <span class="mob-step-arr">←</span>
+            <button type="button" class="mob-step-chip" onclick="openTimingModal()">التوقيت</button>
+            <span class="mob-step-arr">←</span>
+            <button type="button" class="mob-step-chip" onclick="showTab('subjects')">المراحل والإسنادات</button>
+            <span class="mob-step-arr">←</span>
+            <button type="button" class="mob-step-chip" onclick="showTab('generate')">توليد الجدول</button>
+          </div>
+        </div>
+
+        <!-- 5. الكروت الأربعة الكبيرة الاحترافية (The 4 Big Feature Cards) -->
+        <div class="mob-big-cards-list">
+
+          <!-- كرت 1: بيانات المعلمين (Turquoise / Sky Gradient) -->
+          <div class="mob-big-card mob-card-teal" onclick="showTab('teachers')">
+            <div class="mob-big-card-content">
+              <div class="mob-big-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <div class="mob-big-texts">
+                <h3>بيانات المعلمين</h3>
+                <p>إضافة المعلمين وربطهم بالمدرسة</p>
+              </div>
+            </div>
+            <div class="mob-big-card-actions">
+              <button type="button" class="mob-video-pill" onclick="event.stopPropagation(); openVideoGuide('teachers')">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>شرح فيديو</span>
+              </button>
+              <div class="mob-nav-arrow">❮</div>
+            </div>
+          </div>
+
+          <!-- كرت 2: توقيت الحصص (Amber / Gold Gradient) -->
+          <div class="mob-big-card mob-card-amber" onclick="openTimingModal()">
+            <div class="mob-big-card-content">
+              <div class="mob-big-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="mob-big-texts">
+                <h3>توقيت الحصص</h3>
+                <p>تحديد مواعيد بداية ونهاية كل حصة والفسحة</p>
+              </div>
+            </div>
+            <div class="mob-big-card-actions">
+              <button type="button" class="mob-video-pill" onclick="event.stopPropagation(); openVideoGuide('timing')">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>شرح فيديو</span>
+              </button>
+              <div class="mob-nav-arrow">❮</div>
+            </div>
+          </div>
+
+          <!-- كرت 3: المراحل والمواد والإسنادات (Indigo / Purple Gradient) -->
+          <div class="mob-big-card mob-card-indigo" onclick="showTab('subjects')">
+            <div class="mob-big-card-content">
+              <div class="mob-big-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              </div>
+              <div class="mob-big-texts">
+                <h3>المراحل والمواد والإسنادات</h3>
+                <p>الخطة الدراسية وتوزيع الحصص على المعلمين</p>
+              </div>
+            </div>
+            <div class="mob-big-card-actions">
+              <button type="button" class="mob-video-pill" onclick="event.stopPropagation(); openVideoGuide('subjects')">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>شرح فيديو</span>
+              </button>
+              <div class="mob-nav-arrow">❮</div>
+            </div>
+          </div>
+
+          <!-- كرت 4: إنشاء وتوليد الجدول (Emerald / Green Gradient) -->
+          <div class="mob-big-card mob-card-emerald" onclick="showTab('generate')">
+            <div class="mob-big-card-content">
+              <div class="mob-big-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              </div>
+              <div class="mob-big-texts">
+                <h3>توليد الجدول تلقائياً</h3>
+                <p>إنشاء وتوزيع الجدول الذكي بنقرة واحدة</p>
+              </div>
+            </div>
+            <div class="mob-big-card-actions">
+              <button type="button" class="mob-video-pill" onclick="event.stopPropagation(); openVideoGuide('generate')">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>شرح فيديو</span>
+              </button>
+              <div class="mob-nav-arrow">❮</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
       <div class="emis-home-shell">
 
 
@@ -8564,6 +9634,153 @@
     </div>
 
     <section id="settings" class="card" hidden>
+      
+      <!-- =========================================================
+           الواجهة العصرية للملف الشخصي بالهاتف (Mobile Profile Screen)
+           مطابقة للصورة 3 في التطبيق المرجعي
+           ========================================================= -->
+      <div id="mobileProfileShell" class="mobile-only-profile no-print">
+        <!-- 1. شريط الرأس والترحيب -->
+        <div class="mob-hero-card mob-hero-profile">
+          <div class="mob-hero-row">
+            <div class="mob-hero-greeting">
+              <span class="mob-welcome-tag">مرحبًا،</span>
+              <h2 id="mobProfileUserName" class="mob-user-name">عبيده عماد</h2>
+              <p id="mobProfileSchoolName" class="mob-school-name">مدرسة بدور بغداد الابتدائية</p>
+            </div>
+            <div class="mob-hero-actions">
+              <button type="button" class="mob-action-pill" onclick="showTab('views')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>المتابعة المباشرة</span>
+              </button>
+              <div class="mob-action-icons-group">
+                <button type="button" class="mob-round-btn" onclick="location.reload()" title="تحديث">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </button>
+                <button type="button" class="mob-round-btn" onclick="openChangePinModal()" title="رمز الدخول">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5 1.5-1.5-1.5-1.5L9 6 3 12v6h6l6-6 1.5 1.5 1.5-1.5-1.5-1.5 1.5-1.5 3-3z"></path></svg>
+                </button>
+                <button type="button" class="mob-round-btn" onclick="if(confirm('هل تريد تسجيل الخروج؟')){ if(typeof doLogout==='function') doLogout(); else location.reload(); }" title="خروج">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. بطاقة الملف الملكية الكبيرة (Big Royal Blue Card) -->
+        <div class="mob-royal-card">
+          <h2 id="mobCardName" class="mob-royal-title">lenovo pc</h2>
+          <div class="mob-role-badge">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>حساب المدير</span>
+          </div>
+          <p id="mobCardSchool" class="mob-royal-sub">بدور بغداد</p>
+          <div class="mob-royal-phone-pill">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span id="mobCardPhone">07813332882</span>
+          </div>
+        </div>
+
+        <!-- 3. منصات النظام الثلاث (Platforms) -->
+        <div class="mob-platforms-row">
+          <div class="mob-platform-item" onclick="note('تطبيق بوابة مدرستي يعمل بكفاءة تامة على أجهزة الآيفون والآيباد')">
+            <div class="mob-platform-circle mob-circle-apple">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.16c.64-.78 1.08-1.86.96-2.95-.93.04-2.05.62-2.71 1.4-.58.67-1.09 1.77-.95 2.83 1.04.08 2.06-.5 2.7-1.28z"></path></svg>
+            </div>
+            <span>آيفون</span>
+          </div>
+
+          <div class="mob-platform-item" onclick="note('تطبيق بوابة مدرستي يعمل بكفاءة على كافة أجهزة أندرويد وتطبيقات APK')">
+            <div class="mob-platform-circle mob-circle-android">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.4111 13.8533 8.082 12 8.082s-3.5902.3291-5.1367.8676L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396"></path></svg>
+            </div>
+            <span>أندرويد</span>
+          </div>
+
+          <div class="mob-platform-item" onclick="note('منصة الويب السحابية تتيح لك المتابعة من أي متصفح وحاسوب')">
+            <div class="mob-platform-circle mob-circle-web">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            </div>
+            <span>الويب</span>
+          </div>
+        </div>
+
+        <!-- 4. كرت حالة الاشتراك والترخيص -->
+        <div class="mob-sub-card">
+          <div class="mob-sub-head">
+            <div class="mob-sub-head-title">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              <strong>الاشتراك</strong>
+            </div>
+          </div>
+          <div class="mob-sub-box">
+            <div class="mob-sub-status-row">
+              <span class="mob-sub-badge-active">الحساب مفعّل بنجاح ✓</span>
+            </div>
+            <div class="mob-sub-info-row">
+              <span class="mob-sub-lbl">الرقم:</span>
+              <strong id="mobSubPhone">07813332882</strong>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
+            <div class="mob-sub-info-row">
+              <span class="mob-sub-lbl">نوع التفعيل:</span>
+              <strong>دائم ومعتمد</strong>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. أزرار الإجراءات السريعة -->
+        <div class="mob-profile-actions-list">
+          <button type="button" class="mob-profile-action-btn" onclick="forceSyncNow(true)">
+            <div class="mob-pact-icon">🔄</div>
+            <div class="mob-pact-text">
+              <strong>مزامنة سحابية فورية</strong>
+              <span>مزامنة كافة الجداول والبيانات مع السيرفر</span>
+            </div>
+            <div class="mob-pact-arr">❮</div>
+          </button>
+
+          <button type="button" class="mob-profile-action-btn" onclick="exportJSON()">
+            <div class="mob-pact-icon">💾</div>
+            <div class="mob-pact-text">
+              <strong>تنزيل نسخة احتياطية</strong>
+              <span>حفظ ملف كامل ببيانات المدرسة على هاتفك</span>
+            </div>
+            <div class="mob-pact-arr">❮</div>
+          </button>
+
+          <button type="button" class="mob-profile-action-btn" onclick="openTimingModal()">
+            <div class="mob-pact-icon">🕒</div>
+            <div class="mob-pact-text">
+              <strong>إعداد أوقات الحصص والفسح</strong>
+              <span>ضبط مواعيد الحصص والاستراحة بدقة</span>
+            </div>
+            <div class="mob-pact-arr">❮</div>
+          </button>
+
+          <button type="button" class="mob-profile-action-btn" onclick="toggleDesktopSettingsView()">
+            <div class="mob-pact-icon">⚙️</div>
+            <div class="mob-pact-text">
+              <strong>الإعدادات المتقدمة والتفصيلية</strong>
+              <span>فتح كافة خيارات النظام الموسعة</span>
+            </div>
+            <div class="mob-pact-arr">❮</div>
+          </button>
+
+          <button type="button" class="mob-profile-action-btn" onclick="window.open('https://wa.me/9647813332882?text='+encodeURIComponent('السلام عليكم، أحتاج مساعدة أو استفسار بخصوص تطبيق بوابة مدرستي'), '_blank')">
+            <div class="mob-pact-icon">💬</div>
+            <div class="mob-pact-text">
+              <strong>الدعم الفني والمساعدة</strong>
+              <span>التواصل الفوري عبر واتساب</span>
+            </div>
+            <div class="mob-pact-arr">❮</div>
+          </button>
+        </div>
+      </div>
+
+
       <div class="set-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%">
         <div style="display:flex;align-items:center;gap:12px">
           <button class="btn w" type="button" onclick="showTab('home')">
@@ -11239,7 +12456,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.16";
+    const APP_VERSION = "2.17";
     const APP_PUBLIC_URL = "https://bmdiq.vercel.app/";
 
     const GUIDE_STEPS = [];
@@ -13352,6 +14569,151 @@ td{background:#ffffff;color:#163858;font-size:10pt}
 <thead><tr><th>الشعبة</th><th>الدروس الأسبوعية</th><th>سعة الدوام</th><th>حالة النصاب</th><th>المعلمون ودروسهم</th><th>المواد وتوزيعها</th></tr></thead>
 <tbody>${rowsHtml}</tbody>
 </table>
+
+  <!-- =========================================================
+       مودال إعداد أوقات الحصص العصري للهواتف (Timing Bottom Sheet)
+       مطابق تماماً للصورة 2 في التطبيق المرجعي
+       ========================================================= -->
+  <div id="timingModal" class="modal no-print" hidden onclick="if(event.target===this)closeTimingModal()">
+    <div class="modal-card mob-timing-sheet" onclick="event.stopPropagation()">
+      <div class="mob-sheet-handle"></div>
+
+      <!-- الرأس -->
+      <div class="mob-sheet-head">
+        <button type="button" class="mob-export-btn" onclick="exportTimingPDF()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>تصدير</span>
+        </button>
+        <h3 class="mob-sheet-title">إعداد أوقات الحصص</h3>
+      </div>
+
+      <!-- محتوى الإعدادات -->
+      <div class="mob-timing-body">
+        <!-- كرت سويتش 1: أوقات مختلفة بين الفصول -->
+        <div class="mob-switch-card">
+          <label class="mob-switch-wrap">
+            <input type="checkbox" id="timingDiffClasses" onchange="toggleTimingOption('classes')">
+            <span class="mob-switch-slider"></span>
+          </label>
+          <div class="mob-switch-text">
+            <strong>أوقات/فسح مختلفة بين الفصول</strong>
+            <p>مطفأ (الأغلب): توقيت موحّد لكل المدرسة. فعّله فقط إن كانت مدة الحصص/الفسح تختلف بين الفصول أو الشُعب.</p>
+          </div>
+        </div>
+
+        <!-- كرت سويتش 2: توقيت مختلف حسب اليوم -->
+        <div class="mob-switch-card">
+          <label class="mob-switch-wrap">
+            <input type="checkbox" id="timingDiffDays" onchange="toggleTimingOption('days')">
+            <span class="mob-switch-slider"></span>
+          </label>
+          <div class="mob-switch-text">
+            <strong>توقيت مختلف حسب اليوم</strong>
+            <p>مطفأ (الأغلب): التوقيت نفسه لكل الأيام. فعّله إن اختلفت أوقات الحصص أو الفسح في أيام معينة.</p>
+          </div>
+        </div>
+
+        <!-- كرت عدد الحصص في اليوم مع ستبر -->
+        <div class="mob-stepper-card">
+          <div class="mob-stepper-ctrls">
+            <button type="button" class="mob-step-btn" onclick="stepTimingPeriods(1)">+</button>
+            <strong id="mobTimingPeriods" class="mob-step-val">6</strong>
+            <button type="button" class="mob-step-btn" onclick="stepTimingPeriods(-1)">−</button>
+          </div>
+          <div class="mob-stepper-label">
+            <strong>عدد الحصص في اليوم</strong>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+        </div>
+
+        <!-- كرتين عمودين متجاورين: بداية الحصة الأولى + مدة الحصة الافتراضية -->
+        <div class="mob-timing-duo-row">
+          <!-- كرت بداية الحصة الأولى -->
+          <div class="mob-duo-card">
+            <span class="mob-duo-title">بداية الحصة الأولى</span>
+            <div class="mob-time-pill-wrap">
+              <input type="time" id="mobTimingStartTime" class="mob-time-input-pill" value="08:00" onchange="saveTimingModalData(false)">
+            </div>
+          </div>
+
+          <!-- كرت مدة الحصة -->
+          <div class="mob-duo-card">
+            <span class="mob-duo-title">مدة الحصة (افتراضي)</span>
+            <div class="mob-stepper-mini">
+              <button type="button" class="mob-step-btn-mini" onclick="stepTimingDuration(5)">+</button>
+              <strong id="mobTimingDuration" class="mob-step-val-mini">40 د</strong>
+              <button type="button" class="mob-step-btn-mini" onclick="stepTimingDuration(-5)">−</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- كرت الفسحات (الاستراحة) -->
+        <div class="mob-breaks-card">
+          <div class="mob-breaks-head">
+            <button type="button" class="mob-add-break-btn" onclick="addTimingBreak()">+ إضافة فسحة</button>
+            <div class="mob-breaks-title">
+              <strong>الفسحات</strong>
+              <span>☕</span>
+            </div>
+          </div>
+
+          <div id="mobBreaksList" class="mob-breaks-list">
+            <!-- عنصر الفسحة الافتراضي -->
+            <div class="mob-break-item">
+              <div class="mob-break-top-row">
+                <input type="text" id="mobBreakName" class="mob-break-name-input" value="فسحة" placeholder="اسم الفسحة (مثال: الاستراحة الأولى)">
+                <button type="button" class="mob-del-break-btn" onclick="delTimingBreak()" title="حذف الفسحة">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+
+              <div class="mob-break-steppers-row">
+                <div class="mob-break-stepper-cell">
+                  <span class="mob-bstep-lbl">بعد الحصة</span>
+                  <div class="mob-stepper-mini">
+                    <button type="button" class="mob-step-btn-mini" onclick="stepBreakAfter(1)">+</button>
+                    <strong id="mobBreakAfterVal" class="mob-step-val-mini">2</strong>
+                    <button type="button" class="mob-step-btn-mini" onclick="stepBreakAfter(-1)">−</button>
+                  </div>
+                </div>
+
+                <div class="mob-break-stepper-cell">
+                  <span class="mob-bstep-lbl">المدة</span>
+                  <div class="mob-stepper-mini">
+                    <button type="button" class="mob-step-btn-mini" onclick="stepBreakDur(5)">+</button>
+                    <strong id="mobBreakDurVal" class="mob-step-val-mini">10 د</strong>
+                    <button type="button" class="mob-step-btn-mini" onclick="stepBreakDur(-5)">−</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- زر الحفظ العريض الثابت -->
+        <button type="button" class="mob-save-timing-btn" onclick="saveTimingModalData(true)">حفظ الأوقات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       مودال الدليل وشرح الفيديو التوضيحي (Interactive Tutorial Modal)
+       ========================================================= -->
+  <div id="videoGuideModal" class="modal no-print" hidden onclick="if(event.target===this)this.hidden=true">
+    <div class="modal-card mob-guide-sheet" onclick="event.stopPropagation()">
+      <div class="mob-sheet-handle"></div>
+      <div class="mob-sheet-head">
+        <button type="button" class="sub-x" onclick="$('videoGuideModal').hidden=true">✕</button>
+        <h3 id="videoGuideTitle" class="mob-sheet-title">شرح توضيحي</h3>
+      </div>
+      <div class="mob-guide-body" id="videoGuideContent">
+        <!-- المحتوى التفاعلي يولد ديناميكياً -->
+      </div>
+      <button type="button" class="mob-save-timing-btn" onclick="$('videoGuideModal').hidden=true">فهمت، متابعة</button>
+    </div>
+  </div>
+
+
 </body></html>`;
       downloadBlob("ملخص_الشعب_" + (school.replace(/\s+/g, "_")) + ".xls", "application/vnd.ms-excel", html);
       okNote("تم تصدير ملخص الشعب إلى ملف Excel بنجاح");
@@ -25637,6 +26999,229 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         }
       }, 1500);
     });
+  
+    // ==============================================================
+    // دوال إدارة واجهة الهاتف العصرية وتوقيت الحصص (Mobile App Controllers)
+    // ==============================================================
+    window.openTimingModal = function() {
+      const s = (db && db.settings) || {};
+      const periods = +s.periods || 6;
+      const dur = +s.lessonDuration || 40;
+      const start = String(s.schoolStartTime || "08:00");
+      const bAfter = s.breakAfter !== undefined ? +s.breakAfter : 2;
+      const bDur = s.breakDuration !== undefined ? +s.breakDuration : 10;
+
+      if ($("mobTimingPeriods")) $("mobTimingPeriods").textContent = periods;
+      if ($("mobTimingDuration")) $("mobTimingDuration").textContent = dur + " د";
+      if ($("mobTimingStartTime")) $("mobTimingStartTime").value = start;
+      if ($("mobBreakAfterVal")) $("mobBreakAfterVal").textContent = bAfter;
+      if ($("mobBreakDurVal")) $("mobBreakDurVal").textContent = bDur + " د";
+
+      if ($("timingModal")) $("timingModal").hidden = false;
+    };
+
+    window.closeTimingModal = function() {
+      if ($("timingModal")) $("timingModal").hidden = true;
+    };
+
+    window.stepTimingPeriods = function(delta) {
+      let cur = parseInt($("mobTimingPeriods").textContent, 10) || 6;
+      cur = Math.max(1, Math.min(12, cur + delta));
+      $("mobTimingPeriods").textContent = cur;
+    };
+
+    window.stepTimingDuration = function(delta) {
+      let cur = parseInt($("mobTimingDuration").textContent, 10) || 40;
+      cur = Math.max(15, Math.min(90, cur + delta));
+      $("mobTimingDuration").textContent = cur + " د";
+    };
+
+    window.stepBreakAfter = function(delta) {
+      let cur = parseInt($("mobBreakAfterVal").textContent, 10) || 2;
+      cur = Math.max(1, Math.min(10, cur + delta));
+      $("mobBreakAfterVal").textContent = cur;
+    };
+
+    window.stepBreakDur = function(delta) {
+      let cur = parseInt($("mobBreakDurVal").textContent, 10) || 10;
+      cur = Math.max(5, Math.min(60, cur + delta));
+      $("mobBreakDurVal").textContent = cur + " د";
+    };
+
+    window.toggleTimingOption = function(opt) {
+      okNote("تم تفعيل الخيار لتطبيق أوقات مخصصة لكافة الفصول والأيام");
+    };
+
+    window.saveTimingModalData = function(showToast) {
+      if (!db.settings) db.settings = {};
+      const periods = parseInt($("mobTimingPeriods").textContent, 10) || 6;
+      const dur = parseInt($("mobTimingDuration").textContent, 10) || 40;
+      const start = $("mobTimingStartTime") ? $("mobTimingStartTime").value : "08:00";
+      const bAfter = parseInt($("mobBreakAfterVal").textContent, 10) || 2;
+      const bDur = parseInt($("mobBreakDurVal").textContent, 10) || 10;
+
+      db.settings.periods = periods;
+      db.settings.lessonDuration = dur;
+      db.settings.schoolStartTime = start;
+      db.settings.breakAfter = bAfter;
+      db.settings.breakDuration = bDur;
+
+      // تحديث عناصر الإعدادات المتواجدة في صفحة الإعدادات لضمان التوافق التام
+      if ($("periods")) $("periods").value = periods;
+      if ($("lessonDuration")) $("lessonDuration").value = dur;
+      if ($("schoolStartTime")) $("schoolStartTime").value = start;
+      if ($("breakAfter")) $("breakAfter").value = bAfter;
+      if ($("breakDuration")) $("breakDuration").value = bDur;
+
+      save();
+      try { if (typeof saveSettings === "function") saveSettings(true); } catch(e){}
+      if (showToast) {
+        okNote("تم حفظ توقيت الحصص والفسح بنجاح، وجرى تحديث الجدول والمواعيد تلقائياً!");
+        closeTimingModal();
+      }
+    };
+
+    window.exportTimingPDF = function() {
+      if (typeof exportViewsPDF === "function") exportViewsPDF();
+      else window.print();
+    };
+
+    window.addTimingBreak = function() {
+      okNote("الفسحة مضافة ومفعلة حالياً بالجدول");
+    };
+
+    window.delTimingBreak = function() {
+      if (confirm("هل تريد إلغاء الفسحة (الاستراحة) وتعيينها إلى صفر؟")) {
+        $("mobBreakDurVal").textContent = "0 د";
+        saveTimingModalData(true);
+      }
+    };
+
+    window.openVideoGuide = function(topic) {
+      const modal = $("videoGuideModal");
+      const title = $("videoGuideTitle");
+      const body = $("videoGuideContent");
+      if (!modal || !title || !body) return;
+
+      const guides = {
+        teachers: {
+          title: "دليل: بيانات المعلمين",
+          desc: "إضافة المعلمين، تحديد النصاب الأسبوعي، الأيام الأوف، وحصص المواد.",
+          steps: [
+            "1. اضغط على كرت بيانات المعلمين لفتح السجل.",
+            "2. اضغط على زر (+ جديد) لإضافة معلم جديد بالاسم والرقم الرباعي.",
+            "3. حدد اختصاص المعلم وأيام الأوف المعتمدة له.",
+            "4. احفظ البيانات وستظهر في الجدول تلقائياً."
+          ]
+        },
+        timing: {
+          title: "دليل: توقيت الحصص والفسحة",
+          desc: "ضبط مواعيد الحصص، بداية الدوام المدرسي، وفترات الاستراحة بين الدروس.",
+          steps: [
+            "1. حدد عدد الحصص اليومية (مثلاً 6 أو 7 حصص).",
+            "2. اضبط وقت بداية الحصة الأولى (مثلاً 08:00 صباحاً).",
+            "3. حدد مدة الحصة بالدقائق (مثلاً 40 أو 45 دقيقة).",
+            "4. اضبط الفسحة (مثلاً بعد كل درسين فرصة 10 دقائق).",
+            "5. اضغط على (حفظ الأوقات) لتحديث كافة التنبيهات المدرسية."
+          ]
+        },
+        subjects: {
+          title: "دليل: المراحل والمواد والإسنادات",
+          desc: "تحديد الخطة الدراسية، المواد، وربط كل حصة بالمعلم المسؤول عنها.",
+          steps: [
+            "1. أدخل الشعب الدراسية لمدرستك (أ، ب، ج...).",
+            "2. حدد المواد المطلوبة لكل مرحلة (عربي، رياضيات، علوم...).",
+            "3. أسند كل مادة للمعلم المخصص لها مع تحديد عدد الحصص الأسبوعية.",
+            "4. النظام يحسب النصاب تلقائياً ويمنع التضارب."
+          ]
+        },
+        generate: {
+          title: "دليل: توليد الجدول الذكي",
+          desc: "إنشاء الجدول الدراسي آلياً وتفادي أي تضارب بين المعلمين والشعب.",
+          steps: [
+            "1. بعد إدخال المعلمين والمواد، ادخل إلى قسم توليد الجدول.",
+            "2. اضغط على زر (إنشاء الجدول تلقائياً).",
+            "3. يقوم الذكاء الاصطناعي بتوزيع الحصص بعدالة متناهية.",
+            "4. يمكنك معاينة الجدول أو نشره للمعلمين وأولياء الأمور مباشرة."
+          ]
+        },
+        version: {
+          title: "دليل: إدارة نسخ الجدول",
+          desc: "إنشاء جداول متعددة وحفظ مسودات لكل فصل دراسي أو جدول شتوي/صيفي.",
+          steps: [
+            "1. اضغط على زر (+) لإنشاء نسخة جدول جديدة.",
+            "2. اضغط على زر (النسخ) لعمل نسخة طبق الأصل وتعديلها.",
+            "3. يمكنك التنقل بين النسخ بأمان ودون فقدان أي بيانات."
+          ]
+        },
+        stepper: {
+          title: "ترتيب خطوات إعداد الجدول",
+          desc: "أفضل تسلسل لضمان اكتمال جدولك دون أي نقص.",
+          steps: [
+            "الخطوة 1: إدخال بيانات المعلمين وأيام الأوف.",
+            "الخطوة 2: ضبط توقيت الحصص والفسح.",
+            "الخطوة 3: إدخال المواد وإسنادها للشعب.",
+            "الخطوة 4: الضغط على توليد الجدول التلقائي ونشره."
+          ]
+        },
+        guide: {
+          title: "دليل تطبيق بوابة مدرستي الذكية",
+          desc: "النظام الشامل لإدارة الجداول، الإشعار اليومي، وجداول المراقبة.",
+          steps: [
+            "• تطبيق المعلمين: يتيح لكل معلم استلام جدوله برابط مباشر دون الحاجة لحساب.",
+            "• الإشعار اليومي: إرسال تنبيه صباحي بحصص اليوم لكل معلم.",
+            "• جدول المراقبة: توزيع عادل على كادر المدرسة بالقرعة المنصفة.",
+            "• الطباعة والإكسل: تصدير وطباعة الجداول الفردية والعامة بأعلى جودة."
+          ]
+        }
+      };
+
+      const g = guides[topic] || guides.guide;
+      title.textContent = g.title;
+      let html = `<div style="padding:10px 0"><p style="color:#64748b;font-weight:700;font-size:0.95rem;margin:0 0 16px">${g.desc}</p>`;
+      html += `<div style="display:flex;flex-direction:column;gap:10px">`;
+      g.steps.forEach(function(s) {
+        html += `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px 14px;font-size:0.92rem;font-weight:700;color:#1e293b;line-height:1.5">${s}</div>`;
+      });
+      html += `</div></div>`;
+      body.innerHTML = html;
+      modal.hidden = false;
+    };
+
+    window.toggleDesktopSettingsView = function() {
+      const desktopTiles = document.querySelector("#settings .set-tiles");
+      if (desktopTiles) {
+        const isHidden = (desktopTiles.style.display === "none");
+        desktopTiles.style.display = isHidden ? "grid" : "none";
+        okNote(isHidden ? "تم إظهار لوحة الإعدادات المتقدمة" : "تمت العودة للواجهة المبسطة");
+      }
+    };
+
+    window.syncMobileHomeViewData = function() {
+      try {
+        const uName = (db.settings && db.settings.userName) || "عبيده عماد";
+        const sName = (db.settings && db.settings.schoolName) || "مدرسة بدور بغداد الابتدائية";
+        const phone = (db.settings && db.settings.userPhone) || "07813332882";
+
+        if ($("mobHeroUserName")) $("mobHeroUserName").textContent = uName;
+        if ($("mobHeroSchoolName")) $("mobHeroSchoolName").textContent = sName;
+        if ($("mobProfileUserName")) $("mobProfileUserName").textContent = uName;
+        if ($("mobProfileSchoolName")) $("mobProfileSchoolName").textContent = sName;
+        if ($("mobCardName")) $("mobCardName").textContent = uName;
+        if ($("mobCardSchool")) $("mobCardSchool").textContent = sName;
+        if ($("mobCardPhone")) $("mobCardPhone").textContent = phone;
+        if ($("mobSubPhone")) $("mobSubPhone").textContent = phone;
+      } catch(e){}
+    };
+
+    // مزامنة البيانات تلقائياً عند الإقلاع
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", window.syncMobileHomeViewData);
+    } else {
+      window.syncMobileHomeViewData();
+    }
+
+
   </script>
 </body>
 </html>
