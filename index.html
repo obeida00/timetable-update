@@ -10964,7 +10964,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.13";
+    const APP_VERSION = "2.14";
     const APP_PUBLIC_URL = "https://bmdiq.vercel.app/";
 
     const GUIDE_STEPS = [];
@@ -21607,7 +21607,9 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           rec.devices = j.sent || 1;
           save();
           renderTeacherLinks();
-          okNote("تم إرسال الإشعار إلى " + name + " (" + j.sent + " جهاز). تحقق من شاشة القفل الآن.");
+          okNote("تم إرسال إشعار الدرس الفعلي إلى " + name + " بنجاح (" + j.sent + " جهاز). تحقق من شاشة القفل الآن.");
+        } else if (j && j.error === "no_lessons") {
+          note("تنبيه: " + name + " ليس لديه حصص مجدولة في الجدول، لذلك لم يتم إرسال أي إشعار.");
         } else if (j && (j.error === "not_subscribed" || j.error === "expired")) {
           rec.subscribed = false;
           rec.pushOn = false;
@@ -21641,10 +21643,10 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         return;
       }
       toast("جارٍ إرسال إشعار تجريبي إلى " + targets.length + " معلم...");
-      var okN = 0, failN = 0, i = 0;
+      var okN = 0, failN = 0, noLessN = 0, i = 0;
       function next() {
         if (i >= targets.length) {
-          okNote("تم إرسال " + okN + " إشعار تجريبي" + (failN ? " · فشل: " + failN : "") + ".");
+          okNote("تم إرسال " + okN + " إشعار تجريبي" + (noLessN ? " · تم تخطي " + noLessN + " (بدون حصص)" : "") + (failN ? " · فشل: " + failN : "") + ".");
           return;
         }
         var tch = targets[i++];
@@ -21654,7 +21656,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ acc: acc, token: rec.token })
         }).then(function (r) { return r.json(); }).then(function (j) {
-          if (j && j.ok) okN++; else failN++;
+          if (j && j.ok) okN++; else if (j && j.error === "no_lessons") noLessN++; else failN++;
           next();
         }).catch(function () { failN++; next(); });
       }
@@ -21674,7 +21676,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
       var t = (db.teachers || []).find(function (x) { return x.id === tid; });
       var url = teacherLinkUrl(tid);
       if (!url || !t) { note("لا يوجد رابط."); return; }
-      var text = "السلام عليكم " + waTitle(t) + " " + t.name + "\n\n" +
+      var text = "السلام عليكم " + t.name + "\n\n" +
         "هذا رابط جدولك الخاص:\n" + url + "\n\n" +
         "افتحه من جوالك ثم ثبّته على الشاشة الرئيسية، وفعّل التنبيهات — ليصلك تنبيه قبل كل درس بخمس دقائق.\n" +
         "الرابط خاص بك، لا تشاركه.";
