@@ -8066,10 +8066,16 @@
             <label style="font-weight:800;color:#003a8c;display:flex;align-items:center;gap:6px;margin:0;font-size:0.88rem">
               <span>🎛️ صلاحية العرض في روابط المعلمين:</span>
             </label>
-            <select id="tLinksViewModeSelect" style="width:100%;box-sizing:border-box;padding:10px 12px;font-weight:700;border:1.5px solid #1890ff;border-radius:8px;background:#fff;color:#0f172a;font-size:0.86rem;line-height:1.4" onchange="changeTeacherViewMode(this.value)">
-              <option value="full">📅 عرض جدول الحصص كاملاً (الجدول الأسبوعي الكامل مع الإشعار)</option>
-              <option value="next_only">🔔 إشعار والدرس الحالي/القادم فقط (بدون إظهار الجدول الكامل)</option>
-            </select>
+            <div style="display:flex;gap:8px;align-items:center;width:100%">
+              <select id="tLinksViewModeSelect" style="flex:1;box-sizing:border-box;padding:10px 12px;font-weight:700;border:1.5px solid #1890ff;border-radius:8px;background:#fff;color:#0f172a;font-size:0.86rem;line-height:1.4">
+                <option value="full">📅 عرض جدول الحصص كاملاً (الجدول الأسبوعي الكامل مع الإشعار)</option>
+                <option value="next_only">🔔 إشعار والدرس الحالي/القادم فقط (بدون إظهار الجدول الكامل)</option>
+              </select>
+              <button type="button" id="btnSaveTeacherViewMode" onclick="confirmSaveTeacherViewMode()" style="background:#1890ff;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-weight:800;font-family:inherit;font-size:0.86rem;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(24,144,255,0.3);transition:all 0.2s">
+                <span>💾 حفظ وتطبيق عند الكل</span>
+              </button>
+            </div>
+            <div id="tViewModeStatusMsg" style="font-size:0.8rem;color:#059669;font-weight:700;margin-top:4px;display:none"></div>
           </div>
 
           <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(135px, 1fr));gap:8px;margin-bottom:12px">
@@ -10990,7 +10996,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.24";
+    const APP_VERSION = "2.25";
     const APP_PUBLIC_URL = "https://bmdiq.vercel.app/";
 
     const GUIDE_STEPS = [];
@@ -20910,32 +20916,68 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
         if (cur) sel.value = cur;
       }
     }
-    function changeTeacherViewMode(mode) {
-      mode = (mode === "next_only") ? "next_only" : "full";
+    function confirmSaveTeacherViewMode() {
+      var sel = $("tLinksViewModeSelect");
+      var mode = (sel && sel.value === "next_only") ? "next_only" : "full";
+      var btn = $("btnSaveTeacherViewMode");
+      var msg = $("tViewModeStatusMsg");
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ جارٍ التطبيق...</span>';
+      }
+
       db.settings = db.settings || {};
       db.settings.teacherViewMode = mode;
       if ($("teacherViewModeSelect")) $("teacherViewModeSelect").value = mode;
-      if ($("tLinksViewModeSelect")) $("tLinksViewModeSelect").value = mode;
       save();
+
       var acc = (typeof currentOwnerAcc === "function") ? currentOwnerAcc() : "";
-      if (acc) {
-        var base = (window.location.hostname === "bmdiq.vercel.app")
-          ? "https://bmdiq.vercel.app"
-          : (typeof TEACHER_BASE !== "undefined" ? TEACHER_BASE : "https://schol-table-bot.iq-school-timetable.workers.dev");
-        fetch(base + "/api/dev/set_view_mode", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ acc: acc, viewMode: mode, secret: acc })
-        }).then(function (r) { return r.json(); }).then(function (j) {
-          if (typeof note === "function") {
-            note(mode === "next_only"
-              ? "تم ضبط روابط المعلمين: يظهر الإشعار والدرس القادم فقط."
-              : "تم ضبط روابط المعلمين: يظهر جدول الحصص كاملاً.");
-          }
-        }).catch(function (e) {
-          console.warn("set_view_mode error", e);
-        });
-      }
+      if (!acc && typeof currentAccount === "function") acc = currentAccount();
+      if (!acc && db.settings && db.settings.ownerAcc) acc = db.settings.ownerAcc;
+
+      var base = (window.location.hostname === "bmdiq.vercel.app")
+        ? "https://bmdiq.vercel.app"
+        : (typeof TEACHER_BASE !== "undefined" ? TEACHER_BASE : "https://schol-table-bot.iq-school-timetable.workers.dev");
+
+      var endpoint = base + "/api/dev/set_view_mode";
+
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ acc: acc, viewMode: mode, secret: acc })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>✅ تم الحفظ بنجاح</span>';
+          setTimeout(function() {
+            if (btn) btn.innerHTML = '<span>💾 حفظ وتطبيق عند الكل</span>';
+          }, 2500);
+        }
+        if (msg) {
+          msg.style.display = "block";
+          msg.textContent = (mode === "next_only")
+            ? "✓ تم التطبيق بنجاح: سيظهر للمعلمين الإشعار والدرس الحالي/القادم فقط وبشكل فوري بدون تحديث الصفحة."
+            : "✓ تم التطبيق بنجاح: سيظهر للمعلمين جدول الحصص كاملاً وبشكل فوري بدون تحديث الصفحة.";
+          setTimeout(function() { if (msg) msg.style.display = "none"; }, 5000);
+        }
+        if (typeof okNote === "function") {
+          okNote(mode === "next_only"
+            ? "تم حفظ صلاحية العرض: سيظهر لجميع المعلمين الإشعار والدرس القادم فقط فوراً!"
+            : "تم حفظ صلاحية العرض: سيظهر لجميع المعلمين جدول الحصص كاملاً فوراً!");
+        }
+      }).catch(function (e) {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>💾 حفظ وتطبيق عند الكل</span>';
+        }
+        if (typeof note === "function") note("تعذّر حفظ الصلاحية على السيرفر: " + (e.message || e));
+      });
+    }
+    window.confirmSaveTeacherViewMode = confirmSaveTeacherViewMode;
+
+    function changeTeacherViewMode(mode) {
+      confirmSaveTeacherViewMode();
     }
     window.changeTeacherViewMode = changeTeacherViewMode;
 
