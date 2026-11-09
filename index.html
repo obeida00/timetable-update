@@ -4057,6 +4057,9 @@
 
       /* 2. ترويسة التطبيق العلوية (Modern Native App Bar) */
       header.top {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
         margin: -6px -8px 10px !important;
         padding: 8px 12px !important;
         border-radius: 0 0 20px 20px !important;
@@ -6479,18 +6482,16 @@
 
 <body>
   <!-- شاشة البداية الاحترافية الحية (Splash Screen) -->
-  <div id="appSplashScreen" style="position:fixed;inset:0;background:linear-gradient(180deg,#f8fafc 0%,#eef4fa 100%);z-index:99999999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s cubic-bezier(0.4,0,0.2,1),visibility 0.5s;font-family:'Cairo',sans-serif;user-select:none">
-    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:24px;animation:splashPopIn 0.6s cubic-bezier(0.16,1,0.3,1) both">
-      <div style="position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:18px">
-        <!-- هالة ضوئية خلف الشعار -->
-        <div style="position:absolute;inset:-10px;border-radius:50%;background:radial-gradient(circle,rgba(36,135,208,0.25) 0%,rgba(36,135,208,0) 70%);animation:splashPulse 2s ease-in-out infinite"></div>
-        <img src="/logo.png" onerror="this.src='logo.png'" alt="بوابة مدرستي" style="width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 12px 28px rgba(20,93,155,0.28));position:relative;z-index:2">
+  <div id="appSplashScreen" style="position:fixed;inset:0;background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);z-index:99999999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),visibility 0.45s;font-family:'Cairo',sans-serif;user-select:none">
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:24px;animation:splashPopIn 0.5s cubic-bezier(0.16,1,0.3,1) both">
+      <div style="position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+        <img src="/logo.png" onerror="this.src='logo.png'" alt="بوابة مدرستي" style="width:115px;height:115px;object-fit:contain;border-radius:50%!important;border:none!important;outline:none!important;background:transparent!important;box-shadow:none!important;position:relative;z-index:2">
       </div>
-      <h1 style="margin:0 0 4px;font-size:1.6rem;font-weight:900;color:#0f2b48;letter-spacing:-0.5px">بوابة مدرستي</h1>
+      <h1 style="margin:0 0 6px;font-size:1.6rem;font-weight:900;color:#0f2b48;letter-spacing:-0.5px">بوابة مدرستي</h1>
       <p style="margin:0;font-size:0.92rem;font-weight:700;color:#2487d0;opacity:0.95">إدارة الجداول والكادر والطلاب</p>
       
       <!-- مؤشر تحميل ناعم وعصري -->
-      <div style="margin-top:28px;width:120px;height:4px;background:#e2e8f0;border-radius:10px;overflow:hidden;position:relative">
+      <div style="margin-top:24px;width:120px;height:4px;background:#e2e8f0;border-radius:10px;overflow:hidden;position:relative">
         <div style="position:absolute;top:0;left:0;bottom:0;width:45%;background:linear-gradient(90deg,#2487d0,#60a5fa);border-radius:10px;animation:splashBar 1.2s cubic-bezier(0.65,0,0.35,1) infinite"></div>
       </div>
     </div>
@@ -11046,7 +11047,7 @@
     function storageKey() {
       return window._acc ? (KEY + "_" + window._acc) : (KEY + "_guest");
     }
-    const APP_VERSION = "2.26";
+    const APP_VERSION = "2.27";
     const APP_PUBLIC_URL = "https://bmdiq.vercel.app/";
 
     const GUIDE_STEPS = [];
@@ -25157,7 +25158,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
     <div style="background:#ffffff;width:100%;max-width:440px;border-radius:24px;box-shadow:0 25px 60px -15px rgba(0,0,0,0.3);overflow:hidden;border:1px solid #e2e8f0;font-family:inherit;text-align:center">
       <div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:22px 20px 18px;color:#fff;position:relative">
         <button type="button" onclick="closePwaModal()" style="position:absolute;top:14px;left:14px;background:rgba(255,255,255,0.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center">✕</button>
-        <img src="/logo.png" onerror="this.src='logo.png'" alt="بوابة مدرستي" style="width:58px;height:58px;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,0.2);margin-bottom:8px;background:#fff">
+        <img src="/logo.png" onerror="this.src='logo.png'" alt="بوابة مدرستي" style="width:60px;height:60px;border-radius:50%!important;border:none!important;background:transparent!important;box-shadow:none!important;margin-bottom:8px">
         <h3 style="margin:0;font-size:1.15rem;font-weight:800">تثبيت تطبيق بوابة مدرستي</h3>
         <p style="margin:4px 0 0;font-size:0.8rem;opacity:0.9">يعمل التطبيق بدون متصفح ويدعم العمل بدون إنترنت</p>
       </div>
@@ -25214,7 +25215,7 @@ ${mgr ? `<br><table cellpadding="0" cellspacing="0"><tr><td colspan="18" style="
 
   <div id="pwaInstallBanner" style="display:none;position:fixed;top:12px;left:12px;right:12px;z-index:999999;background:linear-gradient(135deg,#ffffff,#f0f7ff);border:1.5px solid #38bdf8;border-radius:18px;padding:12px 14px;box-shadow:0 12px 36px rgba(2,132,199,0.22);align-items:center;justify-content:space-between;gap:10px;animation:slideDownPwa 0.35s ease-out">
     <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
-      <img src="/logo.png" alt="بوابة مدرستي" style="width:42px;height:42px;border-radius:12px;box-shadow:0 3px 8px rgba(0,0,0,0.1);flex-shrink:0">
+      <img src="/logo.png" alt="بوابة مدرستي" style="width:42px;height:42px;border-radius:50%!important;border:none!important;background:transparent!important;box-shadow:none!important;flex-shrink:0">
       <div style="min-width:0;text-align:right">
         <div style="font-weight:800;font-size:0.92rem;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">تثبيت تطبيق «بوابة مدرستي»</div>
         <div style="font-size:0.75rem;color:#64748b;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="pwaBannerSubtitle">أضف التطبيق لشاشتك للوصول السريع بدون متصفح</div>
